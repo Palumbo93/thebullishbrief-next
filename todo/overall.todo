@@ -1,0 +1,89 @@
+Still Need:
+    ✔ Search Page: Search Bar with List of Tags, Authors, Categories and Search Results, Featured Briefs Section at top of page @done(25-07-31 12:21)
+    ✔ Author Page: Author Details @done(25-01-21 15:30)
+    ✔ Category link @done(25-01-21 16:15)
+    ✔ Tag link @done(25-01-21 16:15)
+    ✔ 404 Page @done(25-01-21 16:30)
+    ✔ AI Vault Prompts Page @done(25-07-31 17:18)
+    ✔ AI Vault Prompts Admin @done(25-07-31 17:18)
+    ✔ Article Share @done(25-07-31 17:28)
+    ✔ Article Read Time @done(25-08-01 07:46)
+    ✔ Article Bookmark (with count updates) @done(25-01-21 19:00)
+    ✔ Article Views (with tracking and deduplication) @done(25-01-21 20:00)
+    ✔ Brief Page @done(25-08-06 21:43)
+    ✔ Article Comments @done(25-08-07 10:33)
+    ✔ Account Settings Page @done(25-08-07 12:56)
+    ✔ Bullroom Chats @done(25-08-07 13:00)
+
+Misc:
+    ✔ Terms of Service @done(25-08-07 22:27)
+    ✔ Privacy Policy @done(25-08-07 22:27)
+    ✔ Cookie Policy @done(25-08-07 22:27)
+    ✔ Cookie Consent @done(25-08-07 22:27)
+    ✔ Disclaimer @done(25-08-07 22:27)
+    ✔ Google Analytics @done(25-01-21 21:00) -- Switch to actual domain
+    ✔ Sign Up Block on Bullroom Chat and Ai Vault Using @done(25-08-08 10:20)
+    ✔ Supabase Auth Emails @done(25-08-08 11:22)
+
+    [] Enable Custom SMTP for Supabase Auth Emails
+
+    ✔ Skeleton Loader > Spinner @done(25-08-08 20:14)
+    ✔ Toasts: @done(25-08-08 20:46)
+        ✔ Articles: Added/Removed From Bookmarks @done(25-08-08 20:46)
+        ✔ AI Vault: Prompt Copied, Prompt Downloaded, @done(25-08-08 20:46)
+        ✔ Auth: Auth/OTP Modal Sucess and Errors (replce the inline text messages with toasts), Log Out Success @done(25-08-08 20:46)
+        ✔ Account Settings: Change Email, Change Username @done(25-08-08 20:46)
+    
+    ✔ Alert Modals (Yes, No): Are you sure you want to delete this article comment? Are you sure you want to delete this bull room message? @done(25-08-08 20:52)
+
+    ✔ Data Actions in Account Settings Page (Delete Account, Delete Bull Room Chat Messages) with Toast and Alert Modals @done(25-08-08 21:20)
+
+    [] SEO Optimizing Articles for News
+    [] Briefs to not show on Google
+    [] Better article and brief loading then spinner
+    [] Article Meta Info on Mobile Still Sucks
+
+    ✔ Article Page: Tags, Article Card no padding @done(25-08-11 09:02)
+    
+    [] Bull Room Edit, Reply, Delete
+    [] Bull Room Admin Actions: Delete, Mute, Delete All Messages
+    [] Bull Room Chat Infinite Scroll
+ 
+
+
+    
+Misc Bugs:
+    ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)
+    ✔ Articles flash "No artiles found" after loading @done(25-01-21 22:30)
+    ✔ Auth Modals dont close when finished either action @done(25-08-08 11:48)
+    ✔ Logout needs refreshing page to work @done(25-08-08 11:48)
+    ✔ Tries to fetch user profile even when no auth @done(25-08-08 12:20)
+    [] Analytics already initited errors
+    [] Mobile has some weird scrolling issues
+    [] Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly)
+    [] Article images are still stored in temp folder
+
+Refine/Polish/Mobile Polish: 
+
+    ✔ Layout: Sidebar, Header, Footer @done(25-08-10 14:15)
+    ✔ Clean up code @done(25-08-10 14:15)
+
+
+    ✔ Login Modal @done(25-08-10 20:14)
+    ✔ Signup Modal @done(25-08-10 20:14)
+    ✔ Onboarding Survey @done(25-08-11 09:56)
+    ✔ Sidebar @done(25-08-10 20:14)
+    [] Brief Page (CTA Left)
+    ✔ Home Page @done(25-08-10 20:15)
+    ✔ Explore Sidebar @done(25-08-10 22:49)
+    ✔ Article Page @done(25-08-10 20:15)
+    ✔ Article Comment Widget & Empty State @done(25-08-10 22:48)
+    ✔ Explore Page @done(25-08-10 20:16)
+    [] Bull Room
+    ✔ Prompt Library @done(25-08-10 22:49)
+    ✔ Author Page @done(25-08-11 14:40)
+    ✔ Bookmarks Page (I like it already tbh) @done(25-08-11 14:40)
+    [] Account Settings Page
+    [] Share Sheet
+    [] Legal Pages
+

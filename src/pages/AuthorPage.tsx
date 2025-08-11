@@ -1,0 +1,561 @@
+"use client";
+
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { ExternalLink } from 'lucide-react';
+import { useAuthorBySlug } from '../hooks/useAuthorBySlug';
+import { useArticlesByAuthor } from '../hooks/useArticlesByAuthor';
+import { useMobileHeader } from '../contexts/MobileHeaderContext';
+import { createMobileHeaderConfig } from '../utils/mobileHeaderConfigs';
+import { AuthorAvatar } from '../components/articles/AuthorAvatar';
+import { ArticleCard } from '../components/articles/ArticleCard';
+import { LegalFooter } from '../components/LegalFooter';
+import { ShareSheet } from '../components/ShareSheet';
+import { DesktopBanner } from '../components/DesktopBanner';
+
+interface AuthorPageProps {
+  authorSlug: string;
+  onCreateAccountClick?: () => void;
+  onArticleSelect?: (articleId: number | string, articleTitle: string) => void;
+}
+
+export const AuthorPage: React.FC<AuthorPageProps> = ({ 
+  authorSlug,
+  onCreateAccountClick, 
+  onArticleSelect 
+}) => {
+  const router = useRouter();
+  const { setConfig } = useMobileHeader();
+  
+  const { author, isLoading: authorLoading, error: authorError } = useAuthorBySlug(authorSlug || '');
+  const { articles, isLoading: articlesLoading, error: articlesError } = useArticlesByAuthor(author?.id || '');
+  const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined') {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        router.push('/');
+      }
+    }
+  };
+
+  const handleArticleClick = (articleId: number | string, articleTitle: string) => {
+    const article = articles.find(a => a.id === articleId);
+    const routeId = article?.slug || articleId;
+    router.push(`/articles/${routeId}`);
+    onArticleSelect?.(typeof articleId === 'number' ? articleId : parseInt(String(articleId), 10), articleTitle);
+  };
+
+  // Handle scroll for header background
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Configure mobile header when author data is available
+  React.useEffect(() => {
+    if (author) {
+      const mobileHeaderConfig = createMobileHeaderConfig.author({
+        onMenuClick: () => {}, // Layout will override this with its own handler
+        onLogoClick: () => router.push('/'),
+        onShareClick: () => setIsShareSheetOpen(true)
+      });
+      
+      setConfig(mobileHeaderConfig);
+    }
+    
+    // Cleanup when component unmounts
+    return () => {
+      setConfig(null);
+    };
+  }, [author, setConfig, router]);
+
+  // Author skeleton component
+  const AuthorSkeleton = () => (
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ minHeight: '100vh' }}>
+        {/* Desktop Banner Skeleton */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          height: '56px',
+          position: 'sticky',
+          top: 0,
+          zIndex: 20,
+          borderBottom: '0.5px solid var(--color-border-primary)',
+          padding: '0 var(--content-padding)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: 'var(--radius-lg)',
+              background: 'var(--color-bg-tertiary)',
+              marginRight: 'var(--space-4)',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }} />
+            <div style={{
+              width: '80px',
+              height: '20px',
+              background: 'var(--color-bg-tertiary)',
+              borderRadius: 'var(--radius-sm)',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }} />
+          </div>
+        </div>
+
+        {/* Author Header Skeleton */}
+        <div style={{ 
+          padding: 'var(--space-8) var(--content-padding)',
+          borderBottom: '0.5px solid var(--color-border-primary)'
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            {/* Avatar Skeleton */}
+            <div style={{
+              width: '120px',
+              height: '120px',
+              borderRadius: 'var(--radius-full)',
+              background: 'var(--color-bg-tertiary)',
+              marginBottom: 'var(--space-4)',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }} />
+            
+            {/* Name Skeleton */}
+            <div style={{
+              width: '200px',
+              height: '36px',
+              background: 'var(--color-bg-tertiary)',
+              borderRadius: 'var(--radius-sm)',
+              marginBottom: 'var(--space-4)',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }} />
+            
+            {/* Stats Skeleton */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
+              <div style={{
+                width: '80px',
+                height: '24px',
+                background: 'var(--color-bg-tertiary)',
+                borderRadius: 'var(--radius-sm)',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+              }} />
+              <div style={{
+                width: '80px',
+                height: '24px',
+                background: 'var(--color-bg-tertiary)',
+                borderRadius: 'var(--radius-sm)',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+              }} />
+            </div>
+            
+            {/* Bio Skeleton */}
+            <div style={{ maxWidth: '600px', width: '100%' }}>
+              <div style={{
+                width: '100%',
+                height: '20px',
+                background: 'var(--color-bg-tertiary)',
+                borderRadius: 'var(--radius-sm)',
+                marginBottom: 'var(--space-2)',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+              }} />
+              <div style={{
+                width: '80%',
+                height: '20px',
+                background: 'var(--color-bg-tertiary)',
+                borderRadius: 'var(--radius-sm)',
+                margin: '0 auto',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+              }} />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: .5;
+          }
+        }
+      `}</style>
+    </div>
+  );
+
+  // Loading state
+  if (authorLoading) {
+    return <AuthorSkeleton />;
+  }
+
+  // Error state
+  if (authorError || !author) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        minHeight: '400px',
+        flexDirection: 'column',
+        gap: 'var(--space-6)'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 'var(--font-bold)',
+            color: 'var(--color-text-primary)',
+            marginBottom: 'var(--space-4)'
+          }}>
+            Author Not Found
+          </h1>
+          <p style={{ 
+            color: 'var(--color-text-tertiary)',
+            marginBottom: 'var(--space-6)'
+          }}>
+            The author you're looking for doesn't exist.
+          </p>
+          <button
+            onClick={handleBack}
+            className="btn btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
+          >
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ minHeight: '100vh' }}>
+        {/* Desktop Banner - Hidden on mobile */}
+        <DesktopBanner
+          title="Author"
+          isScrolled={isScrolled}
+          actions={[
+            {
+              type: 'back',
+              onClick: handleBack
+            },
+            {
+              type: 'share',
+              onClick: () => setIsShareSheetOpen(true)
+            }
+          ]}
+        />
+
+      {/* Author Header */}
+      <div style={{ 
+        padding: 'var(--space-8) var(--content-padding)',
+        borderBottom: '0.5px solid var(--color-border-primary)'
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          {/* Author Avatar */}
+          <div style={{ marginBottom: 'var(--space-4)' }}>
+            <AuthorAvatar 
+              author={author.name} 
+              image={author.avatar_url} 
+              size="lg" 
+            />
+          </div>
+          
+          {/* Author Info */}
+          <div style={{ maxWidth: '600px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+              <h1 style={{
+                fontSize: 'var(--text-3xl)',
+                fontWeight: 'var(--font-bold)',
+                color: 'var(--color-text-primary)',
+                margin: 0
+              }}>
+                {author.name}
+              </h1>
+              
+              {author.featured && (
+                <div style={{
+                  display: 'inline-block',
+                  padding: 'var(--space-1) var(--space-3)',
+                  backgroundColor: 'var(--color-brand-primary)',
+                  color: 'var(--color-bg-primary)',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-medium)'
+                }}>
+                  Featured
+                </div>
+              )}
+            </div>
+            
+            {/* Stats inline with name */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <span style={{
+                  fontSize: 'var(--text-lg)',
+                  fontWeight: 'var(--font-bold)',
+                  color: 'var(--color-text-primary)'
+                }}>
+                  {author.article_count || 0}
+                </span>
+                <span style={{
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-tertiary)'
+                }}>
+                  articles
+                </span>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <span style={{
+                  fontSize: 'var(--text-lg)',
+                  fontWeight: 'var(--font-bold)',
+                  color: 'var(--color-text-primary)'
+                }}>
+                  {author.total_views || 0}
+                </span>
+                <span style={{
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-tertiary)'
+                }}>
+                  views
+                </span>
+              </div>
+            </div>
+            
+            {author.bio && (
+              <p style={{
+                color: 'var(--color-text-secondary)',
+                fontSize: 'var(--text-lg)',
+                lineHeight: 'var(--leading-relaxed)',
+                marginBottom: 'var(--space-6)',
+                textAlign: 'center'
+              }}>
+                {author.bio}
+              </p>
+            )}
+            
+            {/* Social Links */}
+            {(author.linkedin_url || author.twitter_handle || author.website_url) && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-4)' }}>
+                {author.linkedin_url && (
+                  <a
+                    href={author.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
+                  >
+                    LinkedIn
+                    <ExternalLink style={{ width: '14px', height: '14px' }} />
+                  </a>
+                )}
+                
+                {author.twitter_handle && (
+                  <a
+                    href={`https://twitter.com/${author.twitter_handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
+                  >
+                    Twitter
+                    <ExternalLink style={{ width: '14px', height: '14px' }} />
+                  </a>
+                )}
+                
+                {author.website_url && (
+                  <a
+                    href={author.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
+                  >
+                    Website
+                    <ExternalLink style={{ width: '14px', height: '14px' }} />
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Author's Articles */}
+      <div>
+        
+        {articlesLoading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <article
+                key={`skeleton-${index}`}
+                style={{
+                  position: 'relative',
+                  padding: 'var(--space-8) var(--content-padding)',
+                  borderBottom: '0.5px solid var(--color-border-primary)',
+                  background: 'transparent'
+                }}
+              >
+                {/* Top line skeleton */}
+                <div style={{
+                  marginBottom: 'var(--space-4)',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-muted)'
+                }}>
+                  <div style={{
+                    width: '200px',
+                    height: '16px',
+                    background: 'var(--color-bg-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }} />
+                </div>
+
+                {/* Main content skeleton */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr auto',
+                  gap: 'var(--space-8)',
+                  alignItems: 'center',
+                  marginBottom: 'var(--space-4)'
+                }}>
+                  {/* Text content skeleton */}
+                  <div style={{ minWidth: 0 }}>
+                    {/* Headline skeleton */}
+                    <div style={{
+                      width: '100%',
+                      height: '24px',
+                      background: 'var(--color-bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      marginBottom: 'var(--space-3)',
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                    
+                    {/* Subheadline skeleton */}
+                    <div style={{
+                      width: '80%',
+                      height: '16px',
+                      background: 'var(--color-bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      marginBottom: 'var(--space-2)',
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                    <div style={{
+                      width: '60%',
+                      height: '16px',
+                      background: 'var(--color-bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                  </div>
+                  
+                  {/* Image skeleton */}
+                  <div style={{
+                    width: '150px',
+                    height: '150px',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--color-bg-tertiary)',
+                    flexShrink: 0,
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }} />
+                </div>
+
+                {/* Bottom line skeleton */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-6)',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-muted)'
+                }}>
+                  <div style={{
+                    width: '60px',
+                    height: '14px',
+                    background: 'var(--color-bg-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }} />
+                  <div style={{
+                    width: '40px',
+                    height: '14px',
+                    background: 'var(--color-bg-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }} />
+                  <div style={{
+                    width: '30px',
+                    height: '14px',
+                    background: 'var(--color-bg-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }} />
+                </div>
+              </article>
+            ))}
+            
+            <style>{`
+              @keyframes pulse {
+                0%, 100% {
+                  opacity: 1;
+                }
+                50% {
+                  opacity: .5;
+                }
+              }
+            `}</style>
+          </div>
+        ) : articlesError ? (
+          <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+            <p style={{ color: 'var(--color-text-tertiary)' }}>Failed to load articles</p>
+          </div>
+        ) : articles.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+            <p style={{ color: 'var(--color-text-tertiary)' }}>No articles found</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {articles.map((article) => (
+              <ArticleCard
+                key={article.id}
+                article={{
+                  id: article.id,
+                  title: article.title,
+                  subtitle: article.subtitle || '',
+                  author: author.name,
+                  authorAvatar: author.avatar_url,
+                  authorSlug: author.slug,
+                  date: article.published_at ? new Date(article.published_at).toLocaleDateString() : '',
+                  category: (article as any).category?.name || '',
+                  time: `${article.reading_time_minutes || 0} min read`,
+                  image: article.featured_image_url || '',
+                  views: String(article.view_count || 0),
+                  slug: article.slug
+                }}
+                onArticleClick={() => handleArticleClick(article.id, article.title)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      </div>
+      
+      <LegalFooter />
+      
+      {/* Share Sheet */}
+      <ShareSheet
+        isOpen={isShareSheetOpen}
+        onClose={() => setIsShareSheetOpen(false)}
+        url={window.location.href}
+      />
+    </div>
+  );
+}; 

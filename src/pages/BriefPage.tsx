@@ -1,0 +1,512 @@
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useBriefBySlug } from '../hooks/useBriefs';
+import { useTrackBriefEngagement } from '../hooks/useAnalytics';
+import { ArrowLeft, Play, User } from 'lucide-react';
+
+import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
+import TradingViewWidget from '../components/TradingViewWidget';
+import CustomWidget from '../components/CustomWidget';
+import { useAuth } from '../contexts/AuthContext';
+import { ShareSheet } from '../components/ShareSheet';
+import { Button } from '../components/ui/Button';
+import { CTABanner } from '../components/CTABanner';
+import { LegalFooter } from '../components/LegalFooter';
+import { BriefDesktopBanner } from '../components/briefs/BriefDesktopBanner';
+import { Layout } from '../components/Layout';
+
+
+interface BriefPageProps {
+  briefSlug: string;
+  onCreateAccountClick?: () => void;
+}
+
+export const BriefPage: React.FC<BriefPageProps> = ({ 
+  briefSlug, 
+  onCreateAccountClick 
+}) => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { data: brief, isLoading, error } = useBriefBySlug(briefSlug);
+  
+  const handleBack = () => {
+    if (typeof window !== 'undefined') {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        router.push('/');
+      }
+    }
+  };
+  const { trackView: trackAnalyticsView, trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
+  const [showVideo, setShowVideo] = useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+  const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
+  
+  // Handle scroll for header background
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Track view when brief loads
+  React.useEffect(() => {
+    if (brief && brief.title) {
+      // Track analytics view
+      trackAnalyticsView(String(brief.id), brief.title);
+    }
+  }, [brief]);
+
+
+
+  // Mobile navigation items
+
+
+  /**
+   * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
+   * 
+   * Features:
+   * - @username → links to https://x.com/username (blue color)
+   * - $TICKER → links to https://x.com/search?q=%24TICKER&src=cashtag_click (green color)
+   * 
+   * @param text - The raw text content to process
+   * @returns Text with HTML link tags for handles and tickers
+   */
+  const processTextWithLinks = (text: string) => {
+    // Replace Twitter handles (@username) with HTML links
+    // Matches @ followed by alphanumeric characters and underscores, 1-15 characters long
+    const withHandles = text.replace(/@([a-zA-Z0-9_]{1,15})\b/g, (match, username) => {
+      return `<a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" style="color: #1DA1F2; text-decoration: underline;">${match}</a>`;
+    });
+    
+    // Replace stock tickers ($TICKER) with HTML links
+    // Matches $ followed by 1-5 uppercase letters, ensuring it's not part of a larger word
+    const withTickers = withHandles.replace(/\$([A-Z]{1,5})\b/g, (match, ticker) => {
+      return `<a href="https://x.com/search?q=%24${ticker}&src=cashtag_click" target="_blank" rel="noopener noreferrer" style="color: #00D4AA; text-decoration: underline;">${match}</a>`;
+    });
+    
+    return withTickers;
+  };
+
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid var(--color-border-primary)',
+            borderTop: '3px solid var(--color-brand-primary)',
+            borderRadius: 'var(--radius-full)',
+            margin: '0 auto var(--space-4)'
+          }} className="animate-spin"></div>
+          <p style={{ color: 'var(--color-text-tertiary)' }}>Loading brief...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !brief) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        textAlign: 'center'
+      }}>
+        <div>
+          <h1 style={{
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 'var(--font-semibold)',
+            color: 'var(--color-text-primary)',
+            marginBottom: 'var(--space-4)'
+          }}>
+            Brief Not Found
+          </h1>
+          <p style={{
+            color: 'var(--color-text-tertiary)',
+            marginBottom: 'var(--space-6)'
+          }}>
+            The brief you're looking for doesn't exist or has been removed.
+          </p>
+          <button
+            onClick={handleBack}
+            className="btn btn-primary"
+            style={{ fontSize: 'var(--text-sm)' }}
+          >
+            <ArrowLeft style={{ width: '16px', height: '16px' }} />
+            <span>Go Back</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Generate TOC from brief content
+  const tocSections = parseTOCFromContent(brief.content);
+  
+  // Generate ticker widget - TradingView first, then custom widget if available
+  const firstTickerSymbol = getFirstTickerSymbol(brief.tickers);
+  const tickerWidget = (
+    <div>
+      {/* TradingView Widget (always shows if tickers exist) */}
+      {firstTickerSymbol && (
+        <TradingViewWidget symbol={firstTickerSymbol} />
+      )}
+      
+      {/* Custom Widget (shows below TradingView if widget_code exists) */}
+      {brief.widget_code && (
+        <CustomWidget code={brief.widget_code} title="Additional Widget" />
+      )}
+    </div>
+  );
+
+  // Prepare action panel data
+  const briefActionPanel = {
+    tickerWidget,
+    sections: tocSections,
+    tickers: brief.tickers,
+    companyName: brief.company_name || undefined,
+    companyLogoUrl: brief.company_logo_url || undefined,
+    investorDeckUrl: brief.investor_deck_url || undefined
+  };
+
+  const mobileHeaderProps = {
+    companyName: brief.company_name || undefined,
+    companyLogoUrl: brief.company_logo_url || undefined,
+    tickers: Array.isArray(brief.tickers) ? brief.tickers as string[] : undefined,
+    onShareClick: () => setIsShareSheetOpen(true)
+  };
+
+  return (
+    <Layout
+      showActionPanel={true}
+      actionPanelType="brief"
+      briefActionPanel={briefActionPanel}
+      mobileHeader={mobileHeaderProps}
+    >
+      {/* Brief Content */}
+      <div style={{ minHeight: '100vh' }}>
+        {/* Desktop Banner - Hidden on mobile */}
+        <BriefDesktopBanner
+          companyName={brief.company_name || undefined}
+          companyLogoUrl={brief.company_logo_url || undefined}
+          tickers={brief.tickers}
+          isScrolled={isScrolled}
+          actions={[
+            {
+              type: 'back',
+              onClick: handleBack
+            },
+            {
+              type: 'share',
+              onClick: () => setIsShareSheetOpen(true)
+            }
+          ]}
+        />
+
+        {/* Brief Header with Background Image */}
+        <div style={{
+          position: 'relative',
+          backgroundImage: `url(${brief.featured_image_url})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          overflow: 'hidden',
+          marginBottom: 'var(--space-8)',
+          minHeight: '300px',
+          display: 'flex',
+          alignItems: 'flex-end',
+        }}>
+          {/* Gradient Overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 40%, rgba(0, 0, 0, 0.85) 70%, rgba(0, 0, 0, 0.95) 85%, rgba(0, 0, 0, 1) 100%)',
+            zIndex: 1
+          }} />
+          
+          {/* Grain Texture Overlay */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `
+              radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px),
+              radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px)
+            `,
+            backgroundSize: '8px 8px, 8px 8px',
+            backgroundPosition: '0 0, 4px 4px',
+            opacity: 0.5,
+            pointerEvents: 'none',
+            zIndex: 2
+          }} />
+          
+          {/* Content */}
+          <div style={{
+            position: 'relative',
+            zIndex: 3,
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            alignItems: 'flex-start',
+            padding: 'var(--space-16) var(--content-padding) 0 var(--content-padding)',
+            maxWidth: '800px',
+            margin: '0 auto',
+          }}>
+            {/* Title */}
+            <h1 style={{
+              fontSize: 'var(--headline-size-desktop)',
+              fontFamily: 'var(--font-editorial)',
+              lineHeight: 'var(--leading-tight)',
+              color: 'var(--color-text-primary)',
+              marginBottom: 'var(--space-4)',
+              letterSpacing: '-0.01em'
+            }}>
+              {brief.title}
+            </h1>
+
+            {/* Subtitle */}
+            <p style={{
+              fontSize: 'var(--text-base)',
+              fontFamily: 'var(--font-primary)',
+              color: 'var(--color-text-secondary)',
+              lineHeight: 'var(--leading-relaxed)',
+              // marginBottom: 'var(--space-6)',
+              fontWeight: '400',
+              maxWidth: '600px'
+            }}>
+              {brief.subtitle}
+            </p>
+            
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <main style={{
+          padding: '0 var(--content-padding)',
+          maxWidth: '800px',
+          margin: '0 auto'
+        }}>
+
+          {/* Video Section (if video exists) */}
+          {brief.video_url && (
+            <div style={{
+              marginBottom: 'var(--space-8)',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              background: 'var(--color-bg-tertiary)',
+              position: 'relative',
+              aspectRatio: '16/9'
+            }}>
+              <div style={{
+                position: 'relative',
+                cursor: 'pointer',
+                width: '100%',
+                height: '100%'
+              }} onClick={() => setShowVideo(true)}>
+                <video
+                  src={brief.video_url}
+                  poster={brief.featured_image_url || undefined}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+                {/* Play button overlay */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  background: 'var(--color-bg-primary)',
+                  borderRadius: '50%',
+                  width: '80px',
+                  height: '80px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all var(--transition-base)'
+                }}>
+                  <Play style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    color: 'white',
+                    marginLeft: '4px' // Offset for play button triangle
+                  }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+
+            {/* Investor Deck Button - Mobile Only */}
+            {brief.investor_deck_url && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                marginBottom: 'var(--space-8)'
+              }}
+              className="mobile-only"
+              >
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth={false}
+                  onClick={() => window.open(brief.investor_deck_url || '', '_blank', 'noopener,noreferrer')}
+                >
+                  Get Investor Brief
+                </Button>
+              </div>
+            )}
+
+          
+
+          {/* Content */}
+          <div className="prose prose-invert prose-lg max-w-none">
+            {brief.content ? (
+              <div 
+                className="html-content"
+                dangerouslySetInnerHTML={{ 
+                  __html: processTextWithLinks(brief.content) 
+                }}
+                ref={(el) => {
+                  if (el) {
+                    // Add IDs to H2 headings for TOC functionality
+                    const h2Elements = el.querySelectorAll('h2');
+                    h2Elements.forEach((h2, index) => {
+                      if (!h2.id) {
+                        const text = h2.textContent?.trim() || '';
+                        const id = text
+                          .toLowerCase()
+                          .replace(/[^a-z0-9\s-]/g, '')
+                          .replace(/\s+/g, '-')
+                          .replace(/-+/g, '-')
+                          .trim()
+                          .replace(/^-+|-+$/g, '');
+                        
+                        if (id) {
+                          h2.id = id;
+                        }
+                      }
+                    });
+                  }
+                }}
+              />
+            ) : (
+              <div className="text-center py-12 bg-tertiary rounded-xl mb-8">
+                <p className="text-lg text-secondary mb-6">
+                  This brief is available to premium subscribers only.
+                </p>
+                {!user && (
+                  <button onClick={onCreateAccountClick} className="btn btn-primary">
+                    <User className="w-4 h-4" />
+                    <span>Subscribe to Read Full Brief</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+
+
+          {/* Disclaimer */}
+          {brief.disclaimer && (
+            <div style={{
+              marginTop: 'var(--space-8)',
+              padding: 'var(--space-4)',
+              background: 'var(--color-bg-card)',
+              border: '0.5px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-secondary)'
+            }}>
+              <strong>Disclaimer:</strong> {brief.disclaimer}
+            </div>
+          )}
+        </main>
+
+        {/* Video Modal */}
+        {showVideo && brief.video_url && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'var(--color-bg-primary)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 'var(--space-4)'
+          }} onClick={() => setShowVideo(false)}>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '800px',
+              aspectRatio: '16/9'
+            }} onClick={(e) => e.stopPropagation()}>
+              <video
+                src={brief.video_url}
+                controls
+                autoPlay
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 'var(--radius-lg)'
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* CTA Banner */}
+      <CTABanner 
+        onCreateAccountClick={onCreateAccountClick}
+        variant="secondary"
+        position="bottom"
+      />
+      
+      {/* Legal Footer */}
+      <LegalFooter />
+      
+      {/* Share Sheet */}
+      {brief && (
+        <ShareSheet
+          isOpen={isShareSheetOpen}
+          onClose={() => setIsShareSheetOpen(false)}
+          url={typeof window !== 'undefined' ? window.location.href : ''}
+          onShare={(platform) => {
+            if (brief.title) {
+              trackAnalyticsShare(String(brief.id), brief.title, platform);
+            }
+          }}
+        />
+      )}
+      
+    </Layout>
+  );
+}; 

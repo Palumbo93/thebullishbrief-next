@@ -75,11 +75,11 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
   } = useBullRoom(selectedRoomSlug);
 
   // Auto-redirect to general room if no specific room is provided
-  useEffect(() => {
-    if (!roomSlug) {
-      router.replace('/bull-room/general');
-    }
-  }, [roomSlug, router]);
+  // useEffect(() => {
+  //   if (!roomSlug) {
+  //     router.replace('/bull-room/general');
+  //   }
+  // }, [roomSlug, router]);
 
   // Remove mock messages - now using real data from hooks
   const [newMessage, setNewMessage] = useState<string>('');

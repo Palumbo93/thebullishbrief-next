@@ -284,7 +284,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             </h1>
 
             {/* Subtitle */}
-            <p style={{
+            {/* <p style={{
               fontSize: 'var(--text-base)',
               fontFamily: 'var(--font-primary)',
               color: 'var(--color-text-secondary)',
@@ -294,7 +294,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               maxWidth: '600px'
             }}>
               {brief.subtitle}
-            </p>
+            </p> */}
             
           </div>
         </div>

@@ -411,7 +411,7 @@ body {
 
 .html-content hr {
   border: none;
-  border-top: 0.5px solid var(--color-border-primary);
+  border-top: 1px solid var(--color-border-primary);
   margin: var(--space-8) 0;
 }
 

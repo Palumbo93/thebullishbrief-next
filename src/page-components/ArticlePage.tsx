@@ -16,6 +16,7 @@ import { ShareSheet } from '../components/ShareSheet';
 
 import { DesktopBanner } from '../components/DesktopBanner';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import { ArticleSkeleton } from '../components/ArticleSkeleton';
 
 interface ArticlePageProps {
   articleId: number | string;
@@ -161,11 +162,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="w-10 h-10 border-3 border-border-primary border-t-brand-primary rounded-full mx-auto mb-4 animate-spin"></div>
-          <p className="text-tertiary">Loading article...</p>
-        </div>
+      <div style={{ minHeight: '100vh' }}>
+        <ArticleSkeleton />
       </div>
     );
   }

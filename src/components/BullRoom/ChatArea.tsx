@@ -1,6 +1,6 @@
 import React from 'react';
 import { MessageSquare, File } from 'lucide-react';
-import { BullRoomMessage } from '../../lib/database.types';
+import { BullRoomMessage } from '../../lib/database.aliases';
 import { MessageReactions } from './MessageReactions';
 
 /**

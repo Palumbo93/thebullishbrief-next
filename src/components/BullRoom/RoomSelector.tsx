@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users, Hash, Loader2 } from 'lucide-react';
-import { BullRoom } from '../../lib/database.types';
+import { BullRoom } from '../../lib/database.aliases';
 
 /**
  * RoomSelector displays a list of rooms and allows the user to select one.

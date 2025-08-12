@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brief } from '../../lib/database.types';
+import { Brief } from '../../lib/database.aliases';
 import { getTickers } from '../../utils/tickerUtils';
 import { CompanyLogoImage } from '../ui/OptimizedImage';
 

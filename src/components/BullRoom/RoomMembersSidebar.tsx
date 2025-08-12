@@ -1,5 +1,5 @@
 import React from 'react';
-import { BullRoomMessage } from '../../lib/database.types';
+import { BullRoomMessage } from '../../lib/database.aliases';
 
 interface RoomMember {
   id: string;

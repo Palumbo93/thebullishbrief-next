@@ -1,6 +1,6 @@
 import React from 'react';
 import { Hash, Users } from 'lucide-react';
-import { BullRoom } from '../../lib/database.types';
+import { BullRoom } from '../../lib/database.aliases';
 
 /**
  * RoomBanner displays the current room's name, topic, and status.

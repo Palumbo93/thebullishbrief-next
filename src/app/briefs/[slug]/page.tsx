@@ -1,25 +1,21 @@
-"use client";
-
 import React from 'react';
-import { BriefPage } from '../../../page-components/BriefPage';
-import { Layout } from '../../../components/Layout';
+import { notFound } from 'next/navigation';
+import { BriefPageClient } from '../../../page-components/BriefPageClient';
+
+// Force dynamic rendering for all brief pages
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export default function BriefPageWrapper({ params }: Props) {
-  const [slug, setSlug] = React.useState<string>('');
+export default async function BriefPageWrapper({ params }: Props) {
+  const { slug } = await params;
   
-  React.useEffect(() => {
-    params.then(({ slug }) => setSlug(slug));
-  }, [params]);
+  if (!slug) {
+    notFound();
+  }
   
-  if (!slug) return null;
-  
-  return (
-    <Layout>
-      <BriefPage briefSlug={slug} />
-    </Layout>
-  );
+  return <BriefPageClient briefSlug={slug} />;
 }

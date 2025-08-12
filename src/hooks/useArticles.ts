@@ -175,9 +175,9 @@ export const useArticlesByCategory = (category: string) => {
 };
 
 /**
- * Fetch a single article by slug from Supabase
+ * Fetch a single article by slug (server-side function)
  */
-const fetchArticleBySlug = async (slug: string): Promise<Article> => {
+export const fetchArticleBySlug = async (slug: string): Promise<Article> => {
   if (!hasSupabaseCredentials) {
     throw new Error('Database connection not configured');
   }

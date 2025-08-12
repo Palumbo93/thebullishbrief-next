@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
-import { useImageUpload } from '../../hooks/useImageUpload';
+import { useAdminImageUpload } from '../../hooks/useAdminImageUpload';
 import { IMAGE_TYPES } from '../../lib/storage';
 
 interface ImageUploadProps {
@@ -38,12 +38,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     uploadAuthorAvatar,
     uploadFeaturedImage,
     reset
-  } = useImageUpload({
-    onSuccess: (result) => {
+  } = useAdminImageUpload({
+    onSuccess: (result: { url: string; path: string }) => {
       setPreviewUrl(result.url);
       onImageUpload(result);
     },
-    onError: (errorMessage) => {
+    onError: (errorMessage: string) => {
       console.error('Upload error:', errorMessage);
     }
   });
@@ -219,9 +219,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   color: 'var(--color-text-secondary)',
                   marginBottom: 'var(--space-2)'
                 }}>
-                  Uploading... {progress?.percentage}%
+                  Uploading... {progress}%
                 </div>
-                {progress && (
+                {progress > 0 && (
                   <div style={{
                     width: '100%',
                     height: '4px',
@@ -230,7 +230,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                     overflow: 'hidden'
                   }}>
                     <div style={{
-                      width: `${progress.percentage}%`,
+                      width: `${progress}%`,
                       height: '100%',
                       background: 'var(--color-primary)',
                       transition: 'width 0.3s ease'

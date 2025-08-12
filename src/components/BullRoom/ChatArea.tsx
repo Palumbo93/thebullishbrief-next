@@ -157,42 +157,38 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       flexDirection: 'column-reverse'
     }} className="hide-scrollbar">
       {messages.length === 0 ? (
-        <div style={{
+        <div style={{ 
+          textAlign: 'center', 
+          padding: 'var(--space-12)', 
+          color: 'var(--color-text-tertiary)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100%'
+          gap: 'var(--space-4)',
+          height: '100%',
+          minHeight: '400px'
         }}>
           <div style={{
-            width: '64px',
-            height: '64px',
-            background: 'rgba(20, 20, 20, 0.2)',
-            borderRadius: '50%',
+            width: '48px',
+            height: '48px',
+            background: 'var(--color-bg-tertiary)',
+            borderRadius: 'var(--radius-full)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: 'var(--space-6)'
-          }}>
-            <MessageSquare style={{ 
-              width: '32px', 
-              height: '32px', 
-              color: 'var(--color-text-muted)' 
-            }} />
-          </div>
-          <h3 style={{
-            fontSize: 'var(--text-lg)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--color-text-primary)',
             marginBottom: 'var(--space-2)'
-          }}>Welcome to the Bull Room</h3>
-          <p style={{
-            fontSize: 'var(--text-sm)',
-            color: 'var(--color-text-muted)',
-            textAlign: 'center',
-            maxWidth: '384px'
           }}>
-            Connect with traders, share insights, and stay ahead of the market
+            <MessageSquare style={{ width: '20px', height: '20px', color: 'var(--color-text-muted)' }} />
+          </div>
+          <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-normal)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>
+            No messages yet
+          </div>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', maxWidth: '200px' }}>
+            Be the first to start the conversation in this room
+          </p>
+          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-2)' }}>
+            Messages disappear after 48 hours
           </p>
         </div>
       ) : (

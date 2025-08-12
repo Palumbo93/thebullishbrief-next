@@ -261,6 +261,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             maxWidth: '800px',
             margin: '0 auto',
           }}>
+
+
             {/* Title */}
             <h1 style={{
               fontSize: 'var(--headline-size-desktop)',

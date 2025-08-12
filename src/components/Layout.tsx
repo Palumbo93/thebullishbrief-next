@@ -79,7 +79,7 @@ export const Layout: React.FC<LayoutProps> = ({
   const [mobileActionPanelOpen, setMobileActionPanelOpen] = React.useState(false);
 
   // Determine current location based on route
-  const getCurrentLocation = (): 'home' | 'articles' | 'article' | 'authors' | 'bullroom' | 'aivault' | 'alphaarena' | 'admin' | 'account-settings' | 'brief' => {
+  const getCurrentLocation = (): 'home' | 'articles' | 'article' | 'authors' | 'bull-room' | 'aivault' | 'alphaarena' | 'admin' | 'account-settings' | 'brief' => {
     if (pathname && pathname.startsWith('/articles/')) {
       return 'article';
     }
@@ -90,7 +90,7 @@ export const Layout: React.FC<LayoutProps> = ({
       return 'brief';
     }
     if (pathname && pathname.startsWith('/bull-room/')) {
-      return 'bullroom';
+      return 'bull-room';
     }
     if (pathname && pathname.startsWith('/admin/')) {
       return 'admin';
@@ -98,6 +98,10 @@ export const Layout: React.FC<LayoutProps> = ({
     switch (pathname) {
       case '/':
         return 'home';
+      case '/alphaarena':
+        return 'alphaarena';
+      case '/bull-room':
+        return 'bull-room';
       case '/aivault':
         return 'aivault';
       case '/alphaarena':
@@ -118,7 +122,7 @@ export const Layout: React.FC<LayoutProps> = ({
     return [
       { id: 'home', label: 'Home', icon: HomeIcon, path: '/', active: actualCurrentLocation === 'home' },
       { id: 'search', label: 'Search', icon: SearchIcon, path: '/search', active: false },
-      { id: 'bullroom', label: 'Bull Room', icon: MessageSquareMoreIcon, path: '/bull-room', active: actualCurrentLocation === 'bullroom' },
+      { id: 'bull-room', label: 'Bull Room', icon: MessageSquareMoreIcon, path: '/bull-room', active: actualCurrentLocation === 'bull-room' },
       { id: 'aivault', label: 'AI Vault', icon: FoldersIcon, path: '/aivault', active: actualCurrentLocation === 'aivault' },
     ];
   };
@@ -373,20 +377,25 @@ export const Layout: React.FC<LayoutProps> = ({
       `}</style>
 
       {/* Mobile Header (visible only on mobile) */}
-      <MobileHeader {...getMobileHeaderConfig()} />
-      {/* Mobile Sidebar Drawer */}
-      <MobileSidebarDrawer
-        open={isMobileSidebarOpen}
-        onClose={() => setIsMobileSidebarOpen(false)}
-        navItems={mobileNavItems}
-        user={user ? { 
-          initials: getUserInitials(),
-          username: user.user_metadata?.username || user.email?.split('@')[0] || 'User'
-        } : null}
-        onSignInClick={handleSignInClick}
-        onSignUpClick={handleSignUpClick}
-        onLogoutClick={handleLogout}
-      />
+      {actualCurrentLocation !== 'bull-room' && (
+        <>
+          <MobileHeader {...getMobileHeaderConfig()} />
+          
+          {/* Mobile Sidebar Drawer */}
+          <MobileSidebarDrawer
+            open={isMobileSidebarOpen}
+            onClose={() => setIsMobileSidebarOpen(false)}
+            navItems={mobileNavItems}
+            user={user ? { 
+              initials: getUserInitials(),
+              username: user.user_metadata?.username || user.email?.split('@')[0] || 'User'
+            } : null}
+            onSignInClick={handleSignInClick}
+            onSignUpClick={handleSignUpClick}
+            onLogoutClick={handleLogout}
+          />
+        </>
+      )}
 
       <div className="shell">
         {/* Left Navigation Sidebar */}

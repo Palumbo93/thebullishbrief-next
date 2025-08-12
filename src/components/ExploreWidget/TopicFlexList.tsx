@@ -26,9 +26,8 @@ export const TopicFlexList: React.FC<TopicFlexListProps> = ({
         </h4>
         <div style={{
           display: 'flex',
-          gap: 'var(--space-2)',
-          overflowX: 'auto',
-          paddingBottom: 'var(--space-2)'
+          flexWrap: 'wrap',
+          gap: 'var(--space-2)'
         }}>
           {Array.from({ length: 6 }).map((_, index) => (
             <div

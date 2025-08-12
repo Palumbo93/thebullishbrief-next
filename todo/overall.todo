@@ -49,6 +49,11 @@ Misc:
     [] Bull Room Edit, Reply, Delete
     [] Bull Room Admin Actions: Delete, Mute, Delete All Messages
     [] Bull Room Chat Infinite Scroll
+    [] Bull Room Chat Message Reactions
+    [] Bull Room Chat Message Replies
+    [] Bull Room Chat Links
+    [] Bull Room Chat Images
+    [] Make more Bull Rooms, tie them to preferences
  
 
 
@@ -63,7 +68,7 @@ Misc Bugs:
     [] Mobile has some weird scrolling issues
     [] Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly)
     [] Article images are still stored in temp folder
-    [] Login doesnt close modal or refresh auth state
+    ✔ Login doesnt close modal or refresh auth state @done(25-08-12 15:34)
 
 Refine/Polish/Mobile Polish: 
 

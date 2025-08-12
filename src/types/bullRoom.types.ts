@@ -25,6 +25,7 @@ export interface BullRoomMessage {
   user?: {
     id: string;
     username: string;
+    profile_image?: string | null;
   };
   reply_to?: BullRoomMessage;
 }

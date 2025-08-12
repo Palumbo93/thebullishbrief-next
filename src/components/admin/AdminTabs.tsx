@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileText, Folder, Users, Tag, Settings, Brain, MessageSquare, Briefcase, RefreshCw } from 'lucide-react';
 
-export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'prompts' | 'prompt-categories' | 'briefs' | 'build';
+export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'prompts' | 'prompt-categories' | 'briefs' | 'bull-rooms' | 'build';
 
 interface AdminTabsProps {
   activeTab: AdminTab;
@@ -64,6 +64,12 @@ const tabConfigs: TabConfig[] = [
     label: 'Prompt Categories',
     icon: <MessageSquare style={{ width: '16px', height: '16px' }} />,
     description: 'Organize prompts by category'
+  },
+  {
+    id: 'bull-rooms',
+    label: 'Bull Rooms',
+    icon: <MessageSquare style={{ width: '16px', height: '16px' }} />,
+    description: 'Manage chat rooms'
   },
   {
     id: 'build',

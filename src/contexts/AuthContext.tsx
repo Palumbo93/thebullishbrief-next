@@ -33,6 +33,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   grantRole: (userId: string, roleName: string) => Promise<{ error?: any; success?: boolean }>;
   revokeRole: (userId: string, roleName: string) => Promise<{ error?: any; success?: boolean }>;
+  refreshToken: () => Promise<{ error?: any; data?: any; success?: boolean }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,6 +52,7 @@ export const useAuth = () => {
       updateProfile: async () => ({ error: null, success: false }),
       sendOTP: async () => ({ error: null, success: false }),
       verifyOTP: async () => ({ error: null, success: false }),
+      refreshToken: async () => ({ error: null, success: false }),
       hasRole: () => false,
       isAdmin: false,
       isPremium: false,
@@ -131,6 +133,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return { error };
         }
 
+        // Manually update auth state since auth state listener is disabled
+        if (data?.user) {
+          console.log('OTP verification successful, manually updating auth state');
+          setUser({ ...data.user, isAdmin: false });
+          setLoading(false);
+          
+          // Fetch user profile separately (slower)
+          fetchUserProfile(data.user.id);
+        }
+
         return { data, success: true };
       } catch (error) {
         console.error('OTP verification catch error:', error);
@@ -139,6 +151,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
     signOut: async () => {
       await supabase.auth.signOut();
+      // Manually clear auth state since auth state listener is disabled
+      setUser(null);
+      setLoading(false);
     },
     grantRole: async (userId: string, roleName: string) => {
       try {
@@ -176,7 +191,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
     },
+    // Manual token refresh for when we need a fresh token
+    refreshToken: async () => {
+      try {
+        const { data, error } = await supabase.auth.refreshSession();
+        if (error) {
+          console.error('Error refreshing token:', error);
+          return { error };
+        }
+        return { data, success: true };
+      } catch (error) {
+        console.error('Error refreshing token:', error);
+        return { error };
+      }
+    },
   }), [user, loading]);
+
+  // Fetch user profile and admin status
+  const fetchUserProfile = async (userId: string) => {
+    setAdminLoading(true);
+    try {
+      // Fetch full user profile
+      const { data: profile, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.log('Could not fetch user profile:', error);
+        return;
+      }
+      
+      // Check JWT metadata for admin status as fallback
+      const { data: { session } } = await supabase.auth.getSession();
+      const jwtIsAdmin = session?.user?.app_metadata?.is_admin || false;
+      const isAdmin = profile?.is_admin || jwtIsAdmin;
+      
+      // Update user with profile and admin status
+      setUser(prev => prev ? { 
+        ...prev, 
+        isAdmin,
+        profile: profile || undefined
+      } : null);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!hasSupabaseCredentials) {
@@ -206,68 +269,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    // Fetch user profile and admin status
-    const fetchUserProfile = async (userId: string) => {
-      setAdminLoading(true);
-      try {
-        // Fetch full user profile
-        const { data: profile, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-        
-        if (error) {
-          console.log('Could not fetch user profile:', error);
-          return;
-        }
-        
-        // Check JWT metadata for admin status as fallback
-        const { data: { session } } = await supabase.auth.getSession();
-        const jwtIsAdmin = session?.user?.app_metadata?.is_admin || false;
-        const isAdmin = profile?.is_admin || jwtIsAdmin;
-        
-        // Update user with profile and admin status
-        setUser(prev => prev ? { 
-          ...prev, 
-          isAdmin,
-          profile: profile || undefined
-        } : null);
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      } finally {
-        setAdminLoading(false);
-      }
-    };
-
     getInitialSession();
 
-    // Temporarily disable auth state listener to prevent window focus refresh
+    // Disable auth state listener completely to prevent window focus refresh issues
+    // We'll rely on manual session checks and explicit auth actions
+    console.log('Auth state listener disabled to prevent window focus refresh issues');
+    
     // const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-    //   console.log('Auth state changed:', event, session?.user?.email, 'Loading:', loading);
-    //   
-    //   // Only update state if the user has actually changed
-    //   const currentUserId = user?.id;
-    //   const newUserId = session?.user?.id;
-    //   
-    //   if (session?.user && currentUserId !== newUserId) {
-    //     console.log('Setting user in auth context:', session.user.email);
-    //     // Set user immediately without admin check
-    //     setUser({ ...session.user, isAdmin: false });
-    //     setLoading(false);
-    //     
-    //     // Fetch user profile separately (slower)
-    //     fetchUserProfile(session.user.id);
-    //   } else if (!session?.user && currentUserId !== null) {
-    //     console.log('Clearing user in auth context');
-    //     setUser(null);
-    //     setLoading(false);
-    //   } else {
-    //     console.log('Auth state change ignored - user unchanged');
-    //   }
+    //   // Disabled to prevent window focus refresh issues
     // });
+    
 
-    // return () => subscription.unsubscribe();
+
+    // No cleanup needed since auth state listener is disabled
   }, []);
 
 

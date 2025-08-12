@@ -118,20 +118,21 @@ export const ONBOARDING_OPTIONS = {
     { id: 'speculative', label: 'Speculative', desc: 'Maximum growth potential' }
   ],
   interests: [
-    { id: 'stocks', label: 'Stocks & Equities' },
-    { id: 'penny-stocks', label: 'Penny Stocks' },
-    { id: 'crypto', label: 'Cryptocurrency' },
-    { id: 'options', label: 'Options Trading' },
-    { id: 'real-estate', label: 'Real Estate' },
-    { id: 'commodities', label: 'Commodities' },
-    { id: 'junior-mining', label: 'Junior Mining' },
-    { id: 'bonds', label: 'Bonds & Fixed Income' },
-    { id: 'etfs', label: 'ETFs & Index Funds' },
-    { id: 'forex', label: 'Foreign Exchange' },
-    { id: 'ai-tech', label: 'AI & Technology' },
-    { id: 'energy', label: 'Energy & ESG' },
-    { id: 'biotech', label: 'Biotech & Healthcare' },
-    { id: 'macro', label: 'Macroeconomics' }
+    // Market Intelligence
+    { id: 'hot-tickers', label: 'Hot Tickers' },
+    { id: 'insider-tracking', label: 'Insider Tracking' },
+    { id: 'earnings-catalysts', label: 'Earnings & Catalysts' },
+  
+    // Speculative Plays
+    { id: 'degen-plays', label: 'Degen Plays' },
+    { id: 'crypto', label: 'Crypto' },
+  
+    // Sector Focus
+    { id: 'tech', label: 'Tech' },
+    { id: 'mining-commodities-energy', label: 'Mining, Commodities & Energy' },
+  
+    // Evergreen Trading
+    { id: 'trading-strategies', label: 'Trading Strategies & Setups' }
   ],
   country: [
     { id: 'us', label: 'United States', desc: 'US markets & regulations' },

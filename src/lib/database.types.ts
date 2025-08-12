@@ -6,8 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-
-
 export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -144,6 +142,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
             referencedColumns: ["id"]
           },
         ]
@@ -574,6 +579,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bull_room_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bull_room_reactions: {
@@ -613,11 +625,17 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bull_room_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bull_rooms: {
         Row: {
-          banner_photo_url: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -626,13 +644,13 @@ export type Database = {
           last_activity_at: string | null
           message_count: number | null
           name: string
+          rules: Json | null
           slug: string
           sort_order: number | null
           topic: string
           updated_at: string | null
         }
         Insert: {
-          banner_photo_url?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -641,13 +659,13 @@ export type Database = {
           last_activity_at?: string | null
           message_count?: number | null
           name: string
+          rules?: Json | null
           slug: string
           sort_order?: number | null
           topic: string
           updated_at?: string | null
         }
         Update: {
-          banner_photo_url?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -656,6 +674,7 @@ export type Database = {
           last_activity_at?: string | null
           message_count?: number | null
           name?: string
+          rules?: Json | null
           slug?: string
           sort_order?: number | null
           topic?: string
@@ -734,6 +753,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
             referencedColumns: ["id"]
           },
         ]
@@ -862,6 +888,7 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          bio: string | null
           created_at: string | null
           email: string
           email_verified: boolean | null
@@ -870,11 +897,14 @@ export type Database = {
           newsletter_subscribed: boolean | null
           notification_preferences: Json | null
           preferences: Json | null
+          profile_image: string | null
           subscription_tier: string | null
+          twitter_handle: string | null
           updated_at: string | null
           username: string
         }
         Insert: {
+          bio?: string | null
           created_at?: string | null
           email: string
           email_verified?: boolean | null
@@ -883,11 +913,14 @@ export type Database = {
           newsletter_subscribed?: boolean | null
           notification_preferences?: Json | null
           preferences?: Json | null
+          profile_image?: string | null
           subscription_tier?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
           username: string
         }
         Update: {
+          bio?: string | null
           created_at?: string | null
           email?: string
           email_verified?: boolean | null
@@ -896,7 +929,9 @@ export type Database = {
           newsletter_subscribed?: boolean | null
           notification_preferences?: Json | null
           preferences?: Json | null
+          profile_image?: string | null
           subscription_tier?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
           username?: string
         }
@@ -966,6 +1001,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles_public: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          id: string | null
+          profile_image: string | null
+          twitter_handle: string | null
+          username: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          profile_image?: string | null
+          twitter_handle?: string | null
+          username?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          profile_image?: string | null
+          twitter_handle?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_missing_user_profiles: {
@@ -1010,6 +1072,17 @@ export type Database = {
           preferences: Json
           created_at: string
           updated_at: string
+        }[]
+      }
+      get_user_profile_public: {
+        Args: { user_id: string }
+        Returns: {
+          id: string
+          username: string
+          bio: string
+          profile_image: string
+          twitter_handle: string
+          created_at: string
         }[]
       }
       get_user_profiles_basic: {

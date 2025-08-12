@@ -1,184 +1,96 @@
 import { useState, useCallback } from 'react';
-import {
-  uploadArticleImage,
-  uploadAuthorAvatar,
-  uploadFeaturedImage,
-  validateImage,
-  StorageError,
-  IMAGE_TYPES
-} from '../lib/storage';
-
-interface UploadProgress {
-  loaded: number;
-  total: number;
-  percentage: number;
-}
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface UseImageUploadOptions {
-  onProgress?: (progress: UploadProgress) => void;
-  onSuccess?: (result: { url: string; path: string }) => void;
+  bucket: string;
+  folder?: string;
+  onSuccess?: (url: string) => void;
   onError?: (error: string) => void;
 }
 
-export function useImageUpload(options: UseImageUploadOptions = {}) {
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState<UploadProgress | null>(null);
+interface UseImageUploadReturn {
+  uploadImage: (file: File) => Promise<string | null>;
+  isUploading: boolean;
+  error: string | null;
+  clearError: () => void;
+}
+
+/**
+ * Custom hook for uploading images to Supabase storage
+ */
+export const useImageUpload = ({
+  bucket,
+  folder = '',
+  onSuccess,
+  onError,
+}: UseImageUploadOptions): UseImageUploadReturn => {
+  const { user } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadArticleImageWithProgress = useCallback(async (
-    file: File,
-    articleId: string
-  ): Promise<{ url: string; path: string } | null> => {
-    try {
-      setUploading(true);
-      setError(null);
-      setProgress({ loaded: 0, total: file.size, percentage: 0 });
-
-      // Validate image first
-      const validation = validateImage(file, 'ARTICLE_IMAGE');
-      if (!validation.isValid) {
-        throw new Error(validation.error || 'Invalid image file');
-      }
-
-      // Simulate progress (since Supabase doesn't provide upload progress)
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          if (!prev) return prev;
-          const newLoaded = Math.min(prev.loaded + file.size / 10, file.size);
-          const newPercentage = Math.round((newLoaded / file.size) * 100);
-          const newProgress = { loaded: newLoaded, total: file.size, percentage: newPercentage };
-          options.onProgress?.(newProgress);
-          return newProgress;
-        });
-      }, 100);
-
-      const result = await uploadArticleImage(file, articleId);
-      
-      clearInterval(progressInterval);
-      setProgress({ loaded: file.size, total: file.size, percentage: 100 });
-      options.onSuccess?.(result);
-      
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof StorageError ? err.message : 'Upload failed';
-      setError(errorMessage);
-      options.onError?.(errorMessage);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  }, [options]);
-
-  const uploadAuthorAvatarWithProgress = useCallback(async (
-    file: File,
-    authorId: string
-  ): Promise<{ url: string; path: string } | null> => {
-    try {
-      setUploading(true);
-      setError(null);
-      setProgress({ loaded: 0, total: file.size, percentage: 0 });
-
-      // Validate image first
-      const validation = validateImage(file, 'AUTHOR_AVATAR');
-      if (!validation.isValid) {
-        throw new Error(validation.error || 'Invalid image file');
-      }
-
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          if (!prev) return prev;
-          const newLoaded = Math.min(prev.loaded + file.size / 10, file.size);
-          const newPercentage = Math.round((newLoaded / file.size) * 100);
-          const newProgress = { loaded: newLoaded, total: file.size, percentage: newPercentage };
-          options.onProgress?.(newProgress);
-          return newProgress;
-        });
-      }, 100);
-
-      const result = await uploadAuthorAvatar(file, authorId);
-      
-      clearInterval(progressInterval);
-      setProgress({ loaded: file.size, total: file.size, percentage: 100 });
-      options.onSuccess?.(result);
-      
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof StorageError ? err.message : 'Upload failed';
-      setError(errorMessage);
-      options.onError?.(errorMessage);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  }, [options]);
-
-  const uploadFeaturedImageWithProgress = useCallback(async (
-    file: File,
-    articleId: string
-  ): Promise<{ url: string; path: string } | null> => {
-    try {
-      setUploading(true);
-      setError(null);
-      setProgress({ loaded: 0, total: file.size, percentage: 0 });
-
-      // Validate image first
-      const validation = validateImage(file, 'FEATURED_IMAGE');
-      if (!validation.isValid) {
-        throw new Error(validation.error || 'Invalid image file');
-      }
-
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          if (!prev) return prev;
-          const newLoaded = Math.min(prev.loaded + file.size / 10, file.size);
-          const newPercentage = Math.round((newLoaded / file.size) * 100);
-          const newProgress = { loaded: newLoaded, total: file.size, percentage: newPercentage };
-          options.onProgress?.(newProgress);
-          return newProgress;
-        });
-      }, 100);
-
-      const result = await uploadFeaturedImage(file, articleId);
-      
-      clearInterval(progressInterval);
-      setProgress({ loaded: file.size, total: file.size, percentage: 100 });
-      options.onSuccess?.(result);
-      
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof StorageError ? err.message : 'Upload failed';
-      setError(errorMessage);
-      options.onError?.(errorMessage);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  }, [options]);
-
-  const reset = useCallback(() => {
-    setUploading(false);
-    setProgress(null);
+  const clearError = useCallback(() => {
     setError(null);
   }, []);
 
+  const uploadImage = useCallback(
+    async (file: File): Promise<string | null> => {
+      if (!user) {
+        const errorMsg = 'User not authenticated';
+        setError(errorMsg);
+        onError?.(errorMsg);
+        return null;
+      }
+
+      try {
+        setIsUploading(true);
+        setError(null);
+
+        // Generate unique filename
+        const timestamp = Date.now();
+        const fileExtension = file.name.split('.').pop() || 'webp';
+        const fileName = `${timestamp}.${fileExtension}`;
+        
+        // Create file path
+        const filePath = folder ? `${folder}/${user.id}/${fileName}` : `${user.id}/${fileName}`;
+
+        // Upload file to Supabase storage
+        const { data, error: uploadError } = await supabase.storage
+          .from(bucket)
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(uploadError.message);
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from(bucket)
+          .getPublicUrl(filePath);
+
+        const publicUrl = urlData.publicUrl;
+
+        onSuccess?.(publicUrl);
+        return publicUrl;
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Failed to upload image';
+        setError(errorMsg);
+        onError?.(errorMsg);
+        return null;
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [user, bucket, folder, onSuccess, onError]
+  );
+
   return {
-    uploading,
-    progress,
+    uploadImage,
+    isUploading,
     error,
-    uploadArticleImage: uploadArticleImageWithProgress,
-    uploadAuthorAvatar: uploadAuthorAvatarWithProgress,
-    uploadFeaturedImage: uploadFeaturedImageWithProgress,
-    reset
+    clearError,
   };
-}
-
-// Utility hook for image validation
-export function useImageValidation() {
-  const validateFile = useCallback((file: File, type: keyof typeof IMAGE_TYPES) => {
-    return validateImage(file, type);
-  }, []);
-
-  return { validateFile };
-} 
+}; 

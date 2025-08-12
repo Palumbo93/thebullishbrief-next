@@ -6,6 +6,7 @@ import { Button } from './ui/Button'
 import { BRAND_COPY } from '../data/copy';
 import { useViewportHeight } from '../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../utils/viewportUtils';
+import { getOnboardingOptions } from '../utils/preferenceMapping';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -133,12 +134,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         return {
           title: "What type of investor are you?",
           subtitle: "Help us understand your investment style",
-          options: [
-            { id: 'day-trader', label: 'Day Trader', desc: 'Active daily trading' },
-            { id: 'swing-trader', label: 'Swing Trader', desc: 'Short to medium term' },
-            { id: 'long-term', label: 'Long-term Investor', desc: 'Buy and hold strategy' },
-            { id: 'diversified', label: 'Diversified Portfolio', desc: 'Mix of strategies' }
-          ],
+          options: getOnboardingOptions('investorType'),
           field: 'investorType' as keyof OnboardingData,
           selectedValue: formData.investorType
         };
@@ -147,12 +143,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         return {
           title: "How long have you been investing?",
           subtitle: "Your experience level helps us tailor content",
-          options: [
-            { id: 'beginner', label: 'Just starting', desc: 'Less than 1 year' },
-            { id: 'intermediate', label: 'Getting serious', desc: '1-3 years' },
-            { id: 'experienced', label: 'Experienced', desc: '3-10 years' },
-            { id: 'veteran', label: 'Market veteran', desc: '10+ years' }
-          ],
+          options: getOnboardingOptions('experience'),
           field: 'experience' as keyof OnboardingData,
           selectedValue: formData.experience
         };
@@ -161,12 +152,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         return {
           title: "What's your risk tolerance?",
           subtitle: "Understanding your comfort with risk",
-          options: [
-            { id: 'conservative', label: 'Conservative', desc: 'Steady, low-risk returns' },
-            { id: 'moderate', label: 'Moderate', desc: 'Balanced risk and reward' },
-            { id: 'aggressive', label: 'Aggressive', desc: 'Higher risk for growth' },
-            { id: 'speculative', label: 'Speculative', desc: 'Maximum growth potential' }
-          ],
+          options: getOnboardingOptions('riskTolerance'),
           field: 'riskTolerance' as keyof OnboardingData,
           selectedValue: formData.riskTolerance
         };
@@ -176,22 +162,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
           title: "What interests you most?",
           subtitle: "Select all topics that interest you",
           isMultiSelect: true,
-          options: [
-            { id: 'stocks', label: 'Stocks & Equities' },
-            { id: 'penny-stocks', label: 'Penny Stocks' },
-            { id: 'crypto', label: 'Cryptocurrency' },
-            { id: 'options', label: 'Options Trading' },
-            { id: 'real-estate', label: 'Real Estate' },
-            { id: 'commodities', label: 'Commodities' },
-            { id: 'junior-mining', label: 'Junior Mining' },
-            { id: 'bonds', label: 'Bonds & Fixed Income' },
-            { id: 'etfs', label: 'ETFs & Index Funds' },
-            { id: 'forex', label: 'Foreign Exchange' },
-            { id: 'ai-tech', label: 'AI & Technology' },
-            { id: 'energy', label: 'Energy & ESG' },
-            { id: 'biotech', label: 'Biotech & Healthcare' },
-            { id: 'macro', label: 'Macroeconomics' }
-          ],
+          options: getOnboardingOptions('interests'),
           field: 'interests' as keyof OnboardingData,
           selectedValue: formData.interests
         };
@@ -200,21 +171,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         return {
           title: "Where are you located?",
           subtitle: "Help us provide relevant market information",
-          options: [
-            { id: 'us', label: 'United States', desc: 'US markets & regulations' },
-            { id: 'ca', label: 'Canada', desc: 'TSX & Canadian markets' },
-            { id: 'uk', label: 'United Kingdom', desc: 'LSE & UK markets' },
-            { id: 'au', label: 'Australia', desc: 'ASX & Australian markets' },
-            { id: 'de', label: 'Germany', desc: 'DAX & European markets' },
-            { id: 'fr', label: 'France', desc: 'CAC 40 & European markets' },
-            { id: 'jp', label: 'Japan', desc: 'Nikkei & Asian markets' },
-            { id: 'sg', label: 'Singapore', desc: 'SGX & Southeast Asian markets' },
-            { id: 'hk', label: 'Hong Kong', desc: 'HKEX & Greater China markets' },
-            { id: 'in', label: 'India', desc: 'BSE/NSE & Indian markets' },
-            { id: 'br', label: 'Brazil', desc: 'B3 & Latin American markets' },
-            { id: 'mx', label: 'Mexico', desc: 'BMV & Mexican markets' },
-            { id: 'other', label: 'Other', desc: 'Global markets focus' }
-          ],
+          options: getOnboardingOptions('country'),
           field: 'country' as keyof OnboardingData,
           selectedValue: formData.country
         };
@@ -232,7 +189,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
       <style>{`
         .onboarding-modal-backdrop {
           ${FULL_HEIGHT_BACKDROP_CSS}
-          background: var(--color-bg-primary);
+          background: #000000;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -252,6 +209,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         .onboarding-modal-container.welcome {
           max-width: none;
           max-height: none;
+          background: transparent;
         }
         .onboarding-modal-content {
           flex: 1;
@@ -287,156 +245,152 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         }
       `}</style>
       
-      {/* Welcome Slide - Full Screen */}
-      {currentStep === 1 && (
-        <div 
-          className="onboarding-modal-backdrop animate-modal-enter"
-          style={{
-            height: `${viewportHeight}px`
-          }}
-        >
-          <div className="onboarding-modal-container welcome">
-          {/* Background Video */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              zIndex: 0
-            }}
-          >
-            <source src="https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websitevideos/5152378-hd_1280_720_24fps.mp4" type="video/mp4" />
-          </video>
+      {/* Main Modal Container - Always Present */}
+      <div 
+        className="onboarding-modal-backdrop animate-modal-enter"
+        style={{
+          height: `${viewportHeight}px`
+        }}
+      >
+        <div className={`onboarding-modal-container ${currentStep === 1 ? 'welcome' : ''}`}>
+          
+          {/* Welcome Slide Content */}
+          {currentStep === 1 && (
+            <>
+              {/* Background Video */}
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  zIndex: 0
+                }}
+              >
+                <source src="https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websitevideos/5152378-hd_1280_720_24fps.mp4" type="video/mp4" />
+              </video>
 
-          {/* Content Overlay */}
-          <div style={{
-            position: 'relative',
-            zIndex: 1,
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 'var(--space-8)',
-            background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)'
-          }}>
-            {/* Grain Overlay */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundImage: `
-                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '4px 4px, 4px 4px',
-              backgroundPosition: '0 0, 2px 2px',
-              opacity: 0.3,
-              pointerEvents: 'none',
-              zIndex: 1
-            }} />
-            {/* Logo */}
-            <div style={{ marginBottom: 'var(--space-12)' }}>
+              {/* Content Overlay */}
               <div style={{
                 position: 'relative',
+                zIndex: 1,
+                flex: 1,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                padding: 'var(--space-8)',
+                background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)'
               }}>
-                <img 
-                  src="/images/logo.png" 
-                  alt="The Bullish Brief" 
-                  style={{
-                    width: '120px',
-                    height: '120px',
-                    objectFit: 'contain',
-                  }}
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                    if (nextElement) {
-                      nextElement.style.display = 'flex';
-                    }
-                  }}
-                />
+                {/* Grain Overlay */}
                 <div style={{
-                  display: 'none',
-                  width: '120px',
-                  height: '120px',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                }}>
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundImage: `
+                    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '4px 4px, 4px 4px',
+                  backgroundPosition: '0 0, 2px 2px',
+                  opacity: 0.3,
+                  pointerEvents: 'none',
+                  zIndex: 1
+                }} />
+                {/* Logo */}
+                <div style={{ marginBottom: 'var(--space-12)' }}>
                   <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: 'var(--color-brand-primary)',
-                    borderRadius: 'var(--radius-full)',
-                    border: '2px solid var(--color-bg-secondary)',
-                  }} className="animate-pulse"></div>
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <img 
+                      src="/images/logo.png" 
+                      alt="The Bullish Brief" 
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        objectFit: 'contain',
+                      }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (nextElement) {
+                          nextElement.style.display = 'flex';
+                        }
+                      }}
+                    />
+                    <div style={{
+                      display: 'none',
+                      width: '120px',
+                      height: '120px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                    }}>
+                      <div style={{
+                        position: 'absolute',
+                        top: '-2px',
+                        right: '-2px',
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: 'var(--color-brand-primary)',
+                        borderRadius: 'var(--radius-full)',
+                        border: '2px solid var(--color-bg-secondary)',
+                      }} className="animate-pulse"></div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Hero Description */}
+                <p style={{
+                  fontSize: 'clamp(var(--text-2xl), 5vw, var(--text-4xl))',
+                  color: 'white',
+                  fontFamily: 'var(--font-editorial)',
+                  fontWeight: 'var(--font-normal)',
+                  lineHeight: '1.2',
+                  letterSpacing: '-0.02em',
+                  margin: 0,
+                  maxWidth: '600px',
+                  textAlign: 'center',
+                  textShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                  marginBottom: 'var(--space-12)'
+                }}>
+                  {BRAND_COPY.onboarding.welcome.description}
+                </p>
+                
+                {/* Continue Button */}
+                <Button
+                  onClick={handleNext}
+                  variant="primary"
+                  size="lg"
+                  icon={ArrowRight}
+                  iconSide="right"
+                  fullWidth={false}
+                  className="animate-slide-in-right"
+                >
+                  Continue
+                </Button>
               </div>
-            </div>
+            </>
+          )}
 
-            {/* Hero Description */}
-            <p style={{
-              fontSize: 'clamp(var(--text-2xl), 5vw, var(--text-4xl))',
-              color: 'white',
-              fontFamily: 'var(--font-editorial)',
-              fontWeight: 'var(--font-normal)',
-              lineHeight: '1.2',
-              letterSpacing: '-0.02em',
-              margin: 0,
-              maxWidth: '600px',
-              textAlign: 'center',
-              textShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              marginBottom: 'var(--space-12)'
-            }}>
-              {BRAND_COPY.onboarding.welcome.description}
-            </p>
-            
-            {/* Continue Button */}
-            <Button
-              onClick={handleNext}
-              variant="primary"
-              size="lg"
-              icon={ArrowRight}
-              iconSide="right"
-              fullWidth={false}
-              className="animate-slide-in-right"
-            >
-              Continue
-            </Button>
-          </div>
-          </div>
-        </div>
-      )}
-
-      {/* Regular Onboarding Steps */}
-      {currentStep > 1 && (
-        <div 
-          className="onboarding-modal-backdrop animate-modal-enter"
-          style={{
-            height: `${viewportHeight}px`
-          }}
-        >
-          <div className="onboarding-modal-container">
-                      {/* Progress Indicator */}
-                          <div style={{
+          {/* Regular Onboarding Steps Content */}
+          {currentStep > 1 && (
+            <>
+              {/* Progress Indicator */}
+              <div style={{
                 padding: 'var(--space-4) var(--space-8)',
                 display: 'flex',
                 justifyContent: 'center',
@@ -447,257 +401,258 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 background: 'var(--color-bg-primary)',
                 flexShrink: 0
               }}>
-            <div style={{
-              display: 'flex',
-              gap: 'var(--space-2)',
-              alignItems: 'center'
-            }}>
-              {Array.from({ length: totalSteps - 1 }, (_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: i < (currentStep - 1) ? '12px' : '8px',
-                    height: i < (currentStep - 1) ? '12px' : '8px',
-                    borderRadius: 'var(--radius-full)',
-                    backgroundColor: i < (currentStep - 1) ? 'var(--color-brand-primary)' : 'var(--color-border-primary)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                />
-              ))}
-            </div>
-            <p style={{
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)',
-              margin: 0
-            }}>
-              {currentStep - 1} of {totalSteps - 1}
-            </p>
-          </div>
+                <div style={{
+                  display: 'flex',
+                  gap: 'var(--space-2)',
+                  alignItems: 'center'
+                }}>
+                  {Array.from({ length: totalSteps - 1 }, (_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: i < (currentStep - 1) ? '12px' : '8px',
+                        height: i < (currentStep - 1) ? '12px' : '8px',
+                        borderRadius: 'var(--radius-full)',
+                        backgroundColor: i < (currentStep - 1) ? 'var(--color-brand-primary)' : 'var(--color-border-primary)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                    />
+                  ))}
+                </div>
+                <p style={{
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-muted)',
+                  margin: 0
+                }}>
+                  {currentStep - 1} of {totalSteps - 1}
+                </p>
+              </div>
 
-          {/* Content */}
-          <div 
-            ref={contentRef}
-            className="onboarding-modal-content"
-            style={{
-              padding: 'var(--space-8) var(--space-8) 0 var(--space-8)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-          >
-            <div 
-              key={currentStep}
-              className="animate-slide-in"
-              style={{
+              {/* Content */}
+              <div 
+                ref={contentRef}
+                className="onboarding-modal-content"
+                style={{
+                  padding: 'var(--space-8) var(--space-8) 0 var(--space-8)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}
+              >
+                <div 
+                  key={currentStep}
+                  className="animate-slide-in"
+                  style={{
+                    maxWidth: '600px',
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    paddingTop: 'var(--space-12)',
+                    paddingBottom: 'var(--space-16)'
+                  }}>
+
+                  {/* Title */}
+                  <h2 style={{
+                    fontFamily: 'var(--font-editorial)',
+                    fontWeight: 'var(--font-normal)',
+                    fontSize: 'clamp(var(--text-xl), 3vw, var(--text-2xl))',
+                    textAlign: 'center',
+                    marginBottom: 'var(--space-3)',
+                    lineHeight: '1.2',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    {stepContent?.title}
+                  </h2>
+
+                  {/* Subtitle */}
+                  <p style={{
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--color-text-secondary)',
+                    textAlign: 'center',
+                    marginBottom: 'var(--space-12)',
+                    maxWidth: '400px'
+                  }}>
+                    {stepContent?.subtitle}
+                  </p>
+
+                  {/* Options */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: stepContent?.isMultiSelect 
+                      ? 'repeat(auto-fit, minmax(180px, 1fr))'
+                      : 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gap: 'var(--space-4)',
+                    width: '100%',
+                    maxWidth: stepContent?.isMultiSelect ? '800px' : '600px',
+                    marginBottom: 'var(--space-8)'
+                  }}>
+                    {stepContent?.options && stepContent.options.map((option, index) => {
+                      const isSelected = stepContent.isMultiSelect
+                        ? (stepContent.selectedValue as string[]).includes(option.id)
+                        : stepContent.selectedValue === option.id;
+
+                      return (
+                        <button
+                          key={option.id}
+                          className="animate-fade-in"
+                          onClick={() => {
+                            if (stepContent.isMultiSelect) {
+                              handleInterestToggle(option.id);
+                            } else {
+                              handleSelection(stepContent.field!, option.id);
+                            }
+                          }}
+                          style={{
+                            padding: 'var(--space-6)',
+                            border: `1px solid ${isSelected ? 'var(--color-brand-primary)' : 'var(--color-border-primary)'}`,
+                            borderRadius: 'var(--radius-lg)',
+                            background: isSelected 
+                              ? 'linear-gradient(135deg, rgba(var(--color-brand-primary-rgb), 0.08) 0%, rgba(var(--color-brand-primary-rgb), 0.03) 50%, rgba(var(--color-brand-primary-rgb), 0.01) 100%)'
+                              : 'transparent',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease',
+                            textAlign: 'center',
+                            position: 'relative',
+                            minHeight: stepContent.isMultiSelect ? '80px' : '100px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 'var(--space-2)',
+                            opacity: 0,
+                            animationDelay: `${Math.floor(index / 2) * 0.1}s`,
+                            transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                            boxShadow: isSelected 
+                              ? `
+                                0 0 0 1px var(--color-brand-primary),
+                                0 0 0 3px rgba(var(--color-brand-primary-rgb), 0.1),
+                                0 4px 20px rgba(var(--color-brand-primary-rgb), 0.15),
+                                0 8px 32px rgba(var(--color-brand-primary-rgb), 0.08)
+                              `
+                              : 'none',
+                            backdropFilter: isSelected ? 'blur(8px)' : 'none'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isSelected) {
+                              e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+                              e.currentTarget.style.background = 'var(--color-bg-secondary)';
+                              e.currentTarget.style.transform = 'translateY(-1px) scale(1.01)';
+                              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isSelected) {
+                              e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }
+                          }}
+                        >
+                          {/* Inner glow effect for selected state */}
+                          {isSelected && (
+                            <>
+                              <div style={{
+                                position: 'absolute',
+                                inset: '-2px',
+                                borderRadius: 'var(--radius-lg)',
+                                background: 'linear-gradient(135deg, rgba(var(--color-brand-primary-rgb), 0.3) 0%, rgba(var(--color-brand-primary-rgb), 0.1) 50%, transparent 100%)',
+                                zIndex: -1,
+                                opacity: 0.6,
+                                filter: 'blur(4px)',
+                                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                              }} />
+                              {/* Animated border effect */}
+                              <div style={{
+                                position: 'absolute',
+                                inset: '-1px',
+                                borderRadius: 'var(--radius-lg)',
+                                background: 'linear-gradient(45deg, transparent 30%, rgba(var(--color-brand-primary-rgb), 0.2) 50%, transparent 70%)',
+                                backgroundSize: '200% 200%',
+                                animation: 'shimmer 3s ease-in-out infinite',
+                                zIndex: -1
+                              }} />
+                            </>
+                          )}
+                          
+                          <div style={{
+                            fontFamily: 'var(--font-editorial)',
+                            fontSize: 'var(--text-lg)',
+                            fontWeight: 'var(--font-normal)',
+                            color: isSelected ? 'var(--color-brand-primary)' : 'var(--color-text-primary)',
+                            marginBottom: (option as any).desc ? 'var(--space-1)' : 0,
+                            transition: 'all var(--transition-base)',
+                            textShadow: isSelected ? '0 0 20px rgba(var(--color-brand-primary-rgb), 0.3)' : 'none',
+                            transform: isSelected ? 'translateZ(0)' : 'none'
+                          }}>
+                            {option.label}
+                          </div>
+                          
+                          {(option as any).desc && (
+                            <div style={{
+                              fontSize: 'var(--text-sm)',
+                              color: isSelected ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
+                              lineHeight: '1.4',
+                              transition: 'all var(--transition-base)',
+                              opacity: isSelected ? 1 : 0.8,
+                              transform: isSelected ? 'translateZ(0)' : 'none'
+                            }}>
+                              {(option as any).desc}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Navigation */}
+              <div style={{
+                padding: 'var(--space-6) var(--space-8)',
+                display: 'flex',
                 maxWidth: '600px',
                 width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
+                margin: '0 auto',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                justifyContent: 'flex-start',
-                paddingTop: 'var(--space-12)',
-                paddingBottom: 'var(--space-16)'
-              }}>
-
-              {/* Title */}
-              <h2 style={{
-                fontFamily: 'var(--font-editorial)',
-                fontWeight: 'var(--font-normal)',
-                fontSize: 'clamp(var(--text-xl), 3vw, var(--text-2xl))',
-                textAlign: 'center',
-                marginBottom: 'var(--space-3)',
-                lineHeight: '1.2',
-                color: 'var(--color-text-primary)'
-              }}>
-                {stepContent?.title}
-              </h2>
-
-              {/* Subtitle */}
-              <p style={{
-                fontSize: 'var(--text-base)',
-                color: 'var(--color-text-secondary)',
-                textAlign: 'center',
-                marginBottom: 'var(--space-12)',
-                maxWidth: '400px'
-              }}>
-                {stepContent?.subtitle}
-              </p>
-
-              {/* Options */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: stepContent?.isMultiSelect 
-                  ? 'repeat(auto-fit, minmax(180px, 1fr))'
-                  : 'repeat(auto-fit, minmax(240px, 1fr))',
+                borderTop: '0.5px solid var(--color-border-primary)',
+                background: 'var(--color-bg-primary)',
                 gap: 'var(--space-4)',
-                width: '100%',
-                maxWidth: stepContent?.isMultiSelect ? '800px' : '600px',
-                marginBottom: 'var(--space-8)'
+                flexShrink: 0
               }}>
-                {stepContent?.options && stepContent.options.map((option, index) => {
-                  const isSelected = stepContent.isMultiSelect
-                    ? (stepContent.selectedValue as string[]).includes(option.id)
-                    : stepContent.selectedValue === option.id;
+                <Button
+                  onClick={handleBack}
+                  disabled={currentStep === 1}
+                  variant="secondary"
+                  icon={ArrowLeft}
+                  iconSide="left"
+                  fullWidth={false}
+                  className="animate-slide-in-left"
+                >
+                  Back
+                </Button>
 
-                  return (
-                    <button
-                      key={option.id}
-                      className="animate-fade-in"
-                      onClick={() => {
-                        if (stepContent.isMultiSelect) {
-                          handleInterestToggle(option.id);
-                        } else {
-                          handleSelection(stepContent.field!, option.id);
-                        }
-                      }}
-                      style={{
-                        padding: 'var(--space-6)',
-                        border: `1px solid ${isSelected ? 'var(--color-brand-primary)' : 'var(--color-border-primary)'}`,
-                        borderRadius: 'var(--radius-lg)',
-                        background: isSelected 
-                          ? 'linear-gradient(135deg, rgba(var(--color-brand-primary-rgb), 0.08) 0%, rgba(var(--color-brand-primary-rgb), 0.03) 50%, rgba(var(--color-brand-primary-rgb), 0.01) 100%)'
-                          : 'transparent',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease',
-                        textAlign: 'center',
-                        position: 'relative',
-                        minHeight: stepContent.isMultiSelect ? '80px' : '100px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 'var(--space-2)',
-                        opacity: 0,
-                        animationDelay: `${Math.floor(index / 2) * 0.1}s`,
-                        transform: isSelected ? 'scale(1.02)' : 'scale(1)',
-                        boxShadow: isSelected 
-                          ? `
-                            0 0 0 1px var(--color-brand-primary),
-                            0 0 0 3px rgba(var(--color-brand-primary-rgb), 0.1),
-                            0 4px 20px rgba(var(--color-brand-primary-rgb), 0.15),
-                            0 8px 32px rgba(var(--color-brand-primary-rgb), 0.08)
-                          `
-                          : 'none',
-                        backdropFilter: isSelected ? 'blur(8px)' : 'none'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isSelected) {
-                          e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
-                          e.currentTarget.style.background = 'var(--color-bg-secondary)';
-                          e.currentTarget.style.transform = 'translateY(-1px) scale(1.01)';
-                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isSelected) {
-                          e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }
-                      }}
-                    >
-                      {/* Inner glow effect for selected state */}
-                      {isSelected && (
-                        <>
-                          <div style={{
-                            position: 'absolute',
-                            inset: '-2px',
-                            borderRadius: 'var(--radius-lg)',
-                            background: 'linear-gradient(135deg, rgba(var(--color-brand-primary-rgb), 0.3) 0%, rgba(var(--color-brand-primary-rgb), 0.1) 50%, transparent 100%)',
-                            zIndex: -1,
-                            opacity: 0.6,
-                            filter: 'blur(4px)',
-                            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-                          }} />
-                          {/* Animated border effect */}
-                          <div style={{
-                            position: 'absolute',
-                            inset: '-1px',
-                            borderRadius: 'var(--radius-lg)',
-                            background: 'linear-gradient(45deg, transparent 30%, rgba(var(--color-brand-primary-rgb), 0.2) 50%, transparent 70%)',
-                            backgroundSize: '200% 200%',
-                            animation: 'shimmer 3s ease-in-out infinite',
-                            zIndex: -1
-                          }} />
-                        </>
-                      )}
-                      
-                      <div style={{
-                        fontFamily: 'var(--font-editorial)',
-                        fontSize: 'var(--text-lg)',
-                        fontWeight: 'var(--font-normal)',
-                        color: isSelected ? 'var(--color-brand-primary)' : 'var(--color-text-primary)',
-                        marginBottom: (option as any).desc ? 'var(--space-1)' : 0,
-                        transition: 'all var(--transition-base)',
-                        textShadow: isSelected ? '0 0 20px rgba(var(--color-brand-primary-rgb), 0.3)' : 'none',
-                        transform: isSelected ? 'translateZ(0)' : 'none'
-                      }}>
-                        {option.label}
-                      </div>
-                      
-                      {(option as any).desc && (
-                        <div style={{
-                          fontSize: 'var(--text-sm)',
-                          color: isSelected ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
-                          lineHeight: '1.4',
-                          transition: 'all var(--transition-base)',
-                          opacity: isSelected ? 1 : 0.8,
-                          transform: isSelected ? 'translateZ(0)' : 'none'
-                        }}>
-                          {(option as any).desc}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+                <Button
+                  onClick={currentStep === totalSteps ? handleComplete : handleNext}
+                  disabled={!canProceed() || loading}
+                  loading={loading}
+                  variant="primary"
+                  icon={currentStep === totalSteps ? undefined : ArrowRight}
+                  iconSide="right"
+                  fullWidth={false}
+                  className="animate-slide-in-right"
+                  style={{ minWidth: '140px' }}
+                >
+                  {currentStep === totalSteps ? 'Complete Setup' : 'Next'}
+                </Button>
               </div>
-            </div>
-          </div>
-
-          {/* Footer Navigation */}
-          <div style={{
-            padding: 'var(--space-6) var(--space-8)',
-            display: 'flex',
-            maxWidth: '600px',
-            width: '100%',
-            margin: '0 auto',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderTop: '0.5px solid var(--color-border-primary)',
-            background: 'var(--color-bg-primary)',
-            gap: 'var(--space-4)',
-            flexShrink: 0
-          }}>
-            <Button
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              variant="secondary"
-              icon={ArrowLeft}
-              iconSide="left"
-              fullWidth={false}
-              className="animate-slide-in-left"
-            >
-              Back
-            </Button>
-
-            <Button
-              onClick={currentStep === totalSteps ? handleComplete : handleNext}
-              disabled={!canProceed() || loading}
-              loading={loading}
-              variant="primary"
-              icon={currentStep === totalSteps ? undefined : ArrowRight}
-              iconSide="right"
-              fullWidth={false}
-              className="animate-slide-in-right"
-              style={{ minWidth: '140px' }}
-            >
-              {currentStep === totalSteps ? 'Complete Setup' : 'Next'}
-            </Button>
-          </div>
-          </div>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 };

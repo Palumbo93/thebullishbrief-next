@@ -24,8 +24,26 @@ export class BullRoomMessageService {
       throw new Error(`Failed to fetch messages: ${error.message}`);
     }
 
-    // Messages already include username field, no need to fetch user profiles
     const messages = data || [];
+
+    // Fetch user profile data for all messages using our secure function
+    const userIds = [...new Set(messages.map(msg => msg.user_id))];
+    const userProfilesMap = new Map<string, any>();
+    
+    if (userIds.length > 0) {
+      for (const userId of userIds) {
+        try {
+          const { data: profileData, error: profileError } = await supabase
+            .rpc('get_user_profile_public', { user_id: userId });
+          
+          if (!profileError && profileData && profileData.length > 0) {
+            userProfilesMap.set(userId, profileData[0]);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      }
+    }
 
     // Fetch reactions for all messages
     const messageIds = messages.map(msg => msg.id);
@@ -54,12 +72,23 @@ export class BullRoomMessageService {
       }
     }
 
-    // Attach reactions to messages
+    // Attach reactions and user profile data to messages
     const messagesWithReactions = messages.map(message => {
       const reactions = reactionsMap.get(message.id) || {};
+      const userProfile = userProfilesMap.get(message.user_id);
+      
       return {
         ...message,
-        reactions
+        reactions,
+        user: userProfile ? {
+          id: userProfile.id,
+          username: userProfile.username,
+          profile_image: userProfile.profile_image
+        } : {
+          id: message.user_id,
+          username: message.username,
+          profile_image: null
+        }
       };
     });
 
@@ -81,10 +110,7 @@ export class BullRoomMessageService {
     const { data, error } = await supabase
       .from('bull_room_messages')
       .insert(messageWithUsername)
-      .select(`
-        *,
-        user:user_profiles(id, username)
-      `)
+      .select('*')
       .single();
 
     if (error) {
@@ -92,7 +118,31 @@ export class BullRoomMessageService {
       throw new Error(`Failed to create message: ${error.message}`);
     }
 
-    return data;
+    // Fetch user profile data for the new message
+    let userProfile = null;
+    try {
+      const { data: profileData, error: profileError } = await supabase
+        .rpc('get_user_profile_public', { user_id: data.user_id });
+      
+      if (!profileError && profileData && profileData.length > 0) {
+        userProfile = profileData[0];
+      }
+    } catch (profileError) {
+      console.error('Error fetching user profile for new message:', profileError);
+    }
+
+    return {
+      ...data,
+      user: userProfile ? {
+        id: userProfile.id,
+        username: userProfile.username,
+        profile_image: userProfile.profile_image
+      } : {
+        id: data.user_id,
+        username: data.username,
+        profile_image: null
+      }
+    };
   }
 
   /**
@@ -107,10 +157,7 @@ export class BullRoomMessageService {
         edited_at: new Date().toISOString() 
       })
       .eq('id', messageId)
-      .select(`
-        *,
-        user:user_profiles(id, username)
-      `)
+      .select('*')
       .single();
 
     if (error) {
@@ -118,7 +165,31 @@ export class BullRoomMessageService {
       throw new Error(`Failed to update message: ${error.message}`);
     }
 
-    return data;
+    // Fetch user profile data for the updated message
+    let userProfile = null;
+    try {
+      const { data: profileData, error: profileError } = await supabase
+        .rpc('get_user_profile_public', { user_id: data.user_id });
+      
+      if (!profileError && profileData && profileData.length > 0) {
+        userProfile = profileData[0];
+      }
+    } catch (profileError) {
+      console.error('Error fetching user profile for updated message:', profileError);
+    }
+
+    return {
+      ...data,
+      user: userProfile ? {
+        id: userProfile.id,
+        username: userProfile.username,
+        profile_image: userProfile.profile_image
+      } : {
+        id: data.user_id,
+        username: data.username,
+        profile_image: null
+      }
+    };
   }
 
   /**

@@ -1,22 +1,24 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { RoomSelector } from '../components/BullRoom/RoomSelector';
-import { RoomBanner } from '../components/BullRoom/RoomBanner';
 import { ChatArea } from '../components/BullRoom/ChatArea';
 import { MessageInput } from '../components/BullRoom/MessageInput';
-import { RoomMembersSidebar } from '../components/BullRoom/RoomMembersSidebar';
+import { RoomInfoSidebar } from '../components/BullRoom/RoomInfoSidebar';
 import { AuthOverlay } from '../components/BullRoom/AuthOverlay';
 import { TypingIndicator } from '../components/BullRoom/TypingIndicator';
+import { BullRoomMobileHeader } from '../components/BullRoom/BullRoomMobileHeader';
+import { BullRoomMobileInfoPanel } from '../components/BullRoom/BullRoomMobileInfoPanel';
 import { useBullRooms, useBullRoom } from '../hooks/useBullRooms';
 import { useBullRoomMessages, useCreateMessage, useToggleReaction } from '../hooks/useBullRoomMessages';
 import { useBullRoomRealtime } from '../hooks/useBullRoomRealtime';
 import { useTypingIndicator } from '../hooks/useTypingIndicator';
 import { useConfirm } from '../hooks/useConfirm';
 import { useDeleteMessage } from '../hooks/useBullRoomMessages';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 // Remove old Message interface - now using BullRoomMessage from types
 
@@ -52,7 +54,11 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
   const confirm = useConfirm();
   const deleteMessage = useDeleteMessage();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const selectedRoomSlug = roomSlug || 'general';
+  
+  // Mobile state
+  const [isMobileInfoPanelOpen, setIsMobileInfoPanelOpen] = useState(false);
 
   // Fetch rooms from database
   const { 
@@ -67,6 +73,13 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     isLoading: roomLoading, 
     error: roomError 
   } = useBullRoom(selectedRoomSlug);
+
+  // Auto-redirect to general room if no specific room is provided
+  useEffect(() => {
+    if (!roomSlug) {
+      router.replace('/bull-room/general');
+    }
+  }, [roomSlug, router]);
 
   // Remove mock messages - now using real data from hooks
   const [newMessage, setNewMessage] = useState<string>('');
@@ -253,113 +266,205 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>       
-      {/* Room Banner */}
-      <RoomBanner room={currentRoom} />
-        
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Mobile Header */}
+      {isMobile && (
+        <BullRoomMobileHeader
+          rooms={rooms}
+          selectedRoom={currentRoom}
+          onSelectRoom={handleSelectRoom}
+          onToggleInfoPanel={() => setIsMobileInfoPanelOpen(!isMobileInfoPanelOpen)}
+          isInfoPanelOpen={isMobileInfoPanelOpen}
+        />
+      )}
+      
       {/* Main Content Area */}
       <div style={{ 
         flex: 1,
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
       }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '200px 1fr 300px',
-          gap: 0,
-          height: '100%'
-        }}>
-          {/* Room Selector - Left Sidebar */}
-          <div style={{ 
-            padding: 'var(--space-4)', 
-            borderRight: '0.5px solid var(--color-border-primary)' 
-          }}>
-            <RoomSelector
-              rooms={rooms}
-              selectedRoomId={selectedRoomSlug}
-              onSelectRoom={handleSelectRoom}
-              isLoading={roomsLoading}
-              error={roomsError ? 'Failed to load rooms' : null}
-            />
-          </div>
-
-          {/* Chat Interface - Center */}
-          <div style={{ 
-            position: 'relative', 
-            height: '100%' 
-          }}>
-            <ChatArea 
-              messages={messages as any} 
-              userId={user?.id} 
-              onAddReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
-              onRemoveReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
-              onReply={handleReply}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </div>
-
-          {/* Room Members Sidebar - Right */}
-          <div style={{ 
-            height: '100%', 
-            display: 'flex', 
-            flexDirection: 'column' 
-          }}>
-            <RoomMembersSidebar 
+        {isMobile ? (
+          /* Mobile Layout */
+          <div style={{ height: '100%', position: 'relative' }}>
+            {/* Chat Interface - Full width on mobile */}
+            <div style={{ 
+              position: 'relative', 
+              height: '100%',
+              marginBottom: '70px' // Space for message input
+            }}>
+              <ChatArea 
+                messages={messages as any} 
+                userId={user?.id} 
+                onAddReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
+                onRemoveReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
+                onReply={handleReply}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </div>
+            
+            {/* Mobile Message Input - Fixed at bottom */}
+            <div 
+              style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: 'rgba(0, 0, 0, 0.95)',
+                backdropFilter: 'blur(4px)',
+                zIndex: 100
+              }}
+            >
+              <MessageInput
+                value={newMessage}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+                  if (e.target.value.trim() === '') {
+                    // Reset to default height when empty
+                    if (textareaRef.current) {
+                      textareaRef.current.style.height = '48px';
+                    }
+                    stopTyping();
+                  } else {
+                    adjustTextareaHeight();
+                    startTyping();
+                  }
+                }}
+                onSend={handleSendMessage}
+                onFileSelect={handleFileSelect}
+                fileUploads={fileUploads}
+                onRemoveFile={removeFileUpload}
+                disabled={!user}
+                textareaRef={textareaRef as any}
+                fileInputRef={fileInputRef as any}
+              />
+            </div>
+            
+            {/* Mobile Typing Indicator */}
+            <div 
+              style={{
+                position: 'fixed',
+                left: 'var(--space-4)',
+                bottom: '80px',
+                zIndex: 99
+              }}
+            >
+              <TypingIndicator isVisible={typingUsers.length > 0} typingUsers={typingUsers} />
+            </div>
+            
+            {/* Mobile Info Panel Overlay */}
+            <BullRoomMobileInfoPanel
+              isOpen={isMobileInfoPanelOpen}
+              onClose={() => setIsMobileInfoPanelOpen(false)}
+              room={currentRoom}
               messages={messages as any}
-              currentUserId={user?.id}
             />
           </div>
-        </div>
+        ) : (
+          /* Desktop Layout */
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '22.5% 1fr 22.5%',
+            gap: 0,
+            height: '100%'
+          }}>
+            {/* Room Selector - Left Sidebar */}
+            <div style={{ 
+              padding: 'var(--space-4)', 
+              borderRight: '0.5px solid var(--color-border-primary)' 
+            }}>
+              <RoomSelector
+                rooms={rooms}
+                selectedRoomId={selectedRoomSlug}
+                onSelectRoom={handleSelectRoom}
+                isLoading={roomsLoading}
+                error={roomsError ? 'Failed to load rooms' : null}
+              />
+            </div>
+
+            {/* Chat Interface - Center */}
+            <div style={{ 
+              position: 'relative', 
+              height: '100%' 
+            }}>
+              <ChatArea 
+                messages={messages as any} 
+                userId={user?.id} 
+                onAddReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
+                onRemoveReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
+                onReply={handleReply}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </div>
+
+            {/* Room Info Sidebar - Right */}
+            <div style={{ 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column' 
+            }}>
+              <RoomInfoSidebar 
+                room={currentRoom}
+                messages={messages as any}
+              />
+            </div>
+          </div>
+        )}
                     
-        {/* Floating Message Input - Positioned over the chat area */}
-        <div 
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: '200px', // Width of left sidebar
-            right: '300px', // Width of right sidebar
-            background: 'rgba(0, 0, 0, 0.95)',
-            backdropFilter: 'blur(4px)'
-          }}
-        >
-          <MessageInput
-            value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value);
-              if (e.target.value.trim() === '') {
-                // Reset to default height when empty
-                if (textareaRef.current) {
-                  textareaRef.current.style.height = '48px';
-                }
-                stopTyping();
-              } else {
-                adjustTextareaHeight();
-                startTyping();
-              }
+        {/* Desktop Floating Message Input - Positioned over the chat area */}
+        {!isMobile && (
+          <div 
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: '22.5%', // Width of left sidebar
+              right: '22.5%', // Width of right sidebar
+              background: 'rgba(0, 0, 0, 0.95)',
+              backdropFilter: 'blur(4px)'
             }}
-            onSend={handleSendMessage}
-            onFileSelect={handleFileSelect}
-            fileUploads={fileUploads}
-            onRemoveFile={removeFileUpload}
-            disabled={!user}
-            textareaRef={textareaRef as any}
-            fileInputRef={fileInputRef as any}
-          />
-        </div>
+          >
+            <MessageInput
+              value={newMessage}
+              onChange={(e) => {
+                setNewMessage(e.target.value);
+                if (e.target.value.trim() === '') {
+                  // Reset to default height when empty
+                  if (textareaRef.current) {
+                    textareaRef.current.style.height = '48px';
+                  }
+                  stopTyping();
+                } else {
+                  adjustTextareaHeight();
+                  startTyping();
+                }
+              }}
+              onSend={handleSendMessage}
+              onFileSelect={handleFileSelect}
+              fileUploads={fileUploads}
+              onRemoveFile={removeFileUpload}
+              disabled={!user}
+              textareaRef={textareaRef as any}
+              fileInputRef={fileInputRef as any}
+            />
+          </div>
+        )}
         
-        {/* Typing indicator positioned absolutely under the input */}
-        <div 
-          style={{
-            position: 'absolute',
-            left: '200px', // Width of left sidebar
-            bottom: '0',
-            paddingLeft: 'var(--space-6)', // Match chat area padding
-            paddingBottom: 'var(--space-1)'
-          }}
-        >
-          <TypingIndicator isVisible={typingUsers.length > 0} typingUsers={typingUsers} />
-        </div>
+        {/* Desktop Typing indicator positioned absolutely under the input */}
+        {!isMobile && (
+          <div 
+            style={{
+              position: 'absolute',
+              left: '20%', // Width of left sidebar
+              bottom: '0',
+              paddingLeft: 'var(--space-6)', // Match chat area padding
+              paddingBottom: 'var(--space-1)'
+            }}
+          >
+            <TypingIndicator isVisible={typingUsers.length > 0} typingUsers={typingUsers} />
+          </div>
+        )}
 
         {/* Authentication Overlay for unauthenticated users */}
         {!user && (

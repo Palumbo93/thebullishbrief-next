@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Twitter } from 'lucide-react';
 import { FormField } from '../ui';
+import { ImageUpload } from '../ui/ImageUpload';
 import { SectionHeader } from '../SectionHeader';
 import { useToast } from '../../hooks/useToast';
+import { useImageUpload } from '../../hooks/useImageUpload';
 
 interface UserProfile {
   id: string;
   email: string;
   username: string;
+  bio: string | null;
+  profile_image: string | null;
+  twitter_handle: string | null;
   newsletter_subscribed: boolean;
   created_at: string;
   updated_at: string;
@@ -88,12 +93,27 @@ export const ProfileSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
+  // Image upload hook
+  const { uploadImage, isUploading: imageUploading, error: imageError } = useImageUpload({
+    bucket: 'profile-images',
+    onSuccess: (url) => {
+      handleProfileImageUpdate(url);
+    },
+    onError: (error) => {
+      toast.error(`Image upload failed: ${error}`);
+    }
+  });
+  
   // Panel states
-  const [activePanel, setActivePanel] = useState<'profile' | 'email' | 'username'>('profile');
+  const [activePanel, setActivePanel] = useState<'profile' | 'email' | 'username' | 'bio' | 'twitter'>('profile');
   const [newEmail, setNewEmail] = useState('');
   const [newUsername, setNewUsername] = useState('');
+  const [newBio, setNewBio] = useState('');
+  const [newTwitterHandle, setNewTwitterHandle] = useState('');
   const [emailError, setEmailError] = useState('');
   const [usernameError, setUsernameError] = useState('');
+  const [bioError, setBioError] = useState('');
+  const [twitterError, setTwitterError] = useState('');
 
   // Load user profile data
   useEffect(() => {
@@ -114,6 +134,8 @@ export const ProfileSection: React.FC = () => {
           setProfile(data);
           setNewEmail(user.email || '');
           setNewUsername(data.username || '');
+          setNewBio(data.bio || '');
+          setNewTwitterHandle(data.twitter_handle || '');
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -215,6 +237,114 @@ export const ProfileSection: React.FC = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleBioUpdate = async () => {
+    if (!user) return;
+
+    // Bio validation
+    if (newBio.length > 500) {
+      setBioError('Bio must be 500 characters or less');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setBioError('');
+
+      // Update bio in user_profiles table
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ bio: newBio.trim() || null })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, bio: newBio.trim() || null } : null);
+      toast.success('Bio updated successfully');
+      setActivePanel('profile');
+    } catch (error: any) {
+      console.error('Error updating bio:', error);
+      setBioError(error.message || 'Failed to update bio');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTwitterHandleUpdate = async () => {
+    if (!user) return;
+
+    // Twitter handle validation
+    const twitterHandle = newTwitterHandle.trim();
+    if (twitterHandle && !/^@[a-zA-Z0-9_]{1,15}$/.test(twitterHandle)) {
+      setTwitterError('Please enter a valid Twitter handle (e.g., @username)');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setTwitterError('');
+
+      // Update Twitter handle in user_profiles table
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ twitter_handle: twitterHandle || null })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, twitter_handle: twitterHandle || null } : null);
+      toast.success('Twitter handle updated successfully');
+      setActivePanel('profile');
+    } catch (error: any) {
+      console.error('Error updating Twitter handle:', error);
+      setTwitterError(error.message || 'Failed to update Twitter handle');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleProfileImageUpdate = async (imageUrl: string) => {
+    if (!user) return;
+
+    try {
+      // Update profile image in user_profiles table
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ profile_image: imageUrl })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, profile_image: imageUrl } : null);
+      toast.success('Profile image updated successfully');
+    } catch (error: any) {
+      console.error('Error updating profile image:', error);
+      toast.error('Failed to update profile image');
+    }
+  };
+
+  const handleImageUpload = async (file: File, optimizedUrl: string) => {
+    await uploadImage(file);
+  };
+
+  const handleImageRemove = () => {
+    if (!user) return;
+
+    // Remove profile image from database
+    supabase
+      .from('user_profiles')
+      .update({ profile_image: null })
+      .eq('id', user.id)
+      .then(({ error }) => {
+        if (error) {
+          console.error('Error removing profile image:', error);
+          toast.error('Failed to remove profile image');
+        } else {
+          setProfile(prev => prev ? { ...prev, profile_image: null } : null);
+          toast.success('Profile image removed');
+        }
+      });
   };
 
   const formatDate = (dateString: string) => {
@@ -361,8 +491,176 @@ export const ProfileSection: React.FC = () => {
     );
   }
 
+  // Bio Editor Panel
+  if (activePanel === 'bio') {
+    return (
+      <div style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <SectionHeader 
+            title="Edit Bio"
+            showBackButton={true}
+            onBackClick={() => setActivePanel('profile')}
+          />
+
+          {/* Bio Form */}
+          <div style={{
+            padding: '0 var(--space-4)'
+          }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-2)',
+              width: '100%',
+            }}>
+              <label style={{
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-medium)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-1)'
+              }}>
+                Bio
+              </label>
+              <textarea
+                value={newBio}
+                onChange={(e) => setNewBio(e.target.value)}
+                maxLength={500}
+                placeholder="Tell us about yourself..."
+                style={{
+                  width: '100%',
+                  minHeight: '120px',
+                  padding: 'var(--space-3)',
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  border: `1px solid ${bioError ? 'var(--color-error)' : 'var(--color-border-secondary)'}`,
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-base)',
+                  fontFamily: 'inherit',
+                  resize: 'vertical',
+                  outline: 'none',
+                  transition: 'border-color var(--transition-base)',
+                }}
+              />
+              {bioError && (
+                <div style={{
+                  color: 'var(--color-error)',
+                  fontSize: 'var(--text-sm)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  {bioError}
+                </div>
+              )}
+            </div>
+            <div style={{
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text-tertiary)',
+              marginTop: 'var(--space-1)',
+              textAlign: 'right'
+            }}>
+              {newBio.length}/500
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 'var(--space-3)',
+              marginTop: 'var(--space-4)'
+            }}>
+              <FormButton
+                onClick={handleBioUpdate}
+                disabled={saving}
+                loading={saving}
+                variant="primary"
+              >
+                Save
+              </FormButton>
+              <FormButton
+                onClick={() => {
+                  setActivePanel('profile');
+                  setNewBio(profile.bio || '');
+                  setBioError('');
+                }}
+                disabled={saving}
+                variant="secondary"
+              >
+                Cancel
+              </FormButton>
+            </div>
+          </div>
+        </div>
+    );
+  }
+
+  // Twitter Handle Editor Panel
+  if (activePanel === 'twitter') {
+    return (
+      <div style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <SectionHeader 
+            title="Edit Twitter Handle"
+            showBackButton={true}
+            onBackClick={() => setActivePanel('profile')}
+          />
+
+          {/* Twitter Handle Form */}
+          <div style={{
+            padding: '0 var(--space-4)'
+          }}>
+            <FormField
+              type="text"
+              label="Twitter Handle"
+              value={newTwitterHandle}
+              onChange={setNewTwitterHandle}
+              error={twitterError}
+              placeholder="@username"
+            />
+            <div style={{
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text-tertiary)',
+              marginTop: 'var(--space-1)'
+            }}>
+              Enter your Twitter handle (e.g., @username)
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 'var(--space-3)',
+              marginTop: 'var(--space-4)'
+            }}>
+              <FormButton
+                onClick={handleTwitterHandleUpdate}
+                disabled={saving}
+                loading={saving}
+                variant="primary"
+              >
+                Save
+              </FormButton>
+              <FormButton
+                onClick={() => {
+                  setActivePanel('profile');
+                  setNewTwitterHandle(profile.twitter_handle || '');
+                  setTwitterError('');
+                }}
+                disabled={saving}
+                variant="secondary"
+              >
+                Cancel
+              </FormButton>
+            </div>
+          </div>
+        </div>
+    );
+  }
+
   // Main Profile Panel
   const profileItems = [
+    {
+      id: 'profile-image',
+      label: 'Profile Image',
+      value: profile.profile_image ? 'Image uploaded' : 'No image',
+      onClick: null, // Handled separately
+      isImage: true
+    },
     {
       id: 'email',
       label: 'Email',
@@ -374,6 +672,18 @@ export const ProfileSection: React.FC = () => {
       label: 'Username',
       value: profile.username,
       onClick: () => setActivePanel('username')
+    },
+    {
+      id: 'bio',
+      label: 'Bio',
+      value: profile.bio || 'No bio added',
+      onClick: () => setActivePanel('bio')
+    },
+    {
+      id: 'twitter',
+      label: 'Twitter Handle',
+      value: profile.twitter_handle || 'No Twitter handle',
+      onClick: () => setActivePanel('twitter')
     },
     {
       id: 'member-since',
@@ -403,53 +713,103 @@ export const ProfileSection: React.FC = () => {
         }}>
           {profileItems.map((item, index) => (
             <div key={item.id}>
-              <div
-                style={{
+              {item.isImage ? (
+                // Profile Image Section - centered layout
+                <div style={{
+                  padding: 'var(--space-4)',
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  padding: 'var(--space-4) 0',
-                  cursor: item.onClick ? 'pointer' : 'default',
-                  transition: 'background var(--transition-base)'
-                }}
-                onClick={item.onClick || undefined}
-                onMouseEnter={(e) => {
-                  if (item.onClick) {
-                    e.currentTarget.style.background = 'var(--color-bg-card)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (item.onClick) {
-                    e.currentTarget.style.background = 'transparent';
-                  }
-                }}
-              >
-                <div style={{ flex: 1, padding: '0 var(--space-4)' }}>
+                  gap: 'var(--space-3)',
+                  width: '100%'
+                }}>
                   <div style={{
                     fontSize: 'var(--text-sm)',
                     fontWeight: 'var(--font-medium)',
                     color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-1)'
+                    marginBottom: 'var(--space-2)',
+                    textAlign: 'center'
                   }}>
                     {item.label}
                   </div>
-                  <div style={{
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--color-text-secondary)'
-                  }}>
-                    {item.value}
-                  </div>
+                  <ImageUpload
+                    currentImageUrl={profile.profile_image}
+                    onImageUpload={handleImageUpload}
+                    onImageRemove={handleImageRemove}
+                    disabled={imageUploading}
+                    maxSize={2 * 1024 * 1024} // 2MB
+                    maxWidth={400}
+                    maxHeight={400}
+                    quality={0.8}
+                    size="medium"
+                  />
+                  {imageError && (
+                    <div style={{
+                      color: 'var(--color-error)',
+                      fontSize: 'var(--text-sm)',
+                      textAlign: 'center'
+                    }}>
+                      {imageError}
+                    </div>
+                  )}
                 </div>
-                {item.onClick && (
-                  <div style={{
-                    color: 'var(--color-text-tertiary)',
-                    opacity: 0.7,
-                    padding: '0 var(--space-4)'
-                  }}>
-                    <ArrowRight style={{ width: '16px', height: '16px' }} />
+              ) : (
+                // Regular Profile Item
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: 'var(--space-4) 0',
+                    cursor: item.onClick ? 'pointer' : 'default',
+                    transition: 'background var(--transition-base)'
+                  }}
+                  onClick={item.onClick || undefined}
+                  onMouseEnter={(e) => {
+                    if (item.onClick) {
+                      e.currentTarget.style.background = 'var(--color-bg-card)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (item.onClick) {
+                      e.currentTarget.style.background = 'transparent';
+                    }
+                  }}
+                >
+                  <div style={{ flex: 1, padding: '0 var(--space-4)' }}>
+                    <div style={{
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-medium)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-2)'
+                    }}>
+                      {item.label}
+                      {item.id === 'twitter' && profile.twitter_handle && (
+                        <Twitter size={14} color="var(--color-primary)" />
+                      )}
+                    </div>
+                    <div style={{
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--color-text-secondary)',
+                      wordBreak: 'break-word'
+                    }}>
+                      {item.value}
+                    </div>
                   </div>
-                )}
-              </div>
+                  {item.onClick && (
+                    <div style={{
+                      color: 'var(--color-text-tertiary)',
+                      opacity: 0.7,
+                      padding: '0 var(--space-4)'
+                    }}>
+                      <ArrowRight style={{ width: '16px', height: '16px' }} />
+                    </div>
+                  )}
+                </div>
+              )}
               {/* Divider - only show if not the last item */}
               {index < profileItems.length - 1 && (
                 <div style={{

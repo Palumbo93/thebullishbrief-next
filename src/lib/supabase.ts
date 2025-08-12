@@ -10,4 +10,13 @@ export const hasSupabaseCredentials =
   !supabaseUrl.includes('your-supabase-url-here') &&
   !supabaseAnonKey.includes('your-supabase-anon-key-here')
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Disable auto-refresh on window focus to prevent unnecessary auth state changes
+    autoRefreshToken: false,
+    // Still allow manual token refresh when needed
+    persistSession: true,
+    // Detect session in URL for magic links
+    detectSessionInUrl: true
+  }
+})

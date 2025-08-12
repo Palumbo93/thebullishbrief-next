@@ -145,7 +145,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       )}
       
       {/* Message Input Container */}
-      <div style={{ padding: 'var(--space-6)' }}>
+      <div style={{ padding: '2px var(--space-2) var(--space-6) var(--space-2)' }}>
         <div style={{
           background: 'var(--color-bg-secondary)',
           border: '0.5px solid rgba(31, 31, 31, 0.1)',
@@ -173,7 +173,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               border: 'none',
               outline: 'none',
               resize: 'none',
-              fontSize: 'var(--text-sm)',
+              fontSize: 'var(--text-input)',
               color: 'var(--color-text-primary)',
               transition: 'all 200ms',
               opacity: disabled ? 0.5 : 1,

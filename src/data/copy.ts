@@ -1,21 +1,20 @@
 /**
  * Centralized copy for branded marketing content
- * This file contains all the marketing copy used across the application
- * to ensure consistency and easy maintenance.
+ * Premium, Wall Street-ready messaging for The Briefed
  */
 
 export const BRAND_COPY = {
   // Core brand messaging
-  tagline: "Personalized market intelligence that moves faster than the competition.",
-  
+  tagline: "Always Ahead. Always Bullish.",
+
   // Authentication modals
   auth: {
     signUp: {
-      title: "It's Always Bullish For The Briefed",
+      title: "It's Always Bullish When You're Briefed",
       features: [
-        "Real-time discussions with other bulls",
-        "AI prompts to get the most out of LLMs", 
-        "Free to join, not a subscription service"
+        "Real-time market discussions with serious traders",
+        "Elite AI prompts for sharper research and faster execution",
+        "Free to join, no subscription required"
       ]
     },
     signIn: {
@@ -26,22 +25,40 @@ export const BRAND_COPY = {
   // Onboarding flow - first slide only
   onboarding: {
     welcome: {
-      title: "Personalized Market Intelligence",
-      description: "Personalized market intelligence that moves faster than the competition."
+      title: "The Market Edge, Delivered",
+      description: "You’re in. Now let’s get you into the right conversations, insights, and tools."
     }
   },
 
   // Bull Room auth overlay
   bullRoom: {
     authOverlay: {
-      description: "Sign up to participate in real-time discussions with other traders and investors.",
+      description: "Sign up to join high-level market conversations with other traders and investors.",
       cta: "Free to join • No credit card required"
     }
   },
 
   // AI Vault
   aiVault: {
-    subtitle: "Top notch AI prompts to get the most out of ChatGPT, Claude, and Perplexity"
+    subtitle: "High-performance AI prompts for ChatGPT, Claude, and Perplexity"
+  },
+
+  // Briefs Action Panel CTA
+  briefsActionPanel: {
+    title: "The Bullish Brief",
+    description: "Always Ahead. Always Bullish.",
+    features: [
+      "Early Market Briefings",
+      "Bull Room Strategy Chats",
+      "Exclusive AI Prompt Library"
+    ],
+    cta: "Secure Your Edge Now",
+    // Variants for testing
+    headlineVariants: [
+      { title: "Ahead of the Market. Ahead of the Pack.", description: "Market-moving intelligence delivered before the competition reacts." },
+      { title: "While Others React, You Profit.", description: "Get the brief that puts you in front of the trade, every time." },
+      { title: "Your First-Mover Advantage", description: "Fast, clear, and decisive intelligence for traders who lead, not follow." }
+    ]
   }
 } as const;
 

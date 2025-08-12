@@ -20,11 +20,13 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import { Video } from '../../lib/tiptap/video-extension';
 import { Gif } from '../../lib/tiptap/gif-extension';
 import { Button } from '../../lib/tiptap/button-extension';
+import { Tweet } from '../../lib/tiptap/tweet-extension';
 import { UrlInputModal } from './UrlInputModal';
 import { ImageUploadModal } from './ImageUploadModal';
 import { VideoModal } from './VideoModal';
 import { GifModal } from './GifModal';
 import { ButtonModal } from './ButtonModal';
+import { TweetModal } from './TweetModal';
 import {
   Bold,
   Italic,
@@ -51,7 +53,8 @@ import {
   Heading3,
   Minus,
   Play,
-  MousePointer
+  MousePointer,
+  Twitter
 } from 'lucide-react';
 
 interface RichTextEditorProps {
@@ -68,6 +71,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isGifModalOpen, setIsGifModalOpen] = useState(false);
   const [isButtonModalOpen, setIsButtonModalOpen] = useState(false);
+  const [isTweetModalOpen, setIsTweetModalOpen] = useState(false);
   const [currentLinkUrl, setCurrentLinkUrl] = useState('');
   const [currentLinkText, setCurrentLinkText] = useState('');
 
@@ -159,6 +163,19 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
     iconSide?: 'left' | 'right';
   }) => {
     editor.chain().focus().setButton(buttonData).run();
+  }, [editor]);
+
+  const addTweet = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsTweetModalOpen(true);
+  }, []);
+
+  const handleTweetSubmit = useCallback((tweetData: {
+    embedCode: string;
+  }) => {
+    // Insert the embed code as plain text content
+    editor.chain().focus().insertContent(`<pre><code>${tweetData.embedCode}</code></pre>`).run();
   }, [editor]);
 
   const addDivider = useCallback(() => {
@@ -661,6 +678,27 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
 
         <button
           type="button"
+          onClick={addTweet}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title="Add Tweet"
+        >
+          <Twitter style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <button
+          type="button"
           onClick={addDivider}
           style={{
             padding: 'var(--space-2)',
@@ -797,6 +835,15 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
         />,
         document.body
       )}
+
+      {isTweetModalOpen && createPortal(
+        <TweetModal
+          isOpen={isTweetModalOpen}
+          onClose={() => setIsTweetModalOpen(false)}
+          onSubmit={handleTweetSubmit}
+        />,
+        document.body
+      )}
     </>
   );
 };
@@ -840,6 +887,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       Video,
       Gif,
       Button,
+      Tweet,
     ],
     content,
     onUpdate: ({ editor }) => {
@@ -909,6 +957,32 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
     }
   }, [editor, content]);
+
+  // Process Twitter widgets when content changes
+  useEffect(() => {
+    if (editor && typeof window !== 'undefined' && (window as any).twttr) {
+      const timer = setTimeout(() => {
+        (window as any).twttr.widgets.load();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [editor, content]);
+
+  // Process Twitter widgets when editor updates
+  useEffect(() => {
+    if (editor && typeof window !== 'undefined' && (window as any).twttr) {
+      const handleUpdate = () => {
+        setTimeout(() => {
+          (window as any).twttr.widgets.load();
+        }, 100);
+      };
+      
+      editor.on('update', handleUpdate);
+      return () => {
+        editor.off('update', handleUpdate);
+      };
+    }
+  }, [editor]);
 
   return (
     <div className={className} style={{

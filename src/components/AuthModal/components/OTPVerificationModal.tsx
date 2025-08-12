@@ -58,7 +58,7 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
     });
     
     if (user && !isLoading && !isFinishing) {
-      console.log('OTPVerificationModal: User authenticated, adding delay before finishing');
+      console.log('OTPVerificationModal: User authenticated, calling onSuccess immediately');
       
       // Set finishing state to show loading
       setIsFinishing(true);
@@ -70,11 +70,8 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
         trackLogin('email');
       }
       
-      // Add a 2-second delay before calling onSuccess
-      setTimeout(() => {
-        console.log('OTPVerificationModal: Delay complete, calling onSuccess');
-        onSuccess();
-      }, 2000);
+      // Call onSuccess immediately since auth state listener will handle the modal close
+      onSuccess();
     }
   }, [user, isLoading, onSuccess, isSignUp, trackSignup, trackLogin, isFinishing]);
 

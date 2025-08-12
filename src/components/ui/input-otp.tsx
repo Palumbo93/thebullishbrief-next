@@ -56,7 +56,7 @@ const InputOTPSlot = React.forwardRef<
         width: '40px',
         alignItems: 'center',
         justifyContent: 'center',
-        border: '1px solid var(--color-border-primary)',
+        border: '1px solid #ffffff30',
         borderRadius: 'var(--radius-md)',
         fontSize: 'var(--text-lg)',
         fontWeight: 'var(--font-semibold)',

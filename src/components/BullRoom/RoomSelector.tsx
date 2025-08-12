@@ -68,24 +68,16 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
   }
 
   return (
-    <>
+    <div style={{ position: 'relative', height: '100%' }}>
       <div style={{ marginBottom: 'var(--space-3)' }}>
         <h2 style={{ 
           fontSize: 'var(--text-sm)', 
-          fontWeight: 'var(--font-semibold)', 
+          fontWeight: 'var(--font-normal)', 
           color: 'var(--color-text-primary)', 
-          marginBottom: 'var(--space-1)' 
+          marginBottom: 'var(--space-1)',
+          fontFamily: 'var(--font-editorial)'
         }}>Rooms</h2>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 'var(--space-1)', 
-          fontSize: 'var(--text-xs)', 
-          color: 'var(--color-text-muted)' 
-        }}>
-          <Users style={{ width: '12px', height: '12px' }} />
-          <span>{rooms.length} active</span>
-        </div>
+
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
         {rooms.map((room) => (
@@ -114,16 +106,16 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: selectedRoomId === room.slug ? 'var(--color-brand-primary)' : 'var(--color-bg-tertiary)',
-                color: selectedRoomId === room.slug ? 'var(--color-text-inverse)' : 'var(--color-text-primary)'
-              }}>
+                              <div style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: selectedRoomId === room.slug ? '#1a1a1a' : 'var(--color-bg-tertiary)',
+                  color: selectedRoomId === room.slug ? 'white' : 'var(--color-text-primary)'
+                }}>
                 <Hash style={{ width: '12px', height: '12px' }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -140,6 +132,45 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
           </button>
         ))}
       </div>
-    </>
+      
+      {/* Bottom text */}
+      <div style={{ 
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: 'var(--space-4)',
+        borderTop: '1px solid rgba(31, 31, 31, 0.3)',
+        background: 'var(--color-bg-primary)'
+      }}>
+        <p style={{
+          fontSize: 'var(--text-xs)',
+          color: 'var(--color-text-muted)',
+          lineHeight: 'var(--leading-relaxed)',
+          margin: 0,
+          textAlign: 'center'
+        }}>
+          Edit your{' '}
+          <a
+            href="/account-settings"
+            style={{
+              color: 'var(--color-brand-primary)',
+              textDecoration: 'none',
+              fontWeight: 'var(--font-bold)',
+              transition: 'all var(--transition-base)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.textDecoration = 'underline';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.textDecoration = 'none';
+            }}
+          >
+            account settings
+          </a>
+          {' '}preferences to see rooms for you
+        </p>
+      </div>
+    </div>
   );
 }; 

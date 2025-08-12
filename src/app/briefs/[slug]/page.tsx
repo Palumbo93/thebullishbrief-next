@@ -4,7 +4,7 @@ import { BriefPage } from '../../../pages/BriefPage';
 import { supabase } from '../../../lib/supabase';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 async function getBrief(slug: string) {
@@ -22,7 +22,8 @@ async function getBrief(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const brief = await getBrief(params.slug);
+  const { slug } = await params;
+  const brief = await getBrief(slug);
   
   if (!brief) {
     return {
@@ -71,9 +72,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function BriefPageWrapper({ params }: Props) {
+export default async function BriefPageWrapper({ params }: Props) {
+  const { slug } = await params;
   return (
-    <BriefPageClient slug={params.slug} />
+    <BriefPageClient slug={slug} />
   );
 }
 

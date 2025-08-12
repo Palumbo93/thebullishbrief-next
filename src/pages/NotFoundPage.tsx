@@ -109,4 +109,6 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onCreateAccountClick
       <LegalFooter />
     </div>
   );
-}; 
+};
+
+export default NotFoundPage; 

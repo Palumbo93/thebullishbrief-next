@@ -678,3 +678,5 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     </>
   );
 };
+
+export default SearchPage;

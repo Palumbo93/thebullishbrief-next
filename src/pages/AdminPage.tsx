@@ -200,3 +200,5 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onCreateAccountClick }) =>
     </div>
   );
 };
+
+export default AdminPage;

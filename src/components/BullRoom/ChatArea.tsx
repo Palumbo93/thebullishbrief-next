@@ -1,6 +1,6 @@
 import React from 'react';
 import { MessageSquare, File } from 'lucide-react';
-import { BullRoomMessage } from '../../types/bullRoom.types';
+import { BullRoomMessage } from '../../lib/database.types';
 import { MessageReactions } from './MessageReactions';
 
 /**
@@ -26,7 +26,8 @@ const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-const formatTime = (timestamp: string) => {
+const formatTime = (timestamp: string | null) => {
+  if (!timestamp) return '';
   const date = new Date(timestamp);
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
@@ -48,7 +49,7 @@ const renderMessageContent = (message: BullRoomMessage) => {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <img 
-            src={message.file_data?.url} 
+            src={(message.file_data as any)?.url} 
             alt={message.content}
             style={{
               maxWidth: '100%',
@@ -107,7 +108,7 @@ const renderMessageContent = (message: BullRoomMessage) => {
               fontSize: 'var(--text-xs)',
               color: 'rgba(153, 153, 153, 0.7)',
               fontWeight: 'var(--font-medium)'
-            }}>{formatFileSize(message.file_data?.size || 0)}</p>
+            }}>{formatFileSize((message.file_data as any)?.size || 0)}</p>
           </div>
         </div>
       );
@@ -118,7 +119,7 @@ const renderMessageContent = (message: BullRoomMessage) => {
             style={{
               fontSize: 'var(--text-sm)',
               whiteSpace: 'pre-wrap',
-              wordBreak: 'break-words',
+              wordBreak: 'break-word',
               lineHeight: '24px'
             }}
             dangerouslySetInnerHTML={{ __html: linkTickers(message.content) }}
@@ -234,7 +235,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                     fontSize: 'var(--text-xs)',
                     color: 'var(--color-text-muted)'
                   }}>
-                    {formatTime(message.created_at)}
+                    {formatTime(message.created_at || '')}
                   </span>
                 </div>
               )}
@@ -245,10 +246,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               </div>
               
               {/* Reactions under message - always visible if they exist */}
-              {onAddReaction && onRemoveReaction && Object.keys(message.reactions).length > 0 && (
+              {onAddReaction && onRemoveReaction && message.reactions && typeof message.reactions === 'object' && Object.keys(message.reactions as Record<string, any>).length > 0 && (
                 <div style={{ marginTop: 'var(--space-2)' }}>
                   <MessageReactions
-                    reactions={message.reactions}
+                    reactions={message.reactions as Record<string, string[]>}
                     messageId={message.id}
                     onAddReaction={onAddReaction}
                     onRemoveReaction={onRemoveReaction}
@@ -359,7 +360,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                     }}>
                       {onAddReaction && onRemoveReaction && (
                         <MessageReactions
-                          reactions={message.reactions}
+                          reactions={message.reactions as Record<string, string[]>}
                           messageId={message.id}
                           onAddReaction={onAddReaction}
                           onRemoveReaction={onRemoveReaction}

@@ -694,7 +694,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           
           // Insert the cleaned HTML using TipTap's insertContent
           const cleanedHtml = tempDiv.innerHTML;
-          editor.commands.insertContent(cleanedHtml);
+          editor?.commands.insertContent(cleanedHtml as string);
           
           return true; // Prevent default paste behavior
         }

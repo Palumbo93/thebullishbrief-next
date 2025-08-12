@@ -12,7 +12,7 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   
   // Get category from URL parameters
-  const categoryFromUrl = searchParams.get('category');
+  const categoryFromUrl = searchParams ? searchParams.get('category') : null;
   
   // Initialize activeFilter from URL or default to 'All'
   const [activeFilter, setActiveFilter] = useState<string>(categoryFromUrl || 'All');
@@ -28,7 +28,7 @@ export default function HomePage() {
     setActiveFilter(filter);
     
     // Update URL parameters
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
     if (filter === 'All') {
       newSearchParams.delete('category');
     } else {

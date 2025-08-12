@@ -5,7 +5,7 @@ import { BullRoomPage } from '../../../pages/BullRoomPage';
 import { supabase } from '../../../lib/supabase';
 
 interface Props {
-  params: { roomSlug: string };
+  params: Promise<{ roomSlug: string }>;
 }
 
 async function getRoom(roomSlug: string) {
@@ -23,7 +23,8 @@ async function getRoom(roomSlug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const room = await getRoom(params.roomSlug);
+  const { roomSlug } = await params;
+  const room = await getRoom(roomSlug);
   
   if (!room) {
     return {
@@ -69,10 +70,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function BullRoomPageWrapper({ params }: Props) {
+export default async function BullRoomPageWrapper({ params }: Props) {
+  const { roomSlug } = await params;
   return (
     <Layout>
-      <BullRoomPage roomSlug={params.roomSlug} />
+      <BullRoomPage roomSlug={roomSlug} />
     </Layout>
   );
 }

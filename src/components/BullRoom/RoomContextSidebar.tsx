@@ -24,54 +24,175 @@ export interface RoomContextSidebarProps {
 export const RoomContextSidebar: React.FC<RoomContextSidebarProps> = ({ summary, topTweets }) => {
   return (
     <>
-      <div className="bg-secondary rounded-lg p-4 mb-6">
-        <div className="flex items-center space-x-2 mb-3">
-          <div className="w-6 h-6 bg-info rounded-full flex items-center justify-center">
-            <Brain className="w-3 h-3 text-inverse" />
+      <div style={{
+        background: 'var(--color-bg-secondary)',
+        borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-4)',
+        marginBottom: 'var(--space-6)'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-2)',
+          marginBottom: 'var(--space-3)'
+        }}>
+          <div style={{
+            width: '24px',
+            height: '24px',
+            background: 'var(--color-info)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Brain style={{ width: '12px', height: '12px', color: 'var(--color-text-inverse)' }} />
           </div>
-          <h4 className="text-sm font-medium text-primary">Market Summary</h4>
+          <h4 style={{
+            fontSize: 'var(--text-sm)',
+            fontWeight: 'var(--font-medium)',
+            color: 'var(--color-text-primary)'
+          }}>Market Summary</h4>
         </div>
-        <p className="text-secondary leading-relaxed text-sm">
+        <p style={{
+          color: 'var(--color-text-secondary)',
+          lineHeight: 'var(--leading-relaxed)',
+          fontSize: 'var(--text-sm)'
+        }}>
           {summary}
         </p>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2 mb-4">
-          <div className="w-6 h-6 bg-success rounded-full flex items-center justify-center">
-            <MessageSquare className="w-3 h-3 text-inverse" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-2)',
+          marginBottom: 'var(--space-4)'
+        }}>
+          <div style={{
+            width: '24px',
+            height: '24px',
+            background: 'var(--color-success)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <MessageSquare style={{ width: '12px', height: '12px', color: 'var(--color-text-inverse)' }} />
           </div>
-          <h4 className="text-sm font-medium text-primary">Top Tweets</h4>
-          <span className="text-xs text-muted bg-tertiary px-2 py-1 rounded-full">{topTweets.length} tweets</span>
+          <h4 style={{
+            fontSize: 'var(--text-sm)',
+            fontWeight: 'var(--font-medium)',
+            color: 'var(--color-text-primary)'
+          }}>Top Tweets</h4>
+          <span style={{
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-muted)',
+            background: 'var(--color-bg-tertiary)',
+            padding: 'var(--space-1) var(--space-2)',
+            borderRadius: '9999px'
+          }}>{topTweets.length} tweets</span>
         </div>
         
         {topTweets.map((tweet, index) => (
-          <div key={tweet.id} className="bg-secondary rounded-lg p-3 hover:bg-tertiary/20 transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-tertiary rounded-full flex items-center justify-center text-xs font-medium text-primary">
+          <div key={tweet.id} style={{
+            background: 'var(--color-bg-secondary)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'var(--space-3)',
+            transition: 'background-color 0.2s ease'
+          }} onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+          }} onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--color-bg-secondary)';
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 'var(--space-2)'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  background: 'var(--color-bg-tertiary)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: 'var(--font-medium)',
+                  color: 'var(--color-text-primary)'
+                }}>
                   {tweet.author.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-primary">{tweet.author}</span>
-                  <span className="text-xs text-muted ml-1">{tweet.handle}</span>
+                  <span style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>{tweet.author}</span>
+                  <span style={{
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-muted)',
+                    marginLeft: 'var(--space-1)'
+                  }}>{tweet.handle}</span>
                 </div>
               </div>
-              <span className="text-xs text-muted bg-tertiary px-2 py-1 rounded-full">{tweet.timestamp}</span>
+              <span style={{
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-muted)',
+                background: 'var(--color-bg-tertiary)',
+                padding: 'var(--space-1) var(--space-2)',
+                borderRadius: '9999px'
+              }}>{tweet.timestamp}</span>
             </div>
-            <p className="text-sm text-secondary mb-3 leading-relaxed">{tweet.content}</p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 text-xs text-muted">
-                <div className="flex items-center space-x-1">
-                  <span className="text-error">❤️</span>
+            <p style={{
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-secondary)',
+              marginBottom: 'var(--space-3)',
+              lineHeight: 'var(--leading-relaxed)'
+            }}>{tweet.content}</p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-4)',
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-muted)'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-1)'
+                }}>
+                  <span style={{ color: 'var(--color-error)' }}>❤️</span>
                   <span>{tweet.likes.toLocaleString()}</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <span className="text-info">🔄</span>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-1)'
+                }}>
+                  <span style={{ color: 'var(--color-info)' }}>🔄</span>
                   <span>{tweet.retweets.toLocaleString()}</span>
                 </div>
               </div>
-              <div className="text-xs text-muted bg-tertiary px-2 py-1 rounded-full">
+              <div style={{
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-muted)',
+                background: 'var(--color-bg-tertiary)',
+                padding: 'var(--space-1) var(--space-2)',
+                borderRadius: '9999px'
+              }}>
                 {tweet.likes > 1000 ? '🔥 Hot' : 'Trending'}
               </div>
             </div>
@@ -80,13 +201,34 @@ export const RoomContextSidebar: React.FC<RoomContextSidebarProps> = ({ summary,
       </div>
 
       {/* Powered By Section */}
-      <div className="mt-8">
-        <div className="flex items-center justify-center space-x-2 -mt-5">
-          <span className="text-xs text-muted">Powered By</span>
+      <div style={{ marginTop: 'var(--space-8)' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 'var(--space-2)',
+          marginTop: 'calc(-1 * var(--space-5))'
+        }}>
+          <span style={{
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-muted)'
+          }}>Powered By</span>
           <img 
             src="/images/sentrol-logo.webp" 
             alt="Sentrol" 
-            className="h-6 w-auto opacity-70 hover:opacity-100 transition-opacity -mt-1"
+            style={{
+              height: '24px',
+              width: 'auto',
+              opacity: 0.7,
+              marginTop: 'calc(-1 * var(--space-1))',
+              transition: 'opacity 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '1';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.7';
+            }}
           />
         </div>
       </div>

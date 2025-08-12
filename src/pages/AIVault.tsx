@@ -381,3 +381,5 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
     </section>
   );
 };
+
+export default AIVault;

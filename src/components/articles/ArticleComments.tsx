@@ -1,12 +1,13 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, MessageSquare, Reply, Edit, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, MessageSquare, Reply, Edit, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 import { useArticleComments, useCreateComment, useDeleteComment, useAddReaction, useRemoveReaction } from '../../hooks/useArticleComments';
 import { Comment } from '../../types/comment.types';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useViewportHeightOnly } from '../../hooks/useViewportHeight';
-import { getSafeAreaInsetPadding } from '../../utils/viewportUtils';
 
 // Mobile detection hook
 const useIsMobile = () => {

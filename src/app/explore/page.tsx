@@ -4,10 +4,11 @@ import { Layout } from '../../components/Layout';
 import { SearchPage } from '../../pages/SearchPage';
 
 interface Props {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  await searchParams; // await but don't use
   const title = 'Explore - The Bullish Brief';
   const description = 'Discover trending topics, popular authors, and the latest financial insights. Explore The Bullish Brief\'s comprehensive collection of market analysis and investment intelligence.';
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://thebullishbrief.com'}/explore`;
@@ -39,14 +40,15 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
-export default function ExplorePageWrapper({ searchParams }: Props) {
+export default async function ExplorePageWrapper({ searchParams }: Props) {
+  const resolvedSearchParams = await searchParams;
   return (
-    <ExplorePageClient searchParams={searchParams} />
+    <ExplorePageClient searchParams={resolvedSearchParams} />
   );
 }
 
 // Client component to handle the interactive parts
-function ExplorePageClient({ searchParams }: { searchParams: Props['searchParams'] }) {
+function ExplorePageClient({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   'use client';
   
   return (

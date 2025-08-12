@@ -128,12 +128,14 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     created_at: string;
     updated_at: string;
     view_count: number;
-    slug?: string;
+    slug: string;
     featured_image_url?: string;
     featured_image_alt?: string;
     tempPath?: string;
     tags?: string[];
     reading_time_minutes?: number;
+    featured: boolean;
+    premium: boolean;
   }
 
   // Convert service layer Article to modal Article
@@ -149,10 +151,12 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     created_at: article.created_at,
     updated_at: article.updated_at,
     view_count: article.view_count || 0,
-    slug: article.slug,
+    slug: article.slug || '',
     featured_image_url: article.featured_image_url,
     featured_image_alt: article.featured_image_alt,
-    reading_time_minutes: article.reading_time_minutes
+    reading_time_minutes: article.reading_time_minutes,
+    featured: article.featured || false,
+    premium: article.premium || false
   });
 
   // Convert modal Article to service layer Article
@@ -726,7 +730,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
                       background: 'var(--color-bg-tertiary)',
                       borderRadius: 'var(--radius-sm)',
                       fontSize: 'var(--text-xs)',
-                      color: getStatusColor(article.status),
+                      color: getStatusColor(article.status || 'draft'),
                       fontWeight: 'var(--font-medium)',
                       textTransform: 'uppercase'
                     }}>

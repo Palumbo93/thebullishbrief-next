@@ -97,7 +97,7 @@ export const PromptCreateModal: React.FC<PromptCreateModalProps> = ({ onClose, o
           sort_order: field.sort_order
         }))
       };
-      await onCreate(promptData);
+      await onCreate(promptData as Partial<Prompt> & { fields: Partial<PromptField>[] });
       setHasUnsavedChanges(false);
     } catch (error) {
       console.error('Error creating prompt:', error);
@@ -501,9 +501,6 @@ export const PromptCreateModal: React.FC<PromptCreateModalProps> = ({ onClose, o
                           <span style={{ fontWeight: 'var(--font-medium)', color: 'var(--color-text-primary)' }}>
                             {field.label || 'Unnamed Field'}
                           </span>
-                          {field.required && (
-                            <span style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)' }}>*</span>
-                          )}
                           <span style={{ 
                             background: 'var(--color-bg-secondary)',
                             padding: 'var(--space-1) var(--space-2)',

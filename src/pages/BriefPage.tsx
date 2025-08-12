@@ -509,4 +509,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       
     </Layout>
   );
-}; 
+};
+
+export default BriefPage; 

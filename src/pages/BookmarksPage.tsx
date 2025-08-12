@@ -349,4 +349,6 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
       <LegalFooter />
     </div>
   );
-}; 
+};
+
+export default BookmarksPage; 

@@ -45,7 +45,7 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       // Upload file to Supabase storage
       setIsLoading(true);
       try {
-        const uploadId = articleId || sessionId;
+        const uploadId = articleId || sessionId || '';
         const result = await uploadArticleImage(uploadedFile, uploadId);
         
         // Track the upload for potential cleanup
@@ -94,20 +94,20 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-tertiary)';
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-secondary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-secondary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
     
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {

@@ -4,12 +4,13 @@ import { Layout } from '../../components/Layout';
 import { SearchPage } from '../../pages/SearchPage';
 
 interface Props {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const query = searchParams.q as string;
-  const tags = searchParams.tags as string;
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams.q as string;
+  const tags = resolvedSearchParams.tags as string;
   
   let title = 'Search | The Bullish Brief';
   let description = 'Search through The Bullish Brief\'s comprehensive collection of financial articles, market analysis, and investment insights.';
@@ -52,14 +53,15 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
-export default function SearchPageWrapper({ searchParams }: Props) {
+export default async function SearchPageWrapper({ searchParams }: Props) {
+  const resolvedSearchParams = await searchParams;
   return (
-    <SearchPageClient searchParams={searchParams} />
+    <SearchPageClient searchParams={resolvedSearchParams} />
   );
 }
 
 // Client component to handle the interactive parts
-function SearchPageClient({ searchParams }: { searchParams: Props['searchParams'] }) {
+function SearchPageClient({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   'use client';
   
   return (

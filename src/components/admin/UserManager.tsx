@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, Users, Search, X, Copy } from 'lucide-react';
+import { Plus,  Users } from 'lucide-react';
 import { useUsers } from '../../hooks/useDatabase';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';

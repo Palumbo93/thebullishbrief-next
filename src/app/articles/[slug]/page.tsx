@@ -5,7 +5,7 @@ import { ArticlePage } from '../../../pages/ArticlePage';
 import { supabase } from '../../../lib/supabase';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 async function getArticle(slug: string) {
@@ -30,14 +30,15 @@ async function getArticle(slug: string) {
   // Transform the data to include tags properly
   const transformedArticle = {
     ...article,
-    tags: article.tags?.map((tagRelation: any) => tagRelation.tag?.name).filter(Boolean) || []
+    tags: article.tags?.map((tagRelation: { tag?: { name: string } }) => tagRelation.tag?.name).filter(Boolean) || []
   };
 
   return transformedArticle;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const article = await getArticle(params.slug);
+  const { slug } = await params;
+  const article = await getArticle(slug);
   
   if (!article) {
     return {
@@ -90,11 +91,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ArticlePageWrapper({ params }: Props) {
-  const article = await getArticle(params.slug);
+  const { slug } = await params;
+  const article = await getArticle(slug);
   
   return (
     <ArticlePageClient 
-      slug={params.slug} 
+      slug={slug} 
       articleId={article?.id ? String(article.id) : undefined}
       articleTitle={article?.title}
     />

@@ -116,7 +116,7 @@ export const PromptEditModal: React.FC<PromptEditModalProps> = ({ prompt, onClos
           sort_order: field.sort_order
         }))
       };
-      await onUpdate(prompt.id, promptData);
+      await onUpdate(prompt.id, promptData as Partial<Prompt> & { fields: Partial<PromptField>[] });
       setHasUnsavedChanges(false);
     } catch (error) {
       console.error('Error updating prompt:', error);
@@ -520,9 +520,6 @@ export const PromptEditModal: React.FC<PromptEditModalProps> = ({ prompt, onClos
                           <span style={{ fontWeight: 'var(--font-medium)', color: 'var(--color-text-primary)' }}>
                             {field.label || 'Unnamed Field'}
                           </span>
-                          {field.required && (
-                            <span style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)' }}>*</span>
-                          )}
                           <span style={{ 
                             background: 'var(--color-bg-secondary)',
                             padding: 'var(--space-1) var(--space-2)',

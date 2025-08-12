@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clock } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Trash2, Copy, Clock } from 'lucide-react';
 import { useCategories, useAuthors, useArticleTags, useAllTags } from '../../hooks/useDatabase';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
@@ -27,6 +27,10 @@ interface Article {
   slug?: string;
   featured_image_url?: string;
   featured_image_alt?: string;
+  tags?: string[];
+  reading_time_minutes?: number;
+  featured: boolean;
+  premium: boolean;
 }
 
 interface ArticleEditModalProps {
@@ -34,7 +38,7 @@ interface ArticleEditModalProps {
   onClose: () => void;
   onUpdate: (id: string, data: Partial<Article>) => void;
   onDelete: (id: string) => void;
-  onDuplicate: (article: Article) => void;
+  onDuplicate: (article: Article) => Promise<void>;
 }
 
 export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onClose, onUpdate, onDelete, onDuplicate }) => {
@@ -244,20 +248,20 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-tertiary)';
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-secondary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-secondary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
     
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {

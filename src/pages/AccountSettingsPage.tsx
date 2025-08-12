@@ -312,4 +312,6 @@ export const AccountSettingsPage: React.FC<AccountSettingsPageProps> = ({
     </div>
     </>
   );
-}; 
+};
+
+export default AccountSettingsPage;

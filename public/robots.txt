@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://thebullishbrief.com/sitemap.xml
+
+# Crawl-delay for news sites (optional)
+Crawl-delay: 1
+
+# Block sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /.well-known/
+Disallow: /auth/
+
+# Block Brief Pages from crawling
+Disallow: /briefs/
+Disallow: /brief/
+
+# Allow important pages
+Allow: /
+Allow: /articles/
+Allow: /authors/
+Allow: /search/
+Allow: /legal/
+
+# Explicitly disallow briefs (reinforcement)
+Disallow: /briefs/
+
+# Block search parameters that might create duplicate content
+Disallow: /*?sort=*
+Disallow: /*?filter=*
+Disallow: /*&sort=*
+Disallow: /*&filter=*

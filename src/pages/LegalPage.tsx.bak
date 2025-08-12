@@ -7,13 +7,12 @@ import { ArrowLeft } from 'lucide-react';
 import { LegalPageTemplate } from '../components/legal/LegalPageTemplate';
 import type { LegalDocument } from '../data/legal/types';
 import { LegalFooter } from '../components/LegalFooter';
-import { legalDocuments } from '../data/legal';
 
 interface LegalPageProps {
   doc: LegalDocument;
 }
 
-export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
+const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -236,4 +235,5 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
   );
 };
 
+export { LegalPage };
 export default LegalPage;

@@ -69,15 +69,30 @@ export const RoomBanner: React.FC<RoomBannerProps> = ({ room }) => {
           </p>
         </div>
         {/* Right side - Status info */}
-        <div className="text-right">
-          <div className="flex items-center justify-end space-x-4 text-sm text-muted">
-            <div className="flex items-center space-x-1">
-              <Users className="w-4 h-4" />
+        <div style={{ textAlign: 'right' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: 'var(--space-4)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--color-text-muted)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-1)'
+            }}>
+              <Users style={{ width: '16px', height: '16px' }} />
               <span>{room.message_count} messages</span>
             </div>
-            <div className="flex items-center space-x-1">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-1)'
+            }}>
               <span>•</span>
-              <span>Last activity {formatLastActivity(room.last_activity_at)}</span>
+              <span>Last activity {formatLastActivity(room.last_activity_at || '')}</span>
             </div>
           </div>
         </div>

@@ -28,9 +28,26 @@ interface Article {
   featured_image_alt?: string;
 }
 
+interface ModalArticle {
+  id: string;
+  title: string;
+  subtitle: string;
+  content: string;
+  author: string;
+  category: string;
+  status: 'draft' | 'published' | 'archived';
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+  featured_image_url?: string;
+  featured_image_alt?: string;
+  tags?: string[];
+  reading_time_minutes?: number;
+}
+
 interface ArticleCreateModalProps {
   onClose: () => void;
-  onCreate: (data: Partial<Article>) => void;
+  onCreate: (data: Partial<ModalArticle>) => Promise<void>;
 }
 
 export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose, onCreate }) => {
@@ -179,20 +196,20 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-tertiary)';
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-secondary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-    e.currentTarget.style.background = 'var(--color-bg-secondary)';
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
     
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {

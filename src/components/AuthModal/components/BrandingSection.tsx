@@ -2,7 +2,6 @@ import React from 'react';
 import { TrendingUp } from 'lucide-react';
 import { BrandingSectionProps } from '../types/auth.types';
 import { BRAND_COPY } from '../../../data/copy';
-import { SIGNUP_FEATURES, SOCIAL_PROOF, COMPONENT_SIZES } from '../utils/constants';
 
 export const BrandingSection: React.FC<BrandingSectionProps> = ({
   variant,

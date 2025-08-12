@@ -666,3 +666,5 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     </div>
   );
 };
+
+export default ArticlePage;

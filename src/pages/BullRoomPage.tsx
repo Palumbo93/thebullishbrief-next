@@ -371,3 +371,5 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     </div>
   );
 };
+
+export default BullRoomPage;

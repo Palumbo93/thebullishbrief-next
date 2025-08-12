@@ -558,4 +558,6 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
       />
     </div>
   );
-}; 
+};
+
+export default AuthorPage; 

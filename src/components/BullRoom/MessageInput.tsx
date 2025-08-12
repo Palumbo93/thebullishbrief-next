@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Paperclip, Image, File as FileIcon, X } from 'lucide-react';
 
 /**

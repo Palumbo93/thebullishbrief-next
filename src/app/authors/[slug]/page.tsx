@@ -5,7 +5,7 @@ import { AuthorPage } from '../../../pages/AuthorPage';
 import { supabase } from '../../../lib/supabase';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 async function getAuthor(slug: string) {
@@ -23,7 +23,8 @@ async function getAuthor(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const author = await getAuthor(params.slug);
+  const { slug } = await params;
+  const author = await getAuthor(slug);
   
   if (!author) {
     return {
@@ -55,11 +56,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ] : [],
       locale: 'en_US',
       type: 'profile',
-      profile: {
-        firstName: author.name.split(' ')[0],
-        lastName: author.name.split(' ').slice(1).join(' '),
-        username: author.slug,
-      },
+      firstName: author.name.split(' ')[0],
+      lastName: author.name.split(' ').slice(1).join(' '),
+      username: author.slug,
     },
     twitter: {
       card: 'summary',
@@ -75,9 +74,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function AuthorPageWrapper({ params }: Props) {
+export default async function AuthorPageWrapper({ params }: Props) {
+  const { slug } = await params;
   return (
-    <AuthorPageClient slug={params.slug} />
+    <AuthorPageClient slug={slug} />
   );
 }
 

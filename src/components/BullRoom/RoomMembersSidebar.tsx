@@ -1,5 +1,5 @@
 import React from 'react';
-import { BullRoomMessage } from '../../types/bullRoom.types';
+import { BullRoomMessage } from '../../lib/database.types';
 
 interface RoomMember {
   id: string;
@@ -26,18 +26,21 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
     const cutoffTime = new Date(Date.now() - 48 * 60 * 60 * 1000);
     
     messages.forEach(message => {
+      if (!message.created_at) return;
+      
       const messageTime = new Date(message.created_at);
       if (messageTime < cutoffTime) return; // Skip messages older than 48 hours
       
-      if (!message.user) return;
-      
-      const userId = message.user.id;
+      const userId = message.user_id;
       const existing = memberMap.get(userId);
       
       // Count bull reactions received (🐂 emoji)
-      const bullReactionsReceived = Object.entries(message.reactions)
-        .filter(([emoji]) => emoji === '🐂')
-        .reduce((total, [, userIds]) => total + userIds.length, 0);
+      let bullReactionsReceived = 0;
+      if (message.reactions && typeof message.reactions === 'object') {
+        bullReactionsReceived = Object.entries(message.reactions as Record<string, any>)
+          .filter(([emoji]) => emoji === '🐂')
+          .reduce((total, [, userIds]) => total + (Array.isArray(userIds) ? userIds.length : 0), 0);
+      }
       
       if (existing) {
         existing.message_count += 1;
@@ -48,7 +51,7 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
       } else {
         memberMap.set(userId, {
           id: userId,
-          username: message.user.username,
+          username: message.username,
           message_count: 1,
           bull_reactions_received: bullReactionsReceived,
           last_active: message.created_at,

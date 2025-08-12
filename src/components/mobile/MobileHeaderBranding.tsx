@@ -3,9 +3,7 @@ import { getTickers } from '../../utils/tickerUtils';
 
 interface MobileHeaderBrandingProps {
   companyName?: string;
-  companyLogoUrl?: string;
   tickers?: any; // JSON ticker data from database
-  fallback?: string;
   onClick?: () => void;
 }
 
@@ -17,9 +15,7 @@ interface MobileHeaderBrandingProps {
  */
 export const MobileHeaderBranding: React.FC<MobileHeaderBrandingProps> = ({
   companyName,
-  companyLogoUrl,
   tickers,
-  fallback,
   onClick
 }) => {
   const getContainerStyles = () => {
@@ -95,40 +91,6 @@ export const MobileHeaderBranding: React.FC<MobileHeaderBrandingProps> = ({
       tabIndex={onClick ? 0 : undefined}
       aria-label={companyName ? `${companyName} company info` : 'Company info'}
     >
-      {/* Company Logo - Smaller size */}
-      {(companyLogoUrl || fallback) && (
-        <div style={{
-          width: '28px',
-          height: '28px',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          overflow: 'hidden'
-        }}>
-          {companyLogoUrl ? (
-            <img 
-              src={companyLogoUrl} 
-              alt={`${companyName} logo`}
-              style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                objectFit: 'contain'
-              }}
-            />
-          ) : (
-            <span style={{
-              fontSize: '0.6rem',
-              fontWeight: 'var(--font-bold)',
-              color: 'var(--color-text-primary)'
-            }}>
-              {fallback}
-            </span>
-          )}
-        </div>
-      )}
 
       {/* Tickers Only - No Company Name */}
       {parsedTickers.length > 0 && (

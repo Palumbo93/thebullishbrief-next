@@ -16,6 +16,7 @@ import { CTABanner } from '../components/CTABanner';
 import { LegalFooter } from '../components/LegalFooter';
 import { BriefDesktopBanner } from '../components/briefs/BriefDesktopBanner';
 import { Layout } from '../components/Layout';
+import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 
 
 interface BriefPageProps {
@@ -97,23 +98,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '3px solid var(--color-border-primary)',
-            borderTop: '3px solid var(--color-brand-primary)',
-            borderRadius: 'var(--radius-full)',
-            margin: '0 auto var(--space-4)'
-          }} className="animate-spin"></div>
-          <p style={{ color: 'var(--color-text-tertiary)' }}>Loading brief...</p>
-        </div>
+      <div style={{ minHeight: '100vh' }}>
+        <ArticleSkeleton />
       </div>
     );
   }
@@ -186,7 +172,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   const mobileHeaderProps = {
     companyName: brief.company_name || undefined,
-    companyLogoUrl: brief.company_logo_url || undefined,
     tickers: Array.isArray(brief.tickers) ? brief.tickers as string[] : undefined,
     onShareClick: () => setIsShareSheetOpen(true)
   };
@@ -283,18 +268,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               {brief.title}
             </h1>
 
-            {/* Subtitle */}
-            {/* <p style={{
-              fontSize: 'var(--text-base)',
-              fontFamily: 'var(--font-primary)',
-              color: 'var(--color-text-secondary)',
-              lineHeight: 'var(--leading-relaxed)',
-              // marginBottom: 'var(--space-6)',
-              fontWeight: '400',
-              maxWidth: '600px'
-            }}>
-              {brief.subtitle}
-            </p> */}
             
           </div>
         </div>

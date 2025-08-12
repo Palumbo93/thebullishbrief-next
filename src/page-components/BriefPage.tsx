@@ -314,7 +314,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               <div 
                 className="html-content"
                 dangerouslySetInnerHTML={{ 
-                  __html: processTextWithLinks(brief.content) 
+                  __html: brief.content
                 }}
                 ref={(el) => {
                   if (el) {

@@ -1,16 +1,10 @@
 "use client";
 
-import dynamic from 'next/dynamic';
+import React from 'react';
+import { BookmarksPage } from '../../page-components/BookmarksPage';
+import { Layout } from '../../components/Layout';
 
-const BookmarksPage = dynamic(() => import('../../page-components/BookmarksPage').then(mod => ({ default: mod.BookmarksPage })), {
-  ssr: false,
-});
-
-const Layout = dynamic(() => import('../../components/Layout').then(mod => ({ default: mod.Layout })), {
-  ssr: false,
-});
-
-export default function BookmarksPageClient() {
+export default function BookmarksPageWrapper() {
   return (
     <Layout>
       <BookmarksPage />

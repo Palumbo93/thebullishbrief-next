@@ -1,16 +1,9 @@
 "use client";
 
 import React from 'react';
-import dynamic from 'next/dynamic';
 import { useArticleBySlug } from '../../../hooks/useArticles';
-
-const Layout = dynamic(() => import('../../../components/Layout').then(mod => ({ default: mod.Layout })), {
-  ssr: false,
-});
-
-const ArticlePage = dynamic(() => import('../../../page-components/ArticlePage').then(mod => ({ default: mod.ArticlePage })), {
-  ssr: false,
-});
+import { Layout } from '../../../components/Layout';
+import { ArticlePage } from '../../../page-components/ArticlePage';
 
 interface Props {
   params: Promise<{ slug: string }>;

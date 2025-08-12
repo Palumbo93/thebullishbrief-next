@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, hasSupabaseCredentials } from '../lib/supabase';
-import { Article as DatabaseArticle, Category, Tag } from '../lib/database.types';
+import { Tables } from '../lib/database.types';
+import { Article as DatabaseArticle, Category, Tag } from '../lib/database.aliases';
 import { queryKeys } from '../lib/queryClient';
 import { CACHE_TTL } from '../lib/cacheStorage';
 import { useAuth } from '../contexts/AuthContext';

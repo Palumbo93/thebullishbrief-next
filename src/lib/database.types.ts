@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -7,60 +6,13 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-// Type aliases for commonly used table types
-export type BullRoom = Tables<'bull_rooms'>
-export type Article = Tables<'articles'>
-export type Author = Tables<'authors'>
-export type Brief = Tables<'briefs'>
-export type Category = Tables<'categories'>
-export type Tag = Tables<'tags'>
-export type UserProfile = Tables<'user_profiles'>
-export type ArticleComment = Tables<'article_comments'>
-export type ArticleView = Tables<'article_views'>
-export type BriefView = Tables<'brief_views'>
-export type Bookmark = Tables<'bookmarks'>
-export type BullRoomMessage = Tables<'bull_room_messages'>
-export type BullRoomReaction = Tables<'bull_room_reactions'>
-export type CommentReaction = Tables<'comment_reactions'>
-export type ArticleTag = Tables<'article_tags'>
-export type AIPrompt = Tables<'ai_prompts'>
-export type AIPromptCategory = Tables<'ai_prompt_categories'>
-export type PromptField = Tables<'prompt_fields'>
-export type Role = Tables<'roles'>
-export type UserRole = Tables<'user_roles'>
-export type ProfileOperationLog = Tables<'profile_operation_logs'>
-export type BullRoomsStats = Tables<'bull_rooms_stats'>
+
 
 export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
-  }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
   }
   public: {
     Tables: {
@@ -146,6 +98,7 @@ export type Database = {
           parent_id: string | null
           updated_at: string | null
           user_id: string
+          username: string
         }
         Insert: {
           article_id: string
@@ -157,6 +110,7 @@ export type Database = {
           parent_id?: string | null
           updated_at?: string | null
           user_id: string
+          username: string
         }
         Update: {
           article_id?: string
@@ -168,6 +122,7 @@ export type Database = {
           parent_id?: string | null
           updated_at?: string | null
           user_id?: string
+          username?: string
         }
         Relationships: [
           {
@@ -478,6 +433,7 @@ export type Database = {
           featured_image_url: string | null
           id: string
           investor_deck_url: string | null
+          published_at: string | null
           reading_time_minutes: number | null
           show_cta: boolean | null
           slug: string
@@ -502,6 +458,7 @@ export type Database = {
           featured_image_url?: string | null
           id?: string
           investor_deck_url?: string | null
+          published_at?: string | null
           reading_time_minutes?: number | null
           show_cta?: boolean | null
           slug: string
@@ -526,6 +483,7 @@ export type Database = {
           featured_image_url?: string | null
           id?: string
           investor_deck_url?: string | null
+          published_at?: string | null
           reading_time_minutes?: number | null
           show_cta?: boolean | null
           slug?: string
@@ -1070,6 +1028,17 @@ export type Database = {
           permissions: Json
         }[]
       }
+      get_user_username: {
+        Args: { user_id: string }
+        Returns: string
+      }
+      get_user_usernames: {
+        Args: { user_ids: string[] }
+        Returns: {
+          id: string
+          username: string
+        }[]
+      }
       log_profile_operation: {
         Args: {
           operation: string
@@ -1253,9 +1222,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

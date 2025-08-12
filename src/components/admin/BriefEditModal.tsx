@@ -13,7 +13,7 @@ import { useUploadSession } from '../../hooks/useUploadSession';
 import { uploadTemporaryFeaturedImage, uploadTemporaryCompanyLogo, moveFeaturedImageToArticle, STORAGE_BUCKETS } from '../../lib/storage';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 import { validateTickerInput } from '../../utils/tickerUtils';
-import { Brief } from '../../hooks/useBriefs';
+import { Brief } from '../../lib/database.aliases';
 
 interface BriefEditModalProps {
   onClose: () => void;
@@ -44,6 +44,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     featured_image_alt: '',
     reading_time_minutes: 5,
     status: 'draft' as 'draft' | 'published',
+    published_at: '',
     video_url: '',
     show_cta: false,
     tickers: '',
@@ -69,6 +70,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         featured_image_alt: brief.featured_image_alt || '',
         reading_time_minutes: brief.reading_time_minutes || 5,
         status: brief.status as 'draft' | 'published' || 'draft',
+        published_at: (brief as any).published_at ? new Date((brief as any).published_at).toISOString().slice(0, 16) : '',
         video_url: brief.video_url || '',
         show_cta: brief.show_cta || false,
         tickers: brief.tickers ? JSON.stringify(brief.tickers, null, 2) : '',
@@ -258,6 +260,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
           reading_time_minutes: readingTimeMinutes,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
+          published_at: formData.status === 'published' && formData.published_at ? formData.published_at : null,
         })
         .eq('id', brief.id);
 
@@ -472,6 +475,44 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                 onChange={(status) => handleChange('status', status)}
               />
             </div>
+
+            {/* Published Date */}
+            {formData.status === 'published' && (
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Published Date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={formData.published_at}
+                  onChange={(e) => handleChange('published_at', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    padding: '0 var(--space-4)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Leave empty to publish immediately
+                </p>
+              </div>
+            )}
 
             {/* Title */}
             <div>

@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefEngagement } from '../hooks/useAnalytics';
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Clock, Eye } from 'lucide-react';
+import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
 import TradingViewWidget from '../components/TradingViewWidget';
@@ -45,6 +46,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
+  
+  // Calculate reading time from brief content
+  const readingTime = React.useMemo(() => {
+    return brief?.content ? calculateReadingTime(brief.content) : 5;
+  }, [brief?.content]);
   
   // Handle scroll for header background
   React.useEffect(() => {
@@ -279,7 +285,30 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           margin: '0 auto'
         }}>
 
-
+          {/* Meta Info - Date and Reading Time */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-3)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--color-text-muted)',
+            marginBottom: 'var(--space-6)',
+            paddingBottom: 'var(--space-4)',
+            borderBottom: '0.5px solid var(--color-border-primary)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Calendar style={{ width: '14px', height: '14px' }} />
+              <span>{(brief as any).date || new Date(brief.created_at || new Date()).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Clock style={{ width: '14px', height: '14px' }} />
+              <span>{formatReadingTime(readingTime)}</span>
+            </div>
+          </div>
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none">

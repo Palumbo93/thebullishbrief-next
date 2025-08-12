@@ -41,6 +41,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     featured_image_alt: '',
     reading_time_minutes: 5,
     status: 'draft' as 'draft' | 'published',
+    published_at: '',
     video_url: '',
     show_cta: false,
     tickers: '',
@@ -232,6 +233,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
           company_logo_url: companyLogo?.url,
+          published_at: formData.status === 'published' && formData.published_at ? formData.published_at : null,
         });
 
       if (error) {
@@ -385,6 +387,44 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 onChange={(status) => handleChange('status', status)}
               />
             </div>
+
+            {/* Published Date */}
+            {formData.status === 'published' && (
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Published Date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={formData.published_at}
+                  onChange={(e) => handleChange('published_at', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    padding: '0 var(--space-4)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Leave empty to publish immediately
+                </p>
+              </div>
+            )}
 
             {/* Title */}
             <div>

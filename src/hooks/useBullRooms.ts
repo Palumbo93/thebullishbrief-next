@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { BullRoom } from '../lib/database.types';
+import { BullRoom } from '../lib/database.aliases';
 
 /**
  * Hook for fetching Bull Rooms from the database

@@ -1,15 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, hasSupabaseCredentials } from '../lib/supabase';
 import { Tables } from '../lib/database.types';
+import { Brief } from '../lib/database.aliases';
 import { queryKeys } from '../lib/queryClient';
 import { CACHE_TTL } from '../lib/cacheStorage';
-
-export type Brief = Tables<'briefs'>;
 
 /**
  * Convert Supabase brief to local Brief format
  */
-const convertSupabaseBrief = (brief: Brief): Brief => {
+const convertSupabaseBrief = (brief: Brief): Brief & { date: string } => {
   return {
     ...brief,
     // Ensure all fields are properly typed
@@ -21,6 +20,12 @@ const convertSupabaseBrief = (brief: Brief): Brief => {
     show_cta: brief.show_cta || false,
     company_name: brief.company_name || null,
     company_logo_url: brief.company_logo_url || null,
+    // Add formatted date
+    date: new Date((brief as any).published_at || brief.created_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }),
   };
 };
 

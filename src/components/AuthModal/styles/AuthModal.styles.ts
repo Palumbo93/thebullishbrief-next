@@ -96,9 +96,9 @@ export const logoPulse: CSSProperties = {
 
 export const brandTitle: CSSProperties = {
   fontSize: 'var(--text-3xl)',
-  fontWeight: 'var(--font-black)',
   fontFamily: 'var(--font-editorial)',
   marginBottom: 'var(--space-4)',
+  fontWeight: 'var(--font-normal)',
   color: 'var(--color-text-primary)',
   letterSpacing: '-0.01em',
   fontStyle: 'italic',
@@ -107,7 +107,7 @@ export const brandTitle: CSSProperties = {
 
 export const brandTitleSignIn: CSSProperties = {
   fontSize: 'var(--text-2xl)',
-  fontWeight: 'var(--font-black)',
+  fontWeight: 'var(--font-normal)',
   fontFamily: 'var(--font-editorial)',
   marginBottom: 'var(--space-2)',
   color: 'var(--color-text-primary)',
@@ -118,10 +118,10 @@ export const brandTitleSignIn: CSSProperties = {
 export const brandSubtitle: CSSProperties = {
   fontSize: 'var(--text-lg)',
   fontFamily: 'var(--font-editorial)',
+  fontWeight: 'var(--font-normal)',
   color: 'var(--color-text-secondary)',
   lineHeight: 'var(--leading-relaxed)',
   marginBottom: 'var(--space-4)',
-  fontWeight: 'var(--font-normal)',
 };
 
 export const brandSubtitleSignIn: CSSProperties = {

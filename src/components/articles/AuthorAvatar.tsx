@@ -1,4 +1,5 @@
 import React from 'react';
+import { AuthorAvatarImage } from '../ui/OptimizedImage';
 
 interface AuthorAvatarProps {
   author: string;
@@ -32,16 +33,11 @@ export const AuthorAvatar: React.FC<AuthorAvatarProps> = ({
 
   if (image) {
     return (
-      <img
+      <AuthorAvatarImage
         src={image}
         alt={author}
-        className={`rounded-full object-cover ${getSizeClasses()} ${className}`}
-        style={{
-          width: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'lg' ? '48px' : '40px',
-          height: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'lg' ? '48px' : '40px',
-          borderRadius: 'var(--radius-full)',
-          objectFit: 'cover'
-        }}
+        size={size}
+        className={className}
       />
     );
   }

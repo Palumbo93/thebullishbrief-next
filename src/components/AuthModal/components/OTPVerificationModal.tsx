@@ -270,14 +270,6 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
                     maxLength={6}
                     value={otpValue}
                     onChange={(value) => setOtpValue(value)}
-                    style={{
-                      '--otp-input-border-color': 'var(--color-border-primary)',
-                      '--otp-input-border-radius': 'var(--radius-md)',
-                      '--otp-input-background': 'var(--color-bg-primary)',
-                      '--otp-input-color': 'var(--color-text-primary)',
-                      '--otp-input-font-size': 'var(--text-lg)',
-                      '--otp-input-font-weight': 'var(--font-semibold)',
-                    } as React.CSSProperties}
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />

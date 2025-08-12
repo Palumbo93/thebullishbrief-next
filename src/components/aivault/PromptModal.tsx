@@ -259,7 +259,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
                 <h1 style={{
                   fontSize: 'var(--text-2xl)',
                   fontFamily: 'var(--font-editorial)',
-                  fontWeight: 'var(--font-bold)',
+                  fontWeight: 'var(--font-normal)',
                   margin: 0,
                   color: 'var(--color-text-primary)',
                   lineHeight: 'var(--leading-tight)',
@@ -307,7 +307,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
               <h3 style={{ 
                 fontSize: 'var(--text-xl)', 
                 fontFamily: 'var(--font-editorial)',
-                fontWeight: 'var(--font-bold)', 
+                fontWeight: 'var(--font-normal)', 
                 marginBottom: 'var(--space-6)',
                 color: 'var(--color-text-primary)',
                 lineHeight: 'var(--leading-tight)',
@@ -444,7 +444,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
                              <h2 style={{ 
                  fontSize: 'var(--text-2xl)', 
                  fontFamily: 'var(--font-editorial)',
-                 fontWeight: 'var(--font-bold)',
+                 fontWeight: 'var(--font-normal)',
                  color: 'var(--color-text-primary)',
                  display: 'flex',
                  alignItems: 'center',
@@ -535,7 +535,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
             <h1 style={{
               fontSize: 'var(--text-xl)',
               fontFamily: 'var(--font-editorial)',
-              fontWeight: 'var(--font-bold)',
+              fontWeight: 'var(--font-normal)',
               margin: 0,
               color: 'var(--color-text-primary)',
               lineHeight: 'var(--leading-tight)',
@@ -578,7 +578,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
               <h2 style={{ 
                 fontSize: 'var(--text-lg)', 
                 fontFamily: 'var(--font-editorial)',
-                fontWeight: 'var(--font-bold)',
+                fontWeight: 'var(--font-normal)',
                 color: 'var(--color-text-primary)',
                 lineHeight: 'var(--leading-tight)',
                 letterSpacing: '-0.02em'
@@ -649,7 +649,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
             <h3 style={{ 
               fontSize: 'var(--text-lg)', 
               fontFamily: 'var(--font-editorial)',
-              fontWeight: 'var(--font-bold)', 
+              fontWeight: 'var(--font-normal)', 
               marginBottom: 'var(--space-4)',
               color: 'var(--color-text-primary)',
               lineHeight: 'var(--leading-tight)',

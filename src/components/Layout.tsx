@@ -121,7 +121,6 @@ export const Layout: React.FC<LayoutProps> = ({
       { id: 'search', label: 'Search', icon: SearchIcon, path: '/search', active: false },
       { id: 'bullroom', label: 'Bull Room', icon: MessageSquareMoreIcon, path: '/bull-room', active: actualCurrentLocation === 'bullroom' },
       { id: 'aivault', label: 'AI Vault', icon: FoldersIcon, path: '/aivault', active: actualCurrentLocation === 'aivault' },
-      { id: 'alphaarena', label: 'Alpha Arena', icon: ShieldCheckIcon, path: '/alphaarena', active: actualCurrentLocation === 'alphaarena' },
     ];
   };
 

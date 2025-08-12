@@ -39,7 +39,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       { id: 'search', label: 'Explore', icon: SearchIcon, path: '/explore' },
       { id: 'bullroom', label: 'Bull Room', icon: MessageSquareMoreIcon, path: '/bull-room' },
       { id: 'aivault', label: 'AI Prompts', icon: FoldersIcon, path: '/aivault' },
-      // { id: 'alphaarena', label: 'Alpha Arena', icon: TrendingUp, path: '/alphaarena' }, // Backlogged
     ];
 
     // Add admin item if user is admin

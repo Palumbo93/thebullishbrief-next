@@ -5,6 +5,7 @@ import { X, MessageSquare, Reply, Edit, Trash2, ThumbsUp, ThumbsDown } from 'luc
 import { useAuth } from '../../contexts/AuthContext';
 
 import { useArticleComments, useCreateComment, useDeleteComment, useAddReaction, useRemoveReaction } from '../../hooks/useArticleComments';
+import { AuthorAvatarImage } from '../ui/OptimizedImage';
 import { Comment } from '../../types/comment.types';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useViewportHeightOnly } from '../../hooks/useViewportHeight';
@@ -114,10 +115,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
           border: '1px solid var(--color-border-secondary)'
         }}>
           {comment.user?.avatar_url ? (
-            <img 
+            <AuthorAvatarImage 
               src={comment.user.avatar_url} 
               alt={comment.user.username}
-              style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-full)' }}
+              size="sm"
             />
           ) : (
             getUserInitials(comment.user?.username || 'User')
@@ -602,7 +603,7 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
             }}>
               <MessageSquare style={{ width: '20px', height: '20px', color: 'var(--color-text-muted)' }} />
             </div>
-            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-lg)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>
+            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-normal)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>
               No comments yet
             </div>
             <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', maxWidth: '200px' }}>

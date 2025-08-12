@@ -52,8 +52,8 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onCreateAccountClick
         {/* Main Heading */}
         <h1 style={{
           fontSize: 'var(--text-2xl)',
-          fontWeight: 'var(--font-semibold)',
           fontFamily: 'var(--font-editorial)',
+          fontWeight: 'var(--font-normal)',
           color: 'var(--color-text-primary)',
           marginBottom: 'var(--space-4)',
           lineHeight: 'var(--leading-tight)'

@@ -1,4 +1,5 @@
 import React from 'react';
+import { AuthorAvatarImage } from '../ui/OptimizedImage';
 
 interface Author {
   name: string;
@@ -120,16 +121,10 @@ export const AuthorList: React.FC<AuthorListProps> = ({
           >
             {/* Author Avatar */}
             {author.avatar ? (
-              <img
+              <AuthorAvatarImage
                 src={author.avatar}
                 alt={`${author.name} avatar`}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  flexShrink: 0
-                }}
+                size="sm"
               />
             ) : (
               <div style={{

@@ -11,6 +11,7 @@ import { DeleteModal } from './DeleteModal';
 import { CreateModal } from './CreateModal';
 import { Author } from '../../services/database';
 import { STORAGE_BUCKETS } from '../../lib/storage';
+import { AuthorAvatarImage } from '../ui/OptimizedImage';
 
 interface AuthorManagerProps {}
 
@@ -142,17 +143,12 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
             fontWeight: 'var(--font-semibold)'
               }}>
                 {author.avatar_url ? (
-                  <img
+                  <AuthorAvatarImage
                     src={author.avatar_url}
                     alt={author.name}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 'var(--radius-full)',
-                  objectFit: 'cover'
-                }}
-              />
-            ) : (
+                    size="sm"
+                  />
+                ) : (
               author.name.split(' ').map(n => n[0]).join('').toUpperCase()
                   )}
                 </div>

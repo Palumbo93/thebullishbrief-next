@@ -397,7 +397,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
               fontSize: 'clamp(var(--text-2xl), 5vw, var(--text-4xl))',
               color: 'white',
               fontFamily: 'var(--font-editorial)',
-              fontWeight: '400',
+              fontWeight: 'var(--font-normal)',
               lineHeight: '1.2',
               letterSpacing: '-0.02em',
               margin: 0,
@@ -502,6 +502,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
               {/* Title */}
               <h2 style={{
                 fontFamily: 'var(--font-editorial)',
+                fontWeight: 'var(--font-normal)',
                 fontSize: 'clamp(var(--text-xl), 3vw, var(--text-2xl))',
                 textAlign: 'center',
                 marginBottom: 'var(--space-3)',
@@ -625,7 +626,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                       <div style={{
                         fontFamily: 'var(--font-editorial)',
                         fontSize: 'var(--text-lg)',
-                        fontWeight: '500',
+                        fontWeight: 'var(--font-normal)',
                         color: isSelected ? 'var(--color-brand-primary)' : 'var(--color-text-primary)',
                         marginBottom: (option as any).desc ? 'var(--space-1)' : 0,
                         transition: 'all var(--transition-base)',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useFeaturedBrief } from '../../hooks/useBriefs';
 import { getTickers } from '../../utils/tickerUtils';
+import { BriefCardImage, CompanyLogoImage } from '../ui/OptimizedImage';
 
 interface FeaturedBriefCardProps {
   className?: string;
@@ -72,14 +73,9 @@ const MediaComponent: React.FC<MediaComponentProps> = ({ brief, isMobile = false
         </>
       ) : brief.featured_image_url ? (
         // Featured image
-        <img
+        <BriefCardImage
           src={brief.featured_image_url}
           alt={brief.featured_image_alt || brief.title || ''}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover'
-          }}
         />
       ) : (
         // Placeholder
@@ -163,20 +159,10 @@ export const FeaturedBriefCard: React.FC<FeaturedBriefCardProps> = ({ className 
             width: 'fit-content'
           }}>
             {brief.company_logo_url ? (
-            <img
+            <CompanyLogoImage
               src={brief.company_logo_url}
               alt={`${brief.company_name} Logo`}
-              style={{
-                height: '32px',
-                width: '32px',
-                borderRadius: '50%',
-                objectFit: 'contain',
-                padding: '2px',
-                marginRight: '10px',
-                background: 'var(--color-bg-primary)',
-                border: '1px solid var(--color-border-secondary)',
-                flexShrink: 0
-              }}
+              size="md"
             />
           ) : (
             <div style={{
@@ -278,6 +264,7 @@ export const FeaturedBriefCard: React.FC<FeaturedBriefCardProps> = ({ className 
             <h2 style={{
               fontSize: isMobile ? '1.5rem' : '1.875rem',
               fontFamily: 'var(--font-editorial)',
+              fontWeight: 'var(--font-normal)',
               color: 'var(--color-text-primary)',
               lineHeight: 'var(--leading-tight)',
               marginBottom: 'var(--space-3)',

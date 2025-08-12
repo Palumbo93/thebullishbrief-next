@@ -274,6 +274,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             <h1 style={{
               fontSize: 'var(--headline-size-desktop)',
               fontFamily: 'var(--font-editorial)',
+              fontWeight: 'var(--font-normal)',
               lineHeight: 'var(--leading-tight)',
               color: 'var(--color-text-primary)',
               marginBottom: 'var(--space-4)',

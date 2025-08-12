@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Copy, ArrowRight, Play, AlertCircle, X } from 'lucide-react';
 import { PromptModal } from '../components/aivault/PromptModal';
 
@@ -242,7 +243,9 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
                 flexDirection: 'column',
                 justifyContent: 'space-between'
               }}
-              onClick={() => handleUsePrompt(prompt)}
+              onClick={(e) => {
+                handleUsePrompt(prompt);
+              }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'var(--color-bg-secondary)';
                 e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
@@ -258,7 +261,7 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
                     <h3 style={{
                       fontSize: 'var(--text-lg)',
                       fontFamily: 'var(--font-editorial)',
-                      fontWeight: 'var(--font-bold)',
+                      fontWeight: 'var(--font-normal)',
                       color: 'var(--color-text-primary)',
                       lineHeight: 'var(--leading-tight)',
                       letterSpacing: '-0.02em',
@@ -364,15 +367,18 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
         )}
 
         {/* Modals */}
-        {showPromptModal && selectedPrompt && (
+        {showPromptModal && selectedPrompt && typeof window !== 'undefined' && createPortal(
           <PromptModal
             prompt={selectedPrompt}
             onClose={() => {
               setShowPromptModal(false);
               setSelectedPrompt(null);
             }}
-          />
+          />,
+          document.body
         )}
+        
+
 
 
       </div>

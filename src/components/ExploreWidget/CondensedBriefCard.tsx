@@ -1,6 +1,7 @@
 import React from 'react';
 import { Brief } from '../../lib/database.types';
 import { getTickers } from '../../utils/tickerUtils';
+import { CompanyLogoImage } from '../ui/OptimizedImage';
 
 interface CondensedBriefCardProps {
   brief: Brief | null | undefined;
@@ -70,20 +71,10 @@ export const CondensedBriefCard: React.FC<CondensedBriefCardProps> = ({
         marginBottom: 'var(--space-2)'
       }}>
         {brief.company_logo_url ? (
-          <img
+          <CompanyLogoImage
             src={brief.company_logo_url}
             alt={`${brief.company_name} Logo`}
-            style={{
-              height: '24px',
-              width: '24px',
-              borderRadius: '50%',
-              objectFit: 'contain',
-              padding: '2px',
-              marginRight: 'var(--space-2)',
-              background: 'var(--color-bg-primary)',
-              border: '1px solid var(--color-border-secondary)',
-              flexShrink: 0
-            }}
+            size="sm"
           />
         ) : (
           <div style={{

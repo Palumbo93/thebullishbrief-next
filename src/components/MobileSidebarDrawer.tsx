@@ -117,8 +117,8 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
           }
           .mobile-sidebar-logo-text {
             font-family: 'var(--font-editorial)';
+            font-weight: 'var(--font-normal)',
             font-size: var(--text-base);
-            font-weight: var(--font-medium);
             color: var(--color-text-primary);
             letter-spacing: -0.005em;
           }

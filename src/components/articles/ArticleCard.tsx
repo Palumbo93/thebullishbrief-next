@@ -7,6 +7,7 @@ import { Eye, Bookmark, MessageSquare, Clock } from 'lucide-react';
 import { useToggleBookmark, useIsBookmarked } from '../../hooks/useArticles';
 import { useAuth } from '../../contexts/AuthContext';
 import { useArticleViewCount } from '../../hooks/useArticleViews';
+import { ArticleCardImage } from '../ui/OptimizedImage';
 
 interface Article {
   id: number | string;
@@ -196,6 +197,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           <h2 style={{
             fontSize: '1.875rem',
             fontFamily: 'var(--font-editorial)',
+            fontWeight: 'var(--font-normal)',
             color: 'var(--color-text-primary)',
             lineHeight: 'var(--leading-tight)',
             marginBottom: 'var(--space-3)',
@@ -236,15 +238,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             background: 'var(--color-bg-tertiary)',
             flexShrink: 0
           }}>
-            <img
+            <ArticleCardImage
               src={article.image}
               alt={article.title}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transition: 'transform var(--transition-slow)'
-              }}
             />
           </div>
         )}

@@ -179,7 +179,7 @@ body {
 .ProseMirror h1 {
   font-size: 2em;
   font-family: var(--font-editorial);
-  font-weight: inherit;
+  font-weight: var(--font-normal);
   margin-top: var(--space-12);
   margin-bottom: var(--space-6);
   color: var(--color-text-primary);
@@ -188,7 +188,7 @@ body {
 .ProseMirror h2 {
   font-size: 1.5em;
   font-family: var(--font-editorial);
-  font-weight: inherit;
+  font-weight: var(--font-normal);
   margin-top: var(--space-10);
   margin-bottom: var(--space-5);
   color: var(--color-text-primary);
@@ -197,7 +197,7 @@ body {
 .ProseMirror h3 {
   font-size: 1.25em;
   font-family: var(--font-editorial);
-  font-weight: inherit;
+  font-weight: var(--font-normal);
   margin-top: var(--space-8);
   margin-bottom: var(--space-4);
   color: var(--color-text-primary);

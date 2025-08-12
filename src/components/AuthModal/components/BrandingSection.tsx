@@ -75,7 +75,7 @@ export const BrandingSection: React.FC<BrandingSectionProps> = ({
         <h1 style={{
           fontFamily: 'var(--font-editorial)',
           fontSize: 'var(--text-xl)',
-          fontWeight: 'var(--font-bold)',
+          fontWeight: 'var(--font-normal)',
           color: 'var(--color-text-primary)',
           margin: 0,
           lineHeight: 1.2,
@@ -160,7 +160,7 @@ export const BrandingSection: React.FC<BrandingSectionProps> = ({
       <h1 style={{
         fontFamily: 'var(--font-editorial)',
         fontSize: 'var(--text-xl)',
-        fontWeight: 'var(--font-bold)',
+        fontWeight: 'var(--font-normal)',
         color: 'var(--color-text-primary)',
         margin: 0,
         lineHeight: 1.2,

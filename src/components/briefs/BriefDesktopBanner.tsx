@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Share, Bookmark } from 'lucide-react';
 import { getTickers } from '../../utils/tickerUtils';
+import { CompanyLogoImage } from '../ui/OptimizedImage';
 
 interface BriefDesktopBannerAction {
   type: 'back' | 'share' | 'bookmark';
@@ -209,15 +210,10 @@ export const BriefDesktopBanner: React.FC<BriefDesktopBannerProps> = ({
           {/* Company Info */}
           <div style={getCompanyInfoStyles()}>
             {companyLogoUrl && (
-              <img
+              <CompanyLogoImage
                 src={companyLogoUrl}
                 alt={`${companyName} Logo`}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  objectFit: 'contain'
-                }}
+                size="md"
               />
             )}
             <div>

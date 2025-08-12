@@ -123,8 +123,8 @@ export const CTABanner: React.FC<CTABannerProps> = ({
         }}>
           <h2 style={{
             fontFamily: 'var(--font-editorial)',
+            fontWeight: 'var(--font-normal)',
             fontSize: 'var(--text-xl)',
-            fontWeight: 'var(--font-bold)',
             color: 'var(--color-text-primary)',
             margin: 0,
             lineHeight: 1.2,

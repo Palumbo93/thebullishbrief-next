@@ -175,7 +175,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         <h2 style={{
           fontSize: 'var(--text-2xl)',
           fontFamily: 'var(--font-editorial)',
-          fontWeight: 'var(--font-bold)',
+          fontWeight: 'var(--font-normal)',
           marginBottom: 'var(--space-4)',
           color: 'var(--color-text-primary)'
         }}>Article Not Found</h2>
@@ -291,6 +291,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         <h1 style={{
           fontSize: 'var(--headline-size-desktop)',
             fontFamily: 'var(--font-editorial)',
+            fontWeight: 'var(--font-normal)',
           lineHeight: 'var(--leading-tight)',
           color: 'var(--color-text-primary)',
           marginBottom: 'var(--space-4)',
@@ -625,6 +626,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             <h2 style={{
               fontSize: 'var(--text-2xl)',
               fontFamily: 'var(--font-editorial)',
+              fontWeight: 'var(--font-normal)',
               marginBottom: 'var(--space-6)',
               color: 'var(--color-text-primary)'
             }}>Related Articles</h2>

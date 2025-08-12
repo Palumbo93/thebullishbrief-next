@@ -757,3 +757,82 @@ export const useArticlesUtils = () => {
     getCategories,
   };
 }; 
+
+/**
+ * Fetch all author slugs for static generation
+ */
+export const fetchAllAuthorSlugs = async (): Promise<string[]> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data, error } = await supabase
+    .from('authors')
+    .select('slug')
+    .order('name', { ascending: true });
+
+  if (error) throw error;
+  return data?.map(author => author.slug) || [];
+};
+
+/**
+ * Fetch a single author by slug (server-side function)
+ */
+export const fetchAuthorBySlug = async (slug: string): Promise<any> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  console.log('fetchAuthorBySlug Debug:', {
+    slug,
+    environment: process.env.NODE_ENV,
+    hasSupabaseCredentials: !!hasSupabaseCredentials,
+    timestamp: new Date().toISOString()
+  });
+
+  const { data: authorData, error: authorError } = await supabase
+    .from('authors')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  console.log('fetchAuthorBySlug Result:', {
+    slug,
+    authorData: authorData ? { id: authorData.id, name: authorData.name, slug: authorData.slug } : null,
+    error: authorError ? { message: authorError.message, code: authorError.code } : null,
+    timestamp: new Date().toISOString()
+  });
+
+  if (authorError) {
+    if (authorError.code === 'PGRST116') {
+      throw new Error(`Author with slug "${slug}" not found`);
+    }
+    throw authorError;
+  }
+
+  return authorData;
+};
+
+/**
+ * Fetch raw author data by slug for metadata generation
+ */
+export const fetchAuthorBySlugForMetadata = async (slug: string): Promise<any> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data: authorData, error: authorError } = await supabase
+    .from('authors')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (authorError) {
+    if (authorError.code === 'PGRST116') {
+      throw new Error(`Author with slug "${slug}" not found`);
+    }
+    throw authorError;
+  }
+
+  return authorData;
+}; 

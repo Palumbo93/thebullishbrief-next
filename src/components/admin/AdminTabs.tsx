@@ -1,7 +1,7 @@
 import React from 'react';
-import { FileText, Folder, Users, Tag, Settings, Brain, MessageSquare, Briefcase } from 'lucide-react';
+import { FileText, Folder, Users, Tag, Settings, Brain, MessageSquare, Briefcase, RefreshCw } from 'lucide-react';
 
-export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'prompts' | 'prompt-categories' | 'briefs';
+export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'prompts' | 'prompt-categories' | 'briefs' | 'build';
 
 interface AdminTabsProps {
   activeTab: AdminTab;
@@ -64,6 +64,12 @@ const tabConfigs: TabConfig[] = [
     label: 'Prompt Categories',
     icon: <MessageSquare style={{ width: '16px', height: '16px' }} />,
     description: 'Organize prompts by category'
+  },
+  {
+    id: 'build',
+    label: 'Build',
+    icon: <RefreshCw style={{ width: '16px', height: '16px' }} />,
+    description: 'Trigger site rebuilds'
   }
 ];
 

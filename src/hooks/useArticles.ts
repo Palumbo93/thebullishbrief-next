@@ -457,6 +457,39 @@ export const useToggleBookmark = () => {
 };
 
 /**
+ * Fetch raw article data by slug for metadata generation
+ */
+export const fetchArticleBySlugForMetadata = async (slug: string): Promise<any> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  // Fetch single article with related data
+  const { data: articleData, error: articleError } = await supabase
+    .from('articles')
+    .select(`
+      *,
+      category:categories(*),
+      author:authors(*),
+      tags:article_tags(
+        tag:tags(*)
+      )
+    `)
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
+
+  if (articleError) {
+    if (articleError.code === 'PGRST116') {
+      throw new Error(`Article with slug "${slug}" not found`);
+    }
+    throw articleError;
+  }
+
+  return articleData;
+};
+
+/**
  * Fetch related articles from Supabase
  */
 const fetchRelatedArticles = async (currentArticle: Article, limit: number = 3): Promise<Article[]> => {

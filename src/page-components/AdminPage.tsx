@@ -11,6 +11,7 @@ import { BriefManager } from '../components/admin/BriefManager';
 import { UserManager } from '../components/admin/UserManager';
 import { PromptManager } from '../components/admin/PromptManager';
 import { PromptCategoryManager } from '../components/admin/PromptCategoryManager';
+import { BuildTrigger } from '../components/admin/BuildTrigger';
 import { AdminTabs, AdminTab } from '../components/admin/AdminTabs';
 
 interface AdminPageProps {
@@ -27,7 +28,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onCreateAccountClick }) =>
   // Handle URL-based routing - simplified to avoid page reloads
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'prompts', 'prompt-categories'].includes(hash)) {
+    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'prompts', 'prompt-categories', 'build'].includes(hash)) {
       setActiveTab(hash as AdminTab);
     } else {
       // Set default tab if no valid hash
@@ -57,6 +58,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onCreateAccountClick }) =>
         return <PromptManager />;
       case 'prompt-categories':
         return <PromptCategoryManager />;
+      case 'build':
+        return <BuildTrigger />;
       default:
         return <ArticleManager />;
     }
@@ -80,6 +83,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onCreateAccountClick }) =>
         return 'Manage AI prompt templates and configurations';
       case 'prompt-categories':
         return 'Organize AI prompts by category';
+      case 'build':
+        return 'Trigger site rebuilds to update content';
       default:
         return 'Manage your publication content and analytics';
     }

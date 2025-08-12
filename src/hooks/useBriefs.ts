@@ -78,6 +78,31 @@ const fetchBriefBySlug = async (slug: string): Promise<Brief> => {
 };
 
 /**
+ * Fetch raw brief data by slug for metadata generation
+ */
+export const fetchBriefBySlugForMetadata = async (slug: string): Promise<any> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data: briefData, error: briefError } = await supabase
+    .from('briefs')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
+
+  if (briefError) {
+    if (briefError.code === 'PGRST116') {
+      throw new Error(`Brief with slug "${slug}" not found`);
+    }
+    throw briefError;
+  }
+
+  return briefData;
+};
+
+/**
  * Hook for fetching the latest featured brief
  */
 export const useFeaturedBrief = () => {

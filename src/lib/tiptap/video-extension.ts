@@ -54,6 +54,9 @@ export const Video = Node.create<VideoOptions>({
       loop: {
         default: false,
       },
+      poster: {
+        default: null,
+      },
     };
   },
 
@@ -93,6 +96,7 @@ export const Video = Node.create<VideoOptions>({
               autoplay: video.hasAttribute('autoplay'),
               muted: video.hasAttribute('muted'),
               loop: video.hasAttribute('loop'),
+              poster: video.getAttribute('poster'),
               width: div.style.width || '100%',
               height: div.style.height || 'auto',
             };
@@ -125,7 +129,7 @@ export const Video = Node.create<VideoOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
-    const { src, title, width, height, controls, autoplay, muted, loop } = HTMLAttributes;
+    const { src, title, width, height, controls, autoplay, muted, loop, poster } = HTMLAttributes;
     console.log('🔄 Video extension renderHTML called with:', { src, title, width, height, controls, autoplay, muted, loop });
     
     // Check if it's a YouTube URL
@@ -189,6 +193,7 @@ export const Video = Node.create<VideoOptions>({
       'video',
       mergeAttributes(this.options.HTMLAttributes, {
         src,
+        poster: poster || undefined,
         controls: controls ? 'controls' : undefined,
         autoplay: autoplay ? 'autoplay' : undefined,
         muted: muted || autoplay ? 'muted' : undefined, // Always mute autoplay videos
@@ -196,6 +201,7 @@ export const Video = Node.create<VideoOptions>({
         playsinline: 'playsinline', // Prevent fullscreen on mobile
         'webkit-playsinline': 'webkit-playsinline', // iOS Safari support
         style: 'width: 100%; height: 100%; border-radius: var(--radius-lg);',
+
       }),
     ];
 

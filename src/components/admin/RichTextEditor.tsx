@@ -123,6 +123,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
     autoplay?: boolean;
     muted?: boolean;
     loop?: boolean;
+    poster?: string;
   }) => {
     editor.chain().focus().setVideo(videoData).run();
   }, [editor]);

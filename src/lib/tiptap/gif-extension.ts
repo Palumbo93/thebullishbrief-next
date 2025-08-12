@@ -49,9 +49,39 @@ export const Gif = Node.create<GifOptions>({
     return [
       {
         tag: 'img[data-gif]',
+        getAttrs: (node) => {
+          if (typeof node === 'string') return false;
+          const img = node as HTMLElement;
+          return {
+            src: img.getAttribute('src'),
+            alt: img.getAttribute('alt'),
+            width: img.style.width || '100%',
+            height: img.style.height || 'auto',
+          };
+        },
       },
       {
         tag: 'div[data-gif]',
+        getAttrs: (node) => {
+          if (typeof node === 'string') return false;
+          const div = node as HTMLElement;
+          const img = div.querySelector('img');
+          
+          if (img) {
+            // Strip the old margin from the style if it exists
+            let divStyle = div.style.cssText || '';
+            divStyle = divStyle.replace(/margin:\s*var\(--space-4\)\s*0;?\s*/g, '');
+            
+            return {
+              src: img.getAttribute('src'),
+              alt: img.getAttribute('alt'),
+              width: div.style.width || '100%',
+              height: div.style.height || 'auto',
+            };
+          }
+          
+          return false;
+        },
       },
     ];
   },
@@ -63,7 +93,7 @@ export const Gif = Node.create<GifOptions>({
       'div',
       mergeAttributes(this.options.HTMLAttributes, {
         'data-gif': 'true',
-        style: `width: ${width}; height: ${height}; max-width: 100%; margin: var(--space-4) 0;`,
+        style: `width: ${width}; height: ${height}; max-width: 100%;`,
       }),
       [
         'img',

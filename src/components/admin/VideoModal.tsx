@@ -16,6 +16,7 @@ interface VideoModalProps {
     autoplay?: boolean;
     muted?: boolean;
     loop?: boolean;
+    poster?: string;
   }) => void;
 }
 
@@ -28,6 +29,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
   const [autoplay, setAutoplay] = useState(false);
   const [muted, setMuted] = useState(false);
   const [loop, setLoop] = useState(false);
+  const [poster, setPoster] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
 
   useEffect(() => {
@@ -64,6 +66,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
       autoplay,
       muted,
       loop,
+      poster: poster.trim() || undefined,
     });
 
     // Reset form
@@ -75,6 +78,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
     setAutoplay(false);
     setMuted(false);
     setLoop(false);
+    setPoster('');
     onClose();
   };
 
@@ -238,6 +242,43 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
                   transition: 'all var(--transition-base)'
                 }}
               />
+            </div>
+
+            {/* Poster URL */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-2)'
+              }}>
+                Poster Image URL (Optional)
+              </label>
+              <input
+                type="url"
+                value={poster}
+                onChange={(e) => setPoster(e.target.value)}
+                placeholder="https://example.com/thumbnail.jpg"
+                style={{
+                  width: '100%',
+                  height: 'var(--input-height)',
+                  padding: '0 var(--input-padding-x)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-base)',
+                  transition: 'all var(--transition-base)'
+                }}
+              />
+              <p style={{
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-tertiary)',
+                marginTop: 'var(--space-1)'
+              }}>
+                URL to an image that will be shown before the video plays
+              </p>
             </div>
 
             {/* Size Controls */}

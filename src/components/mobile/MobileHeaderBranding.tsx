@@ -45,8 +45,8 @@ export const MobileHeaderBranding: React.FC<MobileHeaderBrandingProps> = ({
     return {
       background: 'var(--color-bg-tertiary)',
       color: 'var(--color-text-secondary)',
-      padding: '4px 8px',
-      borderRadius: 'var(--radius-full)',
+      padding: '10px 8px',
+      borderRadius: 'var(--radius-md)',
       fontSize: '0.7rem',
       fontWeight: 'var(--font-medium)',
       textTransform: 'uppercase' as const,

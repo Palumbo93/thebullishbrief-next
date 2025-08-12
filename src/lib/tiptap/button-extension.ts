@@ -105,8 +105,8 @@ export const Button = Node.create<ButtonOptions>({
       switch (variant) {
         case 'primary':
           return {
-            background: 'var(--color-text-primary)',
-            color: 'var(--color-bg-primary)',
+            background: '#fff', // Black background for primary
+            color: '#000', // White text for primary
             border: 'none',
           };
         case 'secondary':
@@ -156,8 +156,8 @@ export const Button = Node.create<ButtonOptions>({
             border-radius: var(--radius-full);
             cursor: pointer;
             white-space: nowrap;
-            background: ${variantStyles.background};
-            color: ${variantStyles.color};
+            background: ${variantStyles.background} !important;
+            color: ${variantStyles.color} !important;
             border: ${variantStyles.border};
           `,
         },

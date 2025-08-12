@@ -211,7 +211,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           backgroundPosition: 'center',
           overflow: 'hidden',
           marginBottom: 'var(--space-8)',
-          minHeight: '300px',
+          minHeight: '250px',
           display: 'flex',
           alignItems: 'flex-end',
         }}>

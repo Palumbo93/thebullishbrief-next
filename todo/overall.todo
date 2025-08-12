@@ -63,6 +63,7 @@ Misc Bugs:
     [] Mobile has some weird scrolling issues
     [] Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly)
     [] Article images are still stored in temp folder
+    [] Login doesnt close modal or refresh auth state
 
 Refine/Polish/Mobile Polish: 
 
@@ -84,7 +85,7 @@ Refine/Polish/Mobile Polish:
     ✔ Prompt Library @done(25-08-10 22:49)
     ✔ Author Page @done(25-08-11 14:40)
     ✔ Bookmarks Page (I like it already tbh) @done(25-08-11 14:40)
-    [] Account Settings Page
+    ✔ Account Settings Page @done(25-08-12 08:44)
     [] Share Sheet
     [] Legal Pages
 

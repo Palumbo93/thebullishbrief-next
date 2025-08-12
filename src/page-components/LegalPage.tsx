@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { LegalPageTemplate } from '../components/legal/LegalPageTemplate';
 import type { LegalDocument } from '../data/legal/types';
 import { LegalFooter } from '../components/LegalFooter';
-import { legalDocuments } from '../data/legal';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 interface LegalPageProps {
   doc: LegalDocument;
@@ -30,7 +30,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
 
   // Add null check for doc
   if (!doc || !doc.slug) {
-    return <div>Loading...</div>;
+    return <LoadingScreen onComplete={() => {}} />;
   }
 
   const currentSlug = doc.slug;

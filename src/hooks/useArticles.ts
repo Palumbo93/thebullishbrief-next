@@ -182,6 +182,13 @@ const fetchArticleBySlug = async (slug: string): Promise<Article> => {
     throw new Error('Database connection not configured');
   }
 
+  console.log('fetchArticleBySlug Debug:', {
+    slug,
+    environment: process.env.NODE_ENV,
+    hasSupabaseCredentials: !!hasSupabaseCredentials,
+    timestamp: new Date().toISOString()
+  });
+
   // Fetch single article with related data
   const { data: articleData, error: articleError } = await supabase
     .from('articles')
@@ -196,6 +203,13 @@ const fetchArticleBySlug = async (slug: string): Promise<Article> => {
     .eq('slug', slug)
     .eq('status', 'published')
     .single();
+
+  console.log('fetchArticleBySlug Result:', {
+    slug,
+    articleData: articleData ? { id: articleData.id, title: articleData.title, status: articleData.status } : null,
+    error: articleError ? { message: articleError.message, code: articleError.code } : null,
+    timestamp: new Date().toISOString()
+  });
 
   if (articleError) {
     if (articleError.code === 'PGRST116') {

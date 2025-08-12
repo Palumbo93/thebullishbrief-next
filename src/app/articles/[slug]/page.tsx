@@ -17,9 +17,49 @@ export default function ArticlePageWrapper({ params }: Props) {
   }, [params]);
   
   // Fetch article data to get the ID and title for the Layout
-  const { data: article } = useArticleBySlug(slug);
+  const { data: article, error, isLoading } = useArticleBySlug(slug);
   
-  if (!slug) return null;
+  // Debug logging
+  React.useEffect(() => {
+    console.log('ArticlePageWrapper Debug:', {
+      slug,
+      article: article ? { id: article.id, title: article.title } : null,
+      error: error ? { message: error.message } : null,
+      isLoading,
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    });
+  }, [slug, article, error, isLoading]);
+  
+  if (!slug) {
+    console.log('No slug provided');
+    return <div>Loading...</div>;
+  }
+  
+  if (error) {
+    console.error('Article error:', error);
+    return (
+      <Layout>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <h1>Article Not Found</h1>
+          <p>The article "{slug}" could not be found.</p>
+          <p>Error: {error.message}</p>
+          <p>Environment: {process.env.NODE_ENV}</p>
+          <p>Timestamp: {new Date().toISOString()}</p>
+        </div>
+      </Layout>
+    );
+  }
+  
+  if (isLoading) {
+    return (
+      <Layout>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Loading article...</p>
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout 

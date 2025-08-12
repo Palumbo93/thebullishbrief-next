@@ -6,6 +6,7 @@ import { Layout } from '../components/Layout';
 import { ArticlesList } from '../components/articles/ArticlesList';
 import { LegalFooter } from '../components/LegalFooter';
 import { useArticlesByCategory, useCategories, Article } from '../hooks/useArticles';
+import { LoadingScreen } from '../components/LoadingScreen';
 
 function HomePageContent() {
   const router = useRouter();
@@ -99,7 +100,7 @@ function HomePageContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingScreen onComplete={() => {}} />}>
       <HomePageContent />
     </Suspense>
   );

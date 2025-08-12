@@ -49,7 +49,6 @@ interface LayoutProps {
     
     // Brief specific
     companyName?: string;
-    companyLogoUrl?: string;
     tickers?: string[];
   };
 }
@@ -200,7 +199,6 @@ export const Layout: React.FC<LayoutProps> = ({
       
       // Brief specific props
       companyName: mobileHeader?.companyName,
-      companyLogoUrl: mobileHeader?.companyLogoUrl,
       tickers: mobileHeader?.tickers,
       
       // Brief action panel functionality

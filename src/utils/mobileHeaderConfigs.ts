@@ -21,9 +21,7 @@ export interface MobileHeaderConfig {
     };
     branding?: {
       companyName?: string;
-      companyLogoUrl?: string;
       tickers?: string[];
-      fallback?: string;
       onClick?: () => void;
     };
   };
@@ -49,7 +47,6 @@ export interface MobileHeaderFactoryProps {
   
   // Brief page specific
   companyName?: string;
-  companyLogoUrl?: string;
   tickers?: any; // JSON ticker data from database
   onMoreClick?: () => void;
   moreActive?: boolean;
@@ -141,9 +138,7 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       branding: {
         companyName: props.companyName,
-        companyLogoUrl: props.companyLogoUrl,
         tickers: props.tickers,
-        fallback: props.companyName?.charAt(0) || '?',
         onClick: props.onLogoClick
       }
     },

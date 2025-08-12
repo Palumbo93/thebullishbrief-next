@@ -15,9 +15,7 @@ interface MobileHeaderConfig {
     };
     branding?: {
       companyName?: string;
-      companyLogoUrl?: string;
       tickers?: string[];
-      fallback?: string;
       onClick?: () => void;
     };
   };

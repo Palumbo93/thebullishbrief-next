@@ -152,9 +152,7 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
             {leftSection.branding && (
               <MobileHeaderBranding
                 companyName={leftSection.branding.companyName}
-                companyLogoUrl={leftSection.branding.companyLogoUrl}
                 tickers={leftSection.branding.tickers}
-                fallback={leftSection.branding.fallback}
                 onClick={leftSection.branding.onClick}
               />
             )}

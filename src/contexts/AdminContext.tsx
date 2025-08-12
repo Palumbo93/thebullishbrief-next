@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState } from 'react';
-import { Brief } from '../hooks/useBriefs';
+import { Brief } from '../lib/database.aliases';
 
 interface AdminContextType {
   // Modal states

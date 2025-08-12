@@ -5,7 +5,7 @@ import { Plus, Edit, Eye, Trash2, Star, StarOff, Search, Filter, X, ChevronDown,
 import { useAllBriefs } from '../../hooks/useBriefs';
 import { BriefCreateModal } from './BriefCreateModal';
 import { BriefEditModal } from './BriefEditModal';
-import { Brief } from '../../hooks/useBriefs';
+import { Brief } from '../../lib/database.aliases';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';

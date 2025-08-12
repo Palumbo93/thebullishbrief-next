@@ -2,11 +2,23 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { Layout } from '../../../components/Layout';
 import { ArticlePageClient } from '../../../page-components/ArticlePageClient';
-import { fetchArticleBySlug } from '../../../hooks/useArticles';
+import { fetchArticleBySlug, fetchAllArticleSlugs } from '../../../hooks/useArticles';
 
-// Force dynamic rendering for all article pages
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Generate static params for all known articles
+export async function generateStaticParams() {
+  try {
+    const slugs = await fetchAllArticleSlugs();
+    return slugs.map((slug) => ({
+      slug: slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for articles:', error);
+    return [];
+  }
+}
+
+// Enable static generation with revalidation
+export const revalidate = 3600; // Revalidate every hour
 
 interface Props {
   params: Promise<{ slug: string }>;

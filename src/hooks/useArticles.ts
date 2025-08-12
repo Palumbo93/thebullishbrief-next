@@ -270,7 +270,23 @@ export const useTags = () => {
   });
 };
 
+/**
+ * Fetch all article slugs for static generation
+ */
+export const fetchAllArticleSlugs = async (): Promise<string[]> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
 
+  const { data: articlesData, error: articlesError } = await supabase
+    .from('articles')
+    .select('slug')
+    .eq('status', 'published');
+
+  if (articlesError) throw articlesError;
+
+  return (articlesData || []).map(article => article.slug);
+};
 
 /**
  * Hook for toggling bookmarks

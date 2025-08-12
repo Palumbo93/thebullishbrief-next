@@ -125,4 +125,22 @@ export const useAllBriefs = () => {
     staleTime: CACHE_TTL.ARTICLES,
     gcTime: CACHE_TTL.ARTICLES * 2,
   });
+};
+
+/**
+ * Fetch all brief slugs for static generation
+ */
+export const fetchAllBriefSlugs = async (): Promise<string[]> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data: briefsData, error: briefsError } = await supabase
+    .from('briefs')
+    .select('slug')
+    .eq('status', 'published');
+
+  if (briefsError) throw briefsError;
+
+  return (briefsData || []).map(brief => brief.slug);
 }; 

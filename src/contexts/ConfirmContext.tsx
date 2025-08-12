@@ -95,7 +95,12 @@ export const ConfirmProvider: React.FC<ConfirmProviderProps> = ({ children }) =>
 export const useConfirmContext = (): ConfirmContextType => {
   const context = useContext(ConfirmContext);
   if (context === undefined) {
-    throw new Error('useConfirmContext must be used within a ConfirmProvider');
+    // Return a safe default for SSR
+    return {
+      confirms: [],
+      showConfirm: () => {},
+      removeConfirm: () => {},
+    };
   }
   return context;
 };

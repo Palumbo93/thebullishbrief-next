@@ -25,9 +25,9 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   const pathname = usePathname();
   
   // Get search query and selected tags from URL
-  const searchQuery = searchParams.get('q') || '';
-  const selectedTags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
-  const shouldFocus = searchParams.get('focus') === 'true';
+  const searchQuery = searchParams?.get('q') || '';
+  const selectedTags = searchParams?.get('tags')?.split(',').filter(Boolean) || [];
+  const shouldFocus = searchParams?.get('focus') === 'true';
   
   // Local state for search input
   const [searchInput, setSearchInput] = useState(searchQuery);
@@ -42,7 +42,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   
   // Update search params helper
   const updateSearchParams = (updates: Record<string, string | null>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
+    const newParams = new URLSearchParams(searchParams?.toString() || '');
     
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null) {
@@ -220,12 +220,12 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   useEffect(() => {
     if (hasSearchOrTags && pathname === '/explore') {
       // If we have search parameters but we're on /explore, redirect to /search
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams?.toString() || '');
       router.replace(`/search?${newParams.toString()}`);
     } else if (!hasSearchOrTags && pathname === '/search') {
       // If we have no search parameters but we're on /search, redirect to /explore
       // But preserve the focus parameter if it exists
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams?.toString() || '');
       const focusParam = newParams.get('focus');
       newParams.delete('focus'); // Remove focus from search params
       

@@ -1,7 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useHydratedQuery } from './useHydratedQuery';
+import { useQuery,  useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   categoryService, 
   authorService, 
@@ -18,8 +17,6 @@ import {
   Article,
   User,
   Prompt,
-  PromptCategory,
-  PromptField
 } from '../services/database';
 import { queryKeys } from '../lib/queryClient';
 
@@ -40,7 +37,7 @@ export function useDatabaseQuery<T>(
   const queryClient = useQueryClient();
 
   // Query for all items
-  const query = useHydratedQuery({
+  const query = useQuery({
     queryKey,
     queryFn: () => service.getAll(),
     staleTime: 5 * 60 * 1000, // 5 minutes

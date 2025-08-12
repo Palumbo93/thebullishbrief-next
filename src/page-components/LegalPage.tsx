@@ -7,12 +7,13 @@ import { ArrowLeft } from 'lucide-react';
 import { LegalPageTemplate } from '../components/legal/LegalPageTemplate';
 import type { LegalDocument } from '../data/legal/types';
 import { LegalFooter } from '../components/LegalFooter';
+import { legalDocuments } from '../data/legal';
 
 interface LegalPageProps {
   doc: LegalDocument;
 }
 
-const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
+export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -26,6 +27,11 @@ const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
     { slug: 'cookies', label: 'Cookies Policy', to: '/cookies' },
     { slug: 'disclaimer', label: 'Disclaimer', to: '/disclaimer' },
   ];
+
+  // Add null check for doc
+  if (!doc || !doc.slug) {
+    return <div>Loading...</div>;
+  }
 
   const currentSlug = doc.slug;
 
@@ -235,5 +241,4 @@ const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
   );
 };
 
-export { LegalPage };
 export default LegalPage;

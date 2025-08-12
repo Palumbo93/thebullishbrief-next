@@ -1,4 +1,6 @@
-import { NotFoundPage } from '../pages/NotFoundPage';
+"use client";
+
+import { NotFoundPage } from '../page-components/NotFoundPage';
 import { Layout } from '../components/Layout';
 
 export default function NotFound() {

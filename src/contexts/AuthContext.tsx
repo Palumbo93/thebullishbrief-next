@@ -40,7 +40,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Return a safe default for SSR
+    return {
+      user: null,
+      loading: true,
+      signIn: async () => ({ error: null, success: false }),
+      signUp: async () => ({ error: null, success: false }),
+      signOut: async () => ({ error: null, success: false }),
+      resetPassword: async () => ({ error: null, success: false }),
+      updateProfile: async () => ({ error: null, success: false }),
+      sendOTP: async () => ({ error: null, success: false }),
+      verifyOTP: async () => ({ error: null, success: false }),
+      hasRole: () => false,
+      isAdmin: false,
+      isPremium: false,
+    };
   }
   return context;
 };

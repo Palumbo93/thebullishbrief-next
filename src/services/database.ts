@@ -528,7 +528,7 @@ export class ArticleTagService {
         .eq('article_id', articleId);
 
       if (error) throw error;
-      return data?.map(item => item.tags).filter(Boolean) || [];
+      return data?.map((item: any) => item.tags).filter(Boolean) || [];
     } catch (error) {
       throw new DatabaseError('Failed to fetch article tags', error);
     }

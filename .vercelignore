@@ -1,0 +1,9 @@
+# Exclude entire Supabase directory from Vercel deployment
+supabase/
+
+# Other common exclusions
+node_modules/
+.env.local
+.env.production
+*.log
+.DS_Store

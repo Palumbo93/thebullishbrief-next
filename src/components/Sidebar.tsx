@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ...item,
       active: pathname === item.path || 
               (item.path === '/' && pathname === '/') ||
-              (item.path !== '/' && pathname.startsWith(item.path)) ||
+              (item.path !== '/' && pathname && pathname.startsWith(item.path)) ||
               (item.path === '/explore' && (pathname === '/explore' || pathname === '/search'))
     }));
   };

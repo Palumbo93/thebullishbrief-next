@@ -1,24 +1,12 @@
-import type { Metadata } from 'next';
-import { AccountSettingsPage } from '../../pages/AccountSettingsPage';
+"use client";
+
+import { AccountSettingsPage } from '../../page-components/AccountSettingsPage';
 import { Layout } from '../../components/Layout';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: 'Account Settings - The Bullish Brief',
-    description: 'Manage your account settings, preferences, and profile information.',
-    robots: {
-      index: false, // Don't index user account pages
-      follow: false,
-    },
-  };
-}
-
-function AccountSettingsPageClient() {
+export default function AccountSettingsPageWrapper() {
   return (
     <Layout>
       <AccountSettingsPage />
     </Layout>
   );
 }
-
-export default AccountSettingsPageClient;

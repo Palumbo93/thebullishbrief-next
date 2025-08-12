@@ -67,7 +67,7 @@ export function validateImage(
   }
   
   // Check file type
-  if (!config.allowedTypes.includes(file.type)) {
+  if (!config.allowedTypes.includes(file.type as any)) {
     return {
       isValid: false,
       error: `File type must be one of: ${config.allowedTypes.join(', ')}`

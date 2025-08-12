@@ -239,7 +239,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     }
   };
 
-  const handleDuplicateArticle = async (article: Article) => {
+  const handleDuplicateArticle = async (article: any) => {
     try {
       // Calculate reading time for the duplicated article
       const { calculateReadingTime } = await import('../../utils/readingTime');

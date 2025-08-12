@@ -3,8 +3,8 @@ import { supabase, hasSupabaseCredentials } from '../lib/supabase';
 export const testSupabaseConnection = async () => {
   console.log('=== Supabase Connection Test ===');
   console.log('Has credentials:', hasSupabaseCredentials);
-  console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-  console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+  console.log('Supabase URL:', process.env.SUPABASE_URL);
+  console.log('Supabase Key exists:', !!process.env.SUPABASE_ANON_KEY);
   
   if (!hasSupabaseCredentials) {
     console.error('❌ No valid Supabase credentials found');

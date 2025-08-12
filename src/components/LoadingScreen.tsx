@@ -42,7 +42,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
           }}
           onError={(e) => {
             e.currentTarget.style.display = 'none';
-            e.currentTarget.nextElementSibling.style.display = 'block';
+            (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block';
           }}
         />
         <TrendingUp 

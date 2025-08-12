@@ -4,7 +4,7 @@ import './globals.css'
 import '../styles/design-system.css'
 
 // Providers
-import { Providers } from '../components/Providers'
+import { ClientProviders } from '../components/ClientProviders'
 import { AppContent } from '../components/AppContent'
 
 const archivo = Archivo({ 
@@ -57,11 +57,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${archivo.variable}`}>
-        <Providers>
+        <ClientProviders>
           <AppContent>
             {children}
           </AppContent>
-        </Providers>
+        </ClientProviders>
       </body>
     </html>
   )

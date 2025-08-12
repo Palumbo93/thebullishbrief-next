@@ -1,8 +1,8 @@
-import { LegalPage } from '../../pages/LegalPage';
+import { LegalPage } from '../../page-components/LegalPage';
 import { Layout } from '../../components/Layout';
 import { getLegalDocument } from '../../data/legal';
 
-export default function Privacy() {
+export default function PrivacyPage() {
   const doc = getLegalDocument('privacy');
   
   return (

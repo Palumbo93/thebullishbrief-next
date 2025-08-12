@@ -6,7 +6,7 @@
 import { analyticsService } from '../services/analytics';
 
 export const testAnalytics = () => {
-  if (import.meta.env.DEV) {
+  if (process.env.NODE_ENV === 'development') {
     console.log('🧪 Testing Analytics...');
     
     // Test page view
@@ -36,7 +36,7 @@ export const testAnalytics = () => {
 };
 
 // Auto-run test in development
-if (import.meta.env.DEV && typeof window !== 'undefined') {
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   // Add to window for manual testing
   (window as any).testAnalytics = testAnalytics;
 }

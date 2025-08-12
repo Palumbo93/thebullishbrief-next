@@ -12,9 +12,7 @@ import { AnalyticsProvider } from '../contexts/AnalyticsContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { ConfirmProvider } from '../contexts/ConfirmContext';
 import { MobileHeaderProvider } from '../contexts/MobileHeaderContext';
-
-// Import the optimized query client
-import { queryClient } from '../lib/queryClient';
+import { createClientQueryClient } from '../lib/queryClient';
 
 interface ClientProvidersProps {
   children: React.ReactNode;
@@ -22,9 +20,12 @@ interface ClientProvidersProps {
 
 /**
  * ClientProviders - Wraps all client-side context providers
- * This component should only be used within client components or after hydration
+ * QueryClient is now handled by SSRProviders at the layout level
  */
 export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
+  // Create a new QueryClient for each request to avoid SSR issues
+  const [queryClient] = React.useState(() => createClientQueryClient());
+
   return (
     <HydrationProvider>
       <QueryClientProvider client={queryClient}>

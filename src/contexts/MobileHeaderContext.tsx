@@ -43,7 +43,11 @@ const MobileHeaderContext = createContext<MobileHeaderContextType | undefined>(u
 export const useMobileHeader = () => {
   const context = useContext(MobileHeaderContext);
   if (!context) {
-    throw new Error('useMobileHeader must be used within MobileHeaderProvider');
+    // Return a default context during SSR to prevent build errors
+    return {
+      config: null,
+      setConfig: () => {},
+    };
   }
   return context;
 };

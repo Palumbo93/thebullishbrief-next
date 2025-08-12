@@ -1,10 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, hasSupabaseCredentials } from '../lib/supabase';
-import { ArticleWithRelations, CategoryWithCount, TagWithCount } from '../lib/database.types';
+import { Article as DatabaseArticle, Category, Tag } from '../lib/database.types';
 import { queryKeys } from '../lib/queryClient';
-import { cacheStorage, cacheKeys, CACHE_TTL } from '../lib/cacheStorage';
+import { CACHE_TTL } from '../lib/cacheStorage';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from './useToast';
+
+// Extended types for articles with relations
+type ArticleWithRelations = any;
+type CategoryWithCount = any;
+type TagWithCount = any;
 
 export interface Article {
   id: number | string;
@@ -48,7 +53,7 @@ const convertSupabaseArticle = (article: ArticleWithRelations): Article => {
       month: 'short',
       day: 'numeric'
     }),
-    tags: article.tags?.map(tag => tag.name) || [],
+    tags: article.tags?.map((tag: any) => tag.name) || [],
     featured: article.featured,
     premium: article.premium,
     slug: article.slug,
@@ -503,7 +508,7 @@ const fetchRelatedArticles = async (currentArticle: Article, limit: number = 3):
  */
 export const useRelatedArticles = (currentArticle: Article | null, limit: number = 3) => {
   return useQuery({
-    queryKey: queryKeys.articles.related(currentArticle?.id, limit),
+    queryKey: queryKeys.articles.related(currentArticle?.id || '', limit),
     queryFn: () => fetchRelatedArticles(currentArticle!, limit),
     staleTime: CACHE_TTL.ARTICLES,
     gcTime: CACHE_TTL.ARTICLES * 2,
@@ -547,7 +552,7 @@ export const useBookmarks = () => {
       const transformedArticles: ArticleWithRelations[] = (bookmarks || [])
         .map(bookmark => bookmark.articles)
         .filter(Boolean)
-        .map(article => ({
+        .map((article: any) => ({
           ...article,
           tags: article.tags?.map((tagRelation: any) => tagRelation.tag).filter(Boolean) || []
         }));

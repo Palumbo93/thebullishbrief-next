@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Layout } from '../components/Layout';
 import { ArticlesList } from '../components/articles/ArticlesList';
 import { LegalFooter } from '../components/LegalFooter';
 import { useArticlesByCategory, useCategories, Article } from '../hooks/useArticles';
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -94,5 +94,13 @@ export default function HomePage() {
       
       <LegalFooter />
     </Layout>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </Suspense>
   );
 }

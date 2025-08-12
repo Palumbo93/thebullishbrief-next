@@ -129,7 +129,17 @@ export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children }
 export const useAuthModal = (): AuthModalContextValue => {
   const context = useContext(AuthModalContext);
   if (context === undefined) {
-    throw new Error('useAuthModal must be used within an AuthModalProvider');
+    // Return a safe default for SSR
+    return {
+      showAuthModal: false,
+      authModalMode: 'signin',
+      showOnboarding: false,
+      handleSignInClick: () => {},
+      handleSignUpClick: () => {},
+      handleAuthModalClose: () => {},
+      handleOnboardingComplete: () => {},
+      handleOnboardingClose: () => {},
+    };
   }
   return context;
 };

@@ -108,7 +108,7 @@ export const useTrackBriefView = () => {
     onSuccess: (success, briefId) => {
       if (success) {
         // Optimistically update the view count in cache
-        queryClient.setQueryData(queryKeys.briefs.all(), (oldData: any) => {
+        queryClient.setQueryData(queryKeys.briefs.all, (oldData: any) => {
           if (!oldData) return oldData;
           
           const updateBriefViewCount = (briefs: any[]) => {

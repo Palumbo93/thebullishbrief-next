@@ -81,19 +81,19 @@ export const Layout: React.FC<LayoutProps> = ({
 
   // Determine current location based on route
   const getCurrentLocation = (): 'home' | 'articles' | 'article' | 'authors' | 'bullroom' | 'aivault' | 'alphaarena' | 'admin' | 'account-settings' | 'brief' => {
-    if (pathname.startsWith('/articles/')) {
+    if (pathname && pathname.startsWith('/articles/')) {
       return 'article';
     }
-    if (pathname.startsWith('/authors/')) {
+    if (pathname && pathname.startsWith('/authors/')) {
       return 'authors';
     }
-    if (pathname.startsWith('/briefs/')) {
+    if (pathname && pathname.startsWith('/briefs/')) {
       return 'brief';
     }
-    if (pathname.startsWith('/bull-room/')) {
+    if (pathname && pathname.startsWith('/bull-room/')) {
       return 'bullroom';
     }
-    if (pathname.startsWith('/admin/')) {
+    if (pathname && pathname.startsWith('/admin/')) {
       return 'admin';
     }
     switch (pathname) {
@@ -209,7 +209,7 @@ export const Layout: React.FC<LayoutProps> = ({
       moreActive: false, // Never show active state since there's a close button
     };
 
-    return getMobileHeaderConfigForRoute(pathname, baseProps);
+    return getMobileHeaderConfigForRoute(pathname || '', baseProps);
   };
 
   return (

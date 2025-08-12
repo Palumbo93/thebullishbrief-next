@@ -20,7 +20,7 @@ export const useTrackPageView = (title?: string) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    trackPageView(pathname, title);
+    trackPageView(pathname || '', title || '');
   }, [pathname, title, trackPageView]);
 };
 

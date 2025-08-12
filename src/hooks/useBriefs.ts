@@ -2,8 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, hasSupabaseCredentials } from '../lib/supabase';
 import { Tables } from '../lib/database.types';
 import { queryKeys } from '../lib/queryClient';
-import { cacheStorage, cacheKeys, CACHE_TTL } from '../lib/cacheStorage';
-import { useAuth } from '../contexts/AuthContext';
+import { CACHE_TTL } from '../lib/cacheStorage';
 
 export type Brief = Tables<'briefs'>;
 

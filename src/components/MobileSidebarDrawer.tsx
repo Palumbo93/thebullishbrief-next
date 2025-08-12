@@ -40,6 +40,12 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const viewportHeight = useViewportHeightOnly();
+  const [isClient, setIsClient] = React.useState(false);
+
+  // Prevent hydration mismatch by only applying viewport height after mount
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Close on ESC key
   useEffect(() => {
@@ -316,7 +322,7 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
         tabIndex={-1}
         style={{
           // Use JavaScript-calculated height as fallback for Safari
-          height: `${viewportHeight}px`
+          height: isClient ? `${viewportHeight}px` : '100vh'
         }}
       />
       
@@ -330,7 +336,7 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
         style={{ 
           pointerEvents: open ? 'auto' : 'none',
           // Use JavaScript-calculated height as fallback for Safari
-          height: `${viewportHeight}px`
+          height: isClient ? `${viewportHeight}px` : '100vh'
         }}
       >
         {/* Header */}

@@ -29,6 +29,14 @@ export const useAuthModal = (): UseAuthModalReturn => {
     setShowOnboarding(false);
   }, []);
 
+  const showOTPVerificationModal = useCallback(() => {
+    setShowOTPVerification(true);
+  }, []);
+
+  const hideOTPVerificationModal = useCallback(() => {
+    setShowOTPVerification(false);
+  }, []);
+
   return {
     isSignUp,
     signUpStep,

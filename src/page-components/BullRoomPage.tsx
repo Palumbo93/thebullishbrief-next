@@ -2,9 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, Hash, Users, TrendingUp, TrendingDown, Minus, Brain, Paperclip, Image, File, X, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { Header } from '../components/Header';
 import { RoomSelector } from '../components/BullRoom/RoomSelector';
 import { RoomBanner } from '../components/BullRoom/RoomBanner';
 import { ChatArea } from '../components/BullRoom/ChatArea';
@@ -16,7 +15,6 @@ import { useBullRooms, useBullRoom } from '../hooks/useBullRooms';
 import { useBullRoomMessages, useCreateMessage, useToggleReaction } from '../hooks/useBullRoomMessages';
 import { useBullRoomRealtime } from '../hooks/useBullRoomRealtime';
 import { useTypingIndicator } from '../hooks/useTypingIndicator';
-import { BullRoomMessage } from '../types/bullRoom.types';
 import { useConfirm } from '../hooks/useConfirm';
 import { useDeleteMessage } from '../hooks/useBullRoomMessages';
 
@@ -291,7 +289,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
             height: '100%' 
           }}>
             <ChatArea 
-              messages={messages} 
+              messages={messages as any} 
               userId={user?.id} 
               onAddReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
               onRemoveReaction={(messageId, emoji) => toggleReactionMutation.mutate({ messageId, emoji })}
@@ -308,7 +306,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
             flexDirection: 'column' 
           }}>
             <RoomMembersSidebar 
-              messages={messages}
+              messages={messages as any}
               currentUserId={user?.id}
             />
           </div>
@@ -345,8 +343,8 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
             fileUploads={fileUploads}
             onRemoveFile={removeFileUpload}
             disabled={!user}
-            textareaRef={textareaRef}
-            fileInputRef={fileInputRef}
+            textareaRef={textareaRef as any}
+            fileInputRef={fileInputRef as any}
           />
         </div>
         

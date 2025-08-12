@@ -308,29 +308,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
 
 
-
-            {/* Investor Deck Button - Mobile Only */}
-            {brief.investor_deck_url && (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                marginBottom: 'var(--space-8)'
-              }}
-              className="mobile-only"
-              >
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth={false}
-                  onClick={() => window.open(brief.investor_deck_url || '', '_blank', 'noopener,noreferrer')}
-                >
-                  Get Investor Brief
-                </Button>
-              </div>
-            )}
-
-          
-
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none">
             {brief.content ? (

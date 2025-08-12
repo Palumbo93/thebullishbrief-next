@@ -191,8 +191,10 @@ export const Video = Node.create<VideoOptions>({
         src,
         controls: controls ? 'controls' : undefined,
         autoplay: autoplay ? 'autoplay' : undefined,
-        muted: muted ? 'muted' : undefined,
+        muted: muted || autoplay ? 'muted' : undefined, // Always mute autoplay videos
         loop: loop ? 'loop' : undefined,
+        playsinline: 'playsinline', // Prevent fullscreen on mobile
+        webkit-playsinline: 'webkit-playsinline', // iOS Safari support
         style: 'width: 100%; height: 100%; border-radius: var(--radius-lg);',
       }),
     ];

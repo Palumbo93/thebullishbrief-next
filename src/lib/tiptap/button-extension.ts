@@ -100,6 +100,33 @@ export const Button = Node.create<ButtonOptions>({
     
     const buttonClasses = ['btn', variantClass, sizeClass].filter(Boolean).join(' ');
     
+    // Get the appropriate background and text colors based on variant
+    const getVariantStyles = () => {
+      switch (variant) {
+        case 'primary':
+          return {
+            background: 'var(--color-text-primary)',
+            color: 'var(--color-bg-primary)',
+            border: 'none',
+          };
+        case 'secondary':
+          return {
+            background: 'var(--color-bg-tertiary)',
+            color: 'var(--color-text-primary)',
+            border: 'none',
+          };
+        case 'ghost':
+        default:
+          return {
+            background: 'transparent',
+            color: 'var(--color-text-secondary)',
+            border: 'none',
+          };
+      }
+    };
+    
+    const variantStyles = getVariantStyles();
+    
     return [
       'div',
       mergeAttributes(this.options.HTMLAttributes, {
@@ -126,10 +153,12 @@ export const Button = Node.create<ButtonOptions>({
             font-size: var(--text-sm);
             font-weight: var(--font-medium);
             line-height: 1;
-            border: 1px solid transparent;
             border-radius: var(--radius-full);
             cursor: pointer;
             white-space: nowrap;
+            background: ${variantStyles.background};
+            color: ${variantStyles.color};
+            border: ${variantStyles.border};
           `,
         },
         [

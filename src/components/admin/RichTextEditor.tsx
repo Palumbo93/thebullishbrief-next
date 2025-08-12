@@ -17,8 +17,14 @@ import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
+import { Video } from '../../lib/tiptap/video-extension';
+import { Gif } from '../../lib/tiptap/gif-extension';
+import { Button } from '../../lib/tiptap/button-extension';
 import { UrlInputModal } from './UrlInputModal';
 import { ImageUploadModal } from './ImageUploadModal';
+import { VideoModal } from './VideoModal';
+import { GifModal } from './GifModal';
+import { ButtonModal } from './ButtonModal';
 import {
   Bold,
   Italic,
@@ -43,7 +49,9 @@ import {
   Heading1,
   Heading2,
   Heading3,
-  Minus
+  Minus,
+  Play,
+  MousePointer
 } from 'lucide-react';
 
 interface RichTextEditorProps {
@@ -57,6 +65,9 @@ interface RichTextEditorProps {
 const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articleId }) => {
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isGifModalOpen, setIsGifModalOpen] = useState(false);
+  const [isButtonModalOpen, setIsButtonModalOpen] = useState(false);
   const [currentLinkUrl, setCurrentLinkUrl] = useState('');
   const [currentLinkText, setCurrentLinkText] = useState('');
 
@@ -97,6 +108,62 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
 
+  const addVideo = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsVideoModalOpen(true);
+  }, []);
+
+  const handleVideoSubmit = useCallback((videoData: {
+    src: string;
+    title?: string;
+    width?: string;
+    height?: string;
+    controls?: boolean;
+    autoplay?: boolean;
+    muted?: boolean;
+    loop?: boolean;
+  }) => {
+    editor.chain().focus().setVideo(videoData).run();
+  }, [editor]);
+
+  const addGif = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGifModalOpen(true);
+  }, []);
+
+  const handleGifSubmit = useCallback((gifData: {
+    src: string;
+    alt?: string;
+    width?: string;
+    height?: string;
+  }) => {
+    editor.chain().focus().setGif(gifData).run();
+  }, [editor]);
+
+  const addButton = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsButtonModalOpen(true);
+  }, []);
+
+  const handleButtonSubmit = useCallback((buttonData: {
+    text: string;
+    href: string;
+    variant?: 'primary' | 'secondary' | 'ghost';
+    size?: 'sm' | 'base' | 'lg';
+    target?: '_blank' | '_self';
+    icon?: string;
+    iconSide?: 'left' | 'right';
+  }) => {
+    editor.chain().focus().setButton(buttonData).run();
+  }, [editor]);
+
+  const addDivider = useCallback(() => {
+    editor.chain().focus().insertContent('<hr>').run();
+  }, [editor]);
+
   if (!editor) {
     return null;
   }
@@ -111,7 +178,12 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
         background: 'var(--color-bg-secondary)',
         borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
         border: '1px solid var(--color-border-primary)',
-        borderBottom: 'none'
+        borderBottom: 'none',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        backdropFilter: 'blur(8px)',
+        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
       }}>
       {/* Text Formatting */}
       <div style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center' }}>
@@ -524,6 +596,90 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
         </button>
 
         <button
+          type="button"
+          onClick={addVideo}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title="Add Video"
+        >
+          <Play style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <button
+          type="button"
+          onClick={addGif}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title="Add GIF"
+        >
+          <ImageIcon style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <button
+          type="button"
+          onClick={addButton}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title="Add Button"
+        >
+          <MousePointer style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <button
+          type="button"
+          onClick={addDivider}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title="Add Divider"
+        >
+          <Minus style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <button
           onClick={addTable}
           style={{
             padding: 'var(--space-2)',
@@ -613,6 +769,33 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
         />,
         document.body
       )}
+
+      {isVideoModalOpen && createPortal(
+        <VideoModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          onSubmit={handleVideoSubmit}
+        />,
+        document.body
+      )}
+
+      {isGifModalOpen && createPortal(
+        <GifModal
+          isOpen={isGifModalOpen}
+          onClose={() => setIsGifModalOpen(false)}
+          onSubmit={handleGifSubmit}
+        />,
+        document.body
+      )}
+
+      {isButtonModalOpen && createPortal(
+        <ButtonModal
+          isOpen={isButtonModalOpen}
+          onClose={() => setIsButtonModalOpen(false)}
+          onSubmit={handleButtonSubmit}
+        />,
+        document.body
+      )}
     </>
   );
 };
@@ -653,10 +836,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       TableRow,
       TableHeader,
       TableCell,
+      Video,
+      Gif,
+      Button,
     ],
     content,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      try {
+        const html = editor.getHTML();
+        console.log('🔄 RichTextEditor: Content changed:', html);
+        onChange(html);
+      } catch (error) {
+        console.error('🔄 RichTextEditor: Error getting HTML:', error);
+      }
     },
     editorProps: {
       handlePaste: (view, event, slice) => {
@@ -707,8 +899,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   // Update editor content when content prop changes
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content);
+    if (editor && editor.commands && content !== editor.getHTML()) {
+      try {
+        console.log('🔄 RichTextEditor: Setting content:', content);
+        editor.commands.setContent(content);
+      } catch (error) {
+        console.error('🔄 RichTextEditor: Error setting content:', error);
+      }
     }
   }, [editor, content]);
 
@@ -717,19 +914,33 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       border: '1px solid var(--color-border-primary)',
       borderRadius: 'var(--radius-lg)',
       overflow: 'hidden',
-      background: 'var(--color-bg-primary)'
+      background: 'var(--color-bg-primary)',
+      height: '600px',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <MenuBar editor={editor} articleId={articleId} />
-      <EditorContent 
-        editor={editor} 
-        style={{
-          padding: 'var(--space-4)',
-          minHeight: '400px',
-          fontSize: 'var(--text-base)',
-          lineHeight: '1.6',
-          color: 'var(--color-text-primary)'
-        }}
-      />
+      <div style={{
+        height: '0.5px',
+        background: 'var(--color-border-primary)',
+        width: '100%'
+      }} />
+      <div style={{
+        flex: 1,
+        overflow: 'auto',
+        position: 'relative'
+      }}>
+        <EditorContent 
+          editor={editor} 
+          style={{
+            padding: 'var(--space-4)',
+            minHeight: '400px',
+            fontSize: 'var(--text-base)',
+            lineHeight: '1.6',
+            color: 'var(--color-text-primary)'
+          }}
+        />
+      </div>
     </div>
   );
 }; 

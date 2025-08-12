@@ -57,6 +57,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
   // Load brief data when modal opens
   useEffect(() => {
     if (brief) {
+      console.log('🔄 BriefEditModal: Loading brief content:', brief.content);
       setFormData({
         title: brief.title || '',
         slug: brief.slug || '',
@@ -248,6 +249,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
       }
 
       // Update brief data
+      console.log('🔄 BriefEditModal: Saving content:', formData.content);
       const { error } = await supabase
         .from('briefs')
         .update({

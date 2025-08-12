@@ -50,7 +50,7 @@ export const createClientQueryClient = () => new QueryClient({
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       
       // Refetch on window focus (good for keeping data fresh)
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
       
       // Refetch on reconnect
       refetchOnReconnect: true,

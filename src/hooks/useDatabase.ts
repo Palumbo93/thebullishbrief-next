@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   categoryService, 
   authorService, 
@@ -32,6 +32,11 @@ export function useDatabaseService<T>(
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasInitializedRef = useRef(false);
+  
+  // Add a static flag to track initialization across re-renders
+  const staticInitializedKey = `useDatabase_${service.constructor.name}_initialized`;
+  const staticInitialized = (globalThis as any)[staticInitializedKey];
 
   const fetchData = useCallback(async () => {
     try {
@@ -45,7 +50,7 @@ export function useDatabaseService<T>(
     } finally {
       setLoading(false);
     }
-  }, [service]);
+  }, []); // Remove service dependency since it's a singleton
 
   const createItem = useCallback(async (item: Partial<T>) => {
     try {
@@ -58,7 +63,7 @@ export function useDatabaseService<T>(
       console.error('Database create error:', err);
       throw err;
     }
-  }, [service]);
+  }, []); // Remove service dependency since it's a singleton
 
   const updateItem = useCallback(async (id: string, updates: Partial<T>) => {
     try {
@@ -73,7 +78,7 @@ export function useDatabaseService<T>(
       console.error('Database update error:', err);
       throw err;
     }
-  }, [service]);
+  }, []); // Remove service dependency since it's a singleton
 
   const deleteItem = useCallback(async (id: string) => {
     try {
@@ -85,7 +90,7 @@ export function useDatabaseService<T>(
       console.error('Database delete error:', err);
       throw err;
     }
-  }, [service]);
+  }, []); // Remove service dependency since it's a singleton
 
   const getById = useCallback(async (id: string) => {
     try {
@@ -96,11 +101,15 @@ export function useDatabaseService<T>(
       console.error('Database getById error:', err);
       throw err;
     }
-  }, [service]);
+  }, []); // Remove service dependency since it's a singleton
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!hasInitializedRef.current && !staticInitialized) {
+      fetchData();
+      hasInitializedRef.current = true;
+      (globalThis as any)[staticInitializedKey] = true;
+    }
+  }, []); // Empty dependency array - only run once
 
   return {
     data,

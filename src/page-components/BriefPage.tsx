@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefEngagement } from '../hooks/useAnalytics';
-import { ArrowLeft, Play, User } from 'lucide-react';
+import { ArrowLeft, User } from 'lucide-react';
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
 import TradingViewWidget from '../components/TradingViewWidget';
@@ -41,7 +41,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     }
   };
   const { trackView: trackAnalyticsView, trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
-  const [showVideo, setShowVideo] = useState(false);
+
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   
@@ -306,60 +306,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           margin: '0 auto'
         }}>
 
-          {/* Video Section (if video exists) */}
-          {brief.video_url && (
-            <div style={{
-              marginBottom: 'var(--space-8)',
-              borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden',
-              background: 'var(--color-bg-tertiary)',
-              position: 'relative',
-              aspectRatio: '16/9'
-            }}>
-              <div style={{
-                position: 'relative',
-                cursor: 'pointer',
-                width: '100%',
-                height: '100%'
-              }} onClick={() => setShowVideo(true)}>
-                <video
-                  src={brief.video_url}
-                  poster={brief.featured_image_url || undefined}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-                {/* Play button overlay */}
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  background: 'var(--color-bg-primary)',
-                  borderRadius: '50%',
-                  width: '80px',
-                  height: '80px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all var(--transition-base)'
-                }}>
-                  <Play style={{ 
-                    width: '32px', 
-                    height: '32px', 
-                    color: 'white',
-                    marginLeft: '4px' // Offset for play button triangle
-                  }} />
-                </div>
-              </div>
-            </div>
-          )}
+
 
 
             {/* Investor Deck Button - Mobile Only */}
@@ -448,40 +395,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           )}
         </main>
 
-        {/* Video Modal */}
-        {showVideo && brief.video_url && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'var(--color-bg-primary)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 'var(--space-4)'
-          }} onClick={() => setShowVideo(false)}>
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '800px',
-              aspectRatio: '16/9'
-            }} onClick={(e) => e.stopPropagation()}>
-              <video
-                src={brief.video_url}
-                controls
-                autoPlay
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 'var(--radius-lg)'
-                }}
-              />
-            </div>
-          </div>
-        )}
+
       </div>
       
       {/* CTA Banner */}

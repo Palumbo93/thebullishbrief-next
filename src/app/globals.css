@@ -332,41 +332,23 @@ body {
 }
 
 .html-content ul {
-  list-style: none;
-  padding-left: 0;
+  list-style: disc;
+  padding-left: 2em;
 }
 
 .html-content ul li {
-  position: relative;
-  padding-left: 1.5em;
-}
-
-.html-content ul li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #ffffff;
-  font-weight: bold;
+  margin: 0.5em 0;
+  padding-left: 0.5em;
 }
 
 .html-content ol {
-  list-style: none;
-  padding-left: 0;
-  counter-reset: item;
+  list-style: decimal;
+  padding-left: 2em;
 }
 
 .html-content ol li {
-  position: relative;
-  padding-left: 2em;
-  counter-increment: item;
-}
-
-.html-content ol li::before {
-  content: counter(item) ".";
-  position: absolute;
-  left: 0;
-  color: #ffffff;
-  font-weight: bold;
+  margin: 0.5em 0;
+  padding-left: 0.5em;
 }
 
 .html-content blockquote {
@@ -425,4 +407,226 @@ body {
   height: auto;
   border-radius: var(--radius-md);
   margin: 1em 0;
+}
+
+.html-content hr {
+  border: none;
+  border-top: 0.5px solid var(--color-border-primary);
+  margin: var(--space-8) 0;
+}
+
+/* Custom TipTap Extensions Styles */
+
+/* Video Elements */
+.html-content div[data-video] {
+  margin: 1.5em 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.html-content div[data-video] iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.html-content div[data-video] video {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Play button overlay for videos with controls */
+.html-content div[data-video] {
+  position: relative;
+}
+
+.html-content div[data-video] video[controls] {
+  position: relative;
+}
+
+/* Play button overlay - applied to the container */
+.html-content div[data-video] video[controls] + .play-button-overlay {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  z-index: 10;
+  pointer-events: none;
+  transition: all var(--transition-base);
+}
+
+.html-content div[data-video] video[controls] + .play-button-overlay::after {
+  content: '▶';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px;
+  z-index: 11;
+  pointer-events: none;
+  transition: all var(--transition-base);
+}
+
+/* Alternative approach using pseudo-elements on the container */
+.html-content div[data-video]:has(video[controls])::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  z-index: 10;
+  pointer-events: none;
+  transition: all var(--transition-base);
+}
+
+.html-content div[data-video]:has(video[controls])::after {
+  content: '▶';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px;
+  z-index: 11;
+  pointer-events: none;
+  transition: all var(--transition-base);
+}
+
+/* Hide play button when video is playing */
+.html-content div[data-video]:has(video:not([paused]))::before,
+.html-content div[data-video]:has(video:not([paused]))::after {
+  opacity: 0;
+}
+
+/* Hide play button overlay when video is playing */
+.html-content div[data-video] video:not([paused]) ~ .play-button-overlay {
+  opacity: 0;
+}
+
+/* JavaScript will handle the play/pause events */
+.html-content div[data-video] .play-button-overlay {
+  opacity: 1;
+  transition: opacity var(--transition-base);
+}
+
+/* GIF Elements */
+.html-content div[data-gif] {
+  margin: 1.5em 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.html-content div[data-gif] img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0;
+}
+
+/* Button Elements */
+.html-content div[data-button] {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.html-content div[data-button] a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  height: var(--btn-height-base);
+  padding: 0 var(--btn-padding-x-base);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  line-height: 1;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* Button variant styles in HTML content */
+.html-content div[data-button] a.btn-primary {
+  background: var(--color-text-primary);
+  color: var(--color-bg-primary);
+  border: none;
+}
+
+.html-content div[data-button] a.btn-primary:hover {
+  background: var(--color-text-secondary);
+  color: var(--color-bg-primary);
+  box-shadow: var(--shadow-brand);
+  transform: translateY(-1px);
+}
+
+.html-content div[data-button] a.btn-secondary {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: none;
+}
+
+.html-content div[data-button] a.btn-secondary:hover {
+  background: var(--color-border-secondary);
+  transform: translateY(-1px);
+}
+
+.html-content div[data-button] a.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: none;
+}
+
+.html-content div[data-button] a.btn-ghost:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+/* Button size styles in HTML content */
+.html-content div[data-button] a.btn-sm {
+  height: var(--btn-height-sm);
+  padding: 0 var(--btn-padding-x-sm);
+  font-size: var(--text-xs);
+}
+
+.html-content div[data-button] a.btn-lg {
+  height: var(--btn-height-lg);
+  padding: 0 var(--btn-padding-x-lg);
+  font-size: var(--text-base);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .html-content div[data-video],
+  .html-content div[data-gif] {
+    margin: 1em 0;
+  }
+  
+  .html-content div[data-button] {
+    margin: 1em 0;
+  }
+  
+  .html-content div[data-button] a {
+    width: 100%;
+    max-width: 300px;
+  }
 }

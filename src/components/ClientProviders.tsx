@@ -23,8 +23,8 @@ interface ClientProvidersProps {
  * QueryClient is now handled by SSRProviders at the layout level
  */
 export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
-  // Create a new QueryClient for each request to avoid SSR issues
-  const [queryClient] = React.useState(() => createClientQueryClient());
+  // Create a stable QueryClient instance
+  const queryClient = React.useMemo(() => createClientQueryClient(), []);
 
   return (
     <HydrationProvider>

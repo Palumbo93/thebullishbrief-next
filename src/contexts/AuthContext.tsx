@@ -242,26 +242,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     getInitialSession();
 
-    // Enable auth state listener for real-time updates
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email, 'Loading:', loading);
-      
-      if (session?.user) {
-        console.log('Setting user in auth context:', session.user.email);
-        // Set user immediately without admin check
-        setUser({ ...session.user, isAdmin: false });
-        setLoading(false);
-        
-        // Fetch user profile separately (slower)
-        fetchUserProfile(session.user.id);
-      } else {
-        console.log('Clearing user in auth context');
-        setUser(null);
-        setLoading(false);
-      }
-    });
+    // Temporarily disable auth state listener to prevent window focus refresh
+    // const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    //   console.log('Auth state changed:', event, session?.user?.email, 'Loading:', loading);
+    //   
+    //   // Only update state if the user has actually changed
+    //   const currentUserId = user?.id;
+    //   const newUserId = session?.user?.id;
+    //   
+    //   if (session?.user && currentUserId !== newUserId) {
+    //     console.log('Setting user in auth context:', session.user.email);
+    //     // Set user immediately without admin check
+    //     setUser({ ...session.user, isAdmin: false });
+    //     setLoading(false);
+    //     
+    //     // Fetch user profile separately (slower)
+    //     fetchUserProfile(session.user.id);
+    //   } else if (!session?.user && currentUserId !== null) {
+    //     console.log('Clearing user in auth context');
+    //     setUser(null);
+    //     setLoading(false);
+    //   } else {
+    //     console.log('Auth state change ignored - user unchanged');
+    //   }
+    // });
 
-    return () => subscription.unsubscribe();
+    // return () => subscription.unsubscribe();
   }, []);
 
 

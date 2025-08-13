@@ -104,6 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           align-items: center;
           padding: var(--space-4) 0;
           width: 80px;
+          height: 100%;
           position: relative;
           z-index: 100;
         }

@@ -103,6 +103,8 @@ export const AccountSettingsPage: React.FC<AccountSettingsPageProps> = ({
           height: 100vh;
           position: sticky;
           top: 0;
+          background: var(--color-bg-primary);
+          z-index: 10;
         }
 
         .account-settings-content {
@@ -127,12 +129,17 @@ export const AccountSettingsPage: React.FC<AccountSettingsPageProps> = ({
           .account-settings-sidebar {
             width: 100%;
             height: auto;
-            position: static;
+            position: sticky;
+            top: 56px; /* Below mobile header */
+            left: 0; /* Reset left position on mobile */
             border-right: none;
+            background: var(--color-bg-primary);
+            z-index: 10;
           }
           
           .account-settings-content {
             height: auto;
+            margin-left: 0; /* Reset margin on mobile */
           }
           
           .sidebar-navigation {

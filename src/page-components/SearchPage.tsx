@@ -245,7 +245,14 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           borderBottom: '0.5px solid var(--color-border-primary)',
           padding: 'var(--space-3) var(--content-padding)',
           zIndex: 10
-        }}>
+        }} className="search-bar-sticky">
+        <style>{`
+          @media (max-width: 768px) {
+            .search-bar-sticky {
+              top: 56px !important; /* Below mobile header */
+            }
+          }
+        `}</style>
         <form onSubmit={(e) => e.preventDefault()}>
           <div style={{
             position: 'relative',

@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAuthModal } from '../contexts/AuthModalContext';
 import { RoomSelector } from '../components/BullRoom/RoomSelector';
 import { ChatArea } from '../components/BullRoom/ChatArea';
 import { MessageInput } from '../components/BullRoom/MessageInput';
@@ -51,6 +52,7 @@ interface BullRoomPageProps {
 
 export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAccountClick }) => {
   const { user } = useAuth();
+  const { handleSignUpClick } = useAuthModal();
   const confirm = useConfirm();
   const deleteMessage = useDeleteMessage();
   const router = useRouter();
@@ -75,11 +77,11 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
   } = useBullRoom(selectedRoomSlug);
 
   // Auto-redirect to general room if no specific room is provided
-  // useEffect(() => {
-  //   if (!roomSlug) {
-  //     router.replace('/bull-room/general');
-  //   }
-  // }, [roomSlug, router]);
+  useEffect(() => {
+    if (!roomSlug) {
+      router.replace('/bull-room/general');
+    }
+  }, [roomSlug, router]);
 
   // Remove mock messages - now using real data from hooks
   const [newMessage, setNewMessage] = useState<string>('');
@@ -313,7 +315,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
                 right: 0,
                 background: 'rgba(0, 0, 0, 0.95)',
                 backdropFilter: 'blur(4px)',
-                zIndex: 100
+                zIndex: 50
               }}
             >
               <MessageInput
@@ -466,11 +468,12 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
           </div>
         )}
 
-        {/* Authentication Overlay for unauthenticated users */}
-        {!user && (
-          <AuthOverlay onCreateAccountClick={onCreateAccountClick} />
-        )}
       </div>
+      
+              {/* Authentication Overlay for unauthenticated users - positioned relative to viewport */}
+        {!user && (
+          <AuthOverlay onCreateAccountClick={handleSignUpClick} />
+        )}
     </div>
   );
 };

@@ -78,6 +78,19 @@ export const Layout: React.FC<LayoutProps> = ({
   // Mobile action panel state for brief pages
   const [mobileActionPanelOpen, setMobileActionPanelOpen] = React.useState(false);
 
+  // Prevent body scroll when mobile action panel is open
+  React.useEffect(() => {
+    if (mobileActionPanelOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileActionPanelOpen]);
+
   // Determine current location based on route
   const getCurrentLocation = (): 'home' | 'articles' | 'article' | 'authors' | 'bull-room' | 'aivault' | 'alphaarena' | 'admin' | 'account-settings' | 'brief' => {
     if (pathname && pathname.startsWith('/articles/')) {
@@ -216,102 +229,63 @@ export const Layout: React.FC<LayoutProps> = ({
   return (
     <>
       <style>{`
-        .shell {
-          display: grid;
-          grid-template-columns: 80px 1fr ${articleCommentsExpanded && actualCurrentLocation === 'article' ? '400px' : '0px'} ${showActionPanel && actionPanelType === 'brief' ? '340px' : '0px'} ${(actualCurrentLocation === 'home' || actualCurrentLocation === 'authors') ? '400px' : '0px'};
+        /* X-Style Layout System - Page scroll approach */
+        .app-container {
+          min-height: 100vh;
+          max-width: 100vw;
+          background: var(--color-bg-primary);
+          /* Remove flexbox - let page scroll naturally */
+        }
+
+        /* Sidebar - Fixed positioning */
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          width: 80px;
           height: 100vh;
-          transition: grid-template-columns var(--transition-base);
-        }
-
-        /* Tablet Layout */
-        @media (max-width: 1024px) {
-          .shell {
-            grid-template-columns: 100px 1fr ${articleCommentsExpanded && actualCurrentLocation === 'article' ? '400px' : '0px'} ${showActionPanel && actionPanelType === 'brief' ? '340px' : '0px'} ${(actualCurrentLocation === 'home' || actualCurrentLocation === 'authors') ? '400px' : '0px'};
-          }
-        }
-
-        .canvas {
+          display: flex;
+          flex-direction: column;
           overflow-y: auto;
+          border-right: 0.5px solid var(--color-border-primary);
+          background: var(--color-bg-primary);
+          z-index: 100;
+          flex-shrink: 0;
+        }
+
+        /* Main Content - Offset by sidebar, page scroll */
+        .main-content {
+          position: relative;
+          margin-left: 80px; /* Offset for fixed sidebar */
+          border-right: 0.5px solid var(--color-border-primary);
+          background: var(--color-bg-primary);
+          min-height: 100vh;
+          /* Remove flexbox - let page scroll naturally */
+        }
+
+        /* Main Content with Right Panel */
+        .main-content.with-right-panel {
+          margin-right: 400px; /* Offset for fixed right panel */
+        }
+
+        /* Right Panel - Fixed positioning */
+        .right-panel {
+          position: fixed;
+          right: 0;
+          top: 0;
+          width: 400px;
+          height: 100vh;
+          background: var(--color-bg-primary);
+          z-index: 1;
+          overflow-y: auto;
+        }
+
+        /* Content Area - No scroll, just wrapper */
+        .content-area {
+          flex: 1;
           padding: 0;
           background: var(--color-bg-primary);
-        }
-
-        /* Base styles - hide mobile comments by default */
-        .mobile-comments-overlay {
-          display: none;
-          position: fixed;
-          top: 56px; /* Below mobile header */
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--color-bg-primary);
-          z-index: 1000;
-          transform: translateY(100%);
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          overflow: hidden;
-        }
-        
-        .mobile-comments-overlay.open {
-          transform: translateY(0);
-        }
-
-        /* Base styles - hide mobile action panel by default */
-        .mobile-action-panel-overlay {
-          display: none;
-          position: fixed;
-          top: 56px; /* Below mobile header */
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--color-bg-primary);
-          z-index: 1000;
-          transform: translateY(100%);
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          overflow: hidden;
-        }
-        
-        .mobile-action-panel-overlay.open {
-          transform: translateY(0);
-        }
-
-        /* Mobile Layout */
-        @media (max-width: 768px) {
-          .shell {
-            grid-template-columns: 1fr;
-            grid-template-rows: 1fr;
-            padding-top: 56px; /* Account for fixed mobile header */
-          }
-          
-          .chat-sidebar {
-            display: none;
-          }
-          
-          .explore-sidebar {
-            display: none;
-          }
-          
-          .canvas {
-            padding-bottom: 80px;
-          }
-          
-          .mobile-comments-overlay {
-            display: block !important; /* Override base display: none on mobile */
-          }
-          
-          .mobile-action-panel-overlay {
-            display: block !important; /* Override base display: none on mobile */
-          }
-        }
-        
-        /* Desktop - ensure mobile overlays are hidden */
-        @media (min-width: 769px) {
-          .mobile-comments-overlay {
-            display: none !important;
-          }
-          
-          .mobile-action-panel-overlay {
-            display: none !important;
-          }
+          position: relative;
         }
 
         /* Ticker tape styles */
@@ -332,6 +306,108 @@ export const Layout: React.FC<LayoutProps> = ({
           display: none;
         }
 
+        /* Global scrollbar styling for main page scroll */
+        ::-webkit-scrollbar {
+          width: 10px; /* Slightly thicker */
+          height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2); /* Light gray for visibility */
+          border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3); /* Lighter on hover */
+        }
+
+        /* Firefox global scrollbar */
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* Light gray for visibility */
+        }
+
+        /* Custom Scrollbar Styling */
+        .sidebar::-webkit-scrollbar,
+        .right-panel::-webkit-scrollbar {
+          width: 10px; /* Slightly thicker */
+          height: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-track,
+        .right-panel::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb,
+        .right-panel::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2); /* Light gray for visibility */
+          border-radius: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .right-panel::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3); /* Lighter on hover */
+        }
+
+        /* Firefox scrollbar */
+        .sidebar,
+        .right-panel {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* Light gray for visibility */
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+          .app-container {
+            padding-top: 56px; /* Account for fixed mobile header */
+          }
+          
+          .sidebar {
+            position: fixed;
+            left: -80px; /* Hidden off-screen, becomes drawer */
+            top: 56px; /* Below mobile header */
+            width: 80px;
+            height: calc(100vh - 56px);
+            transition: left 0.3s ease;
+            z-index: 1000;
+          }
+          
+          .sidebar.open {
+            left: 0; /* Slide in when open */
+          }
+          
+          .main-content {
+            margin-left: 0; /* No offset on mobile */
+            margin-right: 0; /* No right panel offset on mobile */
+            width: 100%;
+          }
+          
+          .right-panel {
+            display: none; /* Hidden on mobile, becomes overlay */
+          }
+        }
+
+        /* Tablet Layout */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .sidebar {
+            width: 80px; /* Keep collapsed sidebar on tablet */
+          }
+          
+          .main-content {
+            margin-left: 80px; /* Offset for collapsed sidebar */
+            margin-right: 0; /* No right panel offset on tablet */
+          }
+          
+          .right-panel {
+            display: none; /* Hide right panel on tablet */
+          }
+        }
+
         /* Hide ticker on mobile */
         @media (max-width: 768px) {
           .ticker-tape-container {
@@ -339,39 +415,62 @@ export const Layout: React.FC<LayoutProps> = ({
           }
         }
 
-        /* Explore sidebar styles */
-        .explore-sidebar {
-          border-left: 0.5px solid var(--color-border-primary);
+        /* Mobile overlay styles */
+        .mobile-comments-overlay {
+          display: none;
+          position: fixed;
+          top: 56px;
+          left: 0;
+          right: 0;
+          bottom: 0;
           background: var(--color-bg-primary);
-          overflow-y: auto;
-          width: 400px;
-          min-width: 400px;
-        }
-
-        /* Chat sidebar styles */
-        .chat-sidebar {
-          border-left: 0.5px solid var(--color-border-primary);
-          background: var(--color-bg-primary);
-          overflow-y: auto;
-          width: 400px;
-          min-width: 400px;
-          z-index: 1;
-        }
-
-        /* Brief action panel styles - Hidden on mobile */
-        .brief-action-panel {
-          border-left: 0.5px solid var(--color-border-primary);
-          background: var(--color-bg-primary);
-          overflow-y: auto;
-          width: 340px;
-          min-width: 340px;
-          z-index: 1;
+          z-index: 1000;
+          transform: translateY(100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow: hidden;
         }
         
-        /* Hide brief action panel on mobile and tablet */
-        @media (max-width: 1024px) {
-          .brief-action-panel {
-            display: none;
+        .mobile-comments-overlay.open {
+          transform: translateY(0);
+        }
+
+        .mobile-action-panel-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: var(--color-bg-primary);
+          z-index: 1000;
+          transform: translateY(100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow: hidden;
+        }
+        
+        .mobile-action-panel-overlay.open {
+          transform: translateY(0);
+        }
+
+        /* Mobile Layout - Show overlays */
+        @media (max-width: 768px) {
+          .mobile-comments-overlay {
+            display: block !important;
+          }
+          
+          .mobile-action-panel-overlay {
+            display: block !important;
+          }
+        }
+        
+        /* Desktop - ensure mobile overlays are hidden */
+        @media (min-width: 769px) {
+          .mobile-comments-overlay {
+            display: none !important;
+          }
+          
+          .mobile-action-panel-overlay {
+            display: none !important;
           }
         }
       `}</style>
@@ -397,61 +496,64 @@ export const Layout: React.FC<LayoutProps> = ({
         </>
       )}
 
-      <div className="shell">
+      <div className="app-container">
         {/* Left Navigation Sidebar */}
-        <Sidebar
-          navItems={navItems}
-          onNavChange={onNavChange}
-          onSignInClick={handleSignInClick}
-          onSignUpClick={handleSignUpClick}
-        />
+        <header className="sidebar" role="banner">
+          <Sidebar
+            navItems={navItems}
+            onNavChange={onNavChange}
+            onSignInClick={handleSignInClick}
+            onSignUpClick={handleSignUpClick}
+          />
+        </header>
 
-        {/* Main Canvas */}
-        <main className="canvas">
-          {/* Ticker Tape Widget - Only on Home Page */}
-          {actualCurrentLocation === 'home' && (
-            <div className="ticker-tape-container">
-              <TickerTapeWidget />
+        {/* Main Content Area */}
+        <main className={`main-content ${(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) ? 'with-right-panel' : ''}`}>
+          <div className="content-area">
+            {/* Ticker Tape Widget - Only on Home Page */}
+            {actualCurrentLocation === 'home' && (
+              <div className="ticker-tape-container">
+                <TickerTapeWidget />
+              </div>
+            )}
+            
+            {/* Scrollable Content Area */}
+            <div>
+              {children}
             </div>
-          )}
-          
-          {/* Scrollable Content Area */}
-          <div>
-            {children}
           </div>
         </main>
 
-        {/* Article Comments Sidebar - Only on Article Pages */}
-        {actualCurrentLocation === 'article' && articleId && (
-          <aside className="chat-sidebar">
-            <ArticleComments 
-              articleId={articleId}
-              articleTitle={articleTitle || ''}
-              isExpanded={articleCommentsExpanded} 
-              onToggleExpanded={() => setArticleCommentsExpanded(!articleCommentsExpanded)}
-              onCreateAccountClick={handleSignUpClick}
-            />
-          </aside>
-        )}
+        {/* Right Panel - Conditional based on page type */}
+        {(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) && (
+          <aside className="right-panel">
+            {/* Article Comments - Only on Article Pages */}
+            {actualCurrentLocation === 'article' && articleId && (
+              <ArticleComments 
+                articleId={articleId}
+                articleTitle={articleTitle || ''}
+                isExpanded={articleCommentsExpanded} 
+                onToggleExpanded={() => setArticleCommentsExpanded(!articleCommentsExpanded)}
+                onCreateAccountClick={handleSignUpClick}
+              />
+            )}
 
-        {/* Brief Action Panel - Only on Brief Pages */}
-        {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
-          <aside className="brief-action-panel">
-            <BriefsActionPanel
-              onSignUpClick={handleSignUpClick}
-              tickerWidget={briefActionPanel.tickerWidget}
-              sections={briefActionPanel.sections || []}
-              tickers={briefActionPanel.tickers}
-              companyName={briefActionPanel.companyName}
-              investorDeckUrl={briefActionPanel.investorDeckUrl}
-            />
-          </aside>
-        )}
+            {/* Brief Action Panel - Only on Brief Pages */}
+            {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
+              <BriefsActionPanel
+                onSignUpClick={handleSignUpClick}
+                tickerWidget={briefActionPanel.tickerWidget}
+                sections={briefActionPanel.sections || []}
+                tickers={briefActionPanel.tickers}
+                companyName={briefActionPanel.companyName}
+                investorDeckUrl={briefActionPanel.investorDeckUrl}
+              />
+            )}
 
-        {/* Explore Widget Sidebar - Only on Home, Articles, and Author Pages */}
-        {(actualCurrentLocation === 'home' || actualCurrentLocation === 'articles' || actualCurrentLocation === 'authors') && (
-          <aside className="explore-sidebar">
-            <ExploreWidget />
+            {/* Explore Widget - Only on Home, Articles, and Author Pages (not search or explore) */}
+            {(actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/search') && !pathname?.startsWith('/explore')) || actualCurrentLocation === 'authors') && (
+              <ExploreWidget />
+            )}
           </aside>
         )}
       </div>
@@ -471,7 +573,25 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {/* Mobile Action Panel Overlay - Only on Brief Pages */}
       {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
-        <div className={`mobile-action-panel-overlay ${mobileActionPanelOpen ? 'open' : ''}`}>
+        <>
+          {/* Backdrop */}
+          {mobileActionPanelOpen && (
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 999,
+                backdropFilter: 'blur(4px)'
+              }}
+              onClick={() => setMobileActionPanelOpen(false)}
+            />
+          )}
+          
+          <div className={`mobile-action-panel-overlay ${mobileActionPanelOpen ? 'open' : ''}`}>
           <BriefsActionPanel
             onSignUpClick={handleSignUpClick}
             tickerWidget={briefActionPanel.tickerWidget}
@@ -480,38 +600,10 @@ export const Layout: React.FC<LayoutProps> = ({
             companyName={briefActionPanel.companyName}
             investorDeckUrl={briefActionPanel.investorDeckUrl}
             isMobileOverlay={true}
+            onClose={() => setMobileActionPanelOpen(false)}
           />
-          {/* Close button for mobile overlay */}
-          <button
-            onClick={() => setMobileActionPanelOpen(false)}
-            style={{
-              position: 'fixed',
-              top: '16px',
-              right: '16px',
-              zIndex: 1001,
-              background: 'var(--color-bg-card)',
-              border: '0.5px solid var(--color-border-primary)',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--color-text-primary)',
-              cursor: 'pointer',
-              transition: 'all var(--transition-base)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--color-bg-card-hover)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--color-bg-card)';
-            }}
-            aria-label="Close action panel"
-          >
-            ×
-          </button>
-        </div>
+          </div>
+        </>
       )}
     </>
   );

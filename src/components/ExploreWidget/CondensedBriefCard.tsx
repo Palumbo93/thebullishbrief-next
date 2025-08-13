@@ -20,7 +20,6 @@ export const CondensedBriefCard: React.FC<CondensedBriefCardProps> = ({
         padding: 'var(--space-3)',
         border: '0.5px solid var(--color-border-primary)',
         borderRadius: 'var(--radius-lg)',
-        // background: 'var(--color-bg-secondary)',
         marginBottom: 'var(--space-4)'
       }}>
         <div style={{
@@ -45,7 +44,6 @@ export const CondensedBriefCard: React.FC<CondensedBriefCardProps> = ({
       padding: 'var(--space-3)',
       border: '0.5px solid var(--color-border-primary)',
       borderRadius: 'var(--radius-lg)',
-      // background: 'var(--color-bg-secondary)',
       marginBottom: 'var(--space-4)',
       cursor: 'pointer',
       transition: 'all var(--transition-base)'

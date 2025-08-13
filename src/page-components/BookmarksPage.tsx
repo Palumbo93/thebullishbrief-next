@@ -33,7 +33,14 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
           top: 0,
           zIndex: 20,
           borderBottom: '0.5px solid var(--color-border-primary)'
-        }}>
+        }} className="bookmarks-header">
+        <style>{`
+          @media (max-width: 768px) {
+            .bookmarks-header {
+              top: 56px !important; /* Below mobile header */
+            }
+          }
+        `}</style>
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -163,7 +170,14 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
         top: 0,
         zIndex: 20,
         borderBottom: '0.5px solid var(--color-border-primary)'
-      }}>
+      }} className="bookmarks-header">
+      <style>{`
+        @media (max-width: 768px) {
+          .bookmarks-header {
+            top: 56px !important; /* Below mobile header */
+          }
+        }
+      `}</style>
         <div style={{
           display: 'flex',
           alignItems: 'center',

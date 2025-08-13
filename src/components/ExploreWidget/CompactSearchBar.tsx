@@ -21,7 +21,7 @@ export const CompactSearchBar: React.FC<CompactSearchBarProps> = ({ onSearch }) 
   
   return (
     <div style={{
-      marginBottom: 'var(--space-4)'
+      
     }}>
       <form onSubmit={handleSubmit}>
         <div style={{
@@ -46,7 +46,7 @@ export const CompactSearchBar: React.FC<CompactSearchBarProps> = ({ onSearch }) 
             placeholder="Search articles..."
             style={{
               width: '100%',
-              height: '36px',
+              height: '40px',
               padding: '0 var(--space-3) 0 calc(var(--space-3) + 16px + var(--space-2))',
               background: 'var(--color-bg-tertiary)',
               border: '0.5px solid var(--color-border-primary)',

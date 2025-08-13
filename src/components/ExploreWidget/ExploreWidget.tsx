@@ -8,6 +8,8 @@ import { CompactSearchBar } from './CompactSearchBar';
 import { CondensedBriefCard } from './CondensedBriefCard';
 import { TopicFlexList } from './TopicFlexList';
 import { AuthorList } from './AuthorList';
+import SidebarJoinCTA from '../SidebarJoinCTA';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ExploreWidgetProps {
   onCreateAccountClick?: () => void;
@@ -19,6 +21,7 @@ export const ExploreWidget: React.FC<ExploreWidgetProps> = ({
   onArticleSelect
 }) => {
   const router = useRouter();
+  const { user } = useAuth();
   
   // Data fetching hooks
   const { data: brief, isLoading: briefLoading } = useFeaturedBrief();
@@ -85,36 +88,64 @@ export const ExploreWidget: React.FC<ExploreWidgetProps> = ({
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      gap: 'var(--space-2)',
       height: '100%',
-      padding: 'var(--space-4)',
-      overflowY: 'auto',
-      minHeight: '100%',
-      width: '100%'
+      width: '100%',
+      overflowY: 'auto'
     }}>
-      {/* Search Bar */}
-      <CompactSearchBar onSearch={handleSearch} />
+      {/* Sticky Search Bar */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: 'var(--color-bg-primary)', 
+        borderBottom: '0.5px solid var(--color-border-primary)',
+        padding: 'var(--space-4)',
+      }}>
+        <CompactSearchBar onSearch={handleSearch} />
+      </div>
       
-      {/* Sponsored Brief */}
-      <CondensedBriefCard 
-        brief={brief} 
-        onBriefClick={handleBriefClick}
-        isLoading={briefLoading}
-      />
-      
-      {/* Trending Topics */}
-      <TopicFlexList 
-        tags={tagsData || []} 
-        onTopicClick={handleTopicClick}
-        isLoading={tagsLoading}
-      />
-      
-      {/* Popular Authors */}
-      <AuthorList 
-        authors={authors} 
-        onAuthorClick={handleAuthorClick}
-        isLoading={articlesLoading}
-      />
+      {/* Content */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-2)'
+      }}>
+        {/* Join CTA - Only show if user is not logged in */}
+        {!user && <SidebarJoinCTA onSignUpClick={onCreateAccountClick} />}
+        
+        <div style={{
+          padding: 'var(--space-4) var(--space-4) 0px var(--space-4)',
+        }}>
+        {/* Sponsored Brief */}
+        <CondensedBriefCard 
+          brief={brief} 
+          onBriefClick={handleBriefClick}
+          isLoading={briefLoading}
+        />
+        </div>
+        
+        <div style={{
+          padding: '0px var(--space-4)',
+        }}>
+        {/* Trending Topics */}
+        <TopicFlexList 
+          tags={tagsData || []} 
+          onTopicClick={handleTopicClick}
+          isLoading={tagsLoading}
+        />
+        </div>
+        
+        <div style={{
+          padding: '0px var(--space-4) var(--space-4) var(--space-4)',
+        }}>
+        {/* Popular Authors */}
+        <AuthorList 
+          authors={authors} 
+          onAuthorClick={handleAuthorClick}
+          isLoading={articlesLoading}
+        />
+        </div>
+      </div>
     </div>
   );
 };

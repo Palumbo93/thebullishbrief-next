@@ -315,29 +315,29 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
 
   // The articleId passed in is already the UUID, no need to fetch article data
   
-  // Prevent body scroll when comments panel is expanded
-  useEffect(() => {
-    if (isExpanded) {
-      // Store original body styles
-      const originalStyle = window.getComputedStyle(document.body);
-      const scrollY = window.scrollY;
-      
-      // Lock body scroll
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      
-      // Restore scroll position when panel closes
-      return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [isExpanded]);
+  // Remove the body scroll locking - it's preventing article scrolling
+  // useEffect(() => {
+  //   if (isExpanded) {
+  //     // Store original body styles
+  //     const originalStyle = window.getComputedStyle(document.body);
+  //     const scrollY = window.scrollY;
+  //     
+  //     // Lock body scroll
+  //     document.body.style.position = 'fixed';
+  //     document.body.style.top = `-${scrollY}px`;
+  //     document.body.style.width = '100%';
+  //     document.body.style.overflow = 'hidden';
+  //     
+  //     // Restore scroll position when panel closes
+  //     return () => {
+  //       document.body.style.position = '';
+  //       document.body.style.top = '';
+  //       document.body.style.width = '';
+  //       document.body.style.overflow = '';
+  //       window.scrollTo(0, scrollY);
+  //     };
+  //   }
+  // }, [isExpanded]);
   
   // Fetch comments using the article UUID - only when expanded
   const { 
@@ -552,7 +552,7 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
       </div>
 
       {/* Comments List */}
-      <div className="hide-scrollbar" style={{
+      <div className="" style={{
         flex: 1,
         overflowY: 'auto',
         padding: 'var(--space-4)',

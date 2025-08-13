@@ -85,8 +85,11 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
           .legal-sidebar {
             width: 100%;
             height: auto;
-            position: static;
+            position: sticky;
+            top: 56px; /* Below mobile header */
             border-right: none;
+            background: var(--color-bg-primary);
+            z-index: 10;
           }
           
           .legal-content {

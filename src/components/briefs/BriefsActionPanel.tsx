@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getTickers } from '../../utils/tickerUtils';
-import { ExternalLink, User } from 'lucide-react';
+import { ExternalLink, User, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { BRAND_COPY } from '../../data/copy';
 import { useAuth } from '../../contexts/AuthContext';
+import SidebarJoinCTA from '../SidebarJoinCTA';
 
 interface CompanyTicker {
   symbol: string;
@@ -29,6 +30,7 @@ interface BriefsActionPanelProps {
   companyName?: string; // Company name for ticker display
   investorDeckUrl?: string; // Investor deck URL
   isMobileOverlay?: boolean; // Whether this panel is being used in mobile overlay
+  onClose?: () => void; // Close handler for mobile overlay
 }
 
 const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({ 
@@ -40,7 +42,8 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   tickers,
   companyName = 'Company',
   investorDeckUrl,
-  isMobileOverlay = false
+  isMobileOverlay = false,
+  onClose
 }) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const tocRef = useRef<HTMLDivElement>(null);
@@ -112,68 +115,50 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
   return (
     <div className={`briefs-action-panel ${isMobileOverlay ? 'mobile-overlay' : ''}`} ref={tocRef}>
-      {/* Bullish Brief Sign Up CTA - Only show if user is not logged in */}
-      {!user && (
-        <div className="briefs-signup-cta">
-          <div className="briefs-signup-content">
-            {/* Brand Logo */}
-            <div className="briefs-signup-logo">
-              <img 
-                src="/images/logo.png" 
-                alt="The Bullish Brief" 
-                className="briefs-logo-img"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (nextElement) {
-                    nextElement.style.display = 'flex';
-                  }
-                }}
-              />
-              <div className="briefs-logo-fallback">
-                <svg 
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
-                </svg>
-                <div className="briefs-logo-dot"></div>
-              </div>
-            </div>
-
-            {/* Brand Title */}
-            <h4 className="briefs-signup-title">{BRAND_COPY.briefsActionPanel.title}</h4>
-            
-            {/* Description */}
-            <p className="briefs-signup-description">
-              {BRAND_COPY.briefsActionPanel.description}
-            </p>
-
-            {/* Features List */}
-            <div className="briefs-signup-features">
-              {BRAND_COPY.briefsActionPanel.features.map((feature, index) => (
-                <div key={index} className="briefs-feature-item">
-                  <span className="briefs-feature-check">✓</span>
-                  <span>{feature}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Sign Up Button */}
-            <Button
-              onClick={onSignUpClick}
-              variant="secondary"
-              fullWidth={true}
+      {/* Mobile Header with Close Button - Only show when used as mobile overlay */}
+      {isMobileOverlay && onClose && (
+        <div className="briefs-mobile-header">
+          <div className="briefs-mobile-header-content">
+            <h3 className="briefs-mobile-header-title">More Info</h3>
+            <button
+              onClick={onClose}
+              className="briefs-mobile-close-btn"
+              aria-label="Close panel"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px',
+                background: 'var(--color-bg-tertiary)',
+                color: 'var(--color-text-primary)',
+                border: 'none',
+                borderRadius: 'var(--radius-lg)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-base)',
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-bg-card-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-brand-primary)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             >
-              Join Free Now
-            </Button>
+              <X style={{ width: '16px', height: '16px' }} />
+            </button>
           </div>
         </div>
       )}
+      
+      {/* Bullish Brief Sign Up CTA - Only show if user is not logged in */}
+      {!user && <SidebarJoinCTA onSignUpClick={onSignUpClick} />}
 
       {/* Quick Links */}
       <div className="briefs-quick-links" style={{ padding: '2rem 1.5rem' }}>
@@ -316,17 +301,39 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
       <style>{`
         .briefs-action-panel {
-          position: sticky;
-          top: 0px;
-          height: calc(100vh - 0px);
+          position: relative; /* Change from sticky to relative for better scroll behavior */
+          height: 100%; /* Use 100% instead of calc(100vh - 0px) */
           background: var(--color-bg-primary);
           border-left: 1px solid rgba(255, 255, 255, 0.1);
-          overflow-y: auto;
+          overflow-y: auto; /* Keep scrollable */
           padding: 0;
           display: flex;
           flex-direction: column;
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* Internet Explorer 10+ */
+          /* Remove scrollbar hiding for better UX */
+        }
+        
+        /* Show scrollbars for better UX */
+        .briefs-action-panel::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .briefs-action-panel::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .briefs-action-panel::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+        
+        .briefs-action-panel::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Firefox scrollbar */
+        .briefs-action-panel {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
         }
         
         /* Sign Up CTA Styles */
@@ -605,6 +612,31 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           font-weight: 600;
         }
         
+        /* Mobile Header Styles */
+        .briefs-mobile-header {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: var(--color-bg-primary);
+          border-bottom: 0.5px solid var(--color-border-primary);
+          backdropFilter: 'blur(10px)';
+          padding-top: 56px; /* Account for mobile header height */
+        }
+        
+        .briefs-mobile-header-content {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: var(--space-2) var(--content-padding);
+        }
+        
+        .briefs-mobile-header-title {
+          font-size: var(--text-lg);
+          font-weight: var(--font-semibold);
+          color: var(--color-text-primary);
+          margin: 0;
+        }
+        
         /* Mobile styles */
         @media (max-width: 1023px) {
           .briefs-action-panel {
@@ -620,14 +652,27 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             border-radius: 0;
             overflow-y: auto;
             padding: 0;
+            background: var(--color-bg-primary);
+          }
+          
+          /* Prevent background scrolling when panel is open */
+          .briefs-action-panel.mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
           }
         }
         
         /* Desktop styles */
         @media (min-width: 1024px) {
           .briefs-action-panel {
-            top: 0px;
-            height: calc(100vh - 0px);
+            position: relative; /* Keep relative positioning */
+            height: 100%; /* Use 100% height */
           }
         }
       `}</style>

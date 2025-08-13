@@ -95,7 +95,7 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
           borderBottom: '0.5px solid var(--color-border-primary)',
           padding: 'var(--space-4) var(--content-padding)',
           zIndex: 10
-        }}>
+        }} className="aivault-filter-bar">
           <div className="hide-scrollbar-horizontal" style={{ 
             display: 'flex', 
             gap: 'var(--space-2)', 

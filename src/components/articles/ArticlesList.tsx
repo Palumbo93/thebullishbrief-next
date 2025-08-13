@@ -166,15 +166,25 @@ export const ArticlesList: React.FC<ArticlesListProps> = ({
     <section style={{ 
       padding: 0
     }}>
+      <style>{`
+        .article-filter-bar {
+          position: sticky;
+          top: 0;
+          background: var(--color-bg-primary);
+          border-bottom: 0.5px solid var(--color-border-primary);
+          padding: var(--space-4) var(--content-padding);
+          z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+          .article-filter-bar {
+            top: 56px; /* Below mobile header */
+          }
+        }
+      `}</style>
+      
       {/* Filter Bar - Twitter-style top navigation */}
-      <div style={{ 
-        position: 'sticky', 
-        top: 0, 
-        background: 'var(--color-bg-primary)', 
-        borderBottom: '0.5px solid var(--color-border-primary)',
-        padding: 'var(--space-4) var(--content-padding)',
-        zIndex: 10
-      }}>
+      <div className="article-filter-bar">
         {/* Category Filters - Horizontal scrollable */}
         <div className="hide-scrollbar-horizontal" style={{ 
           display: 'flex', 

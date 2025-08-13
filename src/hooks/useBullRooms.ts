@@ -1,14 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { BullRoom } from '../lib/database.aliases';
+import { useUserPreferences } from './useUserPreferences';
+import { isRoomVisibleToUser } from '../utils/preferenceMapping';
 
 /**
- * Hook for fetching Bull Rooms from the database
+ * Hook for fetching Bull Rooms from the database with preference-based filtering
  * Provides loading states, error handling, and caching
+ * Filters rooms based on user preferences:
+ * - 'general' room is always available
+ * - Other rooms are only shown if they match user preferences
  */
 export const useBullRooms = () => {
+  const { data: userPreferences } = useUserPreferences();
+
   return useQuery({
-    queryKey: ['bull-rooms'],
+    queryKey: ['bull-rooms', userPreferences],
     queryFn: async (): Promise<BullRoom[]> => {
       const { data, error } = await supabase
         .from('bull_rooms')
@@ -21,7 +28,14 @@ export const useBullRooms = () => {
         throw new Error(`Failed to fetch bull rooms: ${error.message}`);
       }
 
-      return data || [];
+      const allRooms = data || [];
+      
+      // Filter rooms based on user preferences
+      const filteredRooms = allRooms.filter(room => 
+        isRoomVisibleToUser(room.slug, userPreferences)
+      );
+
+      return filteredRooms;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes

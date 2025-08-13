@@ -35,40 +35,21 @@ export const RISK_TOLERANCE_MAP: Record<string, string> = {
 
 // Investment Interests mappings
 export const INTERESTS_MAP: Record<string, string> = {
-  'stocks': 'Stocks & Equities',
-  'bonds': 'Bonds & Fixed Income',
-  'etfs': 'ETFs & Index Funds',
-  'mutual-funds': 'Mutual Funds',
-  'options': 'Options Trading',
-  'futures': 'Futures',
-  'forex': 'Foreign Exchange',
-  'crypto': 'Cryptocurrency',
-  'commodities': 'Commodities',
-  'real-estate': 'Real Estate',
-  'energy': 'Energy & ESG',
-  'tech': 'Technology',
-  'healthcare': 'Healthcare',
-  'finance': 'Financial Services',
-  'consumer': 'Consumer Goods',
-  'industrial': 'Industrial',
-  'materials': 'Materials',
-  'utilities': 'Utilities',
-  'telecom': 'Telecommunications',
-  'junior-mining': 'Junior Mining',
-  'senior-mining': 'Senior Mining',
-  'biotech': 'Biotech & Healthcare',
-  'ai': 'Artificial Intelligence',
-  'ai-tech': 'AI & Technology',
-  'blockchain': 'Blockchain',
-  'renewable-energy': 'Renewable Energy',
-  'cannabis': 'Cannabis',
-  'gaming': 'Gaming',
-  'esports': 'Esports',
-  'metaverse': 'Metaverse',
-  'defi': 'DeFi',
-  'nft': 'NFTs',
-  'penny-stocks': 'Penny Stocks',
-  'macro': 'Macroeconomics'
+  // Market Intelligence
+  'hot-tickers': 'Hot Tickers',
+  'insider-tracking': 'Insider Tracking',
+  'earnings-catalysts': 'Earnings & Catalysts',
+  
+  // Speculative Plays
+  'degen-plays': 'Degen Plays',
+  'crypto': 'Crypto',
+  
+  // Sector Focus
+  'tech': 'Tech',
+  'mining-commodities-energy': 'Mining, Commodities & Energy',
+  
+  // Evergreen Trading
+  'trading-strategies': 'Trading Strategies & Setups'
 };
 
 // Country mappings using countries-list
@@ -195,4 +176,49 @@ export const getAvailableOptions = (preferenceType: string): { value: string; la
 // Get onboarding options for a specific type
 export const getOnboardingOptions = (type: keyof typeof ONBOARDING_OPTIONS) => {
   return ONBOARDING_OPTIONS[type] || [];
+};
+
+/**
+ * Check if a room slug matches user preferences
+ * @param roomSlug - The room slug to check
+ * @param preferences - User preferences object
+ * @returns true if the room should be visible to the user
+ */
+export const isRoomVisibleToUser = (roomSlug: string, preferences: any): boolean => {
+  // General room is always visible
+  if (roomSlug === 'general') {
+    return true;
+  }
+
+  // If no preferences, only show general room
+  if (!preferences) {
+    return false;
+  }
+
+  // Check if room slug matches any user interests
+  if (preferences.interests && preferences.interests.includes(roomSlug)) {
+    return true;
+  }
+
+  // Check if room slug matches user risk tolerance
+  if (preferences.riskTolerance && roomSlug === preferences.riskTolerance) {
+    return true;
+  }
+
+  // Check if room slug matches user investor type
+  if (preferences.investorType && roomSlug === preferences.investorType) {
+    return true;
+  }
+
+  // Check if room slug matches user experience level
+  if (preferences.experience && roomSlug === preferences.experience) {
+    return true;
+  }
+
+  // Check if room slug matches user country
+  if (preferences.country && roomSlug === preferences.country) {
+    return true;
+  }
+
+  return false;
 }; 

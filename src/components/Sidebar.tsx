@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogIn, UserPlus, LogOut, Brain, Bookmark } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../hooks/useToast';
 import { HomeIcon } from './ui/home';
@@ -30,7 +31,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const toast = useToast();
   const pathname = usePathname();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ bottom: 0, left: 0 });
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLButtonElement>(null);
 
   // Generate navigation items based on current route and user permissions
   const getNavItems = () => {
@@ -59,10 +62,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 
 
+  // Calculate menu position based on avatar position
+  const calculateMenuPosition = () => {
+    if (avatarRef.current) {
+      const rect = avatarRef.current.getBoundingClientRect();
+      
+      // Position above the avatar, left-aligned with it
+      // bottom: 48px (avatar height) + 1rem (padding) + 16px (gap) = 48px + 16px + 16px = 80px from bottom
+      const bottom = 70;
+      const left = 16; // 16px from left edge of sidebar
+      
+      setMenuPosition({ 
+        bottom: bottom,
+        left: left 
+      });
+    }
+  };
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node) &&
+          avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
         setShowUserMenu(false);
       }
     };
@@ -70,6 +91,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Update menu position when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      if (showUserMenu) {
+        calculateMenuPosition();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [showUserMenu]);
 
   const handleLogout = async () => {
     try {
@@ -294,25 +327,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }
 
         .user-menu {
-          position: absolute;
-          bottom: 100%;
-          left: 16px;
-          margin-bottom: var(--space-3);
+          position: fixed;
           background: var(--color-bg-card);
           border: 0.5px solid var(--color-border-primary);
           border-radius: var(--radius-lg);
           box-shadow: var(--shadow-xl);
           min-width: 180px;
-          z-index: var(--z-dropdown);
+          z-index: 10000;
           opacity: 0;
           visibility: hidden;
           transition: all var(--transition-base);
+          transform: translateY(-4px);
         }
 
         .user-menu.show {
           opacity: 1;
           visibility: visible;
-          transform: translateY(-4px);
+          transform: translateY(0);
         }
 
         .user-menu-item {
@@ -418,16 +449,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             font-size: var(--text-sm);
           }
 
-          .user-menu {
-            bottom: auto;
-            top: 100%;
-            margin-bottom: 0;
-            margin-top: var(--space-2);
-          }
 
-        .user-menu.show {
-          transform: translateY(4px);
-        }
 
 
 
@@ -473,43 +495,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Authentication Section */}
         {user ? (
           /* User Avatar with Dropdown Menu */
-          <div className="user-avatar-container" ref={userMenuRef}>
+          <div className="user-avatar-container">
             <button
+              ref={avatarRef}
               className={`user-avatar ${showUserMenu ? 'active' : ''}`}
-              onClick={() => setShowUserMenu(!showUserMenu)}
+              onClick={() => {
+                if (!showUserMenu) {
+                  calculateMenuPosition();
+                }
+                setShowUserMenu(!showUserMenu);
+              }}
               aria-label="User menu"
               aria-expanded={showUserMenu}
               aria-haspopup="true"
             >
               {getUserInitials()}
             </button>
-            
-            {/* User Dropdown Menu */}
-            <div className={`user-menu ${showUserMenu ? 'show' : ''}`}>
-              <Link
-                href="/account-settings"
-                className="user-menu-item"
-                onClick={() => setShowUserMenu(false)}
-              >
-                <UserPlus className="user-menu-item-icon" />
-                Account Settings
-              </Link>
-              <Link
-                href="/bookmarks"
-                className="user-menu-item"
-                onClick={() => setShowUserMenu(false)}
-              >
-                <Bookmark className="user-menu-item-icon" />
-                Bookmarks
-              </Link>
-              <button
-                className="user-menu-item"
-                onClick={handleLogout}
-              >
-                <LogOut className="user-menu-item-icon" />
-                Log Out
-              </button>
-            </div>
           </div>
         ) : (
           /* Sign In/Sign Up Buttons */
@@ -546,6 +547,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         
       </aside>
+
+      {/* Portal-rendered User Menu */}
+      {showUserMenu && typeof window !== 'undefined' && createPortal(
+        <div 
+          ref={userMenuRef}
+          className={`user-menu ${showUserMenu ? 'show' : ''}`}
+          style={{
+            bottom: `${menuPosition.bottom}px`,
+            left: `${menuPosition.left}px`
+          }}
+        >
+          <Link
+            href="/account-settings"
+            className="user-menu-item"
+            onClick={() => setShowUserMenu(false)}
+          >
+            <UserPlus className="user-menu-item-icon" />
+            Account Settings
+          </Link>
+          <Link
+            href="/bookmarks"
+            className="user-menu-item"
+            onClick={() => setShowUserMenu(false)}
+          >
+            <Bookmark className="user-menu-item-icon" />
+            Bookmarks
+          </Link>
+          <button
+            className="user-menu-item"
+            onClick={handleLogout}
+          >
+            <LogOut className="user-menu-item-icon" />
+            Log Out
+          </button>
+        </div>,
+        document.body
+      )}
     </>
   );
 }; 

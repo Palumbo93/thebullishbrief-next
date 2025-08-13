@@ -102,15 +102,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     return withTickers;
   };
 
-  if (isLoading) {
-    return (
-      <div style={{ minHeight: '100vh' }}>
-        <ArticleSkeleton />
-      </div>
-    );
-  }
-
-  if (error || !brief) {
+  if (!isLoading && (error || !brief)) {
     return (
       <div style={{
         display: 'flex',
@@ -147,11 +139,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     );
   }
 
-  // Generate TOC from brief content
-  const tocSections = parseTOCFromContent(brief.content);
+  // Only prepare data if brief exists (not loading)
+  const tocSections = brief ? parseTOCFromContent(brief.content) : [];
   
   // Generate ticker widget - TradingView first, then custom widget if available
-  const firstTickerSymbol = getFirstTickerSymbol(brief.tickers);
+  const firstTickerSymbol = brief ? getFirstTickerSymbol(brief.tickers) : null;
   const tickerWidget = (
     <div>
       {/* TradingView Widget (always shows if tickers exist) */}
@@ -160,27 +152,27 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       )}
       
       {/* Custom Widget (shows below TradingView if widget_code exists) */}
-      {brief.widget_code && (
+      {brief?.widget_code && (
         <CustomWidget code={brief.widget_code} title="Additional Widget" />
       )}
     </div>
   );
 
   // Prepare action panel data
-  const briefActionPanel = {
+  const briefActionPanel = brief ? {
     tickerWidget,
     sections: tocSections,
     tickers: brief.tickers,
     companyName: brief.company_name || undefined,
     companyLogoUrl: brief.company_logo_url || undefined,
     investorDeckUrl: brief.investor_deck_url || undefined
-  };
+  } : undefined;
 
-  const mobileHeaderProps = {
+  const mobileHeaderProps = brief ? {
     companyName: brief.company_name || undefined,
     tickers: Array.isArray(brief.tickers) ? brief.tickers as string[] : undefined,
     onShareClick: () => setIsShareSheetOpen(true)
-  };
+  } : {};
 
   return (
     <Layout
@@ -189,13 +181,21 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       briefActionPanel={briefActionPanel}
       mobileHeader={mobileHeaderProps}
     >
+      {/* Loading state */}
+      {isLoading && (
+        <div style={{ minHeight: '100vh' }}>
+          <ArticleSkeleton />
+        </div>
+      )}
+
       {/* Brief Content */}
-      <div style={{ minHeight: '100vh' }}>
+      {!isLoading && (
+        <div style={{ minHeight: '100vh' }}>
         {/* Desktop Banner - Hidden on mobile */}
         <BriefDesktopBanner
-          companyName={brief.company_name || undefined}
-          companyLogoUrl={brief.company_logo_url || undefined}
-          tickers={brief.tickers}
+          companyName={brief?.company_name || undefined}
+          companyLogoUrl={brief?.company_logo_url || undefined}
+          tickers={brief?.tickers || []}
           isScrolled={isScrolled}
           actions={[
             {
@@ -212,7 +212,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         {/* Brief Header with Background Image */}
         <div style={{
           position: 'relative',
-          backgroundImage: `url(${brief.featured_image_url})`,
+          backgroundImage: `url(${brief?.featured_image_url})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           overflow: 'hidden',
@@ -273,7 +273,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               marginBottom: 'var(--space-4)',
               letterSpacing: '-0.01em'
             }}>
-              {brief.title}
+              {brief?.title}
             </h1>
 
             
@@ -282,7 +282,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
         {/* Main Content */}
         <main style={{
-          padding: '0 var(--content-padding)',
+          padding: '0px var(--content-padding) 50px var(--content-padding)',
           maxWidth: '800px',
           margin: '0 auto'
         }}>
@@ -300,7 +300,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Calendar style={{ width: '14px', height: '14px' }} />
-              <span>{(brief as any).date || new Date(brief.created_at || new Date()).toLocaleDateString('en-US', {
+              <span>{(brief as any)?.date || new Date(brief?.created_at || new Date()).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
@@ -314,7 +314,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none">
-            {brief.content ? (
+            {brief?.content ? (
               <div 
                 className="html-content"
                 dangerouslySetInnerHTML={{ 
@@ -361,7 +361,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
 
           {/* Disclaimer */}
-          {brief.disclaimer && (
+          {brief?.disclaimer && (
             <div style={{
               marginTop: 'var(--space-8)',
               padding: 'var(--space-4)',
@@ -378,6 +378,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
 
       </div>
+      )}
       
       {/* CTA Banner */}
       <CTABanner 
@@ -396,7 +397,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           onClose={() => setIsShareSheetOpen(false)}
           url={typeof window !== 'undefined' ? window.location.href : ''}
           onShare={(platform) => {
-            if (brief.title) {
+            if (brief?.title) {
               trackAnalyticsShare(String(brief.id), brief.title, platform);
             }
           }}

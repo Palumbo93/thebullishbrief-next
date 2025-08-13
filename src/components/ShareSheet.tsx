@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { X, Twitter, Linkedin, MessageSquare, Share2, Copy, Check } from 'lucide-react';
+import { X, MessageSquare, Share2, Copy, Check } from 'lucide-react';
+import { SocialIcon } from 'react-social-icons';
 
 interface ShareSheetProps {
   isOpen: boolean;
@@ -66,15 +67,15 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'twitter',
       name: 'X (Twitter)',
-      icon: <Twitter size={20} />,
-      color: '#1da1f2',
+      icon: <SocialIcon network="x" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
+      color: '#fff',
       url: `https://x.com/intent/tweet?text=${encodeURIComponent('Check out this article')}&url=${encodeURIComponent(url)}`,
       action: 'link'
     },
     {
       id: 'linkedin',
       name: 'LinkedIn',
-      icon: <Linkedin size={20} />,
+      icon: <SocialIcon network="linkedin" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
       color: '#0077b5',
       url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
       action: 'link'
@@ -82,7 +83,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'messages',
       name: 'Messages',
-      icon: <MessageSquare size={20} />,
+      icon: <MessageSquare size={24} />,
       color: '#34c759',
       url: `sms:&body=${encodeURIComponent(`Check out this article\n\n${url}`)}`,
       action: 'link'
@@ -90,7 +91,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'whatsapp',
       name: 'WhatsApp',
-      icon: <Share2 size={20} />,
+      icon: <SocialIcon network="whatsapp" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
       color: '#25d366',
       url: `https://wa.me/?text=${encodeURIComponent(`Check out this article\n\n${url}`)}`,
       action: 'link'
@@ -98,7 +99,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'telegram',
       name: 'Telegram',
-      icon: <Share2 size={20} />,
+      icon: <SocialIcon network="telegram" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
       color: '#0088cc',
       url: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Check out this article')}`,
       action: 'link'
@@ -106,7 +107,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'copy',
       name: 'Copy Link',
-      icon: copied ? <Check size={20} /> : <Copy size={20} />,
+      icon: copied ? <Check size={24} /> : <Copy size={24} />,
       color: copied ? '#22c55e' : '#a3a3a3',
       url: '',
       action: 'copy'

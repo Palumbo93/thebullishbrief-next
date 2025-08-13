@@ -6,6 +6,7 @@ import { Search, Copy, ArrowRight, Play, AlertCircle, X } from 'lucide-react';
 import { PromptModal } from '../components/aivault/PromptModal';
 
 import { useAuth } from '../contexts/AuthContext';
+import { useAuthModal } from '../contexts/AuthModalContext';
 import { useToast } from '../hooks/useToast';
 import { usePrompts } from '../hooks/usePrompts';
 import { Prompt, PromptField } from '../services/database';
@@ -16,7 +17,7 @@ interface PromptWithFields extends Prompt {
 }
 
 interface AIVaultProps {
-  onCreateAccountClick?: () => void;
+  onCreateAccountClick?: () => void; // Keep for backward compatibility
 }
 
 export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
@@ -24,8 +25,12 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptWithFields | null>(null);
   const [showPromptModal, setShowPromptModal] = useState(false);
   const { user } = useAuth();
+  const { handleSignUpClick } = useAuthModal();
   const toast = useToast();
   const { prompts, categories, loading, error, getPromptsByCategory, getPromptFields, resetPrompts } = usePrompts();
+
+  // Use the hook's handleSignUpClick or fall back to prop for backward compatibility
+  const handleCreateAccount = onCreateAccountClick || handleSignUpClick;
 
   // Handle category selection
   useEffect(() => {
@@ -51,7 +56,7 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
   const handleCopyPrompt = async (prompt: Prompt) => {
     // Check if user is authenticated
     if (!user) {
-      onCreateAccountClick?.();
+      handleCreateAccount();
       return;
     }
     
@@ -67,7 +72,7 @@ export const AIVault: React.FC<AIVaultProps> = ({ onCreateAccountClick }) => {
   const handleUsePrompt = async (prompt: Prompt) => {
     // Check if user is authenticated
     if (!user) {
-      onCreateAccountClick?.();
+      handleCreateAccount();
       return;
     }
 

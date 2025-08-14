@@ -5,12 +5,7 @@ import { useDatafast } from '../contexts/DatafastContext';
  */
 const trackGoal = async (goal: string, properties: Record<string, any> = {}) => {
   try {
-    // Use absolute URL to ensure correct port
-    const apiUrl = `${window.location.origin}/api/analytics/goal`;
-    console.log('Making request to:', apiUrl);
-    console.log('Current origin:', window.location.origin);
-    
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${window.location.origin}/api/analytics/goal`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -19,13 +14,9 @@ const trackGoal = async (goal: string, properties: Record<string, any> = {}) => 
       })
     });
     
-    console.log('Response status:', response.status);
-    
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Goal tracking failed:', errorData);
-    } else {
-      console.log(`${goal} tracked successfully`);
     }
   } catch (error) {
     console.error(`Failed to track ${goal}:`, error);
@@ -51,14 +42,12 @@ export const useTrackPageView = () => {
 export const useTrackArticleEngagement = () => {
   return {
     trackBookmark: async (articleId: string, title: string) => {
-      console.log('Tracking article bookmark:', { articleId, title });
       await trackGoal('article_bookmark', { 
         article_id: articleId, 
         title 
       });
     },
     trackShare: async (articleId: string, title: string, platform: string) => {
-      console.log('Tracking article share:', { articleId, title, platform });
       await trackGoal('article_share', { 
         article_id: articleId, 
         title, 
@@ -94,14 +83,17 @@ export const useTrackBriefEngagement = () => {
  */
 export const useTrackUserActions = () => {
   return {
-    trackSignup: async (method?: string) => {
+    trackSignup: async (method?: string, userData?: { email?: string; username?: string }) => {
       await trackGoal('user_signup', { 
-        signup_method: method || 'email' 
+        signup_method: method || 'email',
+        user_email: userData?.email || '',
+        username: userData?.username || ''
       });
     },
-    trackLogin: async (method?: string) => {
+    trackLogin: async (method?: string, userData?: { email?: string }) => {
       await trackGoal('user_login', { 
-        login_method: method || 'email' 
+        login_method: method || 'email',
+        user_email: userData?.email || ''
       });
     },
     trackComment: async (contentType: string, contentId: string) => {

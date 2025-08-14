@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'The Bullish Brief',
     description: 'Your daily dose of bullish market insights and financial analysis',
-    url: 'https://thebullishbrief.com',
+    url: 'https://bullishbrief.com',
     siteName: 'The Bullish Brief',
     images: [
       {

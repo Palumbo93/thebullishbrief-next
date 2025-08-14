@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       };
     }
 
-    const briefUrl = `https://thebullishbrief.com/briefs/${slug}`;
+    const briefUrl = `https://bullishbrief.com/briefs/${slug}`;
     const briefImage = brief.featured_image_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png';
     const description = brief.subtitle || brief.title;
     
@@ -114,9 +114,9 @@ export default async function BriefPageWrapper({ params }: Props) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://thebullishbrief.com/briefs/${slug}`,
+      '@id': `https://bullishbrief.com/briefs/${slug}`,
     },
-    url: `https://thebullishbrief.com/briefs/${slug}`,
+    url: `https://bullishbrief.com/briefs/${slug}`,
     articleSection: 'Investor Briefs',
     keywords: rawBrief.company_name ? `${rawBrief.company_name}, investor brief, financial analysis, markets` : 'investor brief, financial analysis, markets',
   };

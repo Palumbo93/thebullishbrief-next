@@ -65,9 +65,9 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
       
       // Track analytics event
       if (isSignUp) {
-        trackSignup('email');
+        trackSignup('email', { email, username: _username });
       } else {
-        trackLogin('email');
+        trackLogin('email', { email });
       }
       
       // Call onSuccess immediately since auth state listener will handle the modal close

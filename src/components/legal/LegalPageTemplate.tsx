@@ -6,6 +6,29 @@ interface LegalPageTemplateProps {
   doc: LegalDocument;
 }
 
+// Function to convert plain text bullet points to HTML lists
+const formatContent = (content: string): string => {
+  // Split content into lines
+  const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+  
+  // Check if content contains bullet points
+  const hasBullets = lines.some(line => line.startsWith('•') || line.startsWith('-') || line.startsWith('*'));
+  
+  if (hasBullets) {
+    // Convert bullet points to HTML list
+    const listItems = lines.map(line => {
+      // Remove bullet point and trim
+      const cleanLine = line.replace(/^[•\-*]\s*/, '').trim();
+      return `<li>${cleanLine}</li>`;
+    });
+    
+    return `<ul style="margin: 0; padding-left: var(--space-6); list-style-type: disc;">${listItems.join('')}</ul>`;
+  } else {
+    // Return as regular paragraph
+    return `<p style="margin: 0 0 var(--space-4) 0;">${content}</p>`;
+  }
+};
+
 export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => {
   return (
     <div style={{
@@ -78,7 +101,7 @@ export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => 
                     color: 'var(--color-text-secondary)',
                     lineHeight: 1.6
                   }}
-                  dangerouslySetInnerHTML={{ __html: section.body }}
+                  dangerouslySetInnerHTML={{ __html: formatContent(section.body) }}
                 />
               </div>
             </div>

@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       };
     }
 
-    const authorUrl = `https://thebullishbrief.com/authors/${slug}`;
+    const authorUrl = `https://bullishbrief.com/authors/${slug}`;
     const authorImage = author.avatar_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png';
     const description = author.bio || `Read articles by ${author.name} on The Bullish Brief`;
     
@@ -101,7 +101,7 @@ export default async function AuthorPageWrapper({ params }: Props) {
     name: rawAuthor.name,
     description: rawAuthor.bio || `Author at The Bullish Brief`,
     image: rawAuthor.avatar_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
-    url: `https://thebullishbrief.com/authors/${slug}`,
+    url: `https://bullishbrief.com/authors/${slug}`,
     sameAs: [
       ...(rawAuthor.website_url ? [rawAuthor.website_url] : []),
       ...(rawAuthor.linkedin_url ? [rawAuthor.linkedin_url] : []),
@@ -110,7 +110,7 @@ export default async function AuthorPageWrapper({ params }: Props) {
     worksFor: {
       '@type': 'Organization',
       name: 'The Bullish Brief',
-      url: 'https://thebullishbrief.com'
+      url: 'https://bullishbrief.com'
     }
   };
   

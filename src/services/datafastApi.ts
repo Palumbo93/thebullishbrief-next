@@ -34,7 +34,6 @@ export class DatafastApiService {
       const visitorId = properties?.datafast_visitor_id;
       
       if (!visitorId) {
-        console.error('No visitor ID provided for goal tracking');
         return {
           status: 'error',
           error: {

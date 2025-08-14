@@ -23,9 +23,8 @@ export class DatafastService {
   /**
    * Initialize the Datafa.st analytics service
    */
-  initialize(siteId: string): void {
+    initialize(siteId: string): void {
     if (this.isInitialized) {
-      console.warn('Datafa.st service already initialized');
       return;
     }
 
@@ -35,9 +34,8 @@ export class DatafastService {
     if (typeof window !== 'undefined') {
       this.waitForScript();
     }
-
+    
     this.isInitialized = true;
-    console.log('Datafa.st service initialized with site ID:', siteId);
   }
 
   /**
@@ -46,7 +44,6 @@ export class DatafastService {
   private waitForScript(): void {
     const checkScript = () => {
       if (window.datafast) {
-        console.log('Datafa.st script is ready');
         return;
       }
       
@@ -62,33 +59,10 @@ export class DatafastService {
    */
   debug(): void {
     if (typeof window === 'undefined') {
-      console.log('Datafa.st debug: Not in browser environment');
       return;
     }
 
-    console.log('Datafa.st debug info:');
-    console.log('- window.datafast exists:', !!window.datafast);
-    console.log('- script tag exists:', !!document.querySelector('script[data-website-id]'));
-    console.log('- site ID:', this.siteId);
-    console.log('- isInitialized:', this.isInitialized);
-    
-    // Check for script tag details
-    const scriptTag = document.querySelector('script[data-website-id]');
-    if (scriptTag) {
-      console.log('- script tag found:', {
-        src: scriptTag.getAttribute('src'),
-        websiteId: scriptTag.getAttribute('data-website-id'),
-        domain: scriptTag.getAttribute('data-domain')
-      });
-    } else {
-      console.log('- No script tag found with data-website-id');
-    }
-    
-    if (window.datafast) {
-      console.log('- Datafa.st object:', window.datafast);
-    } else {
-      console.log('- Datafa.st object not found - script may not be loaded yet');
-    }
+    // Debug function kept for potential future use but logs removed
   }
 
   /**
@@ -118,10 +92,6 @@ export class DatafastService {
 
     if (window.datafast) {
       window.datafast.track(event.event, event.properties);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Datafa.st event:', event);
-      }
     }
   }
 

@@ -7,6 +7,7 @@ import { Eye, Bookmark, MessageSquare, Clock } from 'lucide-react';
 import { useToggleBookmark, useIsBookmarked } from '../../hooks/useArticles';
 import { useAuth } from '../../contexts/AuthContext';
 import { useArticleViewCount } from '../../hooks/useArticleViews';
+import { useTrackArticleEngagement } from '../../hooks/useDatafastAnalytics';
 import { ArticleCardImage } from '../ui/OptimizedImage';
 
 interface Article {
@@ -43,6 +44,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const toggleBookmark = useToggleBookmark();
   const { data: isBookmarked } = useIsBookmarked(article.id);
   const { data: viewCount } = useArticleViewCount(String(article.id));
+  const { trackBookmark } = useTrackArticleEngagement();
   const router = useRouter();
   
   // Format date to show year only if not current year
@@ -104,6 +106,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       
       // Then perform the actual bookmark operation
       toggleBookmark.mutate(String(article.id));
+      
+      // Track analytics if bookmarking (not unbookmarking)
+      if (!isBookmarked) {
+        trackBookmark(String(article.id), article.title);
+      }
     }
   };
 

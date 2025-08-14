@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { datafastApiService } from '../../../../services/datafastApi';
 
 export async function POST(request: NextRequest) {
-  console.log('=== API ROUTE CALLED ===');
-  console.log('Request method:', request.method);
-  console.log('Request URL:', request.url);
-  
   try {
     // Parse request body
     const body = await request.json();
@@ -13,12 +9,6 @@ export async function POST(request: NextRequest) {
 
     // Get visitor ID from server-side cookies
     const datafastVisitorId = request.cookies.get('datafast_visitor_id')?.value;
-    
-    console.log('Goal tracking request received:', { goal, properties });
-    console.log('Environment:', process.env.NODE_ENV);
-    console.log('API Key configured:', !!process.env.DATAFAST_API_KEY);
-    console.log('Visitor ID from cookies:', datafastVisitorId);
-    console.log('All cookies:', request.cookies.getAll().map(c => c.name));
 
     // Validate required fields
     if (!goal || typeof goal !== 'string') {
@@ -61,14 +51,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Track goal with Datafa.st API
-    console.log('Calling Datafa.st API with:', { goal, properties });
-    
-    // Use visitor ID from server-side cookies, not from client properties
     const result = await datafastApiService.trackGoal(goal, {
       datafast_visitor_id: datafastVisitorId,
       ...properties
     });
-    console.log('Datafa.st API result:', result);
 
     if (result.status === 'error') {
       console.error('Datafa.st goal tracking failed:', result.error);
@@ -94,10 +80,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log successful goal tracking in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Goal tracked successfully:', { goal, properties });
-    }
+
 
     return NextResponse.json(
       { status: 'success', message: 'Goal tracked successfully' },

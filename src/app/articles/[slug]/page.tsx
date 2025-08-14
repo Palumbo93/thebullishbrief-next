@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       };
     }
 
-    const articleUrl = `https://thebullishbrief.com/articles/${slug}`;
+    const articleUrl = `https://bullishbrief.com/articles/${slug}`;
     const articleImage = article.featured_image_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png';
     const description = article.subtitle || article.title;
     
@@ -152,7 +152,7 @@ export default async function ArticlePageWrapper({ params }: Props) {
     publisher: {
       '@type': 'Organization',
       name: 'The Bullish Brief',
-      url: 'https://thebullishbrief.com',
+      url: 'https://bullishbrief.com',
       logo: {
         '@type': 'ImageObject',
         url: 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
@@ -166,9 +166,9 @@ export default async function ArticlePageWrapper({ params }: Props) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://thebullishbrief.com/articles/${slug}`,
+      '@id': `https://bullishbrief.com/articles/${slug}`,
     },
-    url: `https://thebullishbrief.com/articles/${slug}`,
+    url: `https://bullishbrief.com/articles/${slug}`,
     articleSection: rawArticle.category?.name || 'Finance',
     keywords: rawArticle.tags?.map((tag: any) => tag.tag.name).join(', ') || 'finance, markets, investing',
     wordCount: rawArticle.content?.length || 0,
@@ -189,19 +189,19 @@ export default async function ArticlePageWrapper({ params }: Props) {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://thebullishbrief.com',
+        item: 'https://bullishbrief.com',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Articles',
-        item: 'https://thebullishbrief.com/articles',
+        item: 'https://bullishbrief.com/articles',
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: rawArticle.title,
-        item: `https://thebullishbrief.com/articles/${slug}`,
+        item: `https://bullishbrief.com/articles/${slug}`,
       },
     ],
   };
@@ -211,7 +211,7 @@ export default async function ArticlePageWrapper({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'The Bullish Brief',
-    url: 'https://thebullishbrief.com',
+    url: 'https://bullishbrief.com',
     logo: {
       '@type': 'ImageObject',
       url: 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',

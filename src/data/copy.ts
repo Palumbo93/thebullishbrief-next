@@ -10,7 +10,7 @@ export const BRAND_COPY = {
   // Authentication modals
   auth: {
     signUp: {
-      title: "It's Always Bullish When You're Briefed",
+      title: "Always Ahead. Always Bullish.",
       features: [
         "Real-time market discussions with serious traders",
         "Elite AI prompts for sharper research and faster execution",
@@ -18,7 +18,7 @@ export const BRAND_COPY = {
       ]
     },
     signIn: {
-      welcome: "Welcome Back To The Briefed"
+      welcome: "Welcome Back, Let's Get You Briefed"
     }
   },
 

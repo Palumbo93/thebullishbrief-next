@@ -243,7 +243,7 @@ export const Layout: React.FC<LayoutProps> = ({
           position: fixed;
           left: 0;
           top: 0;
-          width: 80px;
+          width: 80.5px; /* need to be 80.5px to account for the border */
           height: 100vh;
           display: flex;
           flex-direction: column;
@@ -252,6 +252,7 @@ export const Layout: React.FC<LayoutProps> = ({
           background: var(--color-bg-primary);
           z-index: 100;
           flex-shrink: 0;
+          overflow-x: hidden;
         }
 
         /* Main Content - Offset by sidebar, page scroll */

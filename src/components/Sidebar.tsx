@@ -176,8 +176,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         .nav-button {
           width: 56px;
-          height: 56px;
+          height: 72px;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           border-radius: var(--radius-lg);
@@ -188,10 +189,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           position: relative;
           padding: 0;
           color: var(--color-text-tertiary);
+          gap: var(--space-1);
         }
 
         .nav-button:hover {
-          background: rgba(255, 255, 255, 0.05);
+          /* background: rgba(255, 255, 255, 0.05); */
           color: var(--color-text-primary);
           transform: translateY(-1px);
         }
@@ -203,7 +205,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           top: 50%;
           transform: translateY(-50%);
           margin-left: var(--space-3);
-          background: var(--color-bg-card);
+          /* background: var(--color-bg-card); */
           color: var(--color-text-primary);
           padding: var(--space-2) var(--space-3);
           border-radius: var(--radius-lg);
@@ -219,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         .nav-button.active {
           color: var(--color-text-primary);
-          background: rgba(255, 255, 255, 0.08);
+          /* background: rgba(255, 255, 255, 0.08); */
         }
 
         .nav-button.active::before {
@@ -240,6 +242,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+
+        .nav-button-label {
+          font-size: 9px;
+          font-weight: var(--font-medium);
+          color: var(--color-text-secondary);
+          text-align: center;
+          line-height: 1;
+          opacity: 0.8;
+          transition: all var(--transition-base);
+        }
+
+        .nav-button:hover .nav-button-label {
+          color: var(--color-text-primary);
+          font-weight: var(--font-bold);
+        }
+
+        .nav-button.active .nav-button-label {
+          color: var(--color-text-primary);
+          font-weight: var(--font-bold);
         }
 
         .auth-section {
@@ -391,12 +413,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           
           .nav-button {
             width: 44px;
-            height: 44px;
+            height: 56px;
           }
           
           .nav-button-icon {
             width: 18px;
             height: 18px;
+          }
+
+          .nav-button-label {
+            font-size: 10px;
           }
 
           .auth-button {
@@ -433,6 +459,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           .nav-button-icon {
             width: 20px;
             height: 20px;
+          }
+
+          .nav-button-label {
+            display: none;
           }
           
           .auth-section {
@@ -486,6 +516,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div className="nav-button-icon">
                   <Icon size={24} />
                 </div>
+                <span className="nav-button-label">{item.label}</span>
               </Link>
             );
           })}

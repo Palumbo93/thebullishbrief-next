@@ -5,6 +5,7 @@ import { PromptField } from '../../services/database';
 import { useToast } from '../../hooks/useToast';
 import { useViewportHeightOnly } from '../../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../../utils/viewportUtils';
+import { useTrackPromptInteractions } from '../../hooks/useDatafastAnalytics';
 
 interface PromptWithFields {
   id: string;
@@ -36,6 +37,9 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const toast = useToast();
   const viewportHeight = useViewportHeightOnly();
+  
+  // Analytics tracking
+  const { trackPromptCopied, trackPromptDownloaded } = useTrackPromptInteractions();
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -91,6 +95,9 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(textToCopy);
         toast.success('Prompt copied to clipboard');
+        
+        // Track prompt copied analytics
+        trackPromptCopied(prompt.id, prompt.title);
       } else {
         // Fallback for older browsers/mobile
         const textArea = document.createElement('textarea');
@@ -107,6 +114,9 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
         
         if (successful) {
           toast.success('Prompt copied to clipboard');
+          
+          // Track prompt copied analytics
+          trackPromptCopied(prompt.id, prompt.title);
         } else {
           throw new Error('execCommand copy failed');
         }
@@ -132,6 +142,9 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
       element.click();
       document.body.removeChild(element);
       toast.success('Prompt downloaded successfully');
+      
+      // Track prompt downloaded analytics
+      trackPromptDownloaded(prompt.id, prompt.title);
     } catch (err) {
       console.error('Failed to download prompt:', err);
       toast.error('Failed to download prompt. Please try again.');

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useArticleBySlug, useRelatedArticles, useToggleBookmark, useIsBookmarked } from '../hooks/useArticles';
 import { useTrackArticleView, useArticleViewCount } from '../hooks/useArticleViews';
 import { useAuth } from '../contexts/AuthContext';
-import { useTrackArticleEngagement } from '../hooks/useAnalytics';
+import { useTrackArticleEngagement } from '../hooks/useDatafastAnalytics';
 import { useMobileHeader } from '../contexts/MobileHeaderContext';
 import { createMobileHeaderConfig } from '../utils/mobileHeaderConfigs';
 import { ArticleCard } from '../components/articles/ArticleCard';

@@ -24,7 +24,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
   const navItems: Array<{ slug: LegalDocument['slug']; label: string; to: string }> = [
     { slug: 'terms', label: 'Terms & Conditions', to: '/terms' },
     { slug: 'privacy', label: 'Privacy Policy', to: '/privacy' },
-    { slug: 'cookies', label: 'Cookies Policy', to: '/cookies' },
+
     { slug: 'disclaimer', label: 'Disclaimer', to: '/disclaimer' },
   ];
 

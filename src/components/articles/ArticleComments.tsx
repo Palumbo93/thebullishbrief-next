@@ -9,6 +9,7 @@ import { AuthorAvatarImage } from '../ui/OptimizedImage';
 import { Comment } from '../../types/comment.types';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useViewportHeightOnly } from '../../hooks/useViewportHeight';
+import { useTrackUserActions } from '../../hooks/useDatafastAnalytics';
 
 // Mobile detection hook
 const useIsMobile = () => {
@@ -363,6 +364,9 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
   const deleteComment = useDeleteComment();
   const addReaction = useAddReaction();
   const removeReaction = useRemoveReaction();
+  
+  // Analytics tracking
+  const { trackComment } = useTrackUserActions();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -394,6 +398,9 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
       content: message.trim(),
       parent_id: replyingTo || undefined
     });
+
+    // Track comment post analytics
+    trackComment('article', articleId);
 
     setMessage('');
     setReplyingTo(null);

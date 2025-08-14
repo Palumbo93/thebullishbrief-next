@@ -5,7 +5,7 @@ export interface LegalSection {
 }
 
 export interface LegalDocument {
-  slug: 'terms' | 'privacy' | 'cookies' | 'disclaimer';
+  slug: 'terms' | 'privacy' | 'disclaimer';
   title: string;
   effectiveDate?: string;
   updatedDate?: string;

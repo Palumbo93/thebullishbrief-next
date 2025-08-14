@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { BRAND_COPY } from '../../data/copy';
 import { useAuth } from '../../contexts/AuthContext';
 import SidebarJoinCTA from '../SidebarJoinCTA';
+import { useTrackBriefEngagement } from '../../hooks/useDatafastAnalytics';
 
 interface CompanyTicker {
   symbol: string;
@@ -21,6 +22,7 @@ interface TOCItem {
 }
 
 interface BriefsActionPanelProps {
+  briefId?: string; // Brief ID for analytics tracking
   onSignUpClick?: () => void;
   signUpForm?: React.ReactNode;
   tickerWidget?: React.ReactNode;
@@ -34,6 +36,7 @@ interface BriefsActionPanelProps {
 }
 
 const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({ 
+  briefId,
   onSignUpClick,
   signUpForm,
   tickerWidget,
@@ -48,6 +51,9 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   const [activeSection, setActiveSection] = useState<string>('');
   const tocRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  
+  // Analytics tracking
+  const { trackActionLinkClick } = useTrackBriefEngagement();
 
   // Intersection Observer to track which section is currently visible
   useEffect(() => {
@@ -192,6 +198,12 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
                 e.currentTarget.style.background = 'var(--color-bg-card)';
                 e.currentTarget.style.borderColor = 'var(--color-border-primary)';
               }}
+              onClick={() => {
+                // Track investor deck link click
+                if (briefId) {
+                  trackActionLinkClick(briefId, 'investor_deck');
+                }
+              }}
             >
               <ExternalLink style={{ width: '14px', height: '14px' }} />
               <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-medium)' }}>
@@ -230,6 +242,12 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'var(--color-bg-card)';
                   e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                }}
+                onClick={() => {
+                  // Track ticker chart link click
+                  if (briefId) {
+                    trackActionLinkClick(briefId, `ticker_chart_${ticker.exchange}_${ticker.symbol}`);
+                  }
                 }}
               >
                 <ExternalLink style={{ width: '14px', height: '14px' }} />

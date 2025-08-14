@@ -2,6 +2,21 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  
+  // Datafa.st proxy configuration to bypass adblockers
+  async rewrites() {
+    return [
+      {
+        source: '/js/script.js',
+        destination: 'https://datafa.st/js/script.js',
+      },
+      {
+        source: '/api/events',
+        destination: 'https://datafa.st/api/events',
+      },
+    ];
+  },
+  
   // Exclude Supabase directory from webpack compilation
   webpack: (config, { isServer }) => {
     if (!isServer) {

@@ -5,7 +5,7 @@ import { AuthButton } from './AuthButton';
 import { BrandingSection } from './BrandingSection';
 import { useAuthSubmit } from '../hooks/useAuthSubmit';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTrackAuthEvents } from '../../../hooks/useAnalytics';
+import { useTrackUserActions } from '../../../hooks/useDatafastAnalytics';
 import { FONT_URLS } from '../utils/constants';
 import { ModalCloseButton } from '../../ModalCloseButton';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '../../ui/input-otp';
@@ -24,7 +24,7 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
   const [isFinishing, setIsFinishing] = useState(false);
   const { handleVerifyOTP, handleSendOTP, isLoading, error, success, clearError, clearSuccess } = useAuthSubmit();
   const { user } = useAuth();
-  const { trackSignup, trackLogin } = useTrackAuthEvents();
+  const { trackSignup, trackLogin } = useTrackUserActions();
   const viewportHeight = useViewportHeightOnly();
 
   // Import Google Fonts for brand consistency

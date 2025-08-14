@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
-import { useTrackBriefEngagement } from '../hooks/useAnalytics';
+import { useTrackBriefEngagement } from '../hooks/useDatafastAnalytics';
 import { ArrowLeft, User, Calendar, Clock, Eye } from 'lucide-react';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 
@@ -42,7 +42,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       }
     }
   };
-  const { trackView: trackAnalyticsView, trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
+  const { trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
 
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
@@ -63,13 +63,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Track view when brief loads
-  React.useEffect(() => {
-    if (brief && brief.title) {
-      // Track analytics view
-      trackAnalyticsView(String(brief.id), brief.title);
-    }
-  }, [brief]);
+
 
 
 
@@ -160,6 +154,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   // Prepare action panel data
   const briefActionPanel = brief ? {
+    briefId: String(brief.id),
     tickerWidget,
     sections: tocSections,
     tickers: brief.tickers,

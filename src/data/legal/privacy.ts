@@ -13,7 +13,7 @@ export const privacyDocument: LegalDocument = {
     {
       id: 'how-we-collect',
       title: 'How We Collect Information',
-      body: 'Directly from You: When you fill out forms, send us emails, or otherwise interact with our Website or services. Automatically: Through cookies, analytics tools (such as Google Analytics), and other tracking technologies that monitor usage and performance. From Third Parties: If you are referred by a business partner or if external platforms provide information necessary to deliver our services (subject to applicable laws).'
+      body: 'Directly from You: When you fill out forms, send us emails, or otherwise interact with our Website or services. Automatically: Through cookies, analytics tools, and other tracking technologies that monitor usage and performance. From Third Parties: If you are referred by a business partner or if external platforms provide information necessary to deliver our services (subject to applicable laws).'
     },
     {
       id: 'how-we-use',

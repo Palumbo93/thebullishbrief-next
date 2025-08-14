@@ -18,10 +18,10 @@ Still Need:
 Misc:
     ✔ Terms of Service @done(25-08-07 22:27)
     ✔ Privacy Policy @done(25-08-07 22:27)
-    ✔ Cookie Policy @done(25-08-07 22:27)
-    ✔ Cookie Consent @done(25-08-07 22:27)
+    ✔ Cookie Policy (Removed - no longer needed with Datafa.st)
+    ✔ Cookie Consent (Replaced with Datafa.st - no consent required)
     ✔ Disclaimer @done(25-08-07 22:27)
-    ✔ Google Analytics @done(25-01-21 21:00) -- Switch to actual domain
+    ✔ Analytics (Datafa.st API) @done(25-01-21 21:00) -- Server-side goal tracking, proxy setup, all goals implemented
     ✔ Sign Up Block on Bullroom Chat and Ai Vault Using @done(25-08-08 10:20)
     ✔ Supabase Auth Emails @done(25-08-08 11:22)
 
@@ -38,7 +38,7 @@ Misc:
 
     ✔ Data Actions in Account Settings Page (Delete Account, Delete Bull Room Chat Messages) with Toast and Alert Modals @done(25-08-08 21:20)
 
-    [] SEO Optimizing Articles for News
+    ✔ SEO Optimizing Articles for News @done(25-08-13 21:52)
     ✔ Briefs to not show on Google @done(25-08-13 21:48)
     ✔ Better article and brief loading then spinner @done(25-08-12 08:29)
     [] Article Meta Info on Mobile Still Sucks
@@ -64,7 +64,7 @@ Misc Bugs:
     ✔ Auth Modals dont close when finished either action @done(25-08-08 11:48)
     ✔ Logout needs refreshing page to work @done(25-08-08 11:48)
     ✔ Tries to fetch user profile even when no auth @done(25-08-08 12:20)
-    [] Analytics already initited errors
+    ✔ Analytics already initited errors @done(25-08-13 21:53)
     ✔ Mobile has some weird scrolling issues @done(25-08-13 13:53)
     ✘ Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly) @cancelled(25-08-13 13:53)
     [] Article images are still stored in temp folder

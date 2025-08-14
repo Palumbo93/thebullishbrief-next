@@ -8,7 +8,7 @@ import { HydrationProvider } from '../contexts/HydrationContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { AuthModalProvider } from '../contexts/AuthModalContext';
 import { AdminProvider } from '../contexts/AdminContext';
-import { AnalyticsProvider } from '../contexts/AnalyticsContext';
+import { DatafastProvider } from '../contexts/DatafastContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { ConfirmProvider } from '../contexts/ConfirmContext';
 import { MobileHeaderProvider } from '../contexts/MobileHeaderContext';
@@ -32,7 +32,7 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) =>
         <AuthProvider>
           <AuthModalProvider>
             <AdminProvider>
-              <AnalyticsProvider gtmId="GTM-KK9MF7D7">
+              <DatafastProvider siteId="689dde00a1c832b545b78a9f">
                 <ToastProvider>
                   <ConfirmProvider>
                     <MobileHeaderProvider>
@@ -40,7 +40,7 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) =>
                     </MobileHeaderProvider>
                   </ConfirmProvider>
                 </ToastProvider>
-              </AnalyticsProvider>
+              </DatafastProvider>
             </AdminProvider>
           </AuthModalProvider>
         </AuthProvider>

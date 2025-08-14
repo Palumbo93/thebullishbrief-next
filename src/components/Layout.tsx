@@ -31,6 +31,7 @@ interface LayoutProps {
   showActionPanel?: boolean;
   actionPanelType?: 'brief';
   briefActionPanel?: {
+    briefId?: string;
     tickerWidget?: ReactNode;
     sections?: Array<{ id: string; label: string; level: number }>;
     tickers?: any;
@@ -508,7 +509,7 @@ export const Layout: React.FC<LayoutProps> = ({
         </header>
 
         {/* Main Content Area */}
-        <main className={`main-content ${(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) ? 'with-right-panel' : ''}`}>
+        <main className={`main-content ${(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) ? 'with-right-panel' : ''}`}>
           <div className="content-area">
             {/* Ticker Tape Widget - Only on Home Page */}
             {actualCurrentLocation === 'home' && (
@@ -525,7 +526,7 @@ export const Layout: React.FC<LayoutProps> = ({
         </main>
 
         {/* Right Panel - Conditional based on page type */}
-        {(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) && (
+        {(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) && (
           <aside className="right-panel">
             {/* Article Comments - Only on Article Pages */}
             {actualCurrentLocation === 'article' && articleId && (
@@ -541,6 +542,7 @@ export const Layout: React.FC<LayoutProps> = ({
             {/* Brief Action Panel - Only on Brief Pages */}
             {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
               <BriefsActionPanel
+                briefId={briefActionPanel.briefId}
                 onSignUpClick={handleSignUpClick}
                 tickerWidget={briefActionPanel.tickerWidget}
                 sections={briefActionPanel.sections || []}
@@ -593,6 +595,7 @@ export const Layout: React.FC<LayoutProps> = ({
           
           <div className={`mobile-action-panel-overlay ${mobileActionPanelOpen ? 'open' : ''}`}>
           <BriefsActionPanel
+            briefId={briefActionPanel.briefId}
             onSignUpClick={handleSignUpClick}
             tickerWidget={briefActionPanel.tickerWidget}
             sections={briefActionPanel.sections || []}

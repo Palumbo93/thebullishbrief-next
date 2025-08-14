@@ -38,7 +38,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   const toggleBookmark = useToggleBookmark();
   const trackView = useTrackArticleView();
   const { data: viewCount } = useArticleViewCount(article?.id ? String(article.id) : '');
-  const { trackView: trackAnalyticsView, trackBookmark: trackAnalyticsBookmark, trackShare: trackAnalyticsShare } = useTrackArticleEngagement();
+  const { trackBookmark: trackAnalyticsBookmark, trackShare: trackAnalyticsShare } = useTrackArticleEngagement();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
@@ -80,10 +80,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       // Use the article's UUID for tracking, not the slug
       trackView.mutate(String(article.id));
       
-      // Track analytics view - only once when article loads
-      if (article.title) {
-        trackAnalyticsView(String(article.id), article.title, article.author);
-      }
+      // Note: Page views are automatically tracked by Datafa.st script
+      // No need to manually track article views as goals
     }
   }, [article?.id, article?.title, article?.author]);
 

@@ -30,7 +30,7 @@ interface FieldData {
 }
 
 export const PromptCreateModal: React.FC<PromptCreateModalProps> = ({ onClose, onCreate }) => {
-  const { data: categories } = usePromptCategories();
+  const { data: categories, loading: categoriesLoading, error: categoriesError, refetch: refetchCategories } = usePromptCategories();
   
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -361,6 +361,7 @@ export const PromptCreateModal: React.FC<PromptCreateModalProps> = ({ onClose, o
                   value={formData.category_id}
                   onChange={(e) => handleChange('category_id', e.target.value)}
                   required
+                  disabled={categoriesLoading}
                   style={{
                     width: '100%',
                     height: 'var(--input-height)',
@@ -370,16 +371,72 @@ export const PromptCreateModal: React.FC<PromptCreateModalProps> = ({ onClose, o
                     borderRadius: 'var(--radius-lg)',
                     color: 'var(--color-text-primary)',
                     fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
+                    transition: 'all var(--transition-base)',
+                    opacity: categoriesLoading ? 0.6 : 1
                   }}
                 >
-                  <option value="">Select a category...</option>
+                  <option value="">
+                    {categoriesLoading ? 'Loading categories...' : 'Select a category...'}
+                  </option>
                   {categories?.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
                   ))}
                 </select>
+                {categoriesLoading && categories?.length === 0 && (
+                  <div style={{
+                    color: 'var(--color-text-secondary)',
+                    fontSize: 'var(--text-sm)',
+                    marginTop: 'var(--space-2)',
+                    fontStyle: 'italic',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)'
+                  }}>
+                    <span>No categories found. You may need to create categories first.</span>
+                    <button
+                      onClick={refetchCategories}
+                      style={{
+                        background: 'var(--color-primary)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: 'var(--space-1) var(--space-2)',
+                        fontSize: 'var(--text-xs)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                )}
+                {categoriesError && (
+                  <div style={{
+                    color: 'var(--color-error)',
+                    fontSize: 'var(--text-sm)',
+                    marginTop: 'var(--space-2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)'
+                  }}>
+                    <span>Error loading categories: {categoriesError}</span>
+                    <button
+                      onClick={refetchCategories}
+                      style={{
+                        background: 'var(--color-primary)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: 'var(--space-1) var(--space-2)',
+                        fontSize: 'var(--text-xs)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Intended LLM */}

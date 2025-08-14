@@ -276,6 +276,19 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               {brief?.title}
             </h1>
 
+            {/* Disclaimer - Simple one-liner */}
+            {brief?.disclaimer && (
+              <p style={{
+                fontSize: 'var(--text-base)',
+                color: 'var(--color-text-secondary)',
+                marginBottom: 'var(--space-4)',
+                opacity: 0.8,
+                fontStyle: 'italic',
+                fontWeight: 'var(--font-light)'
+              }}>
+                {brief.disclaimer}
+              </p>
+            )}
             
           </div>
         </div>
@@ -360,20 +373,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
 
 
-          {/* Disclaimer */}
-          {brief?.disclaimer && (
-            <div style={{
-              marginTop: 'var(--space-8)',
-              padding: 'var(--space-4)',
-              background: 'var(--color-bg-card)',
-              border: '0.5px solid var(--color-border-primary)',
-              borderRadius: 'var(--radius-lg)',
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-secondary)'
-            }}>
-              <strong>Disclaimer:</strong> {brief.disclaimer}
-            </div>
-          )}
         </main>
 
 

@@ -9,6 +9,7 @@ import { DataTable, Column } from './DataTable';
 import { EditModal, FormField } from './EditModal';
 import { DeleteModal } from './DeleteModal';
 import { CreateModal } from './CreateModal';
+import { DatabaseTest } from './DatabaseTest';
 import type { PromptCategory } from '../../services/database';
 
 interface PromptCategoryManagerProps {}
@@ -128,6 +129,8 @@ export const PromptCategoryManager: React.FC<PromptCategoryManagerProps> = () =>
 
   return (
     <div>
+      <DatabaseTest />
+      
       <ManagerHeader
         title="Prompt Categories"
         itemCount={filteredCategories.length}

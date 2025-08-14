@@ -45,8 +45,8 @@ export function useDatabaseService<T>(
       const result = await service.getAll();
       setData(result);
     } catch (err) {
+      console.error(`[${service.constructor.name}] Database fetch error:`, err);
       setError(err instanceof Error ? err.message : 'An error occurred');
-      console.error('Database fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -104,11 +104,9 @@ export function useDatabaseService<T>(
   }, []); // Remove service dependency since it's a singleton
 
   useEffect(() => {
-    if (!hasInitializedRef.current && !staticInitialized) {
-      fetchData();
-      hasInitializedRef.current = true;
-      (globalThis as any)[staticInitializedKey] = true;
-    }
+    // Always fetch data when component mounts
+    fetchData();
+    hasInitializedRef.current = true;
   }, []); // Empty dependency array - only run once
 
   return {

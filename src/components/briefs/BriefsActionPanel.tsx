@@ -207,7 +207,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             >
               <ExternalLink style={{ width: '14px', height: '14px' }} />
               <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-medium)' }}>
-                Investor Brief
+                View Investor Deck
               </span>
             </a>
           )}

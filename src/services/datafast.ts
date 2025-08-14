@@ -31,9 +31,9 @@ export class DatafastService {
 
     this.siteId = siteId;
     
-    // Load Datafa.st script
+    // Script is loaded in HTML head, just wait for it to be available
     if (typeof window !== 'undefined') {
-      this.loadScript();
+      this.waitForScript();
     }
 
     this.isInitialized = true;
@@ -41,16 +41,20 @@ export class DatafastService {
   }
 
   /**
-   * Load Datafa.st script
+   * Wait for Datafa.st script to load
    */
-  private loadScript(): void {
-    const script = document.createElement('script');
-    script.src = '/js/script.js'; // Use proxied URL to bypass adblockers
-    script.setAttribute('data-website-id', this.siteId!);
-    script.setAttribute('data-domain', 'thebullishbrief-next.vercel.app');
-    script.defer = true;
+  private waitForScript(): void {
+    const checkScript = () => {
+      if (window.datafast) {
+        console.log('Datafa.st script is ready');
+        return;
+      }
+      
+      // Check again in 100ms
+      setTimeout(checkScript, 100);
+    };
     
-    document.head.appendChild(script);
+    checkScript();
   }
 
   /**

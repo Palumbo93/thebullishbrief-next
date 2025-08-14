@@ -78,6 +78,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* Datafa.st Analytics */}
+        <script 
+          async 
+          src="https://datafa.st/js/script.js" 
+          data-website-id="689dde00a1c832b545b78a9f"
+          data-domain="thebullishbrief-next.vercel.app"
+        />
+      </head>
       <body className={`${archivo.variable}`}>
         <ClientProviders>
           <AppContent>

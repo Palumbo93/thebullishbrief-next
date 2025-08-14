@@ -39,7 +39,7 @@ Misc:
     ✔ Data Actions in Account Settings Page (Delete Account, Delete Bull Room Chat Messages) with Toast and Alert Modals @done(25-08-08 21:20)
 
     [] SEO Optimizing Articles for News
-    [] Briefs to not show on Google
+    ✔ Briefs to not show on Google @done(25-08-13 21:48)
     ✔ Better article and brief loading then spinner @done(25-08-12 08:29)
     [] Article Meta Info on Mobile Still Sucks
     ✔ Next.JS Image Optimization @done(25-08-12 08:29)
@@ -65,8 +65,8 @@ Misc Bugs:
     ✔ Logout needs refreshing page to work @done(25-08-08 11:48)
     ✔ Tries to fetch user profile even when no auth @done(25-08-08 12:20)
     [] Analytics already initited errors
-    [] Mobile has some weird scrolling issues
-    [] Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly)
+    ✔ Mobile has some weird scrolling issues @done(25-08-13 13:53)
+    ✘ Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly) @cancelled(25-08-13 13:53)
     [] Article images are still stored in temp folder
     ✔ Login doesnt close modal or refresh auth state @done(25-08-12 15:34)
 
@@ -91,6 +91,6 @@ Refine/Polish/Mobile Polish:
     ✔ Author Page @done(25-08-11 14:40)
     ✔ Bookmarks Page (I like it already tbh) @done(25-08-11 14:40)
     ✔ Account Settings Page @done(25-08-12 08:44)
-    [] Share Sheet
-    [] Legal Pages
+    ✔ Share Sheet @done(25-08-13 13:53)
+    ✔ Legal Pages @done(25-08-13 13:53)
 

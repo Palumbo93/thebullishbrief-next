@@ -153,21 +153,21 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
           background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(12px);
           display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: var(--space-4);
+          align-items: stretch;
+          justify-content: stretch;
+          padding: 0;
         }
         .prompt-modal-container {
           background: var(--color-bg-primary);
-          border: 0.5px solid var(--color-border-primary);
-          border-radius: var(--radius-2xl);
-          width: 100%;
-          max-width: 1200px;
-          max-height: 90vh;
-          height: 100%;
+          border: none;
+          border-radius: 0;
+          width: 100vw;
+          height: 100vh;
+          max-width: none;
+          max-height: none;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.9);
+          box-shadow: none;
           display: flex;
         }
         
@@ -498,13 +498,13 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
               color: 'var(--color-text-primary)',
               whiteSpace: 'pre-wrap',
               minHeight: '400px',
-              maxHeight: '600px',
-              overflow: 'auto'
+              overflow: 'auto',
             }}
                          dangerouslySetInnerHTML={{ 
                __html: promptPreview.replace(/\n/g, '<br>')
              }}
             />
+            <div style={{ height: 'var(--space-6)' }}></div>
           </div>
         </div>
 

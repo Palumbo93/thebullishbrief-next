@@ -38,8 +38,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const description = article.subtitle || article.title;
     
     return {
-      title: `${article.title} - The Bullish Brief`,
+      title: `${article.title} | The Bullish Brief`,
       description: description,
+      keywords: article.tags?.map((tag: any) => tag.tag.name).join(', ') || 'finance, markets, investing, news',
+      authors: article.author ? [article.author.name] : undefined,
+      category: article.category?.name || 'Finance',
       openGraph: {
         title: article.title,
         description: description,
@@ -56,13 +59,39 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         locale: 'en_US',
         type: 'article',
         publishedTime: article.published_at || undefined,
+        modifiedTime: article.updated_at || article.published_at,
         authors: article.author ? [article.author.name] : undefined,
+        section: article.category?.name || 'Finance',
+        tags: article.tags?.map((tag: any) => tag.tag.name) || ['finance', 'markets'],
       },
       twitter: {
         card: 'summary_large_image',
         title: article.title,
         description: description,
         images: [articleImage],
+        creator: '@thebullishbrief',
+        site: '@thebullishbrief',
+      },
+      alternates: {
+        canonical: articleUrl,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+      other: {
+        'article:published_time': article.published_at || '',
+        'article:modified_time': article.updated_at || article.published_at || '',
+        'article:author': article.author?.name || '',
+        'article:section': article.category?.name || 'Finance',
+        'article:tag': article.tags?.map((tag: any) => tag.tag.name).join(', ') || 'finance, markets, investing',
       },
     };
   } catch (error) {
@@ -99,27 +128,41 @@ export default async function ArticlePageWrapper({ params }: Props) {
     notFound();
   }
 
-  // Generate JSON-LD schema for NewsArticle
-  const jsonLd = {
+  // Generate enhanced JSON-LD schema for NewsArticle
+  const newsArticleSchema = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: rawArticle.title,
     description: rawArticle.subtitle || rawArticle.title,
-    image: rawArticle.featured_image_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
+    image: {
+      '@type': 'ImageObject',
+      url: rawArticle.featured_image_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
+      width: 1200,
+      height: 630,
+      alt: rawArticle.featured_image_alt || rawArticle.title,
+    },
     datePublished: rawArticle.published_at,
     dateModified: rawArticle.updated_at || rawArticle.published_at,
     author: rawArticle.author ? {
       '@type': 'Person',
       name: rawArticle.author.name,
       url: rawArticle.author.website_url || undefined,
+      sameAs: rawArticle.author.website_url || undefined,
     } : undefined,
     publisher: {
       '@type': 'Organization',
       name: 'The Bullish Brief',
+      url: 'https://thebullishbrief.com',
       logo: {
         '@type': 'ImageObject',
         url: 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
+        width: 512,
+        height: 512,
       },
+      sameAs: [
+        'https://twitter.com/thebullishbrief',
+        'https://linkedin.com/company/thebullishbrief'
+      ],
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -128,14 +171,79 @@ export default async function ArticlePageWrapper({ params }: Props) {
     url: `https://thebullishbrief.com/articles/${slug}`,
     articleSection: rawArticle.category?.name || 'Finance',
     keywords: rawArticle.tags?.map((tag: any) => tag.tag.name).join(', ') || 'finance, markets, investing',
+    wordCount: rawArticle.content?.length || 0,
+    articleBody: rawArticle.content || '',
+    isAccessibleForFree: true,
+    isPartOf: {
+      '@type': 'CreativeWork',
+      name: 'The Bullish Brief',
+    },
+  };
+
+  // Generate BreadcrumbList schema
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://thebullishbrief.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Articles',
+        item: 'https://thebullishbrief.com/articles',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: rawArticle.title,
+        item: `https://thebullishbrief.com/articles/${slug}`,
+      },
+    ],
+  };
+
+  // Generate Organization schema for better publisher information
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'The Bullish Brief',
+    url: 'https://thebullishbrief.com',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
+      width: 512,
+      height: 512,
+    },
+    sameAs: [
+      'https://twitter.com/thebullishbrief',
+      'https://linkedin.com/company/thebullishbrief'
+    ],
+    description: 'Your daily dose of bullish market insights and financial analysis',
+    foundingDate: '2025',
+    areaServed: 'Worldwide',
+    knowsAbout: ['Finance', 'Markets', 'Investing', 'Trading', 'Cryptocurrency', 'Stocks'],
   };
   
   return (
     <>
       <Script
-        id="article-schema"
+        id="news-article-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }}
+      />
+      <Script
+        id="breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <Script
+        id="organization-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <Layout 
         articleId={article?.id ? String(article.id) : undefined}

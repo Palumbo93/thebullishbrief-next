@@ -25,7 +25,7 @@ Misc:
     ✔ Sign Up Block on Bullroom Chat and Ai Vault Using @done(25-08-08 10:20)
     ✔ Supabase Auth Emails @done(25-08-08 11:22)
 
-    [] Enable Custom SMTP for Supabase Auth Emails
+    
 
     ✔ Skeleton Loader > Spinner @done(25-08-08 20:14)
     ✔ Toasts: @done(25-08-08 20:46)
@@ -41,10 +41,13 @@ Misc:
     ✔ SEO Optimizing Articles for News @done(25-08-13 21:52)
     ✔ Briefs to not show on Google @done(25-08-13 21:48)
     ✔ Better article and brief loading then spinner @done(25-08-12 08:29)
-    [] Article Meta Info on Mobile Still Sucks
+    
     ✔ Next.JS Image Optimization @done(25-08-12 08:29)
 
     ✔ Article Page: Tags, Article Card no padding @done(25-08-11 09:02)
+
+    [] Enable Custom SMTP for Supabase Auth Emails
+    [] Article Meta Info on Mobile Still Sucks
     
     [] Bull Room Edit, Reply, Delete
     [] Bull Room Admin Actions: Delete, Mute, Delete All Messages

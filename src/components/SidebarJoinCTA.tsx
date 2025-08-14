@@ -4,9 +4,10 @@ import { BRAND_COPY } from '../data/copy';
 
 interface SidebarJoinCTAProps {
   onSignUpClick?: () => void;
+  showButton?: boolean; // Control whether to show the sticky button
 }
 
-const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick }) => {
+const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButton = true }) => {
   return (
     <>
       <div className="briefs-signup-cta">
@@ -58,26 +59,28 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick }) => {
             ))}
           </div>
 
-          {/* Sign Up Button */}
-          <Button
-            onClick={onSignUpClick}
-            variant="secondary"
-            fullWidth={true}
-          >
-            Join Free Now
-          </Button>
+          {/* Regular Button - Only show if showButton is true */}
+          {showButton && (
+            <Button
+              onClick={onSignUpClick}
+              variant="secondary"
+              fullWidth={true}
+            >
+              Join Free Now
+            </Button>
+          )}
         </div>
       </div>
 
       <style jsx>{`
         /* Sign Up CTA Styles */
         .briefs-signup-cta {
-          padding: 1.5rem;
+          padding: 1.5rem 1.5rem ${showButton ? '1.5rem' : '0'} 1.5rem;
           background: var(--color-bg-primary);
           background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px);
           background-size: 20px 20px, 20px 20px;
           background-position: 0 0, 10px 10px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: ${showButton ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
         }
         
         .briefs-signup-content {

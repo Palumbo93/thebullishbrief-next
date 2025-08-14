@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { BRAND_COPY } from '../../data/copy';
 import { useAuth } from '../../contexts/AuthContext';
 import SidebarJoinCTA from '../SidebarJoinCTA';
+import JoinButton from '../JoinButton';
 import { useTrackBriefEngagement } from '../../hooks/useDatafastAnalytics';
 
 interface CompanyTicker {
@@ -163,11 +164,16 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         </div>
       )}
       
-      {/* Bullish Brief Sign Up CTA - Only show if user is not logged in */}
-      {!user && <SidebarJoinCTA onSignUpClick={onSignUpClick} />}
+      {/* Content Container */}
+      <div className="briefs-content-container">
+        {/* Bullish Brief Sign Up CTA - Only show if user is not logged in */}
+        {!user && <SidebarJoinCTA onSignUpClick={onSignUpClick} showButton={false} />}
 
-      {/* Quick Links */}
-      <div className="briefs-quick-links" style={{ padding: '2rem 1.5rem' }}>
+        {/* Sticky Join Button - Only show if user is not logged in */}
+        {!user && <JoinButton onSignUpClick={onSignUpClick} />}
+
+        {/* Quick Links */}
+        <div className="briefs-quick-links" style={{ padding: '2rem 1.5rem' }}>
         <h3 className="briefs-section-title">Quick Links</h3>
         <div className="briefs-links-list">
           {/* Investor Brief Link */}
@@ -316,42 +322,36 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           ))}
         </div>
       </div>
+      </div>
+
+
 
       <style>{`
         .briefs-action-panel {
-          position: relative; /* Change from sticky to relative for better scroll behavior */
-          height: 100%; /* Use 100% instead of calc(100vh - 0px) */
+          position: relative;
+          height: 100%;
           background: var(--color-bg-primary);
           border-left: 1px solid rgba(255, 255, 255, 0.1);
-          overflow-y: auto; /* Keep scrollable */
           padding: 0;
           display: flex;
           flex-direction: column;
-          /* Remove scrollbar hiding for better UX */
+        }
+
+        .briefs-content-container {
+          flex: 1;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
         }
         
-        /* Show scrollbars for better UX */
-        .briefs-action-panel::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        .briefs-action-panel::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        
-        .briefs-action-panel::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 4px;
-        }
-        
-        .briefs-action-panel::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
+        /* Hide scrollbars */
+        .briefs-content-container::-webkit-scrollbar {
+          display: none;
         }
         
         /* Firefox scrollbar */
-        .briefs-action-panel {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        .briefs-content-container {
+          scrollbar-width: none;
         }
         
         /* Sign Up CTA Styles */

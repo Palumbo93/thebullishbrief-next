@@ -171,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           flex: 1;
           gap: var(--space-2);
           width: 100%;
-          padding-top: var(--space-4);
+          padding-top: var(--space-2);
         }
 
         .nav-button {

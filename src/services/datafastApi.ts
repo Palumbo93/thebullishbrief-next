@@ -30,15 +30,33 @@ export class DatafastApiService {
    */
   async trackGoal(goal: string, properties?: Record<string, any>): Promise<DatafastApiResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/goal`, {
+      // Get visitor ID from properties
+      const visitorId = properties?.datafast_visitor_id;
+      
+      if (!visitorId) {
+        console.error('No visitor ID provided for goal tracking');
+        return {
+          status: 'error',
+          error: {
+            code: 400,
+            message: 'datafast_visitor_id is required - visitor may not have any pageviews yet',
+          },
+        };
+      }
+
+      // Remove visitor ID from metadata to avoid duplication
+      const { datafast_visitor_id, ...metadata } = properties || {};
+
+      const response = await fetch(`${this.baseUrl}/goals`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          goal,
-          properties: properties || {},
+          datafast_visitor_id: visitorId,
+          name: goal,
+          metadata: metadata,
         }),
       });
 

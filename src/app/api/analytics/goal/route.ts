@@ -2,10 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { datafastApiService } from '../../../../services/datafastApi';
 
 export async function POST(request: NextRequest) {
+  console.log('=== API ROUTE CALLED ===');
+  console.log('Request method:', request.method);
+  console.log('Request URL:', request.url);
+  
   try {
     // Parse request body
     const body = await request.json();
     const { goal, properties = {} } = body;
+
+    // Get visitor ID from server-side cookies
+    const datafastVisitorId = request.cookies.get('datafast_visitor_id')?.value;
+    
+    console.log('Goal tracking request received:', { goal, properties });
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('API Key configured:', !!process.env.DATAFAST_API_KEY);
+    console.log('Visitor ID from cookies:', datafastVisitorId);
+    console.log('All cookies:', request.cookies.getAll().map(c => c.name));
 
     // Validate required fields
     if (!goal || typeof goal !== 'string') {
@@ -40,14 +53,22 @@ export async function POST(request: NextRequest) {
     // Check if API key is configured
     if (!process.env.DATAFAST_API_KEY) {
       console.error('DATAFAST_API_KEY not configured');
+      console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('DATAFAST')));
       return NextResponse.json(
-        { error: 'Analytics service not configured' },
+        { error: 'Analytics service not configured - DATAFAST_API_KEY missing' },
         { status: 500 }
       );
     }
 
     // Track goal with Datafa.st API
-    const result = await datafastApiService.trackGoal(goal, properties);
+    console.log('Calling Datafa.st API with:', { goal, properties });
+    
+    // Use visitor ID from server-side cookies, not from client properties
+    const result = await datafastApiService.trackGoal(goal, {
+      datafast_visitor_id: datafastVisitorId,
+      ...properties
+    });
+    console.log('Datafa.st API result:', result);
 
     if (result.status === 'error') {
       console.error('Datafa.st goal tracking failed:', result.error);
@@ -68,7 +89,7 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: 'Analytics service error' },
+        { error: 'Analytics service error', details: result.error },
         { status: 500 }
       );
     }

@@ -58,6 +58,40 @@ export class DatafastService {
   }
 
   /**
+   * Debug function to check if Datafa.st is working
+   */
+  debug(): void {
+    if (typeof window === 'undefined') {
+      console.log('Datafa.st debug: Not in browser environment');
+      return;
+    }
+
+    console.log('Datafa.st debug info:');
+    console.log('- window.datafast exists:', !!window.datafast);
+    console.log('- script tag exists:', !!document.querySelector('script[data-website-id]'));
+    console.log('- site ID:', this.siteId);
+    console.log('- isInitialized:', this.isInitialized);
+    
+    // Check for script tag details
+    const scriptTag = document.querySelector('script[data-website-id]');
+    if (scriptTag) {
+      console.log('- script tag found:', {
+        src: scriptTag.getAttribute('src'),
+        websiteId: scriptTag.getAttribute('data-website-id'),
+        domain: scriptTag.getAttribute('data-domain')
+      });
+    } else {
+      console.log('- No script tag found with data-website-id');
+    }
+    
+    if (window.datafast) {
+      console.log('- Datafa.st object:', window.datafast);
+    } else {
+      console.log('- Datafa.st object not found - script may not be loaded yet');
+    }
+  }
+
+  /**
    * Track page view
    */
   trackPageView(path: string, title?: string): void {

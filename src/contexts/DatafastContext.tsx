@@ -16,6 +16,7 @@ interface DatafastContextType {
   trackUserLogin: (method?: string) => void;
   trackCommentPost: (contentType: string, contentId: string) => void;
   trackSearch: (query: string, resultsCount?: number) => void;
+  debug: () => void;
 }
 
 const DatafastContext = createContext<DatafastContextType | undefined>(undefined);
@@ -82,7 +83,9 @@ export const DatafastProvider: React.FC<DatafastProviderProps> = ({
     datafastService.trackSearch(query, resultsCount);
   }, []);
 
-
+  const debug = useCallback(() => {
+    datafastService.debug();
+  }, []);
 
   const value: DatafastContextType = {
     trackPageView,
@@ -97,6 +100,7 @@ export const DatafastProvider: React.FC<DatafastProviderProps> = ({
     trackUserLogin,
     trackCommentPost,
     trackSearch,
+    debug,
   };
 
   return (

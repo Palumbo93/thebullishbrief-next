@@ -64,19 +64,36 @@ serve(async (req) => {
       )
     }
 
+    // Log the deletion attempt
+    console.log(`Attempting to delete user: ${user.id} (${user.email})`)
+
     // Delete the user using admin client (this will cascade to all related data)
     const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id)
 
     if (error) {
       console.error('Error deleting user:', error)
+      
+      // Provide more specific error messages based on the error type
+      let errorMessage = 'Failed to delete user account'
+      if (error.message?.includes('Database error')) {
+        errorMessage = 'Database constraint error - please contact support'
+      } else if (error.message?.includes('foreign key')) {
+        errorMessage = 'User has associated data that could not be deleted'
+      }
+      
       return new Response(
-        JSON.stringify({ error: 'Failed to delete user account' }),
+        JSON.stringify({ 
+          error: errorMessage,
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
     }
+
+    console.log(`Successfully deleted user: ${user.id}`)
 
     return new Response(
       JSON.stringify({ success: true, message: 'User account deleted successfully' }),

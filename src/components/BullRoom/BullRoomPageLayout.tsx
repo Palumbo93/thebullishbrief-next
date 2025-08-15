@@ -1,0 +1,82 @@
+"use client";
+
+import React from 'react';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { BullRoomMobileLayout } from './BullRoomMobileLayout';
+import { BullRoomDesktopLayout } from './BullRoomDesktopLayout';
+
+interface BullRoomPageLayoutProps {
+  children?: React.ReactNode;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  // Mobile layout props
+  mobileHeader?: React.ReactNode;
+  mobileChatArea?: React.ReactNode;
+  mobileMessageInput?: React.ReactNode;
+  mobileTypingIndicator?: React.ReactNode;
+  mobileInfoPanel?: React.ReactNode;
+  // Desktop layout props
+  desktopRoomSelector?: React.ReactNode;
+  desktopChatArea?: React.ReactNode;
+  desktopMessageInput?: React.ReactNode;
+  desktopTypingIndicator?: React.ReactNode;
+  desktopRoomInfoSidebar?: React.ReactNode;
+}
+
+export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
+  children,
+  isAuthenticated,
+  isLoading,
+  // Mobile layout props
+  mobileHeader,
+  mobileChatArea,
+  mobileMessageInput,
+  mobileTypingIndicator,
+  mobileInfoPanel,
+  // Desktop layout props
+  desktopRoomSelector,
+  desktopChatArea,
+  desktopMessageInput,
+  desktopTypingIndicator,
+  desktopRoomInfoSidebar
+}) => {
+  const isMobile = useIsMobile();
+
+  // Main container with full viewport height
+  const containerStyle: React.CSSProperties = {
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  };
+
+  return (
+    <div style={containerStyle}>
+      {isMobile ? (
+        <BullRoomMobileLayout
+          isAuthenticated={isAuthenticated}
+          isLoading={isLoading}
+          header={mobileHeader}
+          chatArea={mobileChatArea}
+          messageInput={mobileMessageInput}
+          typingIndicator={mobileTypingIndicator}
+          infoPanel={mobileInfoPanel}
+        >
+          {children}
+        </BullRoomMobileLayout>
+      ) : (
+        <BullRoomDesktopLayout
+          isAuthenticated={isAuthenticated}
+          isLoading={isLoading}
+          roomSelector={desktopRoomSelector}
+          chatArea={desktopChatArea}
+          messageInput={desktopMessageInput}
+          typingIndicator={desktopTypingIndicator}
+          roomInfoSidebar={desktopRoomInfoSidebar}
+        >
+          {children}
+        </BullRoomDesktopLayout>
+      )}
+    </div>
+  );
+};

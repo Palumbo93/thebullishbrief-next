@@ -1,5 +1,6 @@
 import React from 'react';
 import { Paperclip, Image, File as FileIcon, X } from 'lucide-react';
+import { ReplyPreview } from './ReplyPreview';
 
 /**
  * MessageInput handles new message input and file uploads.
@@ -27,8 +28,15 @@ export interface MessageInputProps {
   fileUploads: FileUpload[];
   onRemoveFile: (file: File) => void;
   disabled?: boolean;
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  replyingTo?: {
+    messageId: string;
+    username: string;
+    content: string;
+  } | null;
+  onCancelReply?: () => void;
+  user?: any; // Add user prop for better placeholder text
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({
@@ -40,7 +48,10 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   onRemoveFile,
   disabled,
   textareaRef,
-  fileInputRef
+  fileInputRef,
+  replyingTo,
+  onCancelReply,
+  user
 }) => {
   // Auto-resize textarea
   React.useEffect(() => {
@@ -51,6 +62,15 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   }, [value]);
   return (
     <>
+      {/* Reply Preview */}
+      {replyingTo && onCancelReply && (
+        <ReplyPreview
+          username={replyingTo.username}
+          content={replyingTo.content}
+          onCancel={onCancelReply}
+        />
+      )}
+      
       {/* File Upload Progress */}
       {fileUploads.length > 0 && (
         <div style={{ 
@@ -165,7 +185,11 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 onSend();
               }
             }}
-            placeholder={disabled ? "Sign in to chat" : "Share your thoughts..."}
+            placeholder={
+              disabled 
+                ? (!user ? "Sign in to chat" : "Select a room to chat...")
+                : "Share your thoughts..."
+            }
             style={{
               width: '100%',
               padding: '0',
@@ -284,16 +308,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           style={{ display: 'none' }}
         />
         
-        {/* Disabled State Message */}
-        {disabled && (
-          <div style={{ marginTop: 'var(--space-4)', textAlign: 'center' }}>
-            <p style={{
-              fontSize: 'var(--text-xs)',
-              color: 'var(--color-text-muted)',
-              fontWeight: 'var(--font-medium)'
-            }}>Sign in to join the conversation</p>
-          </div>
-        )}
+
       </div>
     </>
   );

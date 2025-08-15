@@ -47,6 +47,7 @@ export const useCreateMessage = () => {
         username: user?.profile?.username || user?.user_metadata?.username || user?.email?.split('@')[0] || 'You',
         content: messageData.content!,
         message_type: 'text',
+        reply_to_id: messageData.reply_to_id,
         reactions: {},
         is_edited: false,
         created_at: new Date().toISOString(),
@@ -73,12 +74,21 @@ export const useCreateMessage = () => {
       console.error('Failed to create message:', error);
     },
     onSuccess: (newMessage, variables, context) => {
-      // Replace optimistic message with real one
+      // Replace optimistic message with real one, but be careful about duplicates
       queryClient.setQueryData(
         ['bull-room-messages', variables.room_id],
         (oldData: BullRoomMessage[] = []) => {
-          const filtered = oldData.filter(msg => msg.id !== context?.optimisticMessage?.id);
-          return [newMessage, ...filtered];
+          // Remove optimistic message
+          const withoutOptimistic = oldData.filter(msg => msg.id !== context?.optimisticMessage?.id);
+          
+          // Check if real message already exists (from real-time subscription)
+          const realMessageExists = withoutOptimistic.some(msg => msg.id === newMessage.id);
+          if (realMessageExists) {
+            return withoutOptimistic;
+          }
+          
+          // Add real message if it doesn't exist
+          return [newMessage, ...withoutOptimistic];
         }
       );
       
@@ -119,17 +129,38 @@ export const useDeleteMessage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (messageId: string) => messageService.deleteMessage(messageId),
-    onSuccess: (_, messageId) => {
-      // Remove message from cache
+    mutationFn: ({ messageId, roomId }: { messageId: string; roomId: string }) => 
+      messageService.deleteMessage(messageId),
+    onMutate: async ({ messageId, roomId }) => {
+      // Cancel any outgoing refetches for this room
+      await queryClient.cancelQueries({ queryKey: ['bull-room-messages', roomId] });
+
+      // Snapshot the previous value
+      const previousMessages = queryClient.getQueryData(['bull-room-messages', roomId]);
+
+      // Optimistically remove the message
       queryClient.setQueryData(
-        ['bull-room-messages'],
+        ['bull-room-messages', roomId],
         (oldData: BullRoomMessage[] = []) =>
           oldData.filter(msg => msg.id !== messageId)
       );
+
+      return { previousMessages };
     },
-    onError: (error) => {
-      console.error('Failed to delete message:', error);
+    onError: (err, { messageId, roomId }, context) => {
+      // Rollback on error
+      if (context?.previousMessages) {
+        queryClient.setQueryData(['bull-room-messages', roomId], context.previousMessages);
+      }
+      console.error('Failed to delete message:', err);
+    },
+    onSuccess: (_, { messageId, roomId }) => {
+      // Message already removed optimistically, just ensure it's gone
+      queryClient.setQueryData(
+        ['bull-room-messages', roomId],
+        (oldData: BullRoomMessage[] = []) =>
+          oldData.filter(msg => msg.id !== messageId)
+      );
     },
   });
 };

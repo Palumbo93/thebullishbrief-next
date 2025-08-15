@@ -35,6 +35,15 @@ export const useBullRoomRealtime = (roomId: string) => {
               const exists = oldData.some(msg => msg.id === newMessage.id);
               if (exists) return oldData;
               
+              // Check for duplicate content from same user within last 5 seconds (optimistic update)
+              const fiveSecondsAgo = new Date(Date.now() - 5000).toISOString();
+              const duplicateContent = oldData.some(msg => 
+                msg.content === newMessage.content && 
+                msg.user_id === newMessage.user_id &&
+                msg.created_at > fiveSecondsAgo
+              );
+              if (duplicateContent) return oldData;
+              
               // Add user data to message for consistency
               const messageWithUser = {
                 ...newMessage,

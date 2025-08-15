@@ -1,7 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { BullRoomPage } from '../../../page-components/BullRoomPage';
-import { Layout } from '../../../components/Layout';
+import { BullRoomLayout } from '../../../components/BullRoom/BullRoomLayout';
 import { supabase } from '../../../lib/supabase';
 
 interface Props {
@@ -50,8 +50,8 @@ export default async function BullRoomPageWrapper({ params }: Props) {
   }
   
   return (
-    <Layout>
+    <BullRoomLayout>
       <BullRoomPage roomSlug={roomSlug} />
-    </Layout>
+    </BullRoomLayout>
   );
 }

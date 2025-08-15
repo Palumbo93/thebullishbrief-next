@@ -262,7 +262,6 @@ export const Layout: React.FC<LayoutProps> = ({
           border-right: 0.5px solid var(--color-border-primary);
           background: var(--color-bg-primary);
           min-height: 100vh;
-          /* Remove flexbox - let page scroll naturally */
         }
 
         /* Main Content with Right Panel */

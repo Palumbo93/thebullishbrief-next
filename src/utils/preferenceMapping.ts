@@ -1,85 +1,22 @@
 import { countries } from 'countries-list';
 
-// Investor Type mappings
-export const INVESTOR_TYPE_MAP: Record<string, string> = {
-  'individual': 'Individual',
-  'institutional': 'Institutional',
-  'retail': 'Retail',
-  'day-trader': 'Day Trader',
-  'swing-trader': 'Swing Trader',
-  'position-trader': 'Position Trader',
-  'scalper': 'Scalper',
-  'algorithmic': 'Algorithmic Trader',
-  'long-term': 'Long-term Investor',
-  'diversified': 'Diversified Portfolio'
-};
+// TypeScript interfaces for preference options
+interface PreferenceOption {
+  id: string;
+  label: string;
+  desc?: string;
+}
 
-// Experience Level mappings
-export const EXPERIENCE_MAP: Record<string, string> = {
-  'beginner': 'Just starting',
-  'intermediate': 'Getting serious',
-  'advanced': 'Experienced',
-  'expert': 'Market veteran',
-  'experienced': 'Experienced',
-  'veteran': 'Market veteran'
-};
+interface OnboardingOptions {
+  investorType: PreferenceOption[];
+  experience: PreferenceOption[];
+  riskTolerance: PreferenceOption[];
+  interests: PreferenceOption[];
+  country: PreferenceOption[];
+}
 
-// Risk Tolerance mappings
-export const RISK_TOLERANCE_MAP: Record<string, string> = {
-  'conservative': 'Conservative',
-  'moderate': 'Moderate',
-  'aggressive': 'Aggressive',
-  'very-aggressive': 'Very Aggressive',
-  'speculative': 'Speculative'
-};
-
-// Investment Interests mappings
-export const INTERESTS_MAP: Record<string, string> = {
-  // Market Intelligence
-  'hot-tickers': 'Hot Tickers',
-  'insider-tracking': 'Insider Tracking',
-  'earnings-catalysts': 'Earnings & Catalysts',
-  
-  // Speculative Plays
-  'degen-plays': 'Degen Plays',
-  'crypto': 'Crypto',
-  
-  // Sector Focus
-  'tech': 'Tech',
-  'mining-commodities-energy': 'Mining, Commodities & Energy',
-  
-  // Evergreen Trading
-  'trading-strategies': 'Trading Strategies & Setups'
-};
-
-// Country mappings using countries-list
-export const COUNTRY_MAP: Record<string, string> = Object.entries(countries).reduce((acc, [code, country]) => {
-  acc[code.toLowerCase()] = country.name;
-  return acc;
-}, {} as Record<string, string>);
-
-// Add custom country mappings for OnboardingModal options
-export const CUSTOM_COUNTRY_MAP: Record<string, string> = {
-  'us': 'United States',
-  'ca': 'Canada',
-  'uk': 'United Kingdom',
-  'au': 'Australia',
-  'de': 'Germany',
-  'fr': 'France',
-  'jp': 'Japan',
-  'sg': 'Singapore',
-  'hk': 'Hong Kong',
-  'in': 'India',
-  'br': 'Brazil',
-  'mx': 'Mexico',
-  'other': 'Other'
-};
-
-// Merge custom country mappings with the main country map
-Object.assign(COUNTRY_MAP, CUSTOM_COUNTRY_MAP);
-
-// OnboardingModal Options Data
-export const ONBOARDING_OPTIONS = {
+// Single source of truth for all preference options
+export const ONBOARDING_OPTIONS: OnboardingOptions = {
   investorType: [
     { id: 'day-trader', label: 'Day Trader', desc: 'Active daily trading' },
     { id: 'swing-trader', label: 'Swing Trader', desc: 'Short to medium term' },
@@ -111,9 +48,6 @@ export const ONBOARDING_OPTIONS = {
     // Sector Focus
     { id: 'tech', label: 'Tech' },
     { id: 'mining-commodities-energy', label: 'Mining, Commodities & Energy' },
-  
-    // Evergreen Trading
-    { id: 'trading-strategies', label: 'Trading Strategies & Setups' }
   ],
   country: [
     { id: 'us', label: 'United States', desc: 'US markets & regulations' },
@@ -131,6 +65,40 @@ export const ONBOARDING_OPTIONS = {
     { id: 'other', label: 'Other', desc: 'Global markets focus' }
   ]
 };
+
+// Helper function to create mapping objects from ONBOARDING_OPTIONS
+const createMappingFromOptions = (options: PreferenceOption[]): Record<string, string> => {
+  return options.reduce((acc, option) => {
+    acc[option.id] = option.label;
+    return acc;
+  }, {} as Record<string, string>);
+};
+
+// Derived mapping objects from ONBOARDING_OPTIONS
+export const INVESTOR_TYPE_MAP: Record<string, string> = createMappingFromOptions(ONBOARDING_OPTIONS.investorType);
+
+export const EXPERIENCE_MAP: Record<string, string> = createMappingFromOptions(ONBOARDING_OPTIONS.experience);
+
+export const RISK_TOLERANCE_MAP: Record<string, string> = createMappingFromOptions(ONBOARDING_OPTIONS.riskTolerance);
+
+export const INTERESTS_MAP: Record<string, string> = createMappingFromOptions(ONBOARDING_OPTIONS.interests);
+
+// Country mappings with fallback to countries-list for countries not in ONBOARDING_OPTIONS
+const createCountryMap = (): Record<string, string> => {
+  // Start with onboarding country options
+  const onboardingCountryMap = createMappingFromOptions(ONBOARDING_OPTIONS.country);
+  
+  // Add all countries from countries-list as fallback
+  const countriesListMap = Object.entries(countries).reduce((acc, [code, country]) => {
+    acc[code.toLowerCase()] = country.name;
+    return acc;
+  }, {} as Record<string, string>);
+  
+  // Merge with onboarding options taking precedence
+  return { ...countriesListMap, ...onboardingCountryMap };
+};
+
+export const COUNTRY_MAP: Record<string, string> = createCountryMap();
 
 // Helper function to format preference values
 export const formatPreferenceValue = (key: string, value: any): string => {

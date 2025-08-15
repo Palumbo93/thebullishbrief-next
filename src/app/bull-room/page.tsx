@@ -1,12 +1,12 @@
 "use client";
 
 import { BullRoomPage } from '../../page-components/BullRoomPage';
-import { Layout } from '../../components/Layout';
+import { BullRoomLayout } from '../../components/BullRoom/BullRoomLayout';
 
 export default function BullRoomPageWrapper() {
   return (
-    <Layout>
+    <BullRoomLayout>
       <BullRoomPage />
-    </Layout>
+    </BullRoomLayout>
   );
 }

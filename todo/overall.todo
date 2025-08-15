@@ -49,6 +49,9 @@ Misc:
     [] Enable Custom SMTP for Supabase Auth Emails
     [] Article Meta Info on Mobile Still Sucks
     
+    ✔ Make more Bull Rooms, tie them to preferences @done(25-08-14 17:31)
+
+    
     [] Bull Room Edit, Reply, Delete
     [] Bull Room Admin Actions: Delete, Mute, Delete All Messages
     [] Bull Room Chat Infinite Scroll
@@ -56,8 +59,12 @@ Misc:
     [] Bull Room Chat Message Replies
     [] Bull Room Chat Links
     [] Bull Room Chat Images
-    [] Make more Bull Rooms, tie them to preferences
- 
+    
+    [] Bull Room Designs: 
+        [] Reaction Dock Ugly
+        [] Reactions In Chat Ugly
+        [] Edit Dock Ugly
+        []
 
 
     
@@ -83,7 +90,7 @@ Refine/Polish/Mobile Polish:
     ✔ Signup Modal @done(25-08-10 20:14)
     ✔ Onboarding Survey @done(25-08-11 09:56)
     ✔ Sidebar @done(25-08-10 20:14)
-    [] Brief Page (CTA Left)
+    ✔ Brief Page (CTA Left) @done(25-08-14 12:17)
     ✔ Home Page @done(25-08-10 20:15)
     ✔ Explore Sidebar @done(25-08-10 22:49)
     ✔ Article Page @done(25-08-10 20:15)

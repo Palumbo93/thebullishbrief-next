@@ -220,13 +220,25 @@ export const ProfileSection: React.FC = () => {
         return;
       }
 
+      // Update username in Supabase Auth user metadata
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { username: newUsername.trim() }
+      });
+      if (authError) throw authError;
+
+      // Refresh the session to get updated user metadata
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.warn('Failed to refresh session after username update:', refreshError);
+      }
+
       // Update username in user_profiles table
-      const { error } = await supabase
+      const { error: profileError } = await supabase
         .from('user_profiles')
         .update({ username: newUsername.trim() })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
       setProfile(prev => prev ? { ...prev, username: newUsername.trim() } : null);
       toast.success('Username updated successfully');

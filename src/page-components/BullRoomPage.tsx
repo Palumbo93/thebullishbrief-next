@@ -127,6 +127,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
       <BullRoomPageLayout
         isAuthenticated={!!user}
         isLoading={authLoading}
+        isInfoPanelOpen={isMobileInfoPanelOpen}
         mobileHeader={currentRoom && (
           <BullRoomMobileHeader
             rooms={rooms}

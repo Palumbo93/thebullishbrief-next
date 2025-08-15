@@ -14,12 +14,15 @@ export const useTypingIndicator = (roomId: string) => {
   const sendTypingStatus = useCallback((isTyping: boolean) => {
     if (!user || !roomId) return;
 
+    // Get username from user profile first, fallback to auth metadata, then to 'Anonymous'
+    const username = user.profile?.username || user.user_metadata?.username || 'Anonymous';
+
     supabase.channel(`typing-${roomId}`).send({
       type: 'broadcast',
       event: 'typing',
       payload: {
         user_id: user.id,
-        username: user.user_metadata?.username || 'Anonymous',
+        username: username,
         is_typing: isTyping,
         room_id: roomId,
       },

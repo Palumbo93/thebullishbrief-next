@@ -34,6 +34,7 @@ interface AuthContextType {
   grantRole: (userId: string, roleName: string) => Promise<{ error?: any; success?: boolean }>;
   revokeRole: (userId: string, roleName: string) => Promise<{ error?: any; success?: boolean }>;
   refreshToken: () => Promise<{ error?: any; data?: any; success?: boolean }>;
+  updateUserMetadata: (metadata: any) => Promise<{ error?: any; data?: any; success?: boolean }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -202,6 +203,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { data, success: true };
       } catch (error) {
         console.error('Error refreshing token:', error);
+        return { error };
+      }
+    },
+    // Update user metadata and refresh local state
+    updateUserMetadata: async (metadata: any) => {
+      try {
+        const { data, error } = await supabase.auth.updateUser({ data: metadata });
+        if (error) {
+          console.error('Error updating user metadata:', error);
+          return { error };
+        }
+        
+        // Refresh session to get updated metadata
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          console.error('Error refreshing session:', refreshError);
+          return { error: refreshError };
+        }
+        
+        // Update local user state with new metadata
+        setUser(prev => prev ? { ...prev, user_metadata: data.user?.user_metadata } : null);
+        
+        return { data, success: true };
+      } catch (error) {
+        console.error('Error updating user metadata:', error);
         return { error };
       }
     },

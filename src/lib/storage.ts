@@ -6,7 +6,8 @@ export const STORAGE_BUCKETS = {
   AUTHOR_AVATARS: 'author-avatars',
   FEATURED_IMAGES: 'featured-images',
   BRIEF_IMAGES: 'brief-images',
-  COMPANY_LOGOS: 'company-logos'
+  COMPANY_LOGOS: 'company-logos',
+  BULL_ROOM_FILES: 'bull-room-files'
 } as const;
 
 // Image types and their allowed MIME types

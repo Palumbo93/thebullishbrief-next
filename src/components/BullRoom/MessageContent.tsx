@@ -74,8 +74,6 @@ export const MessageContent: React.FC<MessageContentProps> = ({
         style={{
           fontSize: 'var(--text-sm)',
           whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-          lineHeight: '24px',
           margin: 0
         }}
       >

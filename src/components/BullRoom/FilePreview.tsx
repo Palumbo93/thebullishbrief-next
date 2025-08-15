@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { File as FileIcon } from 'lucide-react';
 import { formatFileSize } from './utils/formatters';
+import { ImagePreviewModal } from './ImagePreviewModal';
 
 /**
  * FilePreview component for displaying file and image previews
@@ -22,32 +23,52 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
   content, 
   className = '' 
 }) => {
+  const [showImageModal, setShowImageModal] = useState(false);
   const isImage = fileData.type.startsWith('image/');
   
   if (isImage) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }} className={className}>
-        <img 
-          src={fileData.url} 
-          alt={content || fileData.name}
-          style={{
-            maxWidth: '100%',
-            borderRadius: 'var(--radius-xl)',
-            maxHeight: '320px',
-            objectFit: 'cover',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-          }}
+      <>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', alignItems: 'flex-start' }} className={className}>
+          <img 
+            src={fileData.url} 
+            alt={content || fileData.name}
+            style={{
+              width: '200px',
+              height: '200px',
+              borderRadius: 'var(--radius-lg)',
+              objectFit: 'cover',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              border: '1px solid rgba(31, 31, 31, 0.2)',
+              cursor: 'pointer',
+              transition: 'transform 200ms'
+            }}
+            onClick={() => setShowImageModal(true)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          />
+          {content && (
+            <p style={{
+              fontSize: 'var(--text-sm)',
+              lineHeight: 'var(--leading-relaxed)',
+              opacity: 0.9
+            }}>
+              {content}
+            </p>
+          )}
+        </div>
+        
+        <ImagePreviewModal
+          isOpen={showImageModal}
+          onClose={() => setShowImageModal(false)}
+          imageUrl={fileData.url}
+          imageName={fileData.name}
         />
-        {content && (
-          <p style={{
-            fontSize: 'var(--text-sm)',
-            lineHeight: 'var(--leading-relaxed)',
-            opacity: 0.9
-          }}>
-            {content}
-          </p>
-        )}
-      </div>
+      </>
     );
   }
   

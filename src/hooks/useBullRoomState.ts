@@ -1,18 +1,25 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBullRooms, useBullRoom } from './useBullRooms';
-import { useBullRoomMessages } from './useBullRoomMessages';
+import { useBullRoomMessages, useCreateMessage } from './useBullRoomMessages';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from './useToast';
+import { BullRoomFileUploadService, FileUploadResult } from '../services/bullRoomFileUpload';
 
 // File upload types
 interface FileUpload {
   file: File;
   preview?: string;
   progress: number;
+  uploadResult?: FileUploadResult;
+  error?: string;
 }
 
 export const useBullRoomState = (roomSlug?: string) => {
   const router = useRouter();
   const selectedRoomSlug = roomSlug || 'general';
+  const { user } = useAuth();
+  const toast = useToast();
   
   // File upload refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,6 +48,9 @@ export const useBullRoomState = (roomSlug?: string) => {
     error: messagesError 
   } = useBullRoomMessages(currentRoom?.id || '');
 
+  // Message creation mutation
+  const createMessageMutation = useCreateMessage();
+
   // Auto-redirect to general room if no specific room is provided
   const handleRoomRedirect = () => {
     if (!roomSlug) {
@@ -54,10 +64,17 @@ export const useBullRoomState = (roomSlug?: string) => {
   };
 
   // File upload handlers
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     
-    files.forEach(file => {
+    for (const file of files) {
+      // Validate file
+      const validation = BullRoomFileUploadService.validateFile(file);
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid file');
+        continue;
+      }
+
       const upload: FileUpload = {
         file,
         progress: 0,
@@ -66,23 +83,39 @@ export const useBullRoomState = (roomSlug?: string) => {
       
       setFileUploads(prev => [...prev, upload]);
       
-      // Simulate upload progress
-      const interval = setInterval(() => {
+      try {
+        // Upload file with real progress tracking
+        const result = await BullRoomFileUploadService.uploadFile(
+          file, 
+          currentRoom?.id || '', 
+          user?.id || ''
+        );
+        
+        // Update upload progress to 100% and store result
         setFileUploads(prev => prev.map(u => 
           u.file === file 
-            ? { ...u, progress: Math.min(u.progress + 10, 100) }
+            ? { ...u, progress: 100, uploadResult: result }
             : u
         ));
         
-        if (upload.progress >= 100) {
-          clearInterval(interval);
-          
-          // TODO: Implement file upload to Supabase storage
-          // For now, just remove the upload
+        toast.success('File uploaded successfully');
+        
+      } catch (error) {
+        // Update upload with error
+        setFileUploads(prev => prev.map(u => 
+          u.file === file 
+            ? { ...u, progress: 0, error: error instanceof Error ? error.message : 'Upload failed' }
+            : u
+        ));
+        
+        toast.error(error instanceof Error ? error.message : 'Upload failed');
+        
+        // Remove failed upload after 3 seconds
+        setTimeout(() => {
           setFileUploads(prev => prev.filter(u => u.file !== file));
-        }
-      }, 100);
-    });
+        }, 3000);
+      }
+    }
     
     // Reset file input
     if (fileInputRef.current) {
@@ -131,6 +164,37 @@ export const useBullRoomState = (roomSlug?: string) => {
     });
   };
 
+  // Enhanced send message handler with file support
+  const handleSendMessageWithCleanup = async () => {
+    if (!newMessage.trim() && fileUploads.length === 0) return;
+    
+    try {
+      // Handle file uploads first
+      const fileData = fileUploads.length > 0 
+        ? fileUploads[0].uploadResult // Use the uploaded file data
+        : undefined;
+      
+      // Send message with file data
+      await createMessageMutation.mutateAsync({
+        room_id: currentRoom?.id || '',
+        content: newMessage.trim(),
+        message_type: fileData ? 'image' : 'text',
+        file_data: fileData
+      });
+      
+      // Clear state
+      setNewMessage('');
+      setFileUploads([]);
+      resetTextareaHeight();
+      
+      toast.success('Message sent successfully');
+      
+    } catch (error) {
+      toast.error('Failed to send message');
+      console.error('Failed to send message:', error);
+    }
+  };
+
   return {
     // Room state
     rooms,
@@ -159,6 +223,7 @@ export const useBullRoomState = (roomSlug?: string) => {
     removeFileUpload,
     updateNewMessage,
     clearNewMessage,
+    handleSendMessageWithCleanup,
     adjustTextareaHeight,
     resetTextareaHeight
   };

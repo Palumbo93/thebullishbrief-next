@@ -90,9 +90,9 @@ Misc:
         ✔ Ticker already links to google 'XYZ stock' in TickerLink.tsx, this link should add to our TickerLink component ($XYZ should render clickable to google 'XYZ stock') @done(25-08-15 18:26)
 
     [] Bull Room Chat Images
-        - Check to see if sending messages with images even works
-        - File selector should only allow images
-        - Images should render in the chat area as a thumbnail square
+        ✔ Check to see if sending messages with images even works @done(25-08-15 18:48)
+        ✔ File selector should only allow images @done(25-08-15 18:48)
+        ✔ Images should render in the chat area as a thumbnail square @done(25-08-15 18:48)
         - Images should be clickable to open in a preview modal
 
     [] Bull Room Admin Actions Menu in all Docks: 

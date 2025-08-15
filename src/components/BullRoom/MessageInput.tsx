@@ -260,7 +260,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             {/* Send Button */}
             <button
               onClick={onSend}
-              disabled={!value.trim() || disabled}
+              disabled={(!value.trim() && fileUploads.length === 0) || disabled}
               style={{
                 width: '40px',
                 height: '40px',
@@ -269,15 +269,15 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 200ms',
-                opacity: (!value.trim() || disabled) ? 0.4 : 1,
-                cursor: (!value.trim() || disabled) ? 'not-allowed' : 'pointer',
+                opacity: ((!value.trim() && fileUploads.length === 0) || disabled) ? 0.4 : 1,
+                cursor: ((!value.trim() && fileUploads.length === 0) || disabled) ? 'not-allowed' : 'pointer',
                 transform: 'scale(1)',
-                border: value.trim() && !disabled ? 'none' : '1px solid rgba(31, 31, 31, 0.4)',
-                background: value.trim() && !disabled ? 'var(--color-brand-primary)' : 'rgba(20, 20, 20, 0.6)',
-                color: value.trim() && !disabled ? '#000000' : 'var(--color-text-primary)'
+                border: (value.trim() || fileUploads.length > 0) && !disabled ? 'none' : '1px solid rgba(31, 31, 31, 0.4)',
+                background: (value.trim() || fileUploads.length > 0) && !disabled ? 'var(--color-brand-primary)' : 'rgba(20, 20, 20, 0.6)',
+                color: (value.trim() || fileUploads.length > 0) && !disabled ? '#000000' : 'var(--color-text-primary)'
               }}
               onMouseEnter={(e) => {
-                if (value.trim() && !disabled) {
+                if ((value.trim() || fileUploads.length > 0) && !disabled) {
                   e.currentTarget.style.background = '#f5f5f5';
                   e.currentTarget.style.transform = 'scale(1.05)';
                 } else if (!disabled) {
@@ -286,7 +286,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 }
               }}
               onMouseLeave={(e) => {
-                if (value.trim() && !disabled) {
+                if ((value.trim() || fileUploads.length > 0) && !disabled) {
                   e.currentTarget.style.background = 'var(--color-brand-primary)';
                   e.currentTarget.style.transform = 'scale(1)';
                 } else if (!disabled) {
@@ -308,7 +308,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
+          accept="image/*"
           onChange={onFileSelect}
           style={{ display: 'none' }}
         />

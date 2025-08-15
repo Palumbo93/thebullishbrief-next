@@ -61,7 +61,8 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     handleFileSelect,
     removeFileUpload,
     updateNewMessage,
-    clearNewMessage
+    clearNewMessage,
+    handleSendMessageWithCleanup
   } = useBullRoomState(roomSlug);
 
   const {
@@ -108,24 +109,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
   // Enable real-time messaging only for authenticated users
   useBullRoomRealtime(currentRoom?.id || '');
 
-  // Enhanced send message handler
-  const handleSendMessageWithCleanup = () => {
-    if (!newMessage.trim() || !user || !currentRoom) return;
 
-    handleSendMessage(
-      newMessage.trim(),
-      replyingTo?.messageId,
-      () => {
-        clearNewMessage();
-        if (replyingTo) {
-          handleCancelReply();
-        }
-      },
-      (error) => {
-        console.error('Failed to send message:', error);
-      }
-    );
-  };
 
   // Wrapper for onStartEdit to match expected signature
   const handleStartEdit = (messageId: string) => {

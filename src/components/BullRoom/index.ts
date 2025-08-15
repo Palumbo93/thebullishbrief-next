@@ -17,7 +17,7 @@ export { BullRoomMobileInfoPanel } from './BullRoomMobileInfoPanel';
 // Foundation components
 export { EmptyState } from './EmptyState';
 export { FilePreview } from './FilePreview';
-export { TickerLink } from './TickerLink';
+export { MessageContentRenderer } from './MessageContentRenderer';
 
 // Message editing components
 export { InlineMessageEditor } from './InlineMessageEditor';

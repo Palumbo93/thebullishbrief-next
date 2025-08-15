@@ -1,7 +1,8 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { RoomInfoSidebar } from './RoomInfoSidebar';
-import { BullRoom, BullRoomMessage } from '../../lib/database.aliases';
+import { BullRoom } from '../../lib/database.aliases';
+import { BullRoomMessage } from '../../types/bullRoom.types';
 
 interface BullRoomMobileInfoPanelProps {
   isOpen: boolean;

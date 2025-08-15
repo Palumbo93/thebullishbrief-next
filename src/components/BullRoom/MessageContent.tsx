@@ -1,7 +1,7 @@
 import React from 'react';
 import { BullRoomMessage } from '../../types/bullRoom.types';
 import { getMessageType, isImageMessage, isFileMessage, hasFileData } from './utils/messageUtils';
-import { TickerLink } from './TickerLink';
+import { MessageContentRenderer } from './MessageContentRenderer';
 import { FilePreview } from './FilePreview';
 
 /**
@@ -79,7 +79,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
           margin: 0
         }}
       >
-        <TickerLink text={message.content} />
+        <MessageContentRenderer text={message.content} />
       </p>
     </div>
   );

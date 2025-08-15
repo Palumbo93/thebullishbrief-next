@@ -107,7 +107,7 @@ export const InlineMessageEditor: React.FC<InlineMessageEditorProps> = ({
           border: 'none',
           outline: 'none',
           resize: 'none',
-          fontSize: 'var(--text-sm)',
+          fontSize: 'var(--text-input)',
           lineHeight: 'var(--leading-relaxed)',
           color: 'var(--color-text-primary)',
           fontFamily: 'inherit'

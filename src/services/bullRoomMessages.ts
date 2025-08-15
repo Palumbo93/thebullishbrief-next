@@ -287,13 +287,26 @@ export class BullRoomMessageService {
         throw new Error(`Failed to remove reaction: ${deleteError.message}`);
       }
     } else {
-      // If reaction doesn't exist, add it
+      // Get the room_id from the message
+      const { data: messageData, error: messageError } = await supabase
+        .from('bull_room_messages')
+        .select('room_id')
+        .eq('id', messageId)
+        .single();
+
+      if (messageError) {
+        console.error('Error fetching message room_id:', messageError);
+        throw new Error(`Failed to fetch message room_id: ${messageError.message}`);
+      }
+
+      // If reaction doesn't exist, add it with room_id
       const { error: insertError } = await supabase
         .from('bull_room_reactions')
         .insert({
           message_id: messageId,
           user_id: userId,
-          emoji: emoji
+          emoji: emoji,
+          room_id: messageData.room_id
         });
 
       if (insertError) {

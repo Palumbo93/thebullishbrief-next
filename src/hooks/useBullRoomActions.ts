@@ -74,8 +74,13 @@ export const useBullRoomActions = (roomId?: string) => {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => {
+    if (!roomId) {
+      onError?.(new Error('No room selected'));
+      return;
+    }
+    
     toggleReactionMutation.mutate(
-      { messageId, emoji },
+      { messageId, emoji, roomId },
       {
         onSuccess: () => {
           onSuccess?.();

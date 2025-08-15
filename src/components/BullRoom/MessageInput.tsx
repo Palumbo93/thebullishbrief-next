@@ -1,6 +1,7 @@
 import React from 'react';
 import { Paperclip, Image, File as FileIcon, X } from 'lucide-react';
 import { ReplyPreview } from './ReplyPreview';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 /**
  * MessageInput handles new message input and file uploads.
@@ -53,6 +54,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   onCancelReply,
   user
 }) => {
+  const isMobile = useIsMobile();
+  
   // Auto-resize textarea
   React.useEffect(() => {
     if (textareaRef.current) {
@@ -180,7 +183,9 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             value={value}
             onChange={onChange}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              // On mobile: Enter creates new line, only send button sends message
+              // On desktop: Enter sends message, Shift+Enter creates new line
+              if (!isMobile && e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 onSend();
               }

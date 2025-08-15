@@ -86,7 +86,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     // Typing indicator state
     typingUsers,
     handleMessageInputChange
-  } = useBullRoomUI(currentRoom?.id);
+  } = useBullRoomUI(currentRoom?.id, textareaRef);
 
   const {
     // Action handlers
@@ -207,7 +207,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
               isOpen={isMobileInfoPanelOpen}
               onClose={() => toggleMobileInfoPanel()}
               room={currentRoom}
-              messages={messages as DBBullRoomMessage[]}
+              messages={messages as BullRoomMessage[]}
             />
           )
         }
@@ -279,7 +279,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
           ) : currentRoom ? (
             <RoomInfoSidebar 
               room={currentRoom}
-              messages={messages as DBBullRoomMessage[]}
+              messages={messages as BullRoomMessage[]}
             />
           ) : (
             <RoomInfoSkeleton />

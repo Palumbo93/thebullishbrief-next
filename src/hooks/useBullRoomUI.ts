@@ -3,7 +3,7 @@ import { useMessageEdit } from './useMessageEdit';
 import { useMessageReply } from './useMessageReply';
 import { useTypingIndicator } from './useTypingIndicator';
 
-export const useBullRoomUI = (roomId?: string) => {
+export const useBullRoomUI = (roomId?: string, textareaRef?: React.RefObject<HTMLTextAreaElement | null>) => {
   // Mobile UI state
   const [isMobileInfoPanelOpen, setIsMobileInfoPanelOpen] = useState(false);
 
@@ -43,6 +43,12 @@ export const useBullRoomUI = (roomId?: string) => {
   // Message action handlers
   const handleReply = (messageId: string, username: string, content: string) => {
     startReply(messageId, username, content);
+    // Focus the textarea after starting reply
+    if (textareaRef?.current) {
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100); // Small delay to ensure the reply state is set
+    }
   };
 
   const handleEdit = (messageId: string, content: string) => {

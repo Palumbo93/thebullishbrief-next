@@ -206,12 +206,6 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
            .prompt-modal-content {
              overflow-y: auto;
              overflow-x: hidden;
-             -webkit-overflow-scrolling: touch;
-             scrollbar-width: none;
-             -ms-overflow-style: none;
-           }
-           .prompt-modal-content::-webkit-scrollbar {
-             display: none;
            }
          }
       `}</style>
@@ -316,7 +310,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
               flex: 1, 
               overflowY: 'auto',
               padding: 'var(--space-6)'
-            }}>
+            }} className="hide-scrollbar">
               <h3 style={{ 
                 fontSize: 'var(--text-xl)', 
                 fontFamily: 'var(--font-editorial)',
@@ -442,7 +436,7 @@ export const PromptModal: React.FC<PromptModalProps> = ({ prompt, onClose }) => 
           overflowY: 'auto',
           
         }}
-        className="mobile-only:hidden"
+        className="mobile-only:hidden hide-scrollbar"
         >
           <div style={{
             padding: 'var(--space-6)',

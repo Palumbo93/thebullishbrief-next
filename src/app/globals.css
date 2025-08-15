@@ -324,6 +324,36 @@ body {
   background: var(--color-text-tertiary);
 }
 
+/* Custom scrollbar for chat area */
+.chat-area-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.chat-area-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-area-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.chat-area-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.chat-area-scrollbar::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Firefox scrollbar for chat area */
+.chat-area-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
 /* Additional HTML Content Styles */
 .html-content ul,
 .html-content ol {

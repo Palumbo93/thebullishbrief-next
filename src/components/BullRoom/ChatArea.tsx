@@ -52,7 +52,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       display: 'flex',
       flexDirection: 'column-reverse',
       scrollBehavior: 'smooth'
-    }} className="">
+    }} className="hide-scrollbar">
       <MessageList
         messages={messages}
         userId={userId}

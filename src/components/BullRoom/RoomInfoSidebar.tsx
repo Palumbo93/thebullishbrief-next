@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Hash, MessageSquare, Clock, Info, Users } from 'lucide-react';
-import { BullRoom, BullRoomMessage } from '../../lib/database.aliases';
+import { BullRoom } from '../../lib/database.aliases';
+import { BullRoomMessage } from '../../types/bullRoom.types';
 import { UserRow } from '../ui/UserRow';
 import { UserProfilePopUp } from '../ui/UserProfilePopUp';
 
@@ -69,7 +70,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
           username: message.username,
           messageCount: 1,
           lastActive: message.created_at,
-          profile_image: null,
+          profile_image: message.user?.profile_image || null,
         });
       }
     });
@@ -113,24 +114,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
         flexDirection: 'column',
         gap: 'var(--space-4)',
         overflowY: 'auto',
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'rgba(255, 255, 255, 0.1) transparent'
-      }}>
-        <style jsx>{`
-          div::-webkit-scrollbar {
-            width: 6px;
-          }
-          div::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          div::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-          }
-          div::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
-          }
-        `}</style>
+      }} className="hide-scrollbar">
       
       {/* Room Header */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>

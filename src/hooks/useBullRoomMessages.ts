@@ -173,49 +173,62 @@ export const useToggleReaction = () => {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
+    mutationFn: ({ messageId, emoji, roomId }: { messageId: string; emoji: string; roomId: string }) =>
       messageService.addReaction(messageId, emoji, user?.id!),
-    onMutate: async ({ messageId, emoji }) => {
+    onMutate: async ({ messageId, emoji, roomId }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['bull-room-messages'] });
+      await queryClient.cancelQueries({ queryKey: ['bull-room-messages', roomId] });
 
       // Snapshot the previous value
-      const previousMessages = queryClient.getQueryData(['bull-room-messages']);
+      const previousMessages = queryClient.getQueryData(['bull-room-messages', roomId]);
 
       // Optimistically update reactions - simplified and faster
+      console.log('🚀 Optimistic reaction update for message:', messageId, 'emoji:', emoji, 'user:', user?.id, 'room:', roomId);
       queryClient.setQueryData(
-        ['bull-room-messages'],
-        (oldData: BullRoomMessage[] = []) =>
-          oldData.map(msg => {
+        ['bull-room-messages', roomId],
+        (oldData: BullRoomMessage[] = []) => {
+          const updatedData = oldData.map(msg => {
             if (msg.id === messageId) {
+              console.log('🎯 Found target message for optimistic update');
               const reactions = { ...(msg.reactions || {}) };
               const userId = user?.id!;
               const hasReacted = reactions[emoji]?.includes(userId);
               
               if (hasReacted) {
                 // Remove reaction - simplified
+                console.log('🗑️ Removing reaction (optimistic)');
                 reactions[emoji] = reactions[emoji].filter(id => id !== userId);
                 if (reactions[emoji].length === 0) delete reactions[emoji];
               } else {
                 // Add reaction - simplified
+                console.log('➕ Adding reaction (optimistic)');
                 if (!reactions[emoji]) reactions[emoji] = [];
                 reactions[emoji].push(userId);
               }
               
+              console.log('✅ Optimistic update complete, reactions:', reactions);
               return { ...msg, reactions };
             }
             return msg;
-          })
+          });
+          console.log('🔄 Optimistic update applied to', updatedData.length, 'messages');
+          return updatedData;
+        }
       );
 
       return { previousMessages };
     },
-    onError: (err, { messageId, emoji }, context) => {
+    onError: (err, { messageId, emoji, roomId }, context) => {
       // Rollback on error
       if (context?.previousMessages) {
-        queryClient.setQueryData(['bull-room-messages'], context.previousMessages);
+        queryClient.setQueryData(['bull-room-messages', roomId], context.previousMessages);
       }
       console.error('Failed to toggle reaction:', err);
+    },
+    onSuccess: (_, { messageId, emoji, roomId }) => {
+      // The optimistic update should already be correct since we're using toggle behavior
+      // Just log success for debugging
+      console.log('✅ Reaction toggle successful for message:', messageId, 'emoji:', emoji);
     },
     // Removed onSettled to prevent unnecessary refetches
   });

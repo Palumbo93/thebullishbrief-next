@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { getFullHeightStyles, getSafeAreaInsetPadding } from '../../utils/viewportUtils';
+import { getSafeAreaInsetPadding } from '../../utils/viewportUtils';
 
 interface BullRoomMobileLayoutProps {
   children?: React.ReactNode;
@@ -13,7 +13,7 @@ interface BullRoomMobileLayoutProps {
   typingIndicator?: React.ReactNode;
   infoPanel?: React.ReactNode;
   isInfoPanelOpen?: boolean;
-  isEditing?: boolean; // New prop to control MessageInput visibility during editing
+  isEditing?: boolean;
 }
 
 export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
@@ -30,6 +30,7 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
 }) => {
   const [messageInputHeight, setMessageInputHeight] = useState(0);
   const [typingIndicatorHeight, setTypingIndicatorHeight] = useState(0);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const messageInputRef = useRef<HTMLDivElement>(null);
   const typingIndicatorRef = useRef<HTMLDivElement>(null);
 
@@ -50,102 +51,142 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
     };
   }, [messageInput]);
 
-  // Measure TypingIndicator height changes
+  // Handle keyboard height changes
   useEffect(() => {
-    if (!typingIndicatorRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setTypingIndicatorHeight(entry.contentRect.height);
+    const handleVisualViewportChange = () => {
+      if (window.visualViewport) {
+        const viewportHeight = window.visualViewport.height;
+        const windowHeight = window.innerHeight;
+        const newKeyboardHeight = Math.max(0, windowHeight - viewportHeight);
+        setKeyboardHeight(newKeyboardHeight);
       }
-    });
+    };
 
-    resizeObserver.observe(typingIndicatorRef.current);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+      handleVisualViewportChange(); // Initial call
+    }
 
     return () => {
-      resizeObserver.disconnect();
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+      }
     };
-  }, [typingIndicator]);
+  }, []);
 
-  // Calculate total bottom space needed - hide MessageInput when editing
+  // Calculate heights
+  const headerHeight = header ? 60 : 0; // Fixed header height
   const totalBottomSpace = isEditing ? typingIndicatorHeight : messageInputHeight + typingIndicatorHeight;
 
-  // Mobile layout container - Using viewport-aware height
+  // Main mobile container - Takes full viewport control
   const mobileContainerStyle: React.CSSProperties = {
-    ...getFullHeightStyles({ includeSafeAreaInsets: false }),
-    position: 'relative',
-    overflow: 'hidden',
-    paddingTop: header ? '60px' : '0px' // Account for mobile header when it exists
-  };
-
-  // Chat interface container - Absolutely positioned to fill available space
-  const chatContainerStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: header ? '60px' : '0px', // Start below the header if it exists
+    position: 'fixed',
+    top: 0,
     left: 0,
     right: 0,
-    bottom: totalBottomSpace, // Dynamically adjusted based on MessageInput and TypingIndicator height
-    overflow: 'hidden'
+    bottom: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    background: 'var(--color-bg-primary)',
+    zIndex: 1
   };
 
-  // Message input container - Fixed at bottom with safe area inset
+  // Header container
+  const headerContainerStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    background: 'var(--color-bg-primary)',
+    height: `${headerHeight}px`
+  };
+
+  // Chat area container - Positioned to avoid header and input, with proper scroll handling
+  const chatContainerStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0, // Start below header
+    left: 0,
+    right: 0,
+    bottom: totalBottomSpace + keyboardHeight, // End above input + keyboard
+    overflow: 'visible', // Allow scroll events to pass through
+    background: 'var(--color-bg-primary)',
+    pointerEvents: 'auto' // Ensure pointer events work
+  };
+
+  // Message input container - Fixed at bottom
   const inputContainerStyle: React.CSSProperties = {
     position: 'fixed',
-    bottom: 0,
+    bottom: keyboardHeight, // Account for keyboard
     left: 0,
     right: 0,
     background: 'rgba(0, 0, 0, 0.95)',
     backdropFilter: 'blur(4px)',
-    borderTop: '0.5px solid var(--color-border-primary)',
     zIndex: 50,
-    ...getSafeAreaInsetPadding() // Add safe area inset padding
+    ...getSafeAreaInsetPadding()
   };
 
-  // Typing indicator container - Fixed above message input with safe area inset
+  // Typing indicator container - Fixed above message input
   const typingContainerStyle: React.CSSProperties = {
     position: 'fixed',
-    bottom: messageInputHeight, // Position above MessageInput
+    bottom: 0, // Account for keyboard + input
     left: 0,
     right: 0,
     paddingLeft: 'var(--space-4)',
     paddingBottom: 'var(--space-1)',
     background: 'rgba(0, 0, 0, 0.95)',
     backdropFilter: 'blur(4px)',
-    zIndex: 50,
-    ...getSafeAreaInsetPadding() // Add safe area inset padding
+    zIndex: 150,
+  };
+
+  // Info panel container - Overlay
+  const infoPanelContainerStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 100,
+    display: isInfoPanelOpen ? 'flex' : 'none',
+    alignItems: 'flex-end'
   };
 
   return (
     <div style={mobileContainerStyle}>
-      {/* Mobile Header */}
+      {/* Header */}
       {header && (
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100 }}>
+        <div style={headerContainerStyle}>
           {header}
         </div>
       )}
 
-      {/* Chat Interface - Absolutely positioned to fill available space */}
+      {/* Chat Area - Positioned to avoid header and input */}
       <div style={chatContainerStyle}>
         {chatArea || children}
       </div>
 
-      {/* Mobile Typing Indicator - Fixed above message input */}
+      {/* Typing Indicator */}
       {typingIndicator && (
         <div ref={typingIndicatorRef} style={typingContainerStyle}>
           {typingIndicator}
         </div>
       )}
 
-      {/* Mobile Message Input - Fixed at bottom of viewport (hidden when editing) */}
+      {/* Message Input - Hidden when editing */}
       {messageInput && !isEditing && (
         <div ref={messageInputRef} style={inputContainerStyle}>
           {messageInput}
         </div>
       )}
 
-      {/* Mobile Info Panel - Rendered directly without container */}
-        {infoPanel}
-
+      {/* Info Panel Overlay */}
+      {infoPanel && (
+        <div style={infoPanelContainerStyle}>
+          {infoPanel}
+        </div>
+      )}
     </div>
   );
 };

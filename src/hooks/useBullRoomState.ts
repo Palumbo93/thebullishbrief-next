@@ -122,6 +122,13 @@ export const useBullRoomState = (roomSlug?: string) => {
   const clearNewMessage = () => {
     setNewMessage('');
     resetTextareaHeight();
+    
+    // Refocus the textarea after clearing to maintain focus
+    requestAnimationFrame(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    });
   };
 
   return {

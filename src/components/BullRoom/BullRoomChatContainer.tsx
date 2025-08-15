@@ -25,7 +25,7 @@ export const BullRoomChatContainer: React.FC<BullRoomChatContainerProps> = ({
     position: 'relative'
   };
 
-  // Chat messages area - Absolutely positioned to fill container
+  // Chat messages area - Absolutely positioned to fill container with proper scroll handling
   const messagesAreaStyle: React.CSSProperties = {
     position: 'absolute',
     top: 0,
@@ -35,7 +35,10 @@ export const BullRoomChatContainer: React.FC<BullRoomChatContainerProps> = ({
     overflowY: 'auto',
     overflowX: 'hidden',
     padding: 'var(--space-4)',
-    scrollBehavior: 'smooth'
+    scrollBehavior: 'smooth',
+    WebkitOverflowScrolling: 'touch', // Better iOS scrolling
+    overscrollBehavior: 'contain', // Prevent scroll chaining
+    touchAction: 'pan-y' // Enable vertical touch scrolling
   };
 
   return (

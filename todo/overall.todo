@@ -55,18 +55,45 @@ Misc:
     
     ✔ Bull Room Edit @done(25-08-15 11:55)
     ✔ Bull Room Chat Message Replies @done(25-08-15 12:34)
-        - Replies don't have a nice UI to show which reply is for which message
-        - Reply should have a slamm line above showing the reply to message (one line only)
-        - Clicking the reply to message should scroll to the message
-        - Reply indicator above message input should be cleaned up
+        ✔ Replies don't have a nice UI to show which reply is for which message @done(25-08-15 13:56)
+        ✔ Reply should have a slamm line above showing the reply to message (one line only) @done(25-08-15 13:56)
+        ✔ Clicking the reply to message should scroll to the message @done(25-08-15 13:56)
+        ✔ Reply indicator above message input should be cleaned up @done(25-08-15 13:56)
     
-    [] Bull Room Delete
-        - Deleted message does not disappear from users or particpants chat area
+    ✔ Bull Room Delete @done(25-08-15 13:56)
+        ✔ Deleted message does not disappear from users or particpants chat area @done(25-08-15 13:56)
 
-    [] Bull Room Own Message Dock is ugly, needs icons and better styling
+    ✔ Bull Room Message Docks are ugly, Edit Reply Delete needs icons and better styling, consistency across both @done(25-08-15 14:19)
 
     ✔ Bull Room Chat Area Avatars @done(25-08-15 12:42)
     ✔ Bull Room Chat Area Profile Popup click @done(25-08-15 12:44)
+
+    ✔ Bull Room, sending message should keep the message input active not dismissing it @done(25-08-15 14:42)
+    ✔ Bull Room, the return key on mobile sends a message it should be just entering newline @done(25-08-15 14:42)
+    ✔ Mobile Bull room, keyboard height messing up bottom padding: not going back, not calculated properly. @done(25-08-15 15:47)
+
+    ✔ Bull Room Chat Message Reactions @done(25-08-15 18:13)
+        ✔ Reactions are not showing in real time, need to refresh the page to see the reactions @done(25-08-15 18:13)
+        ✔ Reactions UI is ugly for your own reactions, need to improve it @done(25-08-15 18:13)
+        ✔ Reactions hover state show list of usernames that have reacted that @done(25-08-15 18:13)
+
+    ✔ Bull Room Typing Indicators @done(25-08-15 18:04)
+        ✔ Works well, just need to lock in position @done(25-08-15 18:04)
+
+    ✔ Misc: @done(25-08-15 18:19)
+        ✔ Mobile Message Action Dock appears on click, need to be able to tap again to hide @done(25-08-15 18:19)
+        ✔ When click reply, need to focus the MEssage Input @done(25-08-15 18:19)
+        ✔ Profile avatar images in the sidebar @done(25-08-15 18:19)
+
+    ✔ Bull Room Chat Links @done(25-08-15 18:26)
+        ✔ Links should render clickable @done(25-08-15 18:26)
+        ✔ Ticker already links to google 'XYZ stock' in TickerLink.tsx, this link should add to our TickerLink component ($XYZ should render clickable to google 'XYZ stock') @done(25-08-15 18:26)
+
+    [] Bull Room Chat Images
+        - Check to see if sending messages with images even works
+        - File selector should only allow images
+        - Images should render in the chat area as a thumbnail square
+        - Images should be clickable to open in a preview modal
 
     [] Bull Room Admin Actions Menu in all Docks: 
         - Admin Delete
@@ -76,24 +103,6 @@ Misc:
     [] Bull Room Chat Infinite Scroll: 
         - Only load messages within the past 48 hours
         - Load 100 messages at a time
-
-    [] Bull Room Chat Message Reactions 
-        - Reaction Dock Ugly
-        - Reactions are not showing in real time, need to refresh the page to see the reactions
-        - Reactions UI is ugly for your own reactions, need to improve it
-
-    [] Bull Room Typing Indicator
-        - Works well, just need to lock in position    
-
-    [] Bull Room Chat Links
-        - Links should render clickable
-        - Tickers ($XYZ should render clickable to google 'XYZ stock')
-
-    [] Bull Room Chat Images
-        - Check to see if sending messages with images even works
-        - File selector should only allow images
-        - Images should render in the chat area
-        - Images should be clickable to open in a new tab
     
 
 

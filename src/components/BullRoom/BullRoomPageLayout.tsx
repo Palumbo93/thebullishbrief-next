@@ -46,8 +46,8 @@ export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
-  // Main container with full viewport height
-  const containerStyle: React.CSSProperties = {
+  // Desktop container with full viewport height
+  const containerStyleDesktop: React.CSSProperties = {
     height: '100vh',
     display: 'flex',
     flexDirection: 'column',
@@ -55,8 +55,9 @@ export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
   };
 
   return (
-    <div style={containerStyle}>
+    <>
       {isMobile ? (
+        // Mobile: Let the mobile layout take full control
         <BullRoomMobileLayout
           isAuthenticated={isAuthenticated}
           isLoading={isLoading}
@@ -70,18 +71,21 @@ export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
           {children}
         </BullRoomMobileLayout>
       ) : (
-        <BullRoomDesktopLayout
-          isAuthenticated={isAuthenticated}
-          isLoading={isLoading}
-          roomSelector={desktopRoomSelector}
-          chatArea={desktopChatArea}
-          messageInput={desktopMessageInput}
-          typingIndicator={desktopTypingIndicator}
-          roomInfoSidebar={desktopRoomInfoSidebar}
-        >
-          {children}
-        </BullRoomDesktopLayout>
+        // Desktop: Use container wrapper
+        <div style={containerStyleDesktop}>
+          <BullRoomDesktopLayout
+            isAuthenticated={isAuthenticated}
+            isLoading={isLoading}
+            roomSelector={desktopRoomSelector}
+            chatArea={desktopChatArea}
+            messageInput={desktopMessageInput}
+            typingIndicator={desktopTypingIndicator}
+            roomInfoSidebar={desktopRoomInfoSidebar}
+          >
+            {children}
+          </BullRoomDesktopLayout>
+        </div>
       )}
-    </div>
+    </>
   );
 };

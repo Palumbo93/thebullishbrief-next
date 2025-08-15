@@ -41,8 +41,6 @@ export const BullRoomLayout: React.FC<BullRoomLayoutProps> = ({ children }) => {
       <style>{`
         /* BullRoom Layout System - Independent styles */
         .bullroom-app-container {
-          min-height: 100vh;
-          max-width: 100vw;
           background: var(--color-bg-primary);
           display: flex;
         }
@@ -69,9 +67,8 @@ export const BullRoomLayout: React.FC<BullRoomLayoutProps> = ({ children }) => {
           position: relative;
           margin-left: 80px; /* Offset for fixed sidebar */
           background: var(--color-bg-primary);
-          min-height: 100vh;
           flex: 1;
-          width: calc(100vw - 80px);
+          width: calc(100vw - 80.5px);
         }
 
         /* Content Area */
@@ -79,8 +76,6 @@ export const BullRoomLayout: React.FC<BullRoomLayoutProps> = ({ children }) => {
           padding: 0;
           background: var(--color-bg-primary);
           position: relative;
-          height: 100vh;
-          overflow: hidden;
         }
 
         /* Custom Scrollbar Styling for Sidebar */

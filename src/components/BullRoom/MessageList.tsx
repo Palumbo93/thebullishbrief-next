@@ -40,11 +40,24 @@ export const MessageList: React.FC<MessageListProps> = ({
     return <EmptyState className={className} />;
   }
 
+  // Create a comprehensive user map from all messages
+  const userMap: Record<string, string> = {};
+  messages.forEach(message => {
+    if (message.user_id && message.username) {
+      userMap[message.user_id] = message.username;
+    }
+    // Also include user data from the user object if available
+    if (message.user?.id && message.user?.username) {
+      userMap[message.user.id] = message.user.username;
+    }
+  });
+
   // Reverse messages to show oldest first (proper chat order)
   const reversedMessages = [...messages].reverse();
 
   return (
     <div className={className}>
+      <div style={{ height: '76px' }} />  
       {reversedMessages.map((message, index) => {
         const previousMessage = index > 0 ? reversedMessages[index - 1] : undefined;
         
@@ -63,6 +76,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             onStartEdit={onStartEdit}
             onStopEdit={onStopEdit}
             onSaveEdit={onSaveEdit}
+            userMap={userMap}
           />
         );
       })}

@@ -28,6 +28,7 @@ export interface MessageItemProps {
   onStopEdit?: () => void;
   onSaveEdit?: (messageId: string, newContent: string) => Promise<void>;
   className?: string;
+  userMap?: Record<string, string>; // userId -> username mapping for all users in the room
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({
@@ -43,9 +44,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onStartEdit,
   onStopEdit,
   onSaveEdit,
-  className = ''
+  className = '',
+  userMap = {}
 }) => {
   const [hovered, setHovered] = React.useState(false);
+  const [mobileActionsOpen, setMobileActionsOpen] = React.useState(false);
   const [profilePopupOpen, setProfilePopupOpen] = React.useState(false);
   const [profilePopupPosition, setProfilePopupPosition] = React.useState({ x: 0, y: 0 });
   const showUsername = shouldShowUsername(message, previousMessage);
@@ -86,18 +89,40 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     setProfilePopupOpen(false);
   };
 
+  // Handle mobile message click
+  const handleMessageClick = () => {
+    if (isMobile && !isEditing) {
+      setMobileActionsOpen(!mobileActionsOpen);
+      // Clear hover state when toggling mobile actions
+      setHovered(false);
+    }
+  };
+
+
+
+  // Close mobile actions when clicking outside
+  const handleMessageMouseLeave = () => {
+    if (isMobile) {
+      setMobileActionsOpen(false);
+    }
+    setHovered(false);
+  };
+
   return (
     <div 
       id={`message-${message.id}`}
       style={{
         position: 'relative',
-        padding: isMobile ? 'var(--space-3) var(--space-4)' : 'var(--space-2) var(--space-4)',
+        padding: isMobile ? 'var(--space-3) var(--space-2)' : 'var(--space-2) var(--space-4)',
         transition: 'all var(--transition-base)',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        background: hovered ? 'var(--color-bg-secondary)' : 
+                   mobileActionsOpen ? 'var(--color-bg-tertiary)' : 'transparent'
       }}
       className={className}
+      onClick={handleMessageClick}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={handleMessageMouseLeave}
     >
       <div style={{
         display: 'flex',
@@ -184,6 +209,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 messageOwnerId={message.user_id}
                 showAllEmojis={false}
                 showCounts={true}
+                userMap={userMap}
               />
             </div>
           )}
@@ -191,14 +217,14 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       </div>
       
       {/* Hover Actions - only show when not editing */}
-      {hovered && !isEditing && (
+      {((hovered && !isMobile) || (mobileActionsOpen && isMobile)) && !isEditing && (
         <div style={{
           position: 'absolute',
           top: '-12px',
-          right: 0,
-          opacity: hovered ? 1 : 0,
+          right: 'var(--space-2)',
+          opacity: (hovered && !isMobile) || (mobileActionsOpen && isMobile) ? 1 : 0,
           transition: 'opacity 200ms',
-          pointerEvents: hovered ? 'auto' : 'none'
+          pointerEvents: (hovered && !isMobile) || (mobileActionsOpen && isMobile) ? 'auto' : 'none'
         }}>
           <MessageActions
             message={message}
@@ -208,6 +234,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             onReply={onReply}
             onEdit={onStartEdit}
             onDelete={onDelete}
+            userMap={userMap}
           />
         </div>
       )}

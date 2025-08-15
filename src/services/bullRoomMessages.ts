@@ -11,10 +11,7 @@ export class BullRoomMessageService {
   async getMessages(roomId: string, limit = 50, offset = 0): Promise<BullRoomMessage[]> {
     const { data, error } = await supabase
       .from('bull_room_messages')
-      .select(`
-        *,
-        reply_to:bull_room_messages!reply_to_id(*)
-      `)
+      .select('*')
       .eq('room_id', roomId)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -26,8 +23,37 @@ export class BullRoomMessageService {
 
     const messages = data || [];
 
+    // Fetch reply_to messages separately
+    const replyToIds = messages
+      .map(msg => msg.reply_to_id)
+      .filter(id => id !== null) as string[];
+    
+    const replyToMessagesMap = new Map<string, any>();
+    
+    if (replyToIds.length > 0) {
+      const { data: replyData, error: replyError } = await supabase
+        .from('bull_room_messages')
+        .select('id, content, username, user_id, created_at')
+        .in('id', replyToIds);
+      
+      if (replyError) {
+        console.error('Error fetching reply messages:', replyError);
+      } else {
+        replyData?.forEach(msg => {
+          replyToMessagesMap.set(msg.id, msg);
+        });
+      }
+    }
+
     // Fetch user profile data for all messages using our secure function
     const userIds = [...new Set(messages.map(msg => msg.user_id))];
+    // Also collect user IDs from reply_to messages
+    replyToMessagesMap.forEach(msg => {
+      if (msg.user_id) {
+        userIds.push(msg.user_id);
+      }
+    });
+    
     const userProfilesMap = new Map<string, any>();
     
     if (userIds.length > 0) {
@@ -77,9 +103,32 @@ export class BullRoomMessageService {
       const reactions = reactionsMap.get(message.id) || {};
       const userProfile = userProfilesMap.get(message.user_id);
       
+      // Process reply_to message if it exists
+      let processedReplyTo = null;
+      if (message.reply_to_id) {
+        const replyData = replyToMessagesMap.get(message.reply_to_id);
+        
+        if (replyData) {
+          const replyUserProfile = userProfilesMap.get(replyData.user_id);
+          processedReplyTo = {
+            ...replyData,
+            user: replyUserProfile ? {
+              id: replyUserProfile.id,
+              username: replyUserProfile.username,
+              profile_image: replyUserProfile.profile_image
+            } : {
+              id: replyData.user_id,
+              username: replyData.username,
+              profile_image: null
+            }
+          };
+        }
+      }
+      
       return {
         ...message,
         reactions,
+        reply_to: processedReplyTo,
         user: userProfile ? {
           id: userProfile.id,
           username: userProfile.username,

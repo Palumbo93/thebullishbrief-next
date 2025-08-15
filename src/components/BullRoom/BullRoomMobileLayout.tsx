@@ -13,6 +13,7 @@ interface BullRoomMobileLayoutProps {
   typingIndicator?: React.ReactNode;
   infoPanel?: React.ReactNode;
   isInfoPanelOpen?: boolean;
+  isEditing?: boolean; // New prop to control MessageInput visibility during editing
 }
 
 export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
@@ -24,7 +25,8 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
   messageInput,
   typingIndicator,
   infoPanel,
-  isInfoPanelOpen = false
+  isInfoPanelOpen = false,
+  isEditing = false
 }) => {
   const [messageInputHeight, setMessageInputHeight] = useState(0);
   const [typingIndicatorHeight, setTypingIndicatorHeight] = useState(0);
@@ -65,8 +67,8 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
     };
   }, [typingIndicator]);
 
-  // Calculate total bottom space needed
-  const totalBottomSpace = messageInputHeight + typingIndicatorHeight;
+  // Calculate total bottom space needed - hide MessageInput when editing
+  const totalBottomSpace = isEditing ? typingIndicatorHeight : messageInputHeight + typingIndicatorHeight;
 
   // Mobile layout container - Using viewport-aware height
   const mobileContainerStyle: React.CSSProperties = {
@@ -134,8 +136,8 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
         </div>
       )}
 
-      {/* Mobile Message Input - Fixed at bottom of viewport */}
-      {messageInput && (
+      {/* Mobile Message Input - Fixed at bottom of viewport (hidden when editing) */}
+      {messageInput && !isEditing && (
         <div ref={messageInputRef} style={inputContainerStyle}>
           {messageInput}
         </div>

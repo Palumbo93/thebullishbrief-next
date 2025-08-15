@@ -21,6 +21,8 @@ interface BullRoomPageLayoutProps {
   desktopMessageInput?: React.ReactNode;
   desktopTypingIndicator?: React.ReactNode;
   desktopRoomInfoSidebar?: React.ReactNode;
+  // Editing state
+  isEditing?: boolean;
 }
 
 export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
@@ -38,7 +40,9 @@ export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
   desktopChatArea,
   desktopMessageInput,
   desktopTypingIndicator,
-  desktopRoomInfoSidebar
+  desktopRoomInfoSidebar,
+  // Editing state
+  isEditing = false
 }) => {
   const isMobile = useIsMobile();
 
@@ -61,6 +65,7 @@ export const BullRoomPageLayout: React.FC<BullRoomPageLayoutProps> = ({
           messageInput={mobileMessageInput}
           typingIndicator={mobileTypingIndicator}
           infoPanel={mobileInfoPanel}
+          isEditing={isEditing}
         >
           {children}
         </BullRoomMobileLayout>

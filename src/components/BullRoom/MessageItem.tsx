@@ -6,7 +6,10 @@ import { MessageActions } from './MessageActions';
 import { MessageReactions } from './MessageReactions';
 import { InlineMessageEditor } from './InlineMessageEditor';
 import { ReplyIndicator } from './ReplyIndicator';
+import { UserAvatar } from '../ui/UserAvatar';
+import { UserProfilePopUp } from '../ui/UserProfilePopUp';
 import { shouldShowUsername, isOwnMessage, hasReactions } from './utils/messageUtils';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 /**
  * MessageItem component for individual message display
@@ -17,7 +20,7 @@ export interface MessageItemProps {
   userId?: string;
   onAddReaction?: (messageId: string, emoji: string) => void;
   onRemoveReaction?: (messageId: string, emoji: string) => void;
-  onReply?: (messageId: string, username: string) => void;
+  onReply?: (messageId: string, username: string, content: string) => void;
   onEdit?: (messageId: string, content: string) => void;
   onDelete?: (messageId: string) => void;
   editingMessageId?: string | null;
@@ -43,15 +46,52 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   className = ''
 }) => {
   const [hovered, setHovered] = React.useState(false);
+  const [profilePopupOpen, setProfilePopupOpen] = React.useState(false);
+  const [profilePopupPosition, setProfilePopupPosition] = React.useState({ x: 0, y: 0 });
   const showUsername = shouldShowUsername(message, previousMessage);
   const isOwn = isOwnMessage(message, userId);
   const isEditing = editingMessageId === message.id;
+  const isMobile = useIsMobile();
+  // Handle scroll to original message when reply indicator is clicked
+  const handleReplyClick = () => {
+    if (message.reply_to_id) {
+      const originalMessage = document.getElementById(`message-${message.reply_to_id}`);
+      if (originalMessage) {
+        originalMessage.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        // Add a subtle highlight effect
+        originalMessage.style.background = 'rgba(255, 255, 255, 0.05)';
+        setTimeout(() => {
+          originalMessage.style.background = 'transparent';
+        }, 2000);
+      }
+    }
+  };
+
+  // Handle profile popup click
+  const handleProfileClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    setProfilePopupPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10
+    });
+    setProfilePopupOpen(true);
+  };
+
+  // Close profile popup
+  const closeProfilePopup = () => {
+    setProfilePopupOpen(false);
+  };
 
   return (
     <div 
+      id={`message-${message.id}`}
       style={{
         position: 'relative',
-        padding: 'var(--space-2) var(--space-6)',
+        padding: isMobile ? 'var(--space-3) var(--space-4)' : 'var(--space-2) var(--space-4)',
         transition: 'all var(--transition-base)',
         cursor: 'pointer'
       }}
@@ -59,50 +99,96 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Message Header */}
-      <MessageHeader 
-        message={message}
-        showUsername={showUsername}
-      />
-      
-      {/* Reply Indicator - subtle and integrated */}
-      {message.reply_to_id && message.reply_to && (
-        <ReplyIndicator
-          replyToUsername={message.reply_to.username || 'Anonymous'}
-          replyToContent={message.reply_to.content || ''}
-        />
-      )}
-      
-      {/* Message Content or Inline Editor */}
-      <div style={{ maxWidth: '80%' }}>
-        {isEditing ? (
-          <InlineMessageEditor
-            messageId={message.id}
-            initialContent={message.content}
-            onSave={onSaveEdit!}
-            onCancel={onStopEdit!}
-            maxLength={2000}
-          />
+      <div style={{
+        display: 'flex',
+        gap: 'var(--space-3)',
+        alignItems: 'flex-start'
+      }}>
+        {/* Avatar - only show when username is displayed */}
+        {showUsername ? (
+          <div 
+            style={{
+              flexShrink: 0,
+              marginTop: 'var(--space-1)',
+              cursor: 'pointer'
+            }}
+            onClick={handleProfileClick}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '0.8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '1';
+            }}
+          >
+            <UserAvatar
+              user={{
+                username: message.username || 'Anonymous',
+                profile_image: message.user?.profile_image || null
+              }}
+              size="sm"
+            />
+          </div>
         ) : (
-          <MessageContent message={message} />
+          /* Spacer to align with message content above */
+          <div style={{
+            flexShrink: 0,
+            width: '32px' /* Same width as small avatar */
+          }} />
         )}
-      </div>
-      
-      {/* Reactions under message - always visible if they exist */}
-      {onAddReaction && onRemoveReaction && hasReactions(message) && (
-        <div style={{ marginTop: 'var(--space-2)' }}>
-          <MessageReactions
-            reactions={message.reactions as Record<string, string[]>}
-            messageId={message.id}
-            onAddReaction={onAddReaction}
-            onRemoveReaction={onRemoveReaction}
-            currentUserId={userId}
-            messageOwnerId={message.user_id}
-            showAllEmojis={false}
-            showCounts={true}
+
+        {/* Message Content Area */}
+        <div style={{
+          flex: 1,
+          minWidth: 0
+        }}>
+          {/* Message Header */}
+          <MessageHeader 
+            message={message}
+            showUsername={showUsername}
+            onProfileClick={handleProfileClick}
           />
+          
+          {/* Reply Indicator - subtle and integrated */}
+          {message.reply_to_id && (
+            <ReplyIndicator
+              replyToUsername={message.reply_to?.username || message.reply_to?.user?.username || 'Anonymous'}
+              replyToContent={message.reply_to?.content || 'Message not found'}
+              onReplyClick={handleReplyClick}
+            />
+          )}
+          
+          {/* Message Content or Inline Editor */}
+          <>
+            {isEditing ? (
+              <InlineMessageEditor
+                messageId={message.id}
+                initialContent={message.content}
+                onSave={onSaveEdit!}
+                onCancel={onStopEdit!}
+                maxLength={2000}
+              />
+            ) : (
+              <MessageContent message={message} />
+            )}
+          </>
+          
+          {/* Reactions under message - always visible if they exist */}
+          {onAddReaction && onRemoveReaction && hasReactions(message) && (
+            <div style={{ marginTop: 'var(--space-2)' }}>
+              <MessageReactions
+                reactions={message.reactions as Record<string, string[]>}
+                messageId={message.id}
+                onAddReaction={onAddReaction}
+                onRemoveReaction={onRemoveReaction}
+                currentUserId={userId}
+                messageOwnerId={message.user_id}
+                showAllEmojis={false}
+                showCounts={true}
+              />
+            </div>
+          )}
         </div>
-      )}
+      </div>
       
       {/* Hover Actions - only show when not editing */}
       {hovered && !isEditing && (
@@ -125,6 +211,16 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           />
         </div>
       )}
+
+      {/* User Profile Popup */}
+      <UserProfilePopUp
+        userId={message.user_id}
+        username={message.username || 'Anonymous'}
+        profile_image={message.user?.profile_image || null}
+        isOpen={profilePopupOpen}
+        onClose={closeProfilePopup}
+        position={profilePopupPosition}
+      />
     </div>
   );
 };

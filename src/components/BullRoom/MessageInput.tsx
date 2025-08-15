@@ -168,7 +168,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       <div style={{ padding: '2px var(--space-2) var(--space-6) var(--space-2)' }}>
         <div style={{
           background: 'var(--color-bg-secondary)',
-          border: '0.5px solid rgba(31, 31, 31, 0.1)',
+          border: '0.5px solid var(--color-border-primary)',
           borderRadius: 'var(--radius-2xl)',
           padding: 'var(--space-4)',
           display: 'flex',

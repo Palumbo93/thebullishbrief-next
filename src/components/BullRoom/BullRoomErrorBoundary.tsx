@@ -2,6 +2,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Button } from '../ui';
 
 interface Props {
   children: ReactNode;
@@ -88,32 +89,13 @@ export class BullRoomErrorBoundary extends Component<Props, State> {
             Please try refreshing the page or contact support if the problem persists.
           </p>
           
-          <button
+          <Button
             onClick={this.handleRetry}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--space-2)',
-              padding: 'var(--space-3) var(--space-4)',
-              background: 'var(--color-brand-primary)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-lg)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-medium)',
-              cursor: 'pointer',
-              transition: 'all var(--transition-base)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--color-brand-primary-hover)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--color-brand-primary)';
-            }}
+            variant="primary"
+            size="lg"
           >
-            <RefreshCw size={16} />
             Try Again
-          </button>
+          </Button>
           
           {this.state.error && (
             <details style={{

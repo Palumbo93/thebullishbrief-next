@@ -19,35 +19,73 @@ export const ReplyPreview: React.FC<ReplyPreviewProps> = ({
 }) => {
   return (
     <div 
-      className={`flex items-center gap-2 p-2 rounded-lg ${className}`}
+      className={`flex items-center justify-between gap-2 p-3 rounded-lg ${className}`}
       style={{
-        backgroundColor: 'rgba(20, 20, 20, 0.3)',
-        border: '1px solid rgba(31, 31, 31, 0.3)',
-        marginBottom: 'var(--space-2)'
+        backgroundColor: 'rgba(20, 20, 20, 0.2)',
+        borderTop: '0.5px solid var(--color-border-primary)',
+        marginBottom: 'var(--space-3)',
+        position: 'relative',
+        width: '100%',
+        padding: 'var(--space-2) var(--space-6)',
+        borderRadius: '0',
+        margin: '0'
       }}
     >
-      <Reply size={14} style={{ color: 'var(--color-text-muted, #6b7280)' }} />
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--space-2)'
+      }}>
+      <Reply 
+        size={14} 
+        style={{ 
+          color: 'var(--color-text-muted)',
+          marginLeft: 'var(--space-1)'
+        }} 
+      />
+      
       <div className="flex-1 min-w-0">
-        <div className="text-xs font-medium" style={{ color: 'var(--color-text-primary, #111827)' }}>
+        <div 
+          className="text-xs font-medium" 
+          style={{ 
+            color: 'var(--color-text-secondary)',
+            marginBottom: 'var(--space-1)'
+          }}
+        >
           Replying to {username}
         </div>
         <div 
-          className="text-xs truncate" 
-          style={{ color: 'var(--color-text-muted, #6b7280)' }}
+          className="text-xs" 
+          style={{ 
+            color: 'var(--color-text-muted)',
+            lineHeight: 'var(--leading-snug)'
+          }}
         >
-          {content}
+          {content.length > 60 ? `${content.substring(0, 60)}...` : content}
         </div>
+      </div>
       </div>
       <button
         onClick={onCancel}
-        className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+        className="p-1 rounded-full transition-colors"
         style={{ 
-          color: 'var(--color-text-muted, #6b7280)',
+          color: 'var(--color-text-muted)',
           width: '24px',
           height: '24px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--color-text-secondary)';
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--color-text-muted)';
+          e.currentTarget.style.background = 'transparent';
         }}
         aria-label="Cancel reply"
       >

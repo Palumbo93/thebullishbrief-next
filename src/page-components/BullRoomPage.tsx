@@ -285,6 +285,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
             <RoomInfoSkeleton />
           )
         }
+        isEditing={isEditing}
       />
 
       {/* Authentication Overlay for unauthenticated users - Rendered outside layout to ensure proper positioning */}

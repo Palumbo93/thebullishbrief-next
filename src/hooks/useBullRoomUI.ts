@@ -13,9 +13,12 @@ export const useBullRoomUI = (roomId?: string) => {
     startEditing,
     stopEditing,
     saveEdit,
-    isEditing,
+    isEditing: isEditingMessage,
     isUpdating
   } = useMessageEdit();
+
+  // Create a boolean for overall editing state
+  const isEditing = editingMessageId !== null;
 
   // Message reply state
   const { 
@@ -50,8 +53,8 @@ export const useBullRoomUI = (roomId?: string) => {
     stopEditing();
   };
 
-  const handleSaveEdit = async (content: string) => {
-    await saveEdit(content);
+  const handleSaveEdit = async (messageId: string, newContent: string) => {
+    await saveEdit(messageId, newContent);
   };
 
   const handleCancelReply = () => {

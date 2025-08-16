@@ -51,6 +51,11 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     newMessage,
     fileUploads,
     
+    // Infinite scroll state
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    
     // Refs
     fileInputRef,
     textareaRef,
@@ -148,8 +153,8 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
               <ChatArea 
                 messages={messages as BullRoomMessage[]} 
                 userId={user?.id} 
-                onAddReaction={(messageId, emoji) => handleAddReaction(messageId, emoji)}
-                onRemoveReaction={(messageId, emoji) => handleRemoveReaction(messageId, emoji)}
+                onAddReaction={(messageId: string, emoji: string) => handleAddReaction(messageId, emoji)}
+                onRemoveReaction={(messageId: string, emoji: string) => handleRemoveReaction(messageId, emoji)}
                 onReply={handleReply}
                 onEdit={handleEdit}
                 onDelete={handleDeleteMessage}
@@ -157,6 +162,9 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
                 onStartEdit={handleStartEdit}
                 onStopEdit={handleCancelEdit}
                 onSaveEdit={handleSaveEdit}
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
               />
             )}
           </BullRoomChatContainer>
@@ -220,8 +228,8 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
               <ChatArea 
                 messages={messages as BullRoomMessage[]} 
                 userId={user?.id} 
-                onAddReaction={(messageId, emoji) => handleAddReaction(messageId, emoji)}
-                onRemoveReaction={(messageId, emoji) => handleRemoveReaction(messageId, emoji)}
+                onAddReaction={(messageId: string, emoji: string) => handleAddReaction(messageId, emoji)}
+                onRemoveReaction={(messageId: string, emoji: string) => handleRemoveReaction(messageId, emoji)}
                 onReply={handleReply}
                 onEdit={handleEdit}
                 onDelete={handleDeleteMessage}
@@ -229,6 +237,9 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
                 onStartEdit={handleStartEdit}
                 onStopEdit={handleCancelEdit}
                 onSaveEdit={handleSaveEdit}
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
               />
             )}
           </BullRoomChatContainer>

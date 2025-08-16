@@ -1,7 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
 import { BullRoomMessageService } from '../services/bullRoomMessages';
 import { BullRoomMessage } from '../types/bullRoom.types';
+import { useState, useCallback, useMemo } from 'react';
 
 const messageService = new BullRoomMessageService();
 
@@ -19,6 +20,114 @@ export const useBullRoomMessages = (roomId: string) => {
 };
 
 /**
+ * Hook for fetching Bull Room messages with infinite scroll
+ * Loads messages from the past 48 hours in smart batches:
+ * - Authenticated users: 50 messages per batch (Discord-like)
+ * - Unauthenticated users: 10 messages per batch (lighter load)
+ */
+export const useBullRoomMessagesInfinite = (roomId: string) => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  
+  // Smart batch sizing based on authentication status
+  const batchSize = user ? 50 : 10;
+  
+  const infiniteQuery = useInfiniteQuery({
+    queryKey: ['bull-room-messages-infinite', roomId, batchSize],
+    queryFn: ({ pageParam = 0 }) => messageService.getMessages(roomId, batchSize, pageParam),
+    enabled: !!roomId,
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    getNextPageParam: (lastPage, allPages) => {
+      // If the last page has fewer than batchSize messages, we've reached the end
+      if (!lastPage || lastPage.length < batchSize) {
+        return undefined;
+      }
+      // Calculate the next offset based on total messages loaded
+      return allPages.reduce((total, page) => total + page.length, 0);
+    },
+    initialPageParam: 0,
+  });
+
+  // Flatten all pages into a single array of messages
+  const messages = useMemo(() => {
+    return infiniteQuery.data?.pages.flat() || [];
+  }, [infiniteQuery.data]);
+
+  // Handle real-time message updates by updating the first page
+  const addMessageToCache = useCallback((newMessage: BullRoomMessage) => {
+    queryClient.setQueryData(
+      ['bull-room-messages-infinite', roomId],
+      (oldData: any) => {
+        if (!oldData?.pages?.length) {
+          return {
+            pages: [[newMessage]],
+            pageParams: [0],
+          };
+        }
+        
+        // Add to the first page (most recent messages)
+        const newPages = [...oldData.pages];
+        newPages[0] = [newMessage, ...newPages[0]];
+        
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      }
+    );
+  }, [queryClient, roomId]);
+
+  // Update a message in the cache
+  const updateMessageInCache = useCallback((updatedMessage: BullRoomMessage) => {
+    queryClient.setQueryData(
+      ['bull-room-messages-infinite', roomId],
+      (oldData: any) => {
+        if (!oldData?.pages?.length) return oldData;
+        
+        const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+          page.map(msg => msg.id === updatedMessage.id ? updatedMessage : msg)
+        );
+        
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      }
+    );
+  }, [queryClient, roomId]);
+
+  // Remove a message from the cache
+  const removeMessageFromCache = useCallback((messageId: string) => {
+    queryClient.setQueryData(
+      ['bull-room-messages-infinite', roomId],
+      (oldData: any) => {
+        if (!oldData?.pages?.length) return oldData;
+        
+        const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+          page.filter(msg => msg.id !== messageId)
+        );
+        
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      }
+    );
+  }, [queryClient, roomId]);
+
+
+
+  return {
+    ...infiniteQuery,
+    messages,
+    addMessageToCache,
+    updateMessageInCache,
+    removeMessageFromCache,
+  };
+};
+
+/**
  * Hook for creating a new message
  */
 export const useCreateMessage = () => {
@@ -33,11 +142,11 @@ export const useCreateMessage = () => {
         username: user?.profile?.username || user?.user_metadata?.username || user?.email?.split('@')[0] || 'Anonymous',
       }),
     onMutate: async (messageData) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['bull-room-messages'] });
+      // Cancel any outgoing refetches for infinite scroll cache
+      await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite'] });
 
       // Snapshot the previous value
-      const previousMessages = queryClient.getQueryData(['bull-room-messages', messageData.room_id]);
+      const previousMessages = queryClient.getQueryData(['bull-room-messages-infinite', messageData.room_id]);
 
       // Create optimistic message
       const optimisticMessage: BullRoomMessage = {
@@ -58,37 +167,70 @@ export const useCreateMessage = () => {
         },
       };
 
-      // Optimistically add message to cache
+      // Optimistically add message to infinite scroll cache
       queryClient.setQueryData(
-        ['bull-room-messages', messageData.room_id],
-        (oldData: BullRoomMessage[] = []) => [optimisticMessage, ...oldData]
+        ['bull-room-messages-infinite', messageData.room_id],
+        (oldData: any) => {
+          if (!oldData?.pages?.length) {
+            return {
+              pages: [[optimisticMessage]],
+              pageParams: [0],
+            };
+          }
+          
+          // Add to the first page (most recent messages)
+          const newPages = [...oldData.pages];
+          newPages[0] = [optimisticMessage, ...newPages[0]];
+          
+          return {
+            ...oldData,
+            pages: newPages,
+          };
+        }
       );
 
       return { previousMessages, optimisticMessage };
     },
     onError: (error, variables, context) => {
-      // Rollback on error
+      // Rollback on error for infinite scroll cache
       if (context?.previousMessages) {
-        queryClient.setQueryData(['bull-room-messages', variables.room_id], context.previousMessages);
+        queryClient.setQueryData(['bull-room-messages-infinite', variables.room_id], context.previousMessages);
       }
       console.error('Failed to create message:', error);
     },
     onSuccess: (newMessage, variables, context) => {
       // Replace optimistic message with real one, but be careful about duplicates
       queryClient.setQueryData(
-        ['bull-room-messages', variables.room_id],
-        (oldData: BullRoomMessage[] = []) => {
+        ['bull-room-messages-infinite', variables.room_id],
+        (oldData: any) => {
+          if (!oldData?.pages?.length) return oldData;
+          
+          // Process first page where optimistic message would be
+          const firstPage = oldData.pages[0] || [];
+          
           // Remove optimistic message
-          const withoutOptimistic = oldData.filter(msg => msg.id !== context?.optimisticMessage?.id);
+          const withoutOptimistic = firstPage.filter((msg: BullRoomMessage) => msg.id !== context?.optimisticMessage?.id);
           
           // Check if real message already exists (from real-time subscription)
-          const realMessageExists = withoutOptimistic.some(msg => msg.id === newMessage.id);
+          const realMessageExists = withoutOptimistic.some((msg: BullRoomMessage) => msg.id === newMessage.id);
           if (realMessageExists) {
-            return withoutOptimistic;
+            // Just remove optimistic message
+            const newPages = [...oldData.pages];
+            newPages[0] = withoutOptimistic;
+            return {
+              ...oldData,
+              pages: newPages,
+            };
           }
           
           // Add real message if it doesn't exist
-          return [newMessage, ...withoutOptimistic];
+          const newPages = [...oldData.pages];
+          newPages[0] = [newMessage, ...withoutOptimistic];
+          
+          return {
+            ...oldData,
+            pages: newPages,
+          };
         }
       );
       
@@ -176,59 +318,61 @@ export const useToggleReaction = () => {
     mutationFn: ({ messageId, emoji, roomId }: { messageId: string; emoji: string; roomId: string }) =>
       messageService.addReaction(messageId, emoji, user?.id!),
     onMutate: async ({ messageId, emoji, roomId }) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['bull-room-messages', roomId] });
+      // Cancel any outgoing refetches for infinite scroll cache
+      await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite', roomId] });
 
       // Snapshot the previous value
-      const previousMessages = queryClient.getQueryData(['bull-room-messages', roomId]);
+      const previousMessages = queryClient.getQueryData(['bull-room-messages-infinite', roomId]);
 
-      // Optimistically update reactions - simplified and faster
-      console.log('🚀 Optimistic reaction update for message:', messageId, 'emoji:', emoji, 'user:', user?.id, 'room:', roomId);
+      // Optimistically update reactions for infinite scroll cache
       queryClient.setQueryData(
-        ['bull-room-messages', roomId],
-        (oldData: BullRoomMessage[] = []) => {
-          const updatedData = oldData.map(msg => {
-            if (msg.id === messageId) {
-              console.log('🎯 Found target message for optimistic update');
-              const reactions = { ...(msg.reactions || {}) };
-              const userId = user?.id!;
-              const hasReacted = reactions[emoji]?.includes(userId);
-              
-              if (hasReacted) {
-                // Remove reaction - simplified
-                console.log('🗑️ Removing reaction (optimistic)');
-                reactions[emoji] = reactions[emoji].filter(id => id !== userId);
-                if (reactions[emoji].length === 0) delete reactions[emoji];
-              } else {
-                // Add reaction - simplified
-                console.log('➕ Adding reaction (optimistic)');
-                if (!reactions[emoji]) reactions[emoji] = [];
-                reactions[emoji].push(userId);
+        ['bull-room-messages-infinite', roomId],
+        (oldData: any) => {
+          if (!oldData?.pages?.length) {
+            return oldData;
+          }
+
+          const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+            page.map(msg => {
+              if (msg.id === messageId) {
+                const reactions = { ...(msg.reactions || {}) };
+                const userId = user?.id!;
+                const hasReacted = reactions[emoji]?.includes(userId);
+                
+                if (hasReacted) {
+                  // Remove reaction
+                  reactions[emoji] = reactions[emoji].filter(id => id !== userId);
+                  if (reactions[emoji].length === 0) delete reactions[emoji];
+                } else {
+                  // Add reaction
+                  if (!reactions[emoji]) reactions[emoji] = [];
+                  reactions[emoji].push(userId);
+                }
+                
+                return { ...msg, reactions };
               }
-              
-              console.log('✅ Optimistic update complete, reactions:', reactions);
-              return { ...msg, reactions };
-            }
-            return msg;
-          });
-          console.log('🔄 Optimistic update applied to', updatedData.length, 'messages');
-          return updatedData;
+              return msg;
+            })
+          );
+          
+          return {
+            ...oldData,
+            pages: newPages,
+          };
         }
       );
 
       return { previousMessages };
     },
     onError: (err, { messageId, emoji, roomId }, context) => {
-      // Rollback on error
+      // Rollback on error for infinite scroll cache
       if (context?.previousMessages) {
-        queryClient.setQueryData(['bull-room-messages', roomId], context.previousMessages);
+        queryClient.setQueryData(['bull-room-messages-infinite', roomId], context.previousMessages);
       }
       console.error('Failed to toggle reaction:', err);
     },
     onSuccess: (_, { messageId, emoji, roomId }) => {
       // The optimistic update should already be correct since we're using toggle behavior
-      // Just log success for debugging
-      console.log('✅ Reaction toggle successful for message:', messageId, 'emoji:', emoji);
     },
     // Removed onSettled to prevent unnecessary refetches
   });

@@ -36,6 +36,7 @@
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-markdown": "^10.1.0",
     "react-social-icons": "^6.24.0",
     "remark-gfm": "^4.0.1",

@@ -72,54 +72,87 @@ export const useBullRoomRealtime = (roomId: string) => {
         if (table === 'bull_room_messages') {
           const newMessage = record as BullRoomMessage;
           
-          // Fast message update - skip if it's our own optimistic message
-          queryClient.setQueryData(
-            ['bull-room-messages', roomId],
-            (oldData: BullRoomMessage[] = []) => {
-              // Don't add if we already have this message (from optimistic update)
-              const exists = oldData.some(msg => msg.id === newMessage.id);
-              if (exists) return oldData;
-              
-              // Check for duplicate content from same user within last 5 seconds (optimistic update)
-              const fiveSecondsAgo = new Date(Date.now() - 5000).toISOString();
-              const duplicateContent = oldData.some(msg => 
-                msg.content === newMessage.content && 
-                msg.user_id === newMessage.user_id &&
-                msg.created_at > fiveSecondsAgo
-              );
-              if (duplicateContent) return oldData;
-              
-              // Add user data to message for consistency
-              const messageWithUser = {
-                ...newMessage,
-                user: {
-                  id: newMessage.user_id,
-                  username: newMessage.username,
-                  profile_image: null // Will be populated by the service
-                }
-              };
-              
-              return [messageWithUser, ...oldData];
-            }
-          );
+                     // Fast message update for infinite scroll cache
+           queryClient.setQueryData(
+             ['bull-room-messages-infinite', roomId],
+             (oldData: any) => {
+               if (!oldData?.pages?.length) {
+                 // Create initial page structure if it doesn't exist
+                 const messageWithUser = {
+                   ...newMessage,
+                   user: {
+                     id: newMessage.user_id,
+                     username: newMessage.username,
+                     profile_image: null // Will be populated by the service
+                   }
+                 };
+                 return {
+                   pages: [[messageWithUser]],
+                   pageParams: [0],
+                 };
+               }
+               
+               // Check first page for duplicates
+               const firstPage = oldData.pages[0] || [];
+               const exists = firstPage.some((msg: BullRoomMessage) => msg.id === newMessage.id);
+               if (exists) return oldData;
+               
+               // Check for duplicate content from same user within last 5 seconds (optimistic update)
+               const fiveSecondsAgo = new Date(Date.now() - 5000).toISOString();
+               const duplicateContent = firstPage.some((msg: BullRoomMessage) => 
+                 msg.content === newMessage.content && 
+                 msg.user_id === newMessage.user_id &&
+                 msg.created_at > fiveSecondsAgo
+               );
+               if (duplicateContent) return oldData;
+               
+               // Add user data to message for consistency
+               const messageWithUser = {
+                 ...newMessage,
+                 user: {
+                   id: newMessage.user_id,
+                   username: newMessage.username,
+                   profile_image: null // Will be populated by the service
+                 }
+               };
+               
+               // Add to the first page (most recent messages)
+               const newPages = [...oldData.pages];
+               newPages[0] = [messageWithUser, ...firstPage];
+               
+               return {
+                 ...oldData,
+                 pages: newPages,
+               };
+             }
+           );
           
           // Fetch user profile data and update the message
           const userProfile = await fetchUserProfile(newMessage.user_id);
           if (userProfile) {
             queryClient.setQueryData(
-              ['bull-room-messages', roomId],
-              (oldData: BullRoomMessage[] = []) => {
-                return oldData.map(msg => 
-                  msg.id === newMessage.id 
-                    ? {
-                        ...msg,
-                        user: {
-                          ...msg.user,
-                          profile_image: userProfile.profile_image
+              ['bull-room-messages-infinite', roomId],
+              (oldData: any) => {
+                if (!oldData?.pages?.length) return oldData;
+                
+                const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+                  page.map(msg => 
+                    msg.id === newMessage.id 
+                      ? {
+                          ...msg,
+                          user: {
+                            ...msg.user,
+                            profile_image: userProfile.profile_image
+                          }
                         }
-                      }
-                    : msg
+                      : msg
+                  )
                 );
+                
+                return {
+                  ...oldData,
+                  pages: newPages,
+                };
               }
             );
           }
@@ -144,22 +177,31 @@ export const useBullRoomRealtime = (roomId: string) => {
           
           // Fast reaction update for other users' reactions
           queryClient.setQueryData(
-            ['bull-room-messages', roomId],
-            (oldData: BullRoomMessage[] = []) => {
-              return oldData.map(msg => {
-                if (msg.id === newReaction.message_id) {
-                  const reactions = { ...(msg.reactions || {}) };
-                  if (!reactions[newReaction.emoji]) {
-                    reactions[newReaction.emoji] = [];
+            ['bull-room-messages-infinite', roomId],
+            (oldData: any) => {
+              if (!oldData?.pages?.length) return oldData;
+              
+              const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+                page.map(msg => {
+                  if (msg.id === newReaction.message_id) {
+                    const reactions = { ...(msg.reactions || {}) };
+                    if (!reactions[newReaction.emoji]) {
+                      reactions[newReaction.emoji] = [];
+                    }
+                    // Only add if not already present (prevent duplicates)
+                    if (!reactions[newReaction.emoji].includes(newReaction.user_id)) {
+                      reactions[newReaction.emoji].push(newReaction.user_id);
+                    }
+                    return { ...msg, reactions };
                   }
-                  // Only add if not already present (prevent duplicates)
-                  if (!reactions[newReaction.emoji].includes(newReaction.user_id)) {
-                    reactions[newReaction.emoji].push(newReaction.user_id);
-                  }
-                  return { ...msg, reactions };
-                }
-                return msg;
-              });
+                  return msg;
+                })
+              );
+              
+              return {
+                ...oldData,
+                pages: newPages,
+              };
             }
           );
         }
@@ -178,11 +220,21 @@ export const useBullRoomRealtime = (roomId: string) => {
         if (table === 'bull_room_messages') {
           const updatedMessage = record as BullRoomMessage;
           
-          // Fast message update
+          // Fast message update for infinite scroll cache
           queryClient.setQueryData(
-            ['bull-room-messages', roomId],
-            (oldData: BullRoomMessage[] = []) =>
-              oldData.map(msg => msg.id === updatedMessage.id ? updatedMessage : msg)
+            ['bull-room-messages-infinite', roomId],
+            (oldData: any) => {
+              if (!oldData?.pages?.length) return oldData;
+              
+              const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+                page.map(msg => msg.id === updatedMessage.id ? updatedMessage : msg)
+              );
+              
+              return {
+                ...oldData,
+                pages: newPages,
+              };
+            }
           );
         }
         
@@ -210,12 +262,20 @@ export const useBullRoomRealtime = (roomId: string) => {
             return;
           }
           
-          // Fast message removal
+          // Fast message removal for infinite scroll cache
           queryClient.setQueryData(
-            ['bull-room-messages', roomId],
-            (oldData: BullRoomMessage[] = []) => {
-              const filtered = oldData.filter(msg => msg.id !== deletedMessageId);
-              return filtered;
+            ['bull-room-messages-infinite', roomId],
+            (oldData: any) => {
+              if (!oldData?.pages?.length) return oldData;
+              
+              const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+                page.filter(msg => msg.id !== deletedMessageId)
+              );
+              
+              return {
+                ...oldData,
+                pages: newPages,
+              };
             }
           );
         }
@@ -233,29 +293,35 @@ export const useBullRoomRealtime = (roomId: string) => {
           
           // Since we have the full old record, we can directly remove the reaction
           queryClient.setQueryData(
-            ['bull-room-messages', roomId],
-            (oldData: BullRoomMessage[] = []) => {
-              return oldData.map(msg => {
-                if (msg.id === deletedReaction.message_id) {
-                  const reactions = { ...(msg.reactions || {}) };
-                  
-                  if (reactions[deletedReaction.emoji]) {
-                    const beforeCount = reactions[deletedReaction.emoji].length;
-                    reactions[deletedReaction.emoji] = reactions[deletedReaction.emoji].filter(
-                      id => id !== deletedReaction.user_id
-                    );
-                    const afterCount = reactions[deletedReaction.emoji].length;
+            ['bull-room-messages-infinite', roomId],
+            (oldData: any) => {
+              if (!oldData?.pages?.length) return oldData;
+              
+              const newPages = oldData.pages.map((page: BullRoomMessage[]) =>
+                page.map(msg => {
+                  if (msg.id === deletedReaction.message_id) {
+                    const reactions = { ...(msg.reactions || {}) };
                     
-                    if (reactions[deletedReaction.emoji].length === 0) {
-                      delete reactions[deletedReaction.emoji];
+                    if (reactions[deletedReaction.emoji]) {
+                      reactions[deletedReaction.emoji] = reactions[deletedReaction.emoji].filter(
+                        id => id !== deletedReaction.user_id
+                      );
+                      
+                      if (reactions[deletedReaction.emoji].length === 0) {
+                        delete reactions[deletedReaction.emoji];
+                      }
                     }
-                  } else {
+                    
+                    return { ...msg, reactions };
                   }
-                  
-                  return { ...msg, reactions };
-                }
-                return msg;
-              });
+                  return msg;
+                })
+              );
+              
+              return {
+                ...oldData,
+                pages: newPages,
+              };
             }
           );
         }
@@ -282,3 +348,4 @@ export const useBullRoomRealtime = (roomId: string) => {
     };
   }, [roomId, user?.id]);
 }; 
+

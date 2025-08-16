@@ -102,9 +102,15 @@ Misc:
 
     [] Bull Room Chat Infinite Scroll: 
         - Only load messages within the past 48 hours
-        - Load 100 messages at a time
+        - Load X (x=100) messages at a time
     
+    [] Gotta get the infinite scroll going
 
+    [] Message sent successfully toast everytime? No way
+
+    [] Admin chat channel
+    
+    [] On window focus fetch latest and subscribe?
 
     
 Misc Bugs:

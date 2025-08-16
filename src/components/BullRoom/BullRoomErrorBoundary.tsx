@@ -93,6 +93,7 @@ export class BullRoomErrorBoundary extends Component<Props, State> {
             onClick={this.handleRetry}
             variant="primary"
             size="lg"
+            fullWidth={false}
           >
             Try Again
           </Button>

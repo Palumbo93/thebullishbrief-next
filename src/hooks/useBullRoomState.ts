@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBullRooms, useBullRoom } from './useBullRooms';
-import { useBullRoomMessages, useCreateMessage } from './useBullRoomMessages';
+import { useBullRoomMessagesInfinite, useCreateMessage } from './useBullRoomMessages';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from './useToast';
 import { BullRoomFileUploadService, FileUploadResult } from '../services/bullRoomFileUpload';
@@ -43,10 +43,16 @@ export const useBullRoomState = (roomSlug?: string) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
 
   const { 
-    data: messages = [], 
+    messages,
     isLoading: messagesLoading, 
-    error: messagesError 
-  } = useBullRoomMessages(currentRoom?.id || '');
+    error: messagesError,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    addMessageToCache,
+    updateMessageInCache,
+    removeMessageFromCache
+  } = useBullRoomMessagesInfinite(currentRoom?.id || '');
 
   // Message creation mutation
   const createMessageMutation = useCreateMessage();
@@ -211,6 +217,14 @@ export const useBullRoomState = (roomSlug?: string) => {
     messagesError,
     newMessage,
     fileUploads,
+    
+    // Infinite scroll state
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    addMessageToCache,
+    updateMessageInCache,
+    removeMessageFromCache,
     
     // Refs
     fileInputRef,

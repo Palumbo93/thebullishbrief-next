@@ -9,10 +9,15 @@ export class BullRoomMessageService {
    * Get messages for a specific room
    */
   async getMessages(roomId: string, limit = 50, offset = 0): Promise<BullRoomMessage[]> {
+    // Calculate 48 hours ago timestamp
+    const fortyEightHoursAgo = new Date();
+    fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+
     const { data, error } = await supabase
       .from('bull_room_messages')
       .select('*')
       .eq('room_id', roomId)
+      .gte('created_at', fortyEightHoursAgo.toISOString())
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 

@@ -13,12 +13,11 @@ export const ChatAreaSkeleton: React.FC = () => {
       bottom: 0,
       overflowY: 'auto',
       padding: 'var(--space-6) 0',
-      paddingBottom: 'var(--space-4)',
       display: 'flex',
       flexDirection: 'column-reverse'
     }} className="hide-scrollbar">
       {/* Message Skeletons */}
-      {Array.from({ length: 8 }).map((_, index) => (
+      {Array.from({ length: 20 }).map((_, index) => (
         <div
           key={index}
           style={{

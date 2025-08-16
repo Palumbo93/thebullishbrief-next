@@ -52,6 +52,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
   // Handle scroll for header background
   React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       setIsScrolled(scrollTop > 50);
@@ -63,6 +65,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
   // Handle window resize for mobile detection
   React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -94,6 +98,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       } else {
         router.push('/');
       }
+    } else {
+      // Fallback for SSR
+      router.push('/');
     }
   };
 
@@ -112,7 +119,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               trackAnalyticsBookmark(String(article.id), article.title);
             }
           }
-        } : onCreateAccountClick,
+        } : () => onCreateAccountClick?.(),
         onShareClick: () => setIsShareSheetOpen(true),
         bookmarkLoading: toggleBookmark.isPending,
         // Comment functionality - Layout will override these handlers
@@ -127,7 +134,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     return () => {
       setConfig(null);
     };
-  }, [article, isBookmarked, user, toggleBookmark.isPending, setConfig, router, onCreateAccountClick, trackAnalyticsBookmark]);
+  }, [article?.id, article?.title, isBookmarked, user, toggleBookmark.isPending]);
 
 
 
@@ -653,7 +660,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               <ShareSheet
         isOpen={isShareSheetOpen}
         onClose={() => setIsShareSheetOpen(false)}
-        url={window.location.href}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
         onShare={(platform) => {
           if (article?.title) {
             trackAnalyticsShare(String(article.id), article.title, platform);

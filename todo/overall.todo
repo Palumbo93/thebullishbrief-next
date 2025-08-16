@@ -100,17 +100,16 @@ Misc:
         - Admin Mute User (Need to create a new table for user restrictions)
         - Admin Delete All Messages from User
 
-    [] Bull Room Chat Infinite Scroll: 
-        - Only load messages within the past 48 hours
-        - Load X (x=100) messages at a time
+    ✔ Bull Room Chat Infinite Scroll: @done(25-08-16 14:32)
+        ✔ Only load messages within the past 48 hours @done(25-08-16 14:32)
+        ✔ Load X (x=100) messages at a time @done(25-08-16 14:32)
     
-    [] Gotta get the infinite scroll going
-
-    [] Message sent successfully toast everytime? No way
-
     [] Admin chat channel
     
     [] On window focus fetch latest and subscribe?
+
+    [] Article Page Author Link Broken
+
 
     
 Misc Bugs:

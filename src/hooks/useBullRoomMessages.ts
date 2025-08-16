@@ -57,7 +57,7 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
   // Handle real-time message updates by updating the first page
   const addMessageToCache = useCallback((newMessage: BullRoomMessage) => {
     queryClient.setQueryData(
-      ['bull-room-messages-infinite', roomId],
+      ['bull-room-messages-infinite', roomId, batchSize],
       (oldData: any) => {
         if (!oldData?.pages?.length) {
           return {
@@ -76,12 +76,12 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
         };
       }
     );
-  }, [queryClient, roomId]);
+  }, [queryClient, roomId, batchSize]);
 
   // Update a message in the cache
   const updateMessageInCache = useCallback((updatedMessage: BullRoomMessage) => {
     queryClient.setQueryData(
-      ['bull-room-messages-infinite', roomId],
+      ['bull-room-messages-infinite', roomId, batchSize],
       (oldData: any) => {
         if (!oldData?.pages?.length) return oldData;
         
@@ -95,12 +95,12 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
         };
       }
     );
-  }, [queryClient, roomId]);
+  }, [queryClient, roomId, batchSize]);
 
   // Remove a message from the cache
   const removeMessageFromCache = useCallback((messageId: string) => {
     queryClient.setQueryData(
-      ['bull-room-messages-infinite', roomId],
+      ['bull-room-messages-infinite', roomId, batchSize],
       (oldData: any) => {
         if (!oldData?.pages?.length) return oldData;
         
@@ -114,7 +114,7 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
         };
       }
     );
-  }, [queryClient, roomId]);
+  }, [queryClient, roomId, batchSize]);
 
 
 
@@ -133,6 +133,9 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
 export const useCreateMessage = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  
+  // Match the cache key structure from useBullRoomMessagesInfinite
+  const batchSize = user ? 50 : 10;
 
   return useMutation({
     mutationFn: (messageData: Partial<BullRoomMessage>) => 
@@ -143,10 +146,10 @@ export const useCreateMessage = () => {
       }),
     onMutate: async (messageData) => {
       // Cancel any outgoing refetches for infinite scroll cache
-      await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite'] });
+      await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite', messageData.room_id, batchSize] });
 
       // Snapshot the previous value
-      const previousMessages = queryClient.getQueryData(['bull-room-messages-infinite', messageData.room_id]);
+      const previousMessages = queryClient.getQueryData(['bull-room-messages-infinite', messageData.room_id, batchSize]);
 
       // Create optimistic message
       const optimisticMessage: BullRoomMessage = {
@@ -169,7 +172,7 @@ export const useCreateMessage = () => {
 
       // Optimistically add message to infinite scroll cache
       queryClient.setQueryData(
-        ['bull-room-messages-infinite', messageData.room_id],
+        ['bull-room-messages-infinite', messageData.room_id, batchSize],
         (oldData: any) => {
           if (!oldData?.pages?.length) {
             return {
@@ -194,14 +197,14 @@ export const useCreateMessage = () => {
     onError: (error, variables, context) => {
       // Rollback on error for infinite scroll cache
       if (context?.previousMessages) {
-        queryClient.setQueryData(['bull-room-messages-infinite', variables.room_id], context.previousMessages);
+        queryClient.setQueryData(['bull-room-messages-infinite', variables.room_id, batchSize], context.previousMessages);
       }
       console.error('Failed to create message:', error);
     },
     onSuccess: (newMessage, variables, context) => {
       // Replace optimistic message with real one, but be careful about duplicates
       queryClient.setQueryData(
-        ['bull-room-messages-infinite', variables.room_id],
+        ['bull-room-messages-infinite', variables.room_id, batchSize],
         (oldData: any) => {
           if (!oldData?.pages?.length) return oldData;
           
@@ -313,20 +316,23 @@ export const useDeleteMessage = () => {
 export const useToggleReaction = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  
+  // Match the cache key structure from useBullRoomMessagesInfinite
+  const batchSize = user ? 50 : 10;
 
   return useMutation({
     mutationFn: ({ messageId, emoji, roomId }: { messageId: string; emoji: string; roomId: string }) =>
       messageService.addReaction(messageId, emoji, user?.id!),
     onMutate: async ({ messageId, emoji, roomId }) => {
       // Cancel any outgoing refetches for infinite scroll cache
-      await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite', roomId] });
+      await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite', roomId, batchSize] });
 
       // Snapshot the previous value
-      const previousMessages = queryClient.getQueryData(['bull-room-messages-infinite', roomId]);
+      const previousMessages = queryClient.getQueryData(['bull-room-messages-infinite', roomId, batchSize]);
 
       // Optimistically update reactions for infinite scroll cache
       queryClient.setQueryData(
-        ['bull-room-messages-infinite', roomId],
+        ['bull-room-messages-infinite', roomId, batchSize],
         (oldData: any) => {
           if (!oldData?.pages?.length) {
             return oldData;
@@ -365,9 +371,10 @@ export const useToggleReaction = () => {
       return { previousMessages };
     },
     onError: (err, { messageId, emoji, roomId }, context) => {
-      // Rollback on error for infinite scroll cache
+      // Rollback on error for infinite scroll cache  
+      const batchSize = user ? 50 : 10;
       if (context?.previousMessages) {
-        queryClient.setQueryData(['bull-room-messages-infinite', roomId], context.previousMessages);
+        queryClient.setQueryData(['bull-room-messages-infinite', roomId, batchSize], context.previousMessages);
       }
       console.error('Failed to toggle reaction:', err);
     },

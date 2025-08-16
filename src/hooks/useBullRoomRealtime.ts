@@ -26,6 +26,9 @@ export const useBullRoomRealtime = (roomId: string) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   
+  // Match the cache key structure from useBullRoomMessagesInfinite
+  const batchSize = user ? 50 : 10;
+  
   // Track subscription status
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -74,7 +77,7 @@ export const useBullRoomRealtime = (roomId: string) => {
           
                      // Fast message update for infinite scroll cache
            queryClient.setQueryData(
-             ['bull-room-messages-infinite', roomId],
+             ['bull-room-messages-infinite', roomId, batchSize],
              (oldData: any) => {
                if (!oldData?.pages?.length) {
                  // Create initial page structure if it doesn't exist
@@ -131,7 +134,7 @@ export const useBullRoomRealtime = (roomId: string) => {
           const userProfile = await fetchUserProfile(newMessage.user_id);
           if (userProfile) {
             queryClient.setQueryData(
-              ['bull-room-messages-infinite', roomId],
+              ['bull-room-messages-infinite', roomId, batchSize],
               (oldData: any) => {
                 if (!oldData?.pages?.length) return oldData;
                 
@@ -177,7 +180,7 @@ export const useBullRoomRealtime = (roomId: string) => {
           
           // Fast reaction update for other users' reactions
           queryClient.setQueryData(
-            ['bull-room-messages-infinite', roomId],
+            ['bull-room-messages-infinite', roomId, batchSize],
             (oldData: any) => {
               if (!oldData?.pages?.length) return oldData;
               
@@ -222,7 +225,7 @@ export const useBullRoomRealtime = (roomId: string) => {
           
           // Fast message update for infinite scroll cache
           queryClient.setQueryData(
-            ['bull-room-messages-infinite', roomId],
+            ['bull-room-messages-infinite', roomId, batchSize],
             (oldData: any) => {
               if (!oldData?.pages?.length) return oldData;
               
@@ -264,7 +267,7 @@ export const useBullRoomRealtime = (roomId: string) => {
           
           // Fast message removal for infinite scroll cache
           queryClient.setQueryData(
-            ['bull-room-messages-infinite', roomId],
+            ['bull-room-messages-infinite', roomId, batchSize],
             (oldData: any) => {
               if (!oldData?.pages?.length) return oldData;
               
@@ -293,7 +296,7 @@ export const useBullRoomRealtime = (roomId: string) => {
           
           // Since we have the full old record, we can directly remove the reaction
           queryClient.setQueryData(
-            ['bull-room-messages-infinite', roomId],
+            ['bull-room-messages-infinite', roomId, batchSize],
             (oldData: any) => {
               if (!oldData?.pages?.length) return oldData;
               

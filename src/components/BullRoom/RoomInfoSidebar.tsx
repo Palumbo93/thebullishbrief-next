@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Hash, MessageSquare, Clock, Info, Users } from 'lucide-react';
+import { Hash, Info, Users } from 'lucide-react';
 import { BullRoom } from '../../lib/database.aliases';
 import { BullRoomMessage } from '../../types/bullRoom.types';
 import { UserRow } from '../ui/UserRow';
@@ -17,32 +17,13 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
     profile_image?: string | null;
   } | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | undefined>();
-  const formatLastActivity = (timestamp: string | null) => {
-    if (!timestamp) return 'No activity';
-    
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'just now';
-    if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-    return `${Math.floor(diffInMinutes / 1440)}d ago`;
-  };
 
-  const formatMessageCount = (count: number | null) => {
-    if (!count) return '0';
-    if (count < 1000) return count.toString();
-    if (count < 1000000) return `${(count / 1000).toFixed(1)}k`;
-    return `${(count / 1000000).toFixed(1)}M`;
-  };
 
   // Calculate active members from messages
   const calculateActiveMembers = () => {
     const memberMap = new Map<string, { 
       userId: string;
       username: string; 
-      messageCount: number; 
       lastActive: string;
       profile_image?: string | null;
     }>();
@@ -60,7 +41,6 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
       const existing = memberMap.get(userId);
       
       if (existing) {
-        existing.messageCount += 1;
         if (messageTime > new Date(existing.lastActive)) {
           existing.lastActive = message.created_at;
         }
@@ -68,7 +48,6 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
         memberMap.set(userId, {
           userId: message.user_id,
           username: message.username,
-          messageCount: 1,
           lastActive: message.created_at,
           profile_image: message.user?.profile_image || null,
         });
@@ -76,7 +55,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
     });
     
     return Array.from(memberMap.values())
-      .sort((a, b) => b.messageCount - a.messageCount)
+      .sort((a, b) => new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime())
       .slice(0, 5); // Show top 5 active members
   };
   
@@ -253,69 +232,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
         </div>
       </div>
 
-      {/* Room Stats */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-        <h4 style={{ 
-          fontWeight: 'var(--font-normal)', 
-          color: 'var(--color-text-primary)',
-          fontSize: 'var(--text-sm)',
-          fontFamily: 'var(--font-editorial)'
-        }}>Room Stats</h4>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          {/* Message Count */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: 'var(--space-3)',
-            borderRadius: 'var(--radius-lg)',
-            background: 'rgba(20, 20, 20, 0.2)',
-            border: '1px solid rgba(31, 31, 31, 0.3)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <MessageSquare style={{ width: '16px', height: '16px', color: 'var(--color-text-muted)' }} />
-              <span style={{
-                fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-primary)'
-              }}>Messages</span>
-            </div>
-            <span style={{
-              fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-medium)',
-              color: 'var(--color-brand-primary)'
-            }}>
-              {formatMessageCount(room.message_count)}
-            </span>
-          </div>
 
-          {/* Last Activity */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: 'var(--space-3)',
-            borderRadius: 'var(--radius-lg)',
-            background: 'rgba(20, 20, 20, 0.2)',
-            border: '1px solid rgba(31, 31, 31, 0.3)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <Clock style={{ width: '16px', height: '16px', color: 'var(--color-text-muted)' }} />
-              <span style={{
-                fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-primary)'
-              }}>Last Activity</span>
-            </div>
-            <span style={{
-              fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-medium)',
-              color: 'var(--color-text-muted)'
-            }}>
-              {formatLastActivity(room.last_activity_at)}
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* Active Members */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
@@ -329,18 +246,17 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
           {activeMembers.length > 0 ? (
             activeMembers.map((member, index) => (
-              <UserRow
-                key={member.username}
-                user={{
-                  userId: member.userId,
-                  username: member.username,
-                  profile_image: member.profile_image
-                }}
-                messageCount={member.messageCount}
-                onClick={handleUserClick}
-                size="sm"
-                showMessageCount={true}
-              />
+                              <UserRow
+                  key={member.username}
+                  user={{
+                    userId: member.userId,
+                    username: member.username,
+                    profile_image: member.profile_image
+                  }}
+                  onClick={handleUserClick}
+                  size="sm"
+                  showMessageCount={false}
+                />
             ))
           ) : (
             <div style={{

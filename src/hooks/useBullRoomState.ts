@@ -193,7 +193,7 @@ export const useBullRoomState = (roomSlug?: string) => {
       setFileUploads([]);
       resetTextareaHeight();
       
-      toast.success('Message sent successfully');
+
       
     } catch (error) {
       toast.error('Failed to send message');

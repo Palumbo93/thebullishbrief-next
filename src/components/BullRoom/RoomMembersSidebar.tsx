@@ -158,7 +158,7 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
                       fontSize: 'var(--text-xs)',
                       color: 'var(--color-text-muted)'
                     }}>
-                      <span>{member.message_count} messages</span>
+
                       <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
                         <span>🐂</span>
                         <span>{member.bull_reactions_received}</span>

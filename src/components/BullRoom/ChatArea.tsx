@@ -11,6 +11,7 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 export interface ChatAreaProps {
   messages: BullRoomMessage[];
   userId: string | undefined;
+  roomId?: string;
   onAddReaction?: (messageId: string, emoji: string) => void;
   onRemoveReaction?: (messageId: string, emoji: string) => void;
   onReply?: (messageId: string, username: string, content: string) => void;
@@ -29,6 +30,7 @@ export interface ChatAreaProps {
 export const ChatArea: React.FC<ChatAreaProps> = ({ 
   messages, 
   userId, 
+  roomId,
   onAddReaction, 
   onRemoveReaction,
   onReply,
@@ -65,6 +67,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       <MessageList
         messages={messages}
         userId={userId}
+        roomId={roomId}
         onAddReaction={onAddReaction}
         onRemoveReaction={onRemoveReaction}
         onReply={onReply}

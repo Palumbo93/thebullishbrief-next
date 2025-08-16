@@ -95,7 +95,7 @@ Misc:
         ✔ Images should render in the chat area as a thumbnail square @done(25-08-15 18:48)
         ✔ Images should be clickable to open in a preview modal @done(25-08-15 18:53)
 
-    [] Bull Room Admin Actions Menu in all Docks: 
+    [] Bull Room Admin Actions Menu in Message Action: 
         - Admin Delete
         - Admin Mute User (Need to create a new table for user restrictions)
         - Admin Delete All Messages from User
@@ -108,6 +108,9 @@ Misc:
     
     [] On window focus fetch latest and subscribe?
 
+    [] Layout doesnt adjust when Article Comments is hiden
+
+    [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
 
 
     

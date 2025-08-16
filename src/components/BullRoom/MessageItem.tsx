@@ -18,6 +18,7 @@ export interface MessageItemProps {
   message: BullRoomMessage;
   previousMessage?: BullRoomMessage;
   userId?: string;
+  roomId?: string;
   onAddReaction?: (messageId: string, emoji: string) => void;
   onRemoveReaction?: (messageId: string, emoji: string) => void;
   onReply?: (messageId: string, username: string, content: string) => void;
@@ -35,6 +36,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   message,
   previousMessage,
   userId,
+  roomId,
   onAddReaction,
   onRemoveReaction,
   onReply,
@@ -229,6 +231,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           <MessageActions
             message={message}
             userId={userId}
+            roomId={roomId}
             onAddReaction={onAddReaction}
             onRemoveReaction={onRemoveReaction}
             onReply={onReply}

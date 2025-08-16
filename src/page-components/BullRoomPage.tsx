@@ -153,6 +153,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
               <ChatArea 
                 messages={messages as BullRoomMessage[]} 
                 userId={user?.id} 
+                roomId={currentRoom?.id}
                 onAddReaction={(messageId: string, emoji: string) => handleAddReaction(messageId, emoji)}
                 onRemoveReaction={(messageId: string, emoji: string) => handleRemoveReaction(messageId, emoji)}
                 onReply={handleReply}
@@ -228,6 +229,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
               <ChatArea 
                 messages={messages as BullRoomMessage[]} 
                 userId={user?.id} 
+                roomId={currentRoom?.id}
                 onAddReaction={(messageId: string, emoji: string) => handleAddReaction(messageId, emoji)}
                 onRemoveReaction={(messageId: string, emoji: string) => handleRemoveReaction(messageId, emoji)}
                 onReply={handleReply}

@@ -10,6 +10,7 @@ import { LoadMoreSkeleton } from './LoadMoreSkeleton';
 export interface MessageListProps {
   messages: BullRoomMessage[];
   userId?: string;
+  roomId?: string;
   onAddReaction?: (messageId: string, emoji: string) => void;
   onRemoveReaction?: (messageId: string, emoji: string) => void;
   onReply?: (messageId: string, username: string, content: string) => void;
@@ -30,6 +31,7 @@ export interface MessageListProps {
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
   userId,
+  roomId,
   onAddReaction,
   onRemoveReaction,
   onReply,
@@ -156,7 +158,12 @@ export const MessageList: React.FC<MessageListProps> = ({
   const displayMessages = [...messages].reverse();
 
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ 
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end'
+    }}>
       {/* Loading skeleton at top when fetching more messages */}
       {isFetchingNextPage && <LoadMoreSkeleton />}
       
@@ -189,6 +196,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             message={message}
             previousMessage={previousMessage}
             userId={userId}
+            roomId={roomId}
             onAddReaction={onAddReaction}
             onRemoveReaction={onRemoveReaction}
             onReply={onReply}

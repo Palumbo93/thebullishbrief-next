@@ -3,6 +3,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { BullRoomMessageService } from '../services/bullRoomMessages';
 import { BullRoomMessage } from '../types/bullRoom.types';
 import { useState, useCallback, useMemo } from 'react';
+import { supabase } from '../lib/supabase';
+import { useToast } from './useToast';
+import { useUserRestrictions } from './useUserRestrictions';
 
 const messageService = new BullRoomMessageService();
 
@@ -133,17 +136,25 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
 export const useCreateMessage = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const toast = useToast();
+  const { isMuted } = useUserRestrictions();
   
   // Match the cache key structure from useBullRoomMessagesInfinite
   const batchSize = user ? 50 : 10;
 
   return useMutation({
-    mutationFn: (messageData: Partial<BullRoomMessage>) => 
-      messageService.createMessage({
+    mutationFn: async (messageData: Partial<BullRoomMessage>) => {
+      // Check if user is muted before sending message (using real-time state)
+      if (isMuted) {
+        throw new Error('You are currently muted and cannot send messages.');
+      }
+
+      return messageService.createMessage({
         ...messageData,
         user_id: user?.id!,
         username: user?.profile?.username || user?.user_metadata?.username || user?.email?.split('@')[0] || 'Anonymous',
-      }),
+      });
+    },
     onMutate: async (messageData) => {
       // Cancel any outgoing refetches for infinite scroll cache
       await queryClient.cancelQueries({ queryKey: ['bull-room-messages-infinite', messageData.room_id, batchSize] });
@@ -199,6 +210,14 @@ export const useCreateMessage = () => {
       if (context?.previousMessages) {
         queryClient.setQueryData(['bull-room-messages-infinite', variables.room_id, batchSize], context.previousMessages);
       }
+      
+      // Show appropriate error message
+      if (error instanceof Error && error.message.includes('muted')) {
+        toast.error('You are currently muted and cannot send messages.');
+      } else {
+        toast.error('Failed to send message');
+      }
+      
       console.error('Failed to create message:', error);
     },
     onSuccess: (newMessage, variables, context) => {

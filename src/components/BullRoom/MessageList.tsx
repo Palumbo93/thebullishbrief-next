@@ -45,35 +45,13 @@ export const MessageList: React.FC<MessageListProps> = ({
   isFetchingNextPage = false,
   scrollableTarget = 'scrollableDiv'
 }) => {
+  // All hooks must be called before any conditional returns
   const containerRef = useRef<HTMLDivElement>(null);
   const lastScrollHeight = useRef<number>(0);
   const lastScrollTop = useRef<number>(0);
-
-  // Show empty state if no messages
-  if (messages.length === 0) {
-    return <EmptyState className={className} />;
-  }
-
-  // Create a comprehensive user map from all messages
-  const userMap: Record<string, string> = {};
-  messages.forEach(message => {
-    if (message.user_id && message.username) {
-      userMap[message.user_id] = message.username;
-    }
-    // Also include user data from the user object if available
-    if (message.user?.id && message.user?.username) {
-      userMap[message.user.id] = message.user.username;
-    }
-  });
-
-  // For proper chat order: newest messages at bottom, oldest at top
-  // Since messages come newest-first from query, we need to reverse them
-  const displayMessages = [...messages].reverse();
-
-
-
-  // Custom infinite scroll implementation
   const isLoadingMore = useRef(false);
+  const hasInitiallyScrolled = useRef(false);
+  const previousMessageCount = useRef(0);
 
   // Handle scroll position restoration after loading more messages
   useEffect(() => {
@@ -90,10 +68,6 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
   }, [messages.length, scrollableTarget]);
 
-  // Auto-scroll management
-  const hasInitiallyScrolled = useRef(false);
-  const previousMessageCount = useRef(0);
-  
   // Check if user is near the bottom of the chat
   const isNearBottom = useCallback(() => {
     const container = document.getElementById(scrollableTarget);
@@ -159,6 +133,27 @@ export const MessageList: React.FC<MessageListProps> = ({
       return () => container.removeEventListener('scroll', handleScroll);
     }
   }, [handleScroll, scrollableTarget]);
+
+  // Show empty state if no messages (after all hooks)
+  if (messages.length === 0) {
+    return <EmptyState className={className} />;
+  }
+
+  // Create a comprehensive user map from all messages
+  const userMap: Record<string, string> = {};
+  messages.forEach(message => {
+    if (message.user_id && message.username) {
+      userMap[message.user_id] = message.username;
+    }
+    // Also include user data from the user object if available
+    if (message.user?.id && message.user?.username) {
+      userMap[message.user.id] = message.user.username;
+    }
+  });
+
+  // For proper chat order: newest messages at bottom, oldest at top
+  // Since messages come newest-first from query, we need to reverse them
+  const displayMessages = [...messages].reverse();
 
   return (
     <div style={{ height: '100%' }}>

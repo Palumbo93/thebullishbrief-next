@@ -95,10 +95,10 @@ Misc:
         ✔ Images should render in the chat area as a thumbnail square @done(25-08-15 18:48)
         ✔ Images should be clickable to open in a preview modal @done(25-08-15 18:53)
 
-    [] Bull Room Admin Actions Menu in Message Action: 
-        - Admin Delete
-        - Admin Mute User (Need to create a new table for user restrictions)
-        - Admin Delete All Messages from User
+    ✔ Bull Room Admin Actions Menu in Message Action: @done(25-08-16 18:09)
+        ✔ Admin Delete @done(25-08-16 18:09)
+        ✔ Admin Mute User (Need to create a new table for user restrictions) @done(25-08-16 18:09)
+        ✔ Admin Delete All Messages from User @done(25-08-16 18:09)
 
     ✔ Bull Room Chat Infinite Scroll: @done(25-08-16 14:32)
         ✔ Only load messages within the past 48 hours @done(25-08-16 14:32)
@@ -111,7 +111,6 @@ Misc:
     [] Layout doesnt adjust when Article Comments is hiden
 
     [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
-
 
     
 Misc Bugs:
@@ -142,7 +141,7 @@ Refine/Polish/Mobile Polish:
     ✔ Article Page @done(25-08-10 20:15)
     ✔ Article Comment Widget & Empty State @done(25-08-10 22:48)
     ✔ Explore Page @done(25-08-10 20:16)
-    [] Bull Room
+    ✔ Bull Room @done(25-08-16 18:10)
     ✔ Prompt Library @done(25-08-10 22:49)
     ✔ Author Page @done(25-08-11 14:40)
     ✔ Bookmarks Page (I like it already tbh) @done(25-08-11 14:40)

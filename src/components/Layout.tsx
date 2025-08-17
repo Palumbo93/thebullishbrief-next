@@ -14,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useAuthModal } from '../contexts/AuthModalContext';
 import { getMobileHeaderConfigForRoute, MobileHeaderFactoryProps } from '../utils/mobileHeaderConfigs';
 import { useMobileHeader } from '../contexts/MobileHeaderContext';
+import { useArticleCommentsState } from '../hooks/useArticleCommentsState';
 import { HomeIcon } from './ui/home';
 import { SearchIcon } from './ui/search';
 import { MessageSquareMoreIcon } from './ui/message-square-more';
@@ -72,8 +73,8 @@ export const Layout: React.FC<LayoutProps> = ({
   const { handleSignInClick, handleSignUpClick } = useAuthModal();
   const { config: mobileHeaderOverride } = useMobileHeader();
 
-  // Temporary chat state for ArticleComments only
-  const [articleCommentsExpanded, setArticleCommentsExpanded] = React.useState(true);
+  // Persistent article comments state
+  const { isExpanded: articleCommentsExpanded, toggleExpanded: toggleArticleComments, isLoaded: commentsStateLoaded, hasHydrated, shouldShowSpace } = useArticleCommentsState();
   // Mobile comments state - separate from desktop sidebar
   const [mobileCommentsOpen, setMobileCommentsOpen] = React.useState(false);
   // Mobile action panel state for brief pages
@@ -259,9 +260,15 @@ export const Layout: React.FC<LayoutProps> = ({
         .main-content {
           position: relative;
           margin-left: 80px; /* Offset for fixed sidebar */
+          margin-right: 0; /* Default: no right panel */
           border-right: 0.5px solid var(--color-border-primary);
           background: var(--color-bg-primary);
           min-height: 100vh;
+        }
+        
+        /* Only apply transitions after state is loaded to prevent hydration glitch */
+        .main-content.state-loaded {
+          transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Main Content with Right Panel */
@@ -279,6 +286,8 @@ export const Layout: React.FC<LayoutProps> = ({
           background: var(--color-bg-primary);
           z-index: 1;
           overflow-y: auto;
+          transform: translateX(0);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Content Area - No scroll, just wrapper */
@@ -388,6 +397,10 @@ export const Layout: React.FC<LayoutProps> = ({
             width: 100%;
           }
           
+          .main-content.state-loaded {
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          
           .right-panel {
             display: none; /* Hidden on mobile, becomes overlay */
           }
@@ -402,6 +415,10 @@ export const Layout: React.FC<LayoutProps> = ({
           .main-content {
             margin-left: 80px; /* Offset for collapsed sidebar */
             margin-right: 0; /* No right panel offset on tablet */
+          }
+          
+          .main-content.state-loaded {
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
           
           .right-panel {
@@ -509,7 +526,16 @@ export const Layout: React.FC<LayoutProps> = ({
         </header>
 
         {/* Main Content Area */}
-        <main className={`main-content ${(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) ? 'with-right-panel' : ''}`}>
+        <main className={`main-content ${hasHydrated ? 'state-loaded' : ''} ${(
+          // For articles: use shouldShowSpace for delayed animation
+          (actualCurrentLocation === 'article' && shouldShowSpace) || 
+          showActionPanel || 
+          actualCurrentLocation === 'home' || 
+          (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
+          actualCurrentLocation === 'authors' || 
+          pathname?.startsWith('/search') || 
+          pathname?.startsWith('/explore')
+        ) ? 'with-right-panel' : ''}`}>
           <div className="content-area">
             {/* Ticker Tape Widget - Only on Home Page */}
             {actualCurrentLocation === 'home' && (
@@ -526,15 +552,24 @@ export const Layout: React.FC<LayoutProps> = ({
         </main>
 
         {/* Right Panel - Conditional based on page type */}
-        {(actualCurrentLocation === 'article' || showActionPanel || actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || actualCurrentLocation === 'authors' || pathname?.startsWith('/search') || pathname?.startsWith('/explore')) && (
+        {(
+          // For articles: use shouldShowSpace for delayed animation
+          (actualCurrentLocation === 'article' && shouldShowSpace) || 
+          showActionPanel || 
+          actualCurrentLocation === 'home' || 
+          (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
+          actualCurrentLocation === 'authors' || 
+          pathname?.startsWith('/search') || 
+          pathname?.startsWith('/explore')
+        ) && (
           <aside className="right-panel">
-            {/* Article Comments - Only on Article Pages */}
-            {actualCurrentLocation === 'article' && articleId && (
+            {/* Article Comments - Only show content when expanded and hydrated */}
+            {actualCurrentLocation === 'article' && articleId && articleCommentsExpanded && hasHydrated && (
               <ArticleComments 
                 articleId={articleId}
                 articleTitle={articleTitle || ''}
                 isExpanded={articleCommentsExpanded} 
-                onToggleExpanded={() => setArticleCommentsExpanded(!articleCommentsExpanded)}
+                onToggleExpanded={toggleArticleComments}
                 onCreateAccountClick={handleSignUpClick}
               />
             )}
@@ -607,6 +642,17 @@ export const Layout: React.FC<LayoutProps> = ({
           />
           </div>
         </>
+      )}
+
+      {/* Article Comments - Always render on article pages for floating button */}
+      {actualCurrentLocation === 'article' && articleId && !articleCommentsExpanded && hasHydrated && (
+        <ArticleComments 
+          articleId={articleId}
+          articleTitle={articleTitle || ''}
+          isExpanded={articleCommentsExpanded} 
+          onToggleExpanded={toggleArticleComments}
+          onCreateAccountClick={handleSignUpClick}
+        />
       )}
     </>
   );

@@ -84,7 +84,7 @@ export default function RootLayout({
           async 
           src="https://datafa.st/js/script.js" 
           data-website-id="689dde00a1c832b545b78a9f"
-          data-domain="thebullishbrief-next.vercel.app"
+          data-domain="thebullishbrief.com"
         />
       </head>
       <body className={`${archivo.variable}`}>

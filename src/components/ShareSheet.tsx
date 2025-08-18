@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X, MessageSquare, Share2, Copy, Check } from 'lucide-react';
 import { SocialIcon } from 'react-social-icons';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ShareSheetProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
   url,
   onShare
 }) => {
+  const { theme } = useTheme();
   const sheetRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = React.useState(false);
 
@@ -68,7 +70,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
       id: 'twitter',
       name: 'X (Twitter)',
       icon: <SocialIcon network="x" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
-      color: '#fff',
+      color: 'var(--color-text-primary)',
       url: `https://x.com/intent/tweet?text=${encodeURIComponent('Check out this article')}&url=${encodeURIComponent(url)}`,
       action: 'link'
     },
@@ -152,7 +154,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.6)',
+          background: theme === 'light' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.6)',
           backdropFilter: 'blur(8px)',
           zIndex: 2000,
           animation: 'fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards'
@@ -229,7 +231,8 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
               transition: 'all var(--transition-base)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+              const hoverColor = theme === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.background = hoverColor;
               e.currentTarget.style.color = 'var(--color-text-primary)';
             }}
             onMouseLeave={(e) => {
@@ -272,10 +275,11 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
                 transform: 'translateY(20px)'
               }}
               onMouseEnter={(e) => {
+                const shadowColor = theme === 'light' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.3)';
                 e.currentTarget.style.background = 'var(--color-bg-card-hover)';
                 e.currentTarget.style.borderColor = option.color;
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = `0 8px 25px rgba(0, 0, 0, 0.3)`;
+                e.currentTarget.style.boxShadow = `0 8px 25px ${shadowColor}`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'var(--color-bg-tertiary)';

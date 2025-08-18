@@ -56,8 +56,8 @@ export const BullRoomDesktopLayout: React.FC<BullRoomDesktopLayoutProps> = ({
   // Message input container - Fixed at bottom
   const inputContainerStyle: React.CSSProperties = {
     flexShrink: 0,
-    background: 'rgba(0, 0, 0, 0.95)',
-    backdropFilter: 'blur(4px)'
+    background: 'var(--color-bg-primary)',
+    backdropFilter: 'blur(4px)',
   };
 
   // Typing indicator container - Fixed at bottom left of chat column

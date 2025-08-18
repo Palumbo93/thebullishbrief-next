@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
 import { Lock } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface AuthOverlayProps {
   onCreateAccountClick?: () => void;
 }
 
 export const AuthOverlay: React.FC<AuthOverlayProps> = ({ onCreateAccountClick }) => {
+  const { theme } = useTheme();
+
   // Prevent scrolling when overlay is active
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
@@ -16,6 +19,12 @@ export const AuthOverlay: React.FC<AuthOverlayProps> = ({ onCreateAccountClick }
       document.body.style.overflow = originalStyle;
     };
   }, []);
+
+  // Theme-aware colors
+  const backdropColor = theme === 'light' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.25)';
+  const shadowColor = theme === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(0, 0, 0, 0.1)';
+  const shadowColorSecondary = theme === 'light' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(0, 0, 0, 0.04)';
+  
   return (
     <div style={{
       position: 'fixed',
@@ -23,7 +32,7 @@ export const AuthOverlay: React.FC<AuthOverlayProps> = ({ onCreateAccountClick }
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.25)',
+      background: backdropColor,
       backdropFilter: 'blur(3px)',
       display: 'flex',
       alignItems: 'center',
@@ -41,7 +50,7 @@ export const AuthOverlay: React.FC<AuthOverlayProps> = ({ onCreateAccountClick }
         maxHeight: 'calc(100vh - 120px)', // Ensure it fits in viewport
         textAlign: 'center',
         border: '0.5px solid var(--color-border-primary)',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        boxShadow: `0 20px 25px -5px ${shadowColor}, 0 10px 10px -5px ${shadowColorSecondary}`,
         overflow: 'hidden' // Prevent content from scrolling
       }}>
         {/* Icon */}

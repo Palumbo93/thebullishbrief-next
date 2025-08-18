@@ -20,32 +20,7 @@
   --top-bar-height: 72px;
   
   /* === COLORS === */
-  /* Background Colors - Pure blacks and subtle greys */
-  --color-bg-primary: #000000;
-  --color-bg-secondary: #0a0a0a;
-  --color-bg-tertiary: #141414;
-  --color-bg-card: #0f0f0f;
-  --color-bg-card-hover: #1a1a1a;
-  --color-bg-surface: #0a0a0a;
-  
-  /* shadcn/ui compatibility */
-  --background: var(--color-bg-primary);
-  --foreground: var(--color-text-primary);
-  --border: var(--color-border-primary);
-  
-  /* Text Colors - Clean whites and refined greys */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #e5e5e5;
-  --color-text-tertiary: #c4c4c4;
-  --color-text-muted: #999999;
-  --color-text-inverse: #ffffff;
-  
-  /* Brand Colors - Minimal white-based palette */
-  --color-brand-primary: #ffffff;
-  --color-brand-secondary: #f5f5f5;
-  --color-brand-tertiary: #e5e5e5;
-  
-  /* Semantic Colors - Subtle and refined */
+  /* Semantic Colors - Theme independent */
   --color-success: #22c55e;
   --color-success-bg: rgba(34, 197, 94, 0.1);
   --color-success-border: rgba(34, 197, 94, 0.15);
@@ -61,12 +36,6 @@
   --color-info: #3b82f6;
   --color-info-bg: rgba(59, 130, 246, 0.08);
   --color-info-border: rgba(59, 130, 246, 0.15);
-  
-  /* Border Colors - Minimal and subtle */
-  --color-border-primary: #1f1f1f;
-  --color-border-secondary: #2a2a2a;
-  --color-border-tertiary: #404040;
-  --color-border-focus: #ffffff;
   
   /* === TYPOGRAPHY === */
   /* Font Families */
@@ -185,6 +154,79 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
+}
+
+/* === THEME COLOR DEFINITIONS === */
+
+/* Dark Theme (Default) */
+:root,
+:root.dark,
+:root[data-theme="dark"] {
+  /* Background Colors - Pure blacks and subtle greys */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #141414;
+  --color-bg-card: #0f0f0f;
+  --color-bg-card-hover: #1a1a1a;
+  --color-bg-surface: #0a0a0a;
+  
+  /* Text Colors - Clean whites and refined greys */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e5e5;
+  --color-text-tertiary: #c4c4c4;
+  --color-text-muted: #999999;
+  --color-text-inverse: #000000;
+  
+  /* Brand Colors - Minimal white-based palette */
+  --color-brand-primary: #ffffff;
+  --color-brand-secondary: #f5f5f5;
+  --color-brand-tertiary: #e5e5e5;
+  
+  /* Border Colors - Minimal and subtle */
+  --color-border-primary: #1f1f1f;
+  --color-border-secondary: #2a2a2a;
+  --color-border-tertiary: #404040;
+  --color-border-focus: #ffffff;
+  
+  /* shadcn/ui compatibility */
+  --background: var(--color-bg-primary);
+  --foreground: var(--color-text-primary);
+  --border: var(--color-border-primary);
+}
+
+/* Light Theme */
+:root.light,
+:root[data-theme="light"] {
+  /* Background Colors - Clean whites and subtle greys */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-tertiary: #f1f3f4;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #f8f9fa;
+  --color-bg-surface: #ffffff;
+  
+  /* Text Colors - Deep blacks and refined greys */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #4a4a4a;
+  --color-text-tertiary: #6a6a6a;
+  --color-text-muted: #8a8a8a;
+  --color-text-inverse: #ffffff;
+  
+  /* Brand Colors - Minimal dark-based palette for light theme */
+  --color-brand-primary: #1a1a1a;
+  --color-brand-secondary: #2a2a2a;
+  --color-brand-tertiary: #4a4a4a;
+  
+  /* Border Colors - Subtle and clean */
+  --color-border-primary: #e1e5e9;
+  --color-border-secondary: #d1d5db;
+  --color-border-tertiary: #9ca3af;
+  --color-border-focus: #1a1a1a;
+  
+  /* shadcn/ui compatibility */
+  --background: var(--color-bg-primary);
+  --foreground: var(--color-text-primary);
+  --border: var(--color-border-primary);
 }
 
 /* === BASE STYLES === */

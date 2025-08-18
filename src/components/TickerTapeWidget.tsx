@@ -1,11 +1,21 @@
 import React, { useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface TickerTapeWidgetProps {
   className?: string;
 }
 
 export const TickerTapeWidget: React.FC<TickerTapeWidgetProps> = ({ className = '' }) => {
+  const { theme } = useTheme();
+
   useEffect(() => {
+    // Find the widget container
+    const widgetContainer = document.querySelector('.tradingview-widget-container__widget');
+    if (!widgetContainer) return;
+
+    // Clear any existing content
+    widgetContainer.innerHTML = '';
+
     // Create the script element
     const script = document.createElement('script');
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
@@ -33,7 +43,7 @@ export const TickerTapeWidget: React.FC<TickerTapeWidgetProps> = ({ className = 
           "title": "Ethereum"
         }
       ],
-      "colorTheme": "dark",
+      "colorTheme": theme === 'dark' ? 'dark' : 'light',
       "locale": "en",
       "largeChartUrl": "",
       "isTransparent": true,
@@ -41,19 +51,16 @@ export const TickerTapeWidget: React.FC<TickerTapeWidgetProps> = ({ className = 
       "displayMode": "regular"
     });
 
-    // Find the widget container
-    const widgetContainer = document.querySelector('.tradingview-widget-container__widget');
-    if (widgetContainer) {
-      widgetContainer.appendChild(script);
-    }
+    // Append the new script
+    widgetContainer.appendChild(script);
 
-    // Cleanup function
+    // Cleanup function - clear the container completely
     return () => {
-      if (widgetContainer && script.parentNode) {
-        widgetContainer.removeChild(script);
+      if (widgetContainer) {
+        widgetContainer.innerHTML = '';
       }
     };
-  }, []);
+  }, [theme]);
 
   return (
     <div className={`tradingview-widget-container ${className}`}>

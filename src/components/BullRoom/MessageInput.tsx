@@ -2,6 +2,7 @@ import React from 'react';
 import { Paperclip, Image, File as FileIcon, X } from 'lucide-react';
 import { ReplyPreview } from './ReplyPreview';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useTheme } from '../../contexts/ThemeContext';
 
 /**
  * MessageInput handles new message input and file uploads.
@@ -54,7 +55,10 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   onCancelReply,
   user
 }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
+
+  // Use design system variables instead of hardcoded colors
   
   // Auto-resize textarea
   React.useEffect(() => {
@@ -88,15 +92,15 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               alignItems: 'center',
               gap: 'var(--space-4)',
               padding: 'var(--space-4)',
-              background: 'rgba(20, 20, 20, 0.3)',
+              background: 'var(--color-bg-tertiary)',
               borderRadius: 'var(--radius-xl)',
-              border: '1px solid rgba(31, 31, 31, 0.3)',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              border: '1px solid var(--color-border-secondary)',
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{
                 width: '40px',
                 height: '40px',
-                background: 'rgba(255, 255, 255, 0.2)',
+                background: 'var(--color-bg-secondary)',
                 borderRadius: 'var(--radius-lg)',
                 display: 'flex',
                 alignItems: 'center',
@@ -120,7 +124,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 }}>{upload.file.name}</p>
                 <div style={{
                   width: '100%',
-                  background: 'rgba(20, 20, 20, 0.5)',
+                  background: 'var(--color-bg-card)',
                   borderRadius: 'var(--radius-full)',
                   height: '8px'
                 }}>
@@ -130,7 +134,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                       height: '8px',
                       borderRadius: 'var(--radius-full)',
                       transition: 'all 300ms',
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                      boxShadow: 'var(--shadow-sm)',
                       width: `${upload.progress}%`
                     }}
                   />
@@ -153,7 +157,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = 'var(--color-error)';
-                  e.currentTarget.style.background = 'rgba(20, 20, 20, 0.3)';
+                  e.currentTarget.style.background = 'var(--color-bg-card)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.color = 'var(--color-text-muted)';
@@ -228,7 +232,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               style={{
                 width: '40px',
                 height: '40px',
-                background: 'rgba(20, 20, 20, 0.6)',
+                background: 'var(--color-bg-tertiary)',
                 color: 'var(--color-text-primary)',
                 borderRadius: '50%',
                 display: 'flex',
@@ -237,18 +241,18 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 transition: 'all 200ms',
                 opacity: disabled ? 0.4 : 1,
                 cursor: disabled ? 'not-allowed' : 'pointer',
-                border: '1px solid rgba(31, 31, 31, 0.4)',
+                border: '1px solid var(--color-border-secondary)',
                 transform: 'scale(1)'
               }}
               onMouseEnter={(e) => {
                 if (!disabled) {
-                  e.currentTarget.style.background = 'rgba(20, 20, 20, 0.8)';
+                  e.currentTarget.style.background = 'var(--color-bg-card-hover)';
                   e.currentTarget.style.transform = 'scale(1.05)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!disabled) {
-                  e.currentTarget.style.background = 'rgba(20, 20, 20, 0.6)';
+                  e.currentTarget.style.background = 'var(--color-bg-tertiary)';
                   e.currentTarget.style.transform = 'scale(1)';
                 }
               }}
@@ -269,29 +273,37 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 200ms',
-                opacity: ((!value.trim() && fileUploads.length === 0) || disabled) ? 0.4 : 1,
-                cursor: ((!value.trim() && fileUploads.length === 0) || disabled) ? 'not-allowed' : 'pointer',
-                transform: 'scale(1)',
-                border: (value.trim() || fileUploads.length > 0) && !disabled ? 'none' : '1px solid rgba(31, 31, 31, 0.4)',
-                background: (value.trim() || fileUploads.length > 0) && !disabled ? 'var(--color-brand-primary)' : 'rgba(20, 20, 20, 0.6)',
-                color: (value.trim() || fileUploads.length > 0) && !disabled ? '#000000' : 'var(--color-text-primary)'
+                border: (value.trim() || fileUploads.length > 0) && !disabled ? 'none' : '1px solid var(--color-border-secondary)',
+                background: (value.trim() || fileUploads.length > 0) && !disabled ? 'var(--color-brand-primary)' : 'var(--color-bg-tertiary)',
+                color: (value.trim() || fileUploads.length > 0) && !disabled ? 'var(--color-text-inverse)' : 'var(--color-text-primary)',
+                opacity: disabled ? 0.4 : 1,
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                transform: 'scale(1)'
               }}
               onMouseEnter={(e) => {
-                if ((value.trim() || fileUploads.length > 0) && !disabled) {
-                  e.currentTarget.style.background = '#f5f5f5';
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                } else if (!disabled) {
-                  e.currentTarget.style.background = 'rgba(20, 20, 20, 0.8)';
-                  e.currentTarget.style.transform = 'scale(1.05)';
+                if (!disabled) {
+                  if (value.trim() || fileUploads.length > 0) {
+                    // Primary button hover (when ready to send)
+                    e.currentTarget.style.filter = 'brightness(0.97)';
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  } else {
+                    // Tertiary button hover (when not ready)
+                    e.currentTarget.style.background = 'var(--color-bg-card-hover)';
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }
                 }
               }}
               onMouseLeave={(e) => {
-                if ((value.trim() || fileUploads.length > 0) && !disabled) {
-                  e.currentTarget.style.background = 'var(--color-brand-primary)';
-                  e.currentTarget.style.transform = 'scale(1)';
-                } else if (!disabled) {
-                  e.currentTarget.style.background = 'rgba(20, 20, 20, 0.6)';
-                  e.currentTarget.style.transform = 'scale(1)';
+                if (!disabled) {
+                  if (value.trim() || fileUploads.length > 0) {
+                    // Reset primary button
+                    e.currentTarget.style.filter = 'none';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  } else {
+                    // Reset tertiary button
+                    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
                 }
               }}
               title="Send message"

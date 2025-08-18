@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { X, LogIn, UserPlus, LogOut, Bookmark, Settings, ChevronRight } from 'lucide-react';
 import { useViewportHeightOnly } from '../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../utils/viewportUtils';
+import { BullLogoImg } from './ui/BullLogo';
 
 /**
  * MobileSidebarDrawer component for mobile navigation.
@@ -342,7 +343,7 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
         {/* Header */}
         <div className="mobile-sidebar-header">
           <div className="mobile-sidebar-logo">
-            <img src="/images/logo.png" alt="Logo" />
+            <BullLogoImg width={32} height={32} alt="Logo" />
             <div className="mobile-sidebar-logo-text">
               The Bullish Brief
             </div>

@@ -203,7 +203,6 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
             marginTop: 'var(--space-2)',
             background: 'var(--color-bg-secondary)',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
               <Settings style={{ width: '16px', height: '16px', color: 'var(--color-text-muted)' }} />
@@ -233,7 +232,6 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
         left: 0,
         right: 0,
         padding: 'var(--space-4)',
-        borderTop: '1px solid rgba(31, 31, 31, 0.3)',
         background: 'var(--color-bg-primary)'
       }}>
         <p style={{

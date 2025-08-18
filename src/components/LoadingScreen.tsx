@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { TrendingUp } from 'lucide-react';
+import { BullLogoImg } from './ui/BullLogo';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -32,18 +33,10 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <img 
-          src="/images/logo.png" 
-          alt="Logo" 
-          style={{
-            width: '120px',
-            height: '120px',
-            objectFit: 'contain'
-          }}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-            (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block';
-          }}
+        <BullLogoImg 
+          width={120}
+          height={120}
+          alt="Logo"
         />
         <TrendingUp 
           style={{ 

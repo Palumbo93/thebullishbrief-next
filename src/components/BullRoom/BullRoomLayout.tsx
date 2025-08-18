@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Sidebar } from '../Sidebar';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAuthModal } from '../../contexts/AuthModalContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { HomeIcon } from '../ui/home';
 import { SearchIcon } from '../ui/search';
 import { MessageSquareMoreIcon } from '../ui/message-square-more';
@@ -15,6 +16,7 @@ interface BullRoomLayoutProps {
 }
 
 export const BullRoomLayout: React.FC<BullRoomLayoutProps> = ({ children }) => {
+  const { theme } = useTheme();
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { handleSignInClick, handleSignUpClick } = useAuthModal();
@@ -35,6 +37,10 @@ export const BullRoomLayout: React.FC<BullRoomLayoutProps> = ({ children }) => {
     await signOut();
     router.push('/');
   };
+
+  // Theme-aware scrollbar colors
+  const scrollbarThumbColor = theme === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)';
+  const scrollbarThumbHoverColor = theme === 'light' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)';
 
   return (
     <>
@@ -89,18 +95,18 @@ export const BullRoomLayout: React.FC<BullRoomLayoutProps> = ({ children }) => {
         }
 
         .bullroom-sidebar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
+          background: ${scrollbarThumbColor};
           border-radius: 5px;
         }
 
         .bullroom-sidebar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: ${scrollbarThumbHoverColor};
         }
 
         /* Firefox scrollbar */
         .bullroom-sidebar {
           scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+          scrollbar-color: ${scrollbarThumbColor} transparent;
         }
 
         /* Mobile Layout - Hide sidebar on mobile */

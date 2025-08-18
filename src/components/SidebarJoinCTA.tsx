@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from './ui/Button';
 import { BRAND_COPY } from '../data/copy';
+import { BullLogoImg } from './ui/BullLogo';
 
 interface SidebarJoinCTAProps {
   onSignUpClick?: () => void;
@@ -14,31 +15,12 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
         <div className="briefs-signup-content">
           {/* Brand Logo */}
           <div className="briefs-signup-logo">
-            <img 
-              src="/images/logo.png" 
-              alt="The Bullish Brief" 
+            <BullLogoImg 
+              width={40}
+              height={40}
+              alt="The Bullish Brief"
               className="briefs-logo-img"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                if (nextElement) {
-                  nextElement.style.display = 'flex';
-                }
-              }}
             />
-            <div className="briefs-logo-fallback">
-              <svg 
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
-              </svg>
-              <div className="briefs-logo-dot"></div>
-            </div>
           </div>
 
           {/* Brand Title */}
@@ -95,41 +77,7 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
         }
         
         .briefs-logo-img {
-          width: 40px;
-          height: 40px;
           object-fit: contain;
-        }
-        
-        .briefs-logo-fallback {
-          display: none;
-          width: 40px;
-          height: 40px;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          color: var(--color-brand-primary);
-        }
-        
-        .briefs-logo-fallback svg {
-          width: 26px;
-          height: 26px;
-        }
-        
-        .briefs-logo-dot {
-          position: absolute;
-          top: '-1px';
-          right: '-1px';
-          width: 6px;
-          height: 6px;
-          background-color: var(--color-brand-primary);
-          border-radius: var(--radius-full);
-          border: 1px solid var(--color-bg-secondary);
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
         }
         
         .briefs-signup-title {

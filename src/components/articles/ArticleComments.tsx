@@ -476,7 +476,6 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
             borderRadius: 'var(--radius-xl) 0 0 var(--radius-xl)',
             color: 'var(--color-text-primary)',
             cursor: 'pointer',
-            boxShadow: 'var(--shadow-xl)',
             transition: 'all var(--transition-base)',
             writingMode: 'horizontal-tb',
             minHeight: '120px',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Reply } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 /**
  * ReplyPreview component for showing which message is being replied to
@@ -17,11 +18,12 @@ export const ReplyPreview: React.FC<ReplyPreviewProps> = ({
   onCancel,
   className = ''
 }) => {
+  const { theme } = useTheme();
+
   return (
     <div 
       className={`flex items-center justify-between gap-2 p-3 rounded-lg ${className}`}
       style={{
-        backgroundColor: 'rgba(20, 20, 20, 0.2)',
         borderTop: '0.5px solid var(--color-border-primary)',
         marginBottom: 'var(--space-3)',
         position: 'relative',
@@ -81,7 +83,7 @@ export const ReplyPreview: React.FC<ReplyPreviewProps> = ({
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = 'var(--color-text-secondary)';
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+          e.currentTarget.style.background = 'var(--color-bg-card-hover)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = 'var(--color-text-muted)';

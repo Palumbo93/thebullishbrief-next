@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { RoomInfoSidebar } from './RoomInfoSidebar';
 import { BullRoom } from '../../lib/database.aliases';
 import { BullRoomMessage } from '../../types/bullRoom.types';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface BullRoomMobileInfoPanelProps {
   isOpen: boolean;
@@ -17,6 +18,11 @@ export const BullRoomMobileInfoPanel: React.FC<BullRoomMobileInfoPanelProps> = (
   room,
   messages
 }) => {
+  const { theme } = useTheme();
+
+  // Theme-aware backdrop color
+  const backdropColor = theme === 'light' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.5)';
+
   return (
     <>
       {/* Backdrop */}
@@ -28,7 +34,7 @@ export const BullRoomMobileInfoPanel: React.FC<BullRoomMobileInfoPanelProps> = (
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'rgba(0, 0, 0, 0.5)',
+            background: backdropColor,
             zIndex: 1000,
             backdropFilter: 'blur(4px)'
           }}

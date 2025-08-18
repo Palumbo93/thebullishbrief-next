@@ -1,5 +1,6 @@
 import React from 'react';
 import { BullRoomMessage } from '../../lib/database.aliases';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface RoomMember {
   id: string;
@@ -18,6 +19,10 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
   messages, 
   currentUserId 
 }) => {
+  const { theme } = useTheme();
+
+  // Use design system variables instead of hardcoded colors
+
   // Calculate members and their stats
   const calculateMembers = (): RoomMember[] => {
     const memberMap = new Map<string, RoomMember>();
@@ -77,7 +82,7 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
   
   return (
     <div style={{
-      borderLeft: '0.5px solid rgba(31, 31, 31, 1)',
+      borderLeft: '0.5px solid var(--color-border-primary)',
       padding: 'var(--space-6)',
       display: 'flex',
       flexDirection: 'column',
@@ -106,11 +111,11 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
                   padding: 'var(--space-3)',
                   borderRadius: 'var(--radius-xl)',
                   border: `1px solid ${member.id === currentUserId 
-                    ? 'rgba(255, 255, 255, 0.3)' 
-                    : 'rgba(31, 31, 31, 0.2)'}`,
+                    ? 'var(--color-border-tertiary)' 
+                    : 'var(--color-border-secondary)'}`,
                   background: member.id === currentUserId 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(20, 20, 20, 0.2)'
+                    ? 'var(--color-bg-card-hover)' 
+                    : 'var(--color-bg-tertiary)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
@@ -120,7 +125,7 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
                     justifyContent: 'center',
                     width: '32px',
                     height: '32px',
-                    background: 'rgba(20, 20, 20, 0.4)',
+                    background: 'var(--color-bg-secondary)',
                     borderRadius: '50%'
                   }}>
                     <span style={{
@@ -142,7 +147,7 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
                       {index === 0 && (
                         <span style={{
                           fontSize: 'var(--text-xs)',
-                          background: 'rgba(255, 255, 255, 0.2)',
+                          background: 'var(--color-bg-card-hover)',
                           color: 'var(--color-brand-primary)',
                           padding: 'var(--space-1) var(--space-2)',
                           borderRadius: 'var(--radius-full)'
@@ -190,8 +195,8 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
                   padding: 'var(--space-2)',
                   borderRadius: 'var(--radius-lg)',
                   background: member.id === currentUserId 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(20, 20, 20, 0.1)'
+                    ? 'var(--color-bg-card-hover)' 
+                    : 'var(--color-bg-tertiary)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
@@ -201,7 +206,7 @@ export const RoomMembersSidebar: React.FC<RoomMembersSidebarProps> = ({
                     justifyContent: 'center',
                     width: '24px',
                     height: '24px',
-                    background: 'rgba(20, 20, 20, 0.4)',
+                    background: 'var(--color-bg-secondary)',
                     borderRadius: '50%'
                   }}>
                     <span style={{

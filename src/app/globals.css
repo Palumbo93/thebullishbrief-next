@@ -95,7 +95,7 @@ body {
 /* HTML Content Styles for ArticlePage and BriefPage */
 .html-content {
   line-height: 1.6 !important;
-  color: #e5e5e5 !important;
+  color: var(--color-text-secondary) !important;
   font-size: 16px !important;
 }
 
@@ -107,7 +107,7 @@ body {
   line-height: 1.1 !important;
   margin-top: 48px !important;
   margin-bottom: 24px !important;
-  color: #ffffff !important;
+  color: var(--color-text-primary) !important;
   letter-spacing: -0.01em !important;
 }
 
@@ -118,7 +118,7 @@ body {
   line-height: 1.1 !important;
   margin-top: 40px !important;
   margin-bottom: 20px !important;
-  color: #ffffff !important;
+  color: var(--color-text-primary) !important;
   letter-spacing: -0.01em !important;
 }
 
@@ -129,18 +129,18 @@ body {
   line-height: 1.1 !important;
   margin-top: 32px !important;
   margin-bottom: 16px !important;
-  color: #ffffff !important;
+  color: var(--color-text-primary) !important;
 }
 
 .html-content p {
   margin: 0 0 16px 0 !important;
-  color: #f4f4f4 !important;
+  color: var(--color-text-secondary) !important;
   line-height: 1.7 !important;
   font-size: 16px !important;
 }
 
 .html-content a {
-  color: #ffffff !important;
+  color: var(--color-text-primary) !important;
   text-decoration: underline !important;
 }
 
@@ -458,7 +458,6 @@ body {
   margin: 1.5em 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   position: relative;
 }
 
@@ -566,7 +565,6 @@ body {
   margin-bottom: 1.5em;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .html-content div[data-gif] img {
@@ -611,7 +609,6 @@ body {
 .html-content div[data-button] a.btn-primary:hover {
   background: var(--color-text-secondary);
   color: var(--color-bg-primary);
-  box-shadow: var(--shadow-brand);
   transform: translateY(-1px);
 }
 

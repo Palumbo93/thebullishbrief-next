@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 // Context Providers
 import { HydrationProvider } from '../contexts/HydrationContext';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { AuthModalProvider } from '../contexts/AuthModalContext';
 import { AdminProvider } from '../contexts/AdminContext';
@@ -28,23 +29,25 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) =>
 
   return (
     <HydrationProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AuthModalProvider>
-            <AdminProvider>
-              <DatafastProvider siteId="689dde00a1c832b545b78a9f">
-                <ToastProvider>
-                  <ConfirmProvider>
-                    <MobileHeaderProvider>
-                      {children}
-                    </MobileHeaderProvider>
-                  </ConfirmProvider>
-                </ToastProvider>
-              </DatafastProvider>
-            </AdminProvider>
-          </AuthModalProvider>
-        </AuthProvider>
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AuthModalProvider>
+              <AdminProvider>
+                <DatafastProvider siteId="689dde00a1c832b545b78a9f">
+                  <ToastProvider>
+                    <ConfirmProvider>
+                      <MobileHeaderProvider>
+                        {children}
+                      </MobileHeaderProvider>
+                    </ConfirmProvider>
+                  </ToastProvider>
+                </DatafastProvider>
+              </AdminProvider>
+            </AuthModalProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </HydrationProvider>
   );
 };

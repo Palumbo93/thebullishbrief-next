@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Share, Bookmark } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface DesktopBannerAction {
   type: 'back' | 'share' | 'bookmark';
@@ -30,11 +31,18 @@ export const DesktopBanner: React.FC<DesktopBannerProps> = ({
   isScrolled = false,
   maxWidth = 'none'
 }) => {
+  const { theme } = useTheme();
+
   const getBannerStyles = () => {
+    // Theme-aware background when scrolled
+    const scrolledBackground = theme === 'light' 
+      ? 'rgba(255, 255, 255, 0.8)' 
+      : 'rgba(0, 0, 0, 0.8)';
+
     return {
       display: 'flex',
       alignItems: 'center',
-      background: isScrolled ? 'rgba(0, 0, 0, 0.8)' : 'transparent',
+      background: isScrolled ? scrolledBackground : 'transparent',
       height: '56px',
       position: 'sticky' as const,
       margin: '0 0 0 0',
@@ -68,8 +76,10 @@ export const DesktopBanner: React.FC<DesktopBannerProps> = ({
   };
 
   const getActionButtonStyles = (action: DesktopBannerAction) => {
+    const buttonBackground = theme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    
     const baseStyles = {
-      background: action.type === 'back' ? 'transparent' : 'rgba(255, 255, 255, 0.1)',
+      background: action.type === 'back' ? 'transparent' : buttonBackground,
       border: 'none',
       color: action.active ? 'var(--color-brand-primary)' : 'var(--color-text-primary)',
       cursor: action.disabled || action.loading ? 'not-allowed' : 'pointer',
@@ -119,10 +129,13 @@ export const DesktopBanner: React.FC<DesktopBannerProps> = ({
     if (action.disabled || action.loading) return;
 
     const target = e.currentTarget;
+    const hoverColor = theme === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+    const buttonHoverColor = theme === 'light' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)';
+    
     if (action.type === 'back') {
-      target.style.background = 'rgba(255,255,255,0.08)';
+      target.style.background = hoverColor;
     } else {
-      target.style.background = 'rgba(255, 255, 255, 0.2)';
+      target.style.background = buttonHoverColor;
     }
   };
 
@@ -130,10 +143,12 @@ export const DesktopBanner: React.FC<DesktopBannerProps> = ({
     if (action.disabled || action.loading) return;
 
     const target = e.currentTarget;
+    const buttonColor = theme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    
     if (action.type === 'back') {
       target.style.background = 'transparent';
     } else {
-      target.style.background = 'rgba(255, 255, 255, 0.1)';
+      target.style.background = buttonColor;
     }
   };
 

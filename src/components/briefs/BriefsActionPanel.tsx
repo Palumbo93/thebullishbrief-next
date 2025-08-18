@@ -331,7 +331,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           position: relative;
           height: 100%;
           background: var(--color-bg-primary);
-          border-left: 1px solid rgba(255, 255, 255, 0.1);
+          
           padding: 0;
           display: flex;
           flex-direction: column;
@@ -361,7 +361,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px);
           background-size: 20px 20px, 20px 20px;
           background-position: 0 0, 10px 10px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 0.5px solid var(--color-border-primary);
         }
         
         .briefs-signup-content {
@@ -404,7 +404,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           height: 6px;
           background-color: var(--color-brand-primary);
           border-radius: var(--radius-full);
-          border: 1px solid var(--color-bg-secondary);
+          border: 0.5px solid var(--color-border-primary);
           animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         
@@ -511,12 +511,12 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         }
         
         .briefs-ticker-section {
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-top: 0.5px solid var(--color-border-primary);
         }
         
         .briefs-tickers-section {
           padding: 2rem 1.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-top: 0.5px solid var(--color-border-primary);
         }
         
         .briefs-tickers-list {
@@ -548,8 +548,8 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         
         .briefs-ticker-item {
           padding: 0.75rem 1rem;
-          background: rgba(0, 0, 0, 0.4);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: var(--color-bg-tertiary);
+          border: 0.5px solid var(--color-border-primary);
           border-radius: 12px;
           transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
           text-decoration: none;
@@ -558,7 +558,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         }
         
         .briefs-ticker-item:hover {
-          background: rgba(0, 0, 0, 0.5);
+          background: var(--color-bg-card-hover);
           border-color: var(--color-border-secondary);
           transform: translateY(-2px);
           box-shadow: var(--shadow-md);
@@ -582,7 +582,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         /* Table of Contents Styles */
         .briefs-toc-section {
           padding: 2rem 1.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-top: 0.5px solid var(--color-border-primary);
         }
         
         .briefs-toc-nav {
@@ -619,7 +619,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         }
         
         .briefs-toc-link:hover {
-          background: rgba(0, 0, 0, 0.4);
+          background: var(--color-bg-tertiary);
           color: var(--color-text-secondary);
           transform: translateX(4px);
         }

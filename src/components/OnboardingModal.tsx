@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/Button'
 import { BRAND_COPY } from '../data/copy';
 import { useViewportHeight } from '../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../utils/viewportUtils';
 import { getOnboardingOptions } from '../utils/preferenceMapping';
+import { BullLogoImg } from './ui/BullLogo';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -23,6 +25,7 @@ interface OnboardingData {
 }
 
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onComplete }) => {
+  const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({
     investorType: '',
@@ -184,12 +187,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
   const stepContent = getStepContent();
   if (!stepContent) return null;
 
+  // Use design system variables instead of hardcoded colors
+
     return (
     <>
       <style>{`
         .onboarding-modal-backdrop {
           ${FULL_HEIGHT_BACKDROP_CSS}
-          background: #000000;
+          background: var(--color-bg-primary);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -286,7 +291,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 'var(--space-8)',
-                background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%)',
+                background: 'linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 50%, var(--color-bg-primary) 100%)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)'
               }}>
@@ -297,10 +302,15 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  backgroundImage: `
-                    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 1px)
-                  `,
+                  backgroundImage: theme === 'light'
+                    ? `
+                      radial-gradient(circle at 25% 25%, rgba(0,0,0,0.05) 1px, transparent 1px),
+                      radial-gradient(circle at 75% 75%, rgba(0,0,0,0.05) 1px, transparent 1px)
+                    `
+                    : `
+                      radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                      radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 1px)
+                    `,
                   backgroundSize: '4px 4px, 4px 4px',
                   backgroundPosition: '0 0, 2px 2px',
                   opacity: 0.3,
@@ -315,21 +325,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                    <img 
-                      src="/images/logo.png" 
-                      alt="The Bullish Brief" 
-                      style={{
-                        width: '120px',
-                        height: '120px',
-                        objectFit: 'contain',
-                      }}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                        if (nextElement) {
-                          nextElement.style.display = 'flex';
-                        }
-                      }}
+                    <BullLogoImg 
+                      width={120}
+                      height={120}
+                      alt="The Bullish Brief"
                     />
                     <div style={{
                       display: 'none',
@@ -356,7 +355,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 {/* Hero Description */}
                 <p style={{
                   fontSize: 'clamp(var(--text-2xl), 5vw, var(--text-4xl))',
-                  color: 'white',
+                  color: theme === 'light' ? 'var(--color-text-primary)' : 'white',
                   fontFamily: 'var(--font-editorial)',
                   fontWeight: 'var(--font-normal)',
                   lineHeight: '1.2',
@@ -364,7 +363,6 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                   margin: 0,
                   maxWidth: '600px',
                   textAlign: 'center',
-                  textShadow: '0 4px 8px rgba(0,0,0,0.3)',
                   marginBottom: 'var(--space-12)'
                 }}>
                   {BRAND_COPY.onboarding.welcome.description}

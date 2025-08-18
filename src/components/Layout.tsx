@@ -269,7 +269,6 @@ export const Layout: React.FC<LayoutProps> = ({
           display: flex;
           flex-direction: column;
           overflow-y: auto;
-          border-right: 0.5px solid var(--color-border-primary);
           background: var(--color-bg-primary);
           z-index: 100;
           flex-shrink: 0;

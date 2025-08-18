@@ -2,6 +2,7 @@ import React from 'react';
 import { TrendingUp } from 'lucide-react';
 import { BrandingSectionProps } from '../types/auth.types';
 import { BRAND_COPY } from '../../../data/copy';
+import { BullLogoImg } from '../../ui/BullLogo';
 
 export const BrandingSection: React.FC<BrandingSectionProps> = ({
   variant,
@@ -27,21 +28,10 @@ export const BrandingSection: React.FC<BrandingSectionProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-          <img 
-            src="/images/logo.png" 
-            alt="The Bullish Brief" 
-            style={{
-              width: `${logoSize}px`,
-              height: `${logoSize}px`,
-              objectFit: 'contain',
-            }}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-              if (nextElement) {
-                nextElement.style.display = 'flex';
-              }
-            }}
+          <BullLogoImg 
+            width={logoSize}
+            height={logoSize}
+            alt="The Bullish Brief"
           />
           <div style={{
             display: 'none',
@@ -112,21 +102,10 @@ export const BrandingSection: React.FC<BrandingSectionProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <img 
-          src="/images/logo.png" 
-          alt="The Bullish Brief" 
-          style={{
-            width: `${logoSize}px`,
-            height: `${logoSize}px`,
-            objectFit: 'contain',
-          }}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-            if (nextElement) {
-              nextElement.style.display = 'flex';
-            }
-          }}
+        <BullLogoImg 
+          width={logoSize}
+          height={logoSize}
+          alt="The Bullish Brief"
         />
         <div style={{
           display: 'none',

@@ -49,6 +49,7 @@ const CustomWidget = dynamic(() => import('../components/CustomWidget'), {
   ssr: false
 });
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { ShareSheet } from '../components/ShareSheet';
 import { CTABanner } from '../components/CTABanner';
 import { LegalFooter } from '../components/LegalFooter';
@@ -71,6 +72,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 }) => {
   const router = useRouter();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const { data: brief, isLoading, error } = useBriefBySlug(briefSlug);
   
   const handleBack = () => {
@@ -91,6 +93,12 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const readingTime = React.useMemo(() => {
     return brief?.content ? calculateReadingTime(brief.content) : 5;
   }, [brief?.content]);
+
+  // Theme-aware gradient overlay
+  const getGradientOverlay = React.useMemo(() => {
+    const baseColor = theme === 'light' ? '255, 255, 255' : '0, 0, 0';
+    return `linear-gradient(to bottom, rgba(${baseColor}, 0.3) 0%, rgba(${baseColor}, 0.6) 40%, rgba(${baseColor}, 0.85) 70%, rgba(${baseColor}, 0.95) 85%, rgba(${baseColor}, 1) 100%)`;
+  }, [theme]);
   
   // Handle scroll for header background
   React.useEffect(() => {
@@ -310,7 +318,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 40%, rgba(0, 0, 0, 0.85) 70%, rgba(0, 0, 0, 0.95) 85%, rgba(0, 0, 0, 1) 100%)',
+            background: getGradientOverlay,
             zIndex: 1
           }} />
           
@@ -321,7 +329,10 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: `
+            backgroundImage: theme === 'light' ? `
+              radial-gradient(circle at 25% 25%, rgba(0,0,0,0.02) 1px, transparent 1px),
+              radial-gradient(circle at 75% 75%, rgba(0,0,0,0.02) 1px, transparent 1px)
+            ` : `
               radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px),
               radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px)
             `,

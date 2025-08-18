@@ -39,8 +39,7 @@ export const UserRow: React.FC<UserRowProps> = ({
         justifyContent: 'space-between',
         padding: size === 'sm' ? 'var(--space-2)' : 'var(--space-3)',
         borderRadius: 'var(--radius-lg)',
-        background: 'rgba(20, 20, 20, 0.2)',
-        border: '1px solid rgba(31, 31, 31, 0.3)',
+        border: '0.5px solid var(--color-border-primary)',
         cursor: isClickable ? 'pointer' : 'default',
         transition: 'all var(--transition-base)',
         ...(isClickable && {
@@ -53,14 +52,14 @@ export const UserRow: React.FC<UserRowProps> = ({
       className={className}
       onMouseEnter={(e) => {
         if (isClickable) {
-          e.currentTarget.style.background = 'rgba(20, 20, 20, 0.3)';
-          e.currentTarget.style.borderColor = 'rgba(31, 31, 31, 0.5)';
+          e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+          e.currentTarget.style.borderColor = 'var(--color-border-primary)';
         }
       }}
       onMouseLeave={(e) => {
         if (isClickable) {
-          e.currentTarget.style.background = 'rgba(20, 20, 20, 0.2)';
-          e.currentTarget.style.borderColor = 'rgba(31, 31, 31, 0.3)';
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.borderColor = 'var(--color-border-primary)';
         }
       }}
     >

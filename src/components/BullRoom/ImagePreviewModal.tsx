@@ -36,7 +36,7 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.95)',
+      background: 'var(--color-bg-primary)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -63,7 +63,6 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
           border: '1px solid var(--color-border-primary)',
           borderRadius: 'var(--radius-xl)',
           padding: 'var(--space-1) var(--space-1)',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
           backdropFilter: 'blur(8px)',
           transition: 'all var(--transition-base)'
         }}>
@@ -104,7 +103,6 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
             maxHeight: '100%',
             objectFit: 'contain',
             borderRadius: 'var(--radius-lg)',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
           }}
         />
       </div>

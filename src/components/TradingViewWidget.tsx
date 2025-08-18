@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, memo } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface TradingViewWidgetProps {
   symbol?: string;
@@ -13,24 +14,34 @@ interface TradingViewWidgetProps {
  */
 const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({ symbol = "CSE:SPTZ" }) => {
   const container = useRef<HTMLDivElement | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!container.current) return;
-    // Remove any previous widget scripts to avoid duplicates
+    
+    // Clear any existing content completely
     container.current.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
+    
     const script = document.createElement('script');
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js';
     script.type = 'text/javascript';
     script.async = true;
     script.innerHTML = `{
       "symbol": "${symbol}",
-      "colorTheme": "dark",
+      "colorTheme": "${theme === 'dark' ? 'dark' : 'light'}",
       "isTransparent": true,
       "locale": "en",
       "width": "100%"
     }`;
     container.current.appendChild(script);
-  }, []);
+
+    // Cleanup function
+    return () => {
+      if (container.current) {
+        container.current.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
+      }
+    };
+  }, [symbol, theme]);
 
   return (
     <div className="tradingview-widget-container" ref={container} style={{ width: '100%' }}>

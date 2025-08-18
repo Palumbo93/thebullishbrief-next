@@ -4,6 +4,7 @@ import { BullRoom } from '../../lib/database.aliases';
 import { BullRoomMessage } from '../../types/bullRoom.types';
 import { UserRow } from '../ui/UserRow';
 import { UserProfilePopUp } from '../ui/UserProfilePopUp';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface RoomInfoSidebarProps {
   room: BullRoom;
@@ -11,12 +12,15 @@ interface RoomInfoSidebarProps {
 }
 
 export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages }) => {
+  const { theme } = useTheme();
   const [selectedUser, setSelectedUser] = useState<{
     userId: string;
     username: string;
     profile_image?: string | null;
   } | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | undefined>();
+
+  // Use design system variables instead of hardcoded colors
 
 
   // Calculate active members from messages
@@ -78,7 +82,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
 
   return (
     <div style={{
-      borderLeft: '0.5px solid rgba(31, 31, 31, 1)',
+      borderLeft: '0.5px solid var(--color-border-primary)',
       position: 'relative',
       height: '100%'
     }}>
@@ -128,7 +132,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
           </div>
           <p style={{
             fontSize: 'var(--text-sm)',
-            color: 'var(--color-text-muted)',
+            color: 'var(--color-text-primary)',
             lineHeight: 'var(--leading-relaxed)',
             margin: 0
           }}>
@@ -178,8 +182,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
                   <div key={index} style={{
                     padding: 'var(--space-2) var(--space-3)',
                     borderRadius: 'var(--radius-md)',
-                    background: 'rgba(20, 20, 20, 0.3)',
-                    border: '1px solid rgba(31, 31, 31, 0.4)'
+                    border: '0.5px solid var(--color-border-primary)'
                   }}>
                     <div style={{
                       display: 'flex',
@@ -262,8 +265,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
             <div style={{
               padding: 'var(--space-3)',
               borderRadius: 'var(--radius-lg)',
-              background: 'rgba(20, 20, 20, 0.2)',
-              border: '1px solid rgba(31, 31, 31, 0.3)',
+              border: '0.5px solid var(--color-border-primary)',
               textAlign: 'center'
             }}>
               <p style={{
@@ -282,7 +284,7 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
       <div style={{ 
         marginTop: 'auto', 
         paddingTop: 'var(--space-6)',
-        borderTop: '1px solid rgba(31, 31, 31, 0.3)'
+        borderTop: '1px solid var(--color-border-secondary)'
       }}>
         <p style={{
           fontSize: 'var(--text-xs)',

@@ -6,12 +6,14 @@ import { usePathname } from 'next/navigation';
 import { LogIn, UserPlus, LogOut, Brain, Bookmark } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../hooks/useToast';
 import { HomeIcon } from './ui/home';
 import { SearchIcon } from './ui/search';
 import { MessageSquareMoreIcon } from './ui/message-square-more';
 import { FoldersIcon } from './ui/folders';
 import { ShieldCheckIcon } from './ui/shield-check';
+import { BullLogoImg } from './ui/BullLogo';
 
 interface SidebarProps {
   navItems?: Array<{ id: string; label: string; icon: any; active?: boolean }>;
@@ -28,6 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   // Debug logging
   const { user, signOut } = useAuth();
+  const { theme } = useTheme();
   const toast = useToast();
   const pathname = usePathname();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -214,7 +217,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           white-space: nowrap;
           z-index: 10001;
           border: 0.5px solid var(--color-border-primary);
-          box-shadow: var(--shadow-lg);
           opacity: 0;
           animation: fadeIn 0.2s ease forwards;
         }
@@ -404,6 +406,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           flex-shrink: 0;
         }
 
+
+        }
+          content: attr(data-label);
+          position: absolute;
+          left: 100%;
+          top: 50%;
+          transform: translateY(-50%);
+          margin-left: var(--space-3);
+          color: var(--color-text-primary);
+          padding: var(--space-2) var(--space-3);
+          border-radius: var(--radius-lg);
+          font-size: var(--text-sm);
+          font-weight: var(--font-medium);
+          white-space: nowrap;
+          z-index: 10001;
+          border: 0.5px solid var(--color-border-primary);
+          box-shadow: var(--shadow-lg);
+          background: var(--color-bg-card);
+          opacity: 0;
+          animation: fadeIn 0.2s ease forwards;
+        }
+
         /* Tablet Layout */
         @media (max-width: 1024px) {
           .nav-left {
@@ -435,6 +459,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             height: 44px;
             font-size: var(--text-xs);
           }
+
+
         }
 
         /* Mobile Layout */
@@ -483,6 +509,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 
 
+
+
         /* Mobile Layout - Hide legal links on mobile */
         @media (max-width: 768px) {
           .legal-section {
@@ -496,7 +524,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Logo - Desktop Only */}
         <div className="nav-logo">
           <Link href="/" className="nav-logo-link" aria-label="Home">
-            <img src="/images/logo.png" alt="Logo" />
+            <BullLogoImg width={40} height={40} alt="Logo" />
           </Link>
         </div>
 
@@ -521,6 +549,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
         </div>
+
 
 
         {/* Authentication Section */}

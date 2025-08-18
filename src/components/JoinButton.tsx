@@ -25,10 +25,9 @@ const JoinButton: React.FC<JoinButtonProps> = ({ onSignUpClick }) => {
           top: 0;
           z-index: 10;
           background: var(--color-bg-primary);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 0.5px solid var(--color-border-primary);
           padding: 1rem 1.5rem;
           backdrop-filter: blur(10px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .join-button {

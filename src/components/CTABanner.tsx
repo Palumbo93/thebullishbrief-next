@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from './ui/Button';
+import { BullLogoImg } from './ui/BullLogo';
 
 interface CTABannerProps {
   onCreateAccountClick?: () => void;
@@ -64,21 +65,10 @@ export const CTABanner: React.FC<CTABannerProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <img 
-              src="/images/logo.png" 
-              alt="The Bullish Brief" 
-              style={{
-                width: '48px',
-                height: '48px',
-                objectFit: 'contain',
-              }}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                if (nextElement) {
-                  nextElement.style.display = 'flex';
-                }
-              }}
+            <BullLogoImg 
+              width={48}
+              height={48}
+              alt="The Bullish Brief"
             />
             <div style={{
               display: 'none',

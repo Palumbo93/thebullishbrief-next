@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { getSafeAreaInsetPadding } from '../../utils/viewportUtils';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface BullRoomMobileLayoutProps {
   children?: React.ReactNode;
@@ -28,6 +29,7 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
   isInfoPanelOpen = false,
   isEditing = false
 }) => {
+  const { theme } = useTheme();
   const [messageInputHeight, setMessageInputHeight] = useState(0);
   const [typingIndicatorHeight, setTypingIndicatorHeight] = useState(0);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -78,6 +80,10 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
   const headerHeight = header ? 60 : 0; // Fixed header height
   const totalBottomSpace = isEditing ? typingIndicatorHeight : messageInputHeight + typingIndicatorHeight;
 
+  // Theme-aware background colors
+  const overlayBackground = theme === 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.95)';
+  const infoPanelBackground = theme === 'light' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
   // Main mobile container - Takes full viewport control
   const mobileContainerStyle: React.CSSProperties = {
     position: 'fixed',
@@ -121,7 +127,7 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
     bottom: keyboardHeight, // Account for keyboard
     left: 0,
     right: 0,
-    background: 'rgba(0, 0, 0, 0.95)',
+    background: overlayBackground,
     backdropFilter: 'blur(4px)',
     zIndex: 50,
     ...getSafeAreaInsetPadding()
@@ -135,7 +141,7 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
     right: 0,
     paddingLeft: 'var(--space-4)',
     paddingBottom: 'var(--space-1)',
-    background: 'rgba(0, 0, 0, 0.95)',
+    background: overlayBackground,
     backdropFilter: 'blur(4px)',
     zIndex: 150,
   };
@@ -147,7 +153,7 @@ export const BullRoomMobileLayout: React.FC<BullRoomMobileLayoutProps> = ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0, 0, 0, 0.8)',
+    background: infoPanelBackground,
     zIndex: 100,
     display: isInfoPanelOpen ? 'flex' : 'none',
     alignItems: 'flex-end'

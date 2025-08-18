@@ -79,6 +79,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Performance: Preconnect to critical origins */}
+        <link rel="preconnect" href="https://potsdvyvpwuycgocpivf.supabase.co" />
+        <link rel="preconnect" href="https://s3.tradingview.com" />
+        <link rel="preconnect" href="https://www.tradingview-widget.com" />
+        <link rel="preconnect" href="https://s3-symbol-logo.tradingview.com" />
+        
         {/* Datafa.st Analytics */}
         <script 
           async 
@@ -93,7 +99,6 @@ export default function RootLayout({
             {children}
           </AppContent>
         </ClientProviders>
-        <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
       </body>
     </html>
   )

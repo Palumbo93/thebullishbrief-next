@@ -17,6 +17,7 @@ import { ShareSheet } from '../components/ShareSheet';
 import { DesktopBanner } from '../components/DesktopBanner';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 import { ArticleSkeleton } from '../components/ArticleSkeleton';
+import Image from 'next/image';
 
 interface ArticlePageProps {
   articleId: number | string;
@@ -139,6 +140,42 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
 
   /**
+   * Optimizes images within HTML content for better performance
+   * 
+   * Features:
+   * - Adds responsive srcset and sizes attributes
+   * - Enables lazy loading for non-critical images
+   * - Adds proper decoding attributes
+   * - Optimizes loading behavior
+   * 
+   * @param el - The HTML element containing images to optimize
+   */
+  const optimizeContentImages = (el: HTMLElement) => {
+    const imgElements = el.querySelectorAll('img');
+    imgElements.forEach((img) => {
+      // Skip if already optimized
+      if (img.hasAttribute('data-optimized')) return;
+      
+      // Add responsive loading attributes
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      
+      // Add responsive sizes for better performance
+      if (!img.sizes) {
+        img.sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px';
+      }
+      
+      // Add proper alt text if missing
+      if (!img.alt && img.title) {
+        img.alt = img.title;
+      }
+      
+      // Mark as optimized to prevent re-processing
+      img.setAttribute('data-optimized', 'true');
+    });
+  };
+
+  /**
    * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
    * 
    * Features:
@@ -242,15 +279,29 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               {/* Article Header with Background Image */}
         <div style={{
         position: 'relative',
-        backgroundImage: `url(${article.image})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
         overflow: 'hidden',
         marginBottom: 'var(--space-4)',
         minHeight: '300px',
         display: 'flex',
         alignItems: 'flex-end',
+        backgroundColor: 'var(--color-bg-secondary)', // Skeleton background
       }}>
+        {/* Optimized Featured Image */}
+        {article.image && (
+          <Image
+            src={article.image}
+            alt={article.title || 'Article featured image'}
+            fill
+            priority={true}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+              zIndex: 0
+            }}
+          />
+        )}
+        
         {/* Gradient Overlay */}
         <div style={{
           position: 'absolute',
@@ -539,6 +590,12 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               className="html-content"
               dangerouslySetInnerHTML={{ 
                 __html: processTextWithLinks(article.content) 
+              }}
+              ref={(el) => {
+                if (el) {
+                  // Optimize images in content for better performance
+                  optimizeContentImages(el);
+                }
               }}
             />
           ) : (

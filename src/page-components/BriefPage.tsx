@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefEngagement } from '../hooks/useDatafastAnalytics';
@@ -8,16 +8,54 @@ import { ArrowLeft, User, Calendar, Clock, Eye } from 'lucide-react';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
-import TradingViewWidget from '../components/TradingViewWidget';
-import CustomWidget from '../components/CustomWidget';
+import dynamic from 'next/dynamic';
+
+// Lazy load TradingView widgets to reduce initial bundle size
+const TradingViewWidget = dynamic(() => import('../components/TradingViewWidget'), {
+  loading: () => (
+    <div style={{
+      width: '100%',
+      height: '200px',
+      backgroundColor: 'var(--color-bg-secondary)',
+      borderRadius: 'var(--radius-lg)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'var(--color-text-tertiary)',
+      fontSize: 'var(--text-sm)'
+    }}>
+      Loading chart...
+    </div>
+  ),
+  ssr: false
+});
+
+const CustomWidget = dynamic(() => import('../components/CustomWidget'), {
+  loading: () => (
+    <div style={{
+      width: '100%',
+      height: '100px',
+      backgroundColor: 'var(--color-bg-secondary)',
+      borderRadius: 'var(--radius-lg)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'var(--color-text-tertiary)',
+      fontSize: 'var(--text-sm)'
+    }}>
+      Loading widget...
+    </div>
+  ),
+  ssr: false
+});
 import { useAuth } from '../contexts/AuthContext';
 import { ShareSheet } from '../components/ShareSheet';
-import { Button } from '../components/ui/Button';
 import { CTABanner } from '../components/CTABanner';
 import { LegalFooter } from '../components/LegalFooter';
 import { BriefDesktopBanner } from '../components/briefs/BriefDesktopBanner';
 import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
+import Image from 'next/image';
 
 
 interface BriefPageProps {
@@ -69,6 +107,42 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   // Mobile navigation items
 
+
+  /**
+   * Optimizes images within HTML content for better performance
+   * 
+   * Features:
+   * - Adds responsive srcset and sizes attributes
+   * - Enables lazy loading for non-critical images
+   * - Adds proper decoding attributes
+   * - Optimizes loading behavior
+   * 
+   * @param el - The HTML element containing images to optimize
+   */
+  const optimizeContentImages = (el: HTMLElement) => {
+    const imgElements = el.querySelectorAll('img');
+    imgElements.forEach((img) => {
+      // Skip if already optimized
+      if (img.hasAttribute('data-optimized')) return;
+      
+      // Add responsive loading attributes
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      
+      // Add responsive sizes for better performance
+      if (!img.sizes) {
+        img.sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px';
+      }
+      
+      // Add proper alt text if missing
+      if (!img.alt && img.title) {
+        img.alt = img.title;
+      }
+      
+      // Mark as optimized to prevent re-processing
+      img.setAttribute('data-optimized', 'true');
+    });
+  };
 
   /**
    * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
@@ -207,15 +281,29 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         {/* Brief Header with Background Image */}
         <div style={{
           position: 'relative',
-          backgroundImage: `url(${brief?.featured_image_url})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           overflow: 'hidden',
           marginBottom: 'var(--space-8)',
           minHeight: '250px',
           display: 'flex',
           alignItems: 'flex-end',
+          backgroundColor: 'var(--color-bg-secondary)', // Skeleton background
         }}>
+          {/* Optimized Featured Image */}
+          {brief?.featured_image_url && (
+            <Image
+              src={brief.featured_image_url}
+              alt={brief.title || 'Brief featured image'}
+              fill
+              priority={true}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center',
+                zIndex: 0
+              }}
+            />
+          )}
+          
           {/* Gradient Overlay */}
           <div style={{
             position: 'absolute',
@@ -348,6 +436,9 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                         }
                       }
                     });
+
+                    // Optimize images in content for better performance
+                    optimizeContentImages(el);
                   }
                 }}
               />

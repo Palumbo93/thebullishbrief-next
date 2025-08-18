@@ -9,7 +9,27 @@ import BriefsActionPanel from './briefs/BriefsActionPanel';
 import { Sidebar } from './Sidebar';
 import { MobileHeader } from './mobile/MobileHeader';
 import { MobileSidebarDrawer } from './MobileSidebarDrawer';
-import { TickerTapeWidget } from './TickerTapeWidget';
+import dynamic from 'next/dynamic';
+
+// Lazy load TickerTapeWidget to reduce initial bundle size
+const TickerTapeWidget = dynamic(() => import('./TickerTapeWidget').then(mod => ({ default: mod.TickerTapeWidget })), {
+  loading: () => (
+    <div style={{
+      width: '100%',
+      height: '40px',
+      backgroundColor: 'var(--color-bg-secondary)',
+      borderRadius: 'var(--radius-md)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'var(--color-text-tertiary)',
+      fontSize: 'var(--text-xs)'
+    }}>
+      Loading ticker...
+    </div>
+  ),
+  ssr: false
+});
 import { useAuth } from '../contexts/AuthContext';
 import { useAuthModal } from '../contexts/AuthModalContext';
 import { getMobileHeaderConfigForRoute, MobileHeaderFactoryProps } from '../utils/mobileHeaderConfigs';

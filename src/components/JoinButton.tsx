@@ -11,7 +11,7 @@ const JoinButton: React.FC<JoinButtonProps> = ({ onSignUpClick }) => {
       <div className="join-button-container">
         <Button
           onClick={onSignUpClick}
-          variant="secondary"
+          variant="primary"
           fullWidth={true}
           className="join-button"
         >

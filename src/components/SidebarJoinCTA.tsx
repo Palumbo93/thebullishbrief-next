@@ -63,7 +63,7 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
           {showButton && (
             <Button
               onClick={onSignUpClick}
-              variant="secondary"
+              variant="primary"
               fullWidth={true}
             >
               Join Free Now

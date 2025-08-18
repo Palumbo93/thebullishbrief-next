@@ -33,7 +33,7 @@ export const useAuthSubmit = (): UseAuthSubmitReturn => {
         setError(userFriendlyError);
         toast.error(userFriendlyError);
       } else {
-        toast.success('Check your email for the verification code!');
+        toast.success('Check your email for the verification code! It may take a minute to arrive.');
       }
     } catch (err) {
       const userFriendlyError = mapContextualAuthError(err, 'signin');
@@ -65,7 +65,7 @@ export const useAuthSubmit = (): UseAuthSubmitReturn => {
         setError(userFriendlyError);
         toast.error(userFriendlyError);
       } else {
-        toast.success('Check your email for the verification code!');
+        toast.success('Check your email for the verification code! It may take a minute to arrive.');
       }
     } catch (err) {
       const userFriendlyError = mapContextualAuthError(err, 'signup');

@@ -148,8 +148,8 @@ export default async function BriefPageWrapper({ params }: Props) {
       height: 630,
       alt: rawBrief.featured_image_alt || rawBrief.title,
     },
-    datePublished: rawBrief.published_at || rawBrief.created_at,
-    dateModified: rawBrief.updated_at || rawBrief.created_at,
+    datePublished: rawBrief.published_at || rawBrief.created_at || new Date().toISOString(),
+    dateModified: rawBrief.updated_at || rawBrief.created_at || new Date().toISOString(),
     publisher: {
       '@type': 'Organization',
       name: 'The Bullish Brief',

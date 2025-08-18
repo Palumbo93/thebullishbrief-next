@@ -306,8 +306,8 @@ export const generateBriefStructuredData = (brief: Brief, baseUrl: string, viewC
         "https://linkedin.com/company/thebullishbrief"
       ]
     },
-    "datePublished": new Date(brief.published_at || brief.created_at).toISOString(),
-    "dateModified": new Date(brief.updated_at || brief.created_at).toISOString(),
+    "datePublished": new Date(brief.published_at || brief.created_at || new Date()).toISOString(),
+    "dateModified": new Date(brief.updated_at || brief.created_at || new Date()).toISOString(),
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": briefUrl

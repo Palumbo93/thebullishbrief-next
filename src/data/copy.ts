@@ -13,7 +13,7 @@ export const BRAND_COPY = {
       title: "Always Ahead. Always Bullish.",
       features: [
         "Real-time market discussions with serious traders",
-        "Elite AI prompts for sharper research and faster execution",
+        "Elite AI prompts to get the most out of LLMs",
         "Free to join, no subscription required"
       ]
     },

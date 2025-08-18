@@ -177,7 +177,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 'var(--space-2)',
-                  fontSize: 'var(--text-xs)',
+                  fontSize: 'var(--text-sm)',
+                  textAlign: 'center',
                   color: 'var(--color-text-secondary)'
                 }}>
                   <span style={{ color: 'var(--color-success)', fontSize: '12px', fontWeight: 'bold' }}>✓</span>

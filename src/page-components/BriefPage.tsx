@@ -55,6 +55,8 @@ import { LegalFooter } from '../components/LegalFooter';
 import { BriefDesktopBanner } from '../components/briefs/BriefDesktopBanner';
 import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
+import ScrollingPopup from '../components/ScrollingPopup';
+import SidebarJoinCTA from '../components/SidebarJoinCTA';
 import Image from 'next/image';
 
 
@@ -464,6 +466,24 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
       </div>
       )}
+      
+      {/* Mobile Scrolling Popup - Only shows on mobile */}
+      <ScrollingPopup
+        triggerScrollPercentage={25}
+        hideAfterScrollPercentage={75}
+        showDelay={0}
+      >
+        {(dismissPopup) => (
+          <SidebarJoinCTA 
+            onSignUpClick={() => {
+              onCreateAccountClick?.();
+              dismissPopup();
+            }}
+            showButton={true}
+          />
+        )}
+      </ScrollingPopup>
+      
       
       {/* CTA Banner */}
       <CTABanner 

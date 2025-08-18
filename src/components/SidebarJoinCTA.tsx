@@ -95,15 +95,15 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
         }
         
         .briefs-logo-img {
-          width: 32px;
-          height: 32px;
+          width: 40px;
+          height: 40px;
           object-fit: contain;
         }
         
         .briefs-logo-fallback {
           display: none;
-          width: 32px;
-          height: 32px;
+          width: 40px;
+          height: 40px;
           align-items: center;
           justify-content: center;
           position: relative;
@@ -135,7 +135,7 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
         .briefs-signup-title {
           font-family: var(--font-editorial);
           font-weight: var(--font-normal);
-          font-size: var(--text-lg);
+          font-size: var(--text-xl);
           color: var(--color-text-primary);
           margin: 0 0 var(--space-2) 0;
           line-height: 1.2;
@@ -162,7 +162,7 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
           display: flex;
           align-items: center;
           gap: var(--space-2);
-          font-size: var(--text-xs);
+          font-size: var(--text-sm);
           color: var(--color-text-secondary);
         }
         

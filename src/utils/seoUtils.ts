@@ -1,4 +1,5 @@
 import { Article } from '../hooks/useArticles';
+import { Brief } from '../lib/database.aliases';
 
 /**
  * SEO utility functions for generating sitemaps, RSS feeds, and meta tags
@@ -215,5 +216,154 @@ export const generateArticleStructuredData = (article: Article, baseUrl: string,
       "@type": "Thing",
       "name": tag
     }))
+  };
+};
+
+/**
+ * BRIEF-SPECIFIC SEO UTILITIES
+ */
+
+/**
+ * Generate meta keywords from brief tickers, company name, and content
+ */
+export const generateBriefMetaKeywords = (brief: Brief): string => {
+  const keywords = [
+    brief.company_name,
+    ...(Array.isArray(brief.tickers) ? brief.tickers : []),
+    'investor brief',
+    'financial analysis',
+    'market insights',
+    'bullish brief',
+    'finance',
+    'investing',
+    'stocks',
+    'trading'
+  ].filter(Boolean);
+  
+  return keywords.join(', ');
+};
+
+/**
+ * Generate brief excerpt for meta description
+ */
+export const generateBriefMetaDescription = (brief: Brief, maxLength: number = 160): string => {
+  if (brief.subtitle && brief.subtitle.length <= maxLength) {
+    return brief.subtitle;
+  }
+  
+  if (brief.disclaimer && brief.disclaimer.length <= maxLength) {
+    return brief.disclaimer;
+  }
+  
+  if (brief.content) {
+    const textContent = brief.content.replace(/<[^>]*>/g, '').trim();
+    if (textContent.length <= maxLength) {
+      return textContent;
+    }
+    return textContent.substring(0, maxLength - 3) + '...';
+  }
+  
+  return `${brief.title} - Comprehensive investor brief and financial analysis from The Bullish Brief.`;
+};
+
+/**
+ * Generate canonical URL for brief
+ */
+export const generateBriefCanonicalUrl = (brief: Brief, baseUrl: string): string => {
+  return `${baseUrl}/briefs/${brief.slug || brief.id}`;
+};
+
+/**
+ * Generate structured data for brief
+ */
+export const generateBriefStructuredData = (brief: Brief, baseUrl: string, viewCount?: number) => {
+  const briefUrl = generateBriefCanonicalUrl(brief, baseUrl);
+  
+  return {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": brief.title,
+    "description": generateBriefMetaDescription(brief),
+    "image": {
+      "@type": "ImageObject",
+      "url": brief.featured_image_url || `${baseUrl}/images/logo.png`,
+      "width": 1200,
+      "height": 630,
+      "alt": brief.featured_image_alt || brief.title
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Bullish Brief",
+      "url": baseUrl,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${baseUrl}/images/logo.png`,
+        "width": 200,
+        "height": 60
+      },
+      "sameAs": [
+        "https://twitter.com/thebullishbrief",
+        "https://linkedin.com/company/thebullishbrief"
+      ]
+    },
+    "datePublished": new Date(brief.published_at || brief.created_at).toISOString(),
+    "dateModified": new Date(brief.updated_at || brief.created_at).toISOString(),
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": briefUrl
+    },
+    "url": briefUrl,
+    "articleSection": "Investor Briefs",
+    "keywords": generateBriefMetaKeywords(brief),
+    "wordCount": brief.content?.length || 0,
+    "articleBody": brief.content || "",
+    "isAccessibleForFree": true,
+    "isPartOf": {
+      "@type": "CreativeWork",
+      "name": "The Bullish Brief",
+      "url": baseUrl
+    },
+    "about": brief.company_name ? {
+      "@type": "Corporation",
+      "name": brief.company_name,
+      "tickerSymbol": Array.isArray(brief.tickers) ? brief.tickers[0] : undefined
+    } : undefined,
+    "interactionStatistic": [
+      {
+        "@type": "InteractionCounter",
+        "interactionType": "https://schema.org/ReadAction",
+        "userInteractionCount": viewCount || brief.view_count || 0
+      }
+    ]
+  };
+};
+
+/**
+ * Generate breadcrumb structured data for brief
+ */
+export const generateBriefBreadcrumbData = (brief: Brief, baseUrl: string) => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": baseUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Investor Briefs",
+        "item": `${baseUrl}/briefs`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": brief.title,
+        "item": generateBriefCanonicalUrl(brief, baseUrl)
+      }
+    ]
   };
 };

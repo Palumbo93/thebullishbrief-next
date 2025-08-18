@@ -108,7 +108,7 @@ Misc:
     
     [] On window focus fetch latest and subscribe?
 
-    [] Layout doesnt adjust when Article Comments is hiden
+    ✔ Layout doesnt adjust when Article Comments is hiden @done(25-08-16 23:21)
 
     [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
 

@@ -147,13 +147,24 @@ export const getOnboardingOptions = (type: keyof typeof ONBOARDING_OPTIONS) => {
 };
 
 /**
- * Check if a room slug matches user preferences
+ * Check if a room slug matches user preferences or admin status
  * @param roomSlug - The room slug to check
  * @param preferences - User preferences object
+ * @param isAdmin - Whether the user is an admin (optional)
  * @returns true if the room should be visible to the user
  */
-export const isRoomVisibleToUser = (roomSlug: string, preferences: any): boolean => {
-  // General room is always visible
+export const isRoomVisibleToUser = (roomSlug: string, preferences: any, isAdmin?: boolean): boolean => {
+  // Admins can see ALL rooms
+  if (isAdmin) {
+    return true;
+  }
+
+  // Admin room is only visible to admins
+  if (roomSlug === 'admin') {
+    return false;
+  }
+
+  // General room is always visible to non-admins
   if (roomSlug === 'general') {
     return true;
   }

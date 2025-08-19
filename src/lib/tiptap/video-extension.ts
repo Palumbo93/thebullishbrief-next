@@ -61,12 +61,10 @@ export const Video = Node.create<VideoOptions>({
   },
 
   parseHTML() {
-    console.log('🔄 Video extension parseHTML called');
     return [
       {
         tag: 'video',
         getAttrs: (node) => {
-          console.log('🔄 Video extension parsing video tag:', node);
           if (typeof node === 'string') return false;
           const video = node as HTMLElement;
           return {
@@ -83,7 +81,6 @@ export const Video = Node.create<VideoOptions>({
       {
         tag: 'div[data-video]',
         getAttrs: (node) => {
-          console.log('🔄 Video extension parsing div[data-video]:', node);
           if (typeof node === 'string') return false;
           const div = node as HTMLElement;
           const video = div.querySelector('video');
@@ -130,7 +127,6 @@ export const Video = Node.create<VideoOptions>({
 
   renderHTML({ HTMLAttributes }) {
     const { src, title, width, height, controls, autoplay, muted, loop, poster } = HTMLAttributes;
-    console.log('🔄 Video extension renderHTML called with:', { src, title, width, height, controls, autoplay, muted, loop });
     
     // Check if it's a YouTube URL
     const youtubeMatch = src?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
@@ -257,7 +253,6 @@ export const Video = Node.create<VideoOptions>({
       setVideo:
         (options) =>
         ({ commands }) => {
-          console.log('🔄 Video extension setVideo called with:', options);
           return commands.insertContent({
             type: this.name,
             attrs: options,

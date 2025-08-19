@@ -65,7 +65,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick
@@ -86,7 +85,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick
@@ -104,7 +102,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick
@@ -164,7 +161,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick
@@ -185,7 +181,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick
@@ -206,7 +201,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick
@@ -224,7 +218,6 @@ export const createMobileHeaderConfig = {
       showMenu: true,
       logo: {
         type: 'main',
-        src: '/images/logo.png',
         alt: 'The Bullish Brief Logo',
         fallback: 'TB',
         onClick: props.onLogoClick

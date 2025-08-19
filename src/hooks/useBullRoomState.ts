@@ -15,7 +15,7 @@ interface FileUpload {
   error?: string;
 }
 
-export const useBullRoomState = (roomSlug?: string) => {
+export const useBullRoomState = (roomSlug?: string, isMuted: boolean = false) => {
   const router = useRouter();
   const selectedRoomSlug = roomSlug || 'general';
   const { user } = useAuth();
@@ -55,7 +55,7 @@ export const useBullRoomState = (roomSlug?: string) => {
   } = useBullRoomMessagesInfinite(currentRoom?.id || '');
 
   // Message creation mutation
-  const createMessageMutation = useCreateMessage();
+  const createMessageMutation = useCreateMessage(isMuted);
 
   // Auto-redirect to general room if no specific room is provided
   const handleRoomRedirect = () => {

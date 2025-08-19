@@ -45,7 +45,6 @@ export function useUploadSession() {
         for (const file of session.uploadedFiles) {
           await deleteImage(file.bucket, file.path);
         }
-        console.log(`Cleaned up ${session.uploadedFiles.length} uploaded files from session ${session.sessionId}`);
       } catch (error) {
         console.error('Failed to cleanup upload session:', error);
       }

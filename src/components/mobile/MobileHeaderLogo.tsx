@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { BullLogoImg } from '../ui/BullLogo';
 
 interface MobileHeaderLogoProps {
   type: 'main' | 'company';
@@ -113,7 +114,12 @@ export const MobileHeaderLogo: React.FC<MobileHeaderLogoProps> = ({
       tabIndex={onClick ? 0 : undefined}
       aria-label={alt || `${type} logo`}
     >
-      {shouldShowImage ? (
+      {type === 'main' ? (
+        <BullLogoImg
+          style={getImageStyles()}
+          alt={alt || 'The Bullish Brief Logo'}
+        />
+      ) : shouldShowImage ? (
         <img
           src={src}
           alt={alt || `${type} logo`}

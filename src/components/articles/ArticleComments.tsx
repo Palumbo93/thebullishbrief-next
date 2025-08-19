@@ -62,13 +62,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
   const isOwnComment = comment.user_id === currentUserId;
   const isReplying = replyingTo === comment.id;
 
-  // Debug: Log reply detection
-  useEffect(() => {
-    if (comment.replies && comment.replies.length > 0) {
-      console.log(`CommentItem ${comment.id} detected ${comment.replies.length} replies`);
-    }
-  }, [comment.replies]);
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -346,18 +339,6 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
     isLoading: commentsLoading, 
     error: commentsError 
   } = useArticleComments(articleId, isExpanded);
-
-  // Debug: Log the comments structure
-  useEffect(() => {
-    if (comments.length > 0) {
-      console.log('Comments structure:', comments);
-      comments.forEach(comment => {
-        if (comment.replies && comment.replies.length > 0) {
-          console.log(`Comment ${comment.id} has ${comment.replies.length} replies:`, comment.replies);
-        }
-      });
-    }
-  }, [comments]);
 
   // Mutations
   const createComment = useCreateComment();
@@ -752,7 +733,6 @@ export const ArticleComments: React.FC<ArticleCommentsProps> = ({
           </p>
           <button 
             onClick={() => {
-              console.log('Sign In button clicked in ArticleComments');
               onCreateAccountClick?.();
             }}
             className="btn btn-primary" 

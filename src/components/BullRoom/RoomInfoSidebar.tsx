@@ -284,7 +284,6 @@ export const RoomInfoSidebar: React.FC<RoomInfoSidebarProps> = ({ room, messages
       <div style={{ 
         marginTop: 'auto', 
         paddingTop: 'var(--space-6)',
-        borderTop: '1px solid var(--color-border-secondary)'
       }}>
         <p style={{
           fontSize: 'var(--text-xs)',

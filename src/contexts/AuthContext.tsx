@@ -136,7 +136,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // Manually update auth state since auth state listener is disabled
         if (data?.user) {
-          console.log('OTP verification successful, manually updating auth state');
           setUser({ ...data.user, isAdmin: false });
           setLoading(false);
           
@@ -245,7 +244,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
       
       if (error) {
-        console.log('Could not fetch user profile:', error);
+        console.error('Could not fetch user profile:', error);
         return;
       }
       
@@ -296,16 +295,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     getInitialSession();
-
-    // Disable auth state listener completely to prevent window focus refresh issues
-    // We'll rely on manual session checks and explicit auth actions
-    console.log('Auth state listener disabled to prevent window focus refresh issues');
-    
-    // const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-    //   // Disabled to prevent window focus refresh issues
-    // });
-    
-
 
     // No cleanup needed since auth state listener is disabled
   }, []);

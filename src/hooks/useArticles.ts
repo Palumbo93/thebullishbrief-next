@@ -183,13 +183,6 @@ export const fetchArticleBySlug = async (slug: string): Promise<Article> => {
     throw new Error('Database connection not configured');
   }
 
-  console.log('fetchArticleBySlug Debug:', {
-    slug,
-    environment: process.env.NODE_ENV,
-    hasSupabaseCredentials: !!hasSupabaseCredentials,
-    timestamp: new Date().toISOString()
-  });
-
   // Fetch single article with related data
   const { data: articleData, error: articleError } = await supabase
     .from('articles')
@@ -204,13 +197,6 @@ export const fetchArticleBySlug = async (slug: string): Promise<Article> => {
     .eq('slug', slug)
     .eq('status', 'published')
     .single();
-
-  console.log('fetchArticleBySlug Result:', {
-    slug,
-    articleData: articleData ? { id: articleData.id, title: articleData.title, status: articleData.status } : null,
-    error: articleError ? { message: articleError.message, code: articleError.code } : null,
-    timestamp: new Date().toISOString()
-  });
 
   if (articleError) {
     if (articleError.code === 'PGRST116') {
@@ -784,12 +770,6 @@ export const fetchAuthorBySlug = async (slug: string): Promise<any> => {
     throw new Error('Database connection not configured');
   }
 
-  console.log('fetchAuthorBySlug Debug:', {
-    slug,
-    environment: process.env.NODE_ENV,
-    hasSupabaseCredentials: !!hasSupabaseCredentials,
-    timestamp: new Date().toISOString()
-  });
 
   const { data: authorData, error: authorError } = await supabase
     .from('authors')
@@ -797,12 +777,6 @@ export const fetchAuthorBySlug = async (slug: string): Promise<any> => {
     .eq('slug', slug)
     .single();
 
-  console.log('fetchAuthorBySlug Result:', {
-    slug,
-    authorData: authorData ? { id: authorData.id, name: authorData.name, slug: authorData.slug } : null,
-    error: authorError ? { message: authorError.message, code: authorError.code } : null,
-    timestamp: new Date().toISOString()
-  });
 
   if (authorError) {
     if (authorError.code === 'PGRST116') {

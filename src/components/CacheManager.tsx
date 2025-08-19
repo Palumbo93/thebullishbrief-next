@@ -12,12 +12,10 @@ export const CacheManager: React.FC<CacheManagerProps> = ({ isVisible = false })
   const clearAllCache = () => {
     queryClient.clear();
     cacheStorage.clear();
-    console.log('All cache cleared');
   };
 
   const clearExpiredCache = () => {
     cacheStorage.clearExpired();
-    console.log('Expired cache cleared');
   };
 
   const getCacheInfo = () => {

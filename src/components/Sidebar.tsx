@@ -112,7 +112,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       await signOut();
       setShowUserMenu(false);
       toast.success('Successfully signed out');
-      console.log('User signed out successfully');
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to sign out. Please try again.');
@@ -579,7 +578,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Sidebar Sign In clicked');
                 onSignInClick?.();
               }}
               className="auth-button"
@@ -592,7 +590,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Sidebar Sign Up clicked');
                 onSignUpClick?.();
               }}
               className="auth-button signup"

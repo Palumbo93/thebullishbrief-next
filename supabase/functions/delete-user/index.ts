@@ -64,9 +64,6 @@ serve(async (req) => {
       )
     }
 
-    // Log the deletion attempt
-    console.log(`Attempting to delete user: ${user.id} (${user.email})`)
-
     // Delete the user using admin client (this will cascade to all related data)
     const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id)
 
@@ -92,8 +89,6 @@ serve(async (req) => {
         }
       )
     }
-
-    console.log(`Successfully deleted user: ${user.id}`)
 
     return new Response(
       JSON.stringify({ success: true, message: 'User account deleted successfully' }),

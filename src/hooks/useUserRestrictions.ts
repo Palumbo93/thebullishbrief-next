@@ -13,12 +13,25 @@ export const useUserRestrictions = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [restrictions, setRestrictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastErrorTime, setLastErrorTime] = useState<number | null>(null);
 
-  // Check current user restrictions on mount
-  const checkUserRestrictions = useCallback(async () => {
+  // Check current user restrictions with retry logic
+  const checkUserRestrictions = useCallback(async (skipRetryLogic: boolean = false) => {
     if (!user?.id) {
       setLoading(false);
       return;
+    }
+
+    // Implement exponential backoff to prevent spam
+    if (!skipRetryLogic && lastErrorTime) {
+      const timeSinceLastError = Date.now() - lastErrorTime;
+      const backoffTime = Math.min(1000 * Math.pow(2, retryCount), 30000); // Max 30 seconds
+      
+      if (timeSinceLastError < backoffTime) {
+        setTimeout(() => checkUserRestrictions(true), backoffTime - timeSinceLastError);
+        return;
+      }
     }
 
     try {
@@ -29,10 +42,10 @@ export const useUserRestrictions = () => {
         });
 
       if (error) {
-        console.error('Error checking user restrictions:', error);
-      } else {
-        setIsMuted(data || false);
+        throw error;
       }
+      
+      setIsMuted(data || false);
 
       // Also fetch full restrictions list for detailed info
       const { data: fullRestrictions, error: restrictionsError } = await supabase
@@ -41,22 +54,42 @@ export const useUserRestrictions = () => {
         .eq('user_id', user.id)
         .or('expires_at.is.null,expires_at.gt.now()'); // Active restrictions only
 
-      if (!restrictionsError) {
-        setRestrictions(fullRestrictions || []);
+      if (restrictionsError) {
+        throw restrictionsError;
       }
+      
+      setRestrictions(fullRestrictions || []);
+      
+      // Reset retry count on success
+      setRetryCount(0);
+      setLastErrorTime(null);
     } catch (error) {
       console.error('Error in checkUserRestrictions:', error);
+      
+      // Update retry logic
+      setRetryCount(prev => prev + 1);
+      setLastErrorTime(Date.now());
+      
+      // Don't retry indefinitely - stop after 5 attempts
+      if (retryCount >= 5) {
+        console.error('Max retries reached for user restrictions check. Giving up.');
+        setLoading(false);
+        return;
+      }
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, retryCount, lastErrorTime]);
+
+  // Initial check on user change
+  useEffect(() => {
+    if (!user?.id) return;
+    checkUserRestrictions();
+  }, [user?.id]); // Only depend on user.id
 
   // Set up real-time subscription for restriction changes
   useEffect(() => {
     if (!user?.id) return;
-
-    // Initial check
-    checkUserRestrictions();
 
     // Subscribe to restriction changes
     const channel = supabase
@@ -69,9 +102,7 @@ export const useUserRestrictions = () => {
           table: 'user_restrictions',
           filter: `user_id=eq.${user.id}`,
         },
-        (payload) => {
-          console.log('User restriction change:', payload);
-          
+        (payload) => {          
           if (payload.eventType === 'INSERT') {
             const newRestriction = payload.new;
             if (newRestriction.restriction_type === 'muted') {
@@ -135,7 +166,7 @@ export const useUserRestrictions = () => {
       channel.unsubscribe();
       notificationChannel.unsubscribe();
     };
-  }, [user?.id, checkUserRestrictions, toast]);
+  }, [user?.id, toast]); // Removed checkUserRestrictions to prevent infinite re-runs
 
   // Helper to get active mute restriction details
   const getMuteDetails = useCallback(() => {

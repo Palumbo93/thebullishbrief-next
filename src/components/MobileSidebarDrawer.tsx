@@ -89,7 +89,6 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
             width: 85vw;
             max-width: 320px;
             background: var(--color-bg-primary);
-            box-shadow: var(--shadow-xl);
             z-index: calc(var(--z-modal) + 1);
             transform: translateX(${open ? '0' : '-100%'});
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -101,9 +100,8 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 60px;
-            padding: 0 var(--space-4);
-            border-bottom: 0.5px solid var(--color-border-primary);
+            // height: 60px;
+            padding: 12px var(--space-5);
           }
           .mobile-sidebar-logo {
             display: flex;
@@ -146,7 +144,7 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
             display: flex;
             flex-direction: column;
             gap: var(--space-1);
-            padding: var(--space-4);
+            padding: 0px var(--space-4);
             flex: 1;
             overflow-y: auto;
           }

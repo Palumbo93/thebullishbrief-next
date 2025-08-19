@@ -78,18 +78,37 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
   const otherRooms = rooms.filter(room => room.slug !== 'general');
 
   return (
-    <div style={{ position: 'relative', height: '100%' }}>
-      <div style={{ marginBottom: 'var(--space-3)' }}>
-        <h2 style={{ 
-          fontSize: 'var(--text-sm)', 
-          fontWeight: 'var(--font-normal)', 
-          color: 'var(--color-text-primary)', 
-          marginBottom: 'var(--space-1)',
-          fontFamily: 'var(--font-editorial)'
-        }}>Rooms</h2>
-      </div>
+    <div style={{ 
+      position: 'relative', 
+      height: '100%'
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-4)',
+        overflowY: 'auto',
+      }} className="hide-scrollbar">
+      
+        <div style={{ flexShrink: 0 }}>
+          <h2 style={{ 
+            fontSize: 'var(--text-sm)', 
+            fontWeight: 'var(--font-normal)', 
+            color: 'var(--color-text-primary)', 
+            fontFamily: 'var(--font-editorial)'
+          }}>Rooms</h2>
+        </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 'var(--space-1)',
+          paddingBottom: '80px' // Space for fixed bottom section
+        }}>
         {/* Always show general room */}
         {generalRoom && (
           <button
@@ -223,23 +242,25 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
             </p>
           </div>
         )}
+        </div>
       </div>
       
-      {/* Bottom text */}
+      {/* Bottom text - Fixed at bottom */}
       <div style={{ 
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        padding: 'var(--space-4)',
-        background: 'var(--color-bg-primary)'
+        background: 'var(--color-bg-primary)',
       }}>
         <p style={{
           fontSize: 'var(--text-xs)',
           color: 'var(--color-text-muted)',
           lineHeight: 'var(--leading-relaxed)',
           margin: 0,
-          textAlign: 'center'
+          textAlign: 'center',
+          padding: 'var(--space-4)',
+
         }}>
           Edit your{' '}
           <a

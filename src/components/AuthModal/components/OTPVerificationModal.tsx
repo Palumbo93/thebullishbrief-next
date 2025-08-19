@@ -49,16 +49,8 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
 
   // Watch for successful authentication - when user becomes available
   useEffect(() => {
-    console.log('OTPVerificationModal: user state changed', { 
-      user: !!user, 
-      userEmail: user?.email,
-      isLoading,
-      isSignUp,
-      isFinishing
-    });
     
     if (user && !isLoading && !isFinishing) {
-      console.log('OTPVerificationModal: User authenticated, calling onSuccess immediately');
       
       // Set finishing state to show loading
       setIsFinishing(true);
@@ -84,13 +76,11 @@ export const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
 
     clearError();
     clearSuccess();
-    console.log('OTPVerificationModal: Submitting OTP', { email, otpValue });
     await handleVerifyOTP({
       email,
       token: otpValue,
       type: 'email',
     });
-    console.log('OTPVerificationModal: handleVerifyOTP finished');
   };
 
   const handleResendCode = async () => {

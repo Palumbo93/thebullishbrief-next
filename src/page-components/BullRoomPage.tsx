@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAuthModal } from '../contexts/AuthModalContext';
+import { useUserRestrictions } from '../hooks/useUserRestrictions';
 import { RoomSelector } from '../components/BullRoom/RoomSelector';
 import { ChatArea } from '../components/BullRoom/ChatArea';
 import { MessageInput } from '../components/BullRoom/MessageInput';
@@ -32,6 +33,9 @@ interface BullRoomPageProps {
 export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAccountClick }) => {
   const { user, loading: authLoading } = useAuth();
   const { handleSignUpClick } = useAuthModal();
+  
+  // Get user restrictions from global hook (already initialized in AppContent)
+  const { isMuted } = useUserRestrictions();
 
   // Use our organized hooks
   const {
@@ -68,7 +72,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     updateNewMessage,
     clearNewMessage,
     handleSendMessageWithCleanup
-  } = useBullRoomState(roomSlug);
+  } = useBullRoomState(roomSlug, isMuted);
 
   const {
     // Mobile UI state
@@ -104,7 +108,7 @@ export const BullRoomPage: React.FC<BullRoomPageProps> = ({ roomSlug, onCreateAc
     // Loading states
     isActionLoading,
     isCreatingMessage
-  } = useBullRoomActions(currentRoom?.id);
+  } = useBullRoomActions(currentRoom?.id, isMuted);
 
   // Auto-redirect to general room if no specific room is provided
   useEffect(() => {

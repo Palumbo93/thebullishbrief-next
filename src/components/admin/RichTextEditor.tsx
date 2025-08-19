@@ -893,7 +893,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     onUpdate: ({ editor }) => {
       try {
         const html = editor.getHTML();
-        console.log('🔄 RichTextEditor: Content changed:', html);
         onChange(html);
       } catch (error) {
         console.error('🔄 RichTextEditor: Error getting HTML:', error);
@@ -950,7 +949,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   useEffect(() => {
     if (editor && editor.commands && content !== editor.getHTML()) {
       try {
-        console.log('🔄 RichTextEditor: Setting content:', content);
         editor.commands.setContent(content);
       } catch (error) {
         console.error('🔄 RichTextEditor: Error setting content:', error);

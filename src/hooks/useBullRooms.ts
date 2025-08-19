@@ -2,20 +2,24 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { BullRoom } from '../lib/database.aliases';
 import { useUserPreferences } from './useUserPreferences';
+import { useAuth } from '../contexts/AuthContext';
 import { isRoomVisibleToUser } from '../utils/preferenceMapping';
 
 /**
  * Hook for fetching Bull Rooms from the database with preference-based filtering
  * Provides loading states, error handling, and caching
- * Filters rooms based on user preferences:
- * - 'general' room is always available
+ * Filters rooms based on user preferences and admin status:
+ * - 'general' room is always available to non-admins
+ * - 'admin' room is only available to admins
+ * - Admins can see all active rooms
  * - Other rooms are only shown if they match user preferences
  */
 export const useBullRooms = () => {
   const { data: userPreferences } = useUserPreferences();
+  const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['bull-rooms', userPreferences],
+    queryKey: ['bull-rooms', userPreferences, user?.isAdmin],
     queryFn: async (): Promise<BullRoom[]> => {
       const { data, error } = await supabase
         .from('bull_rooms')
@@ -30,9 +34,9 @@ export const useBullRooms = () => {
 
       const allRooms = data || [];
       
-      // Filter rooms based on user preferences
+      // Filter rooms based on user preferences and admin status
       const filteredRooms = allRooms.filter(room => 
-        isRoomVisibleToUser(room.slug, userPreferences)
+        isRoomVisibleToUser(room.slug, userPreferences, user?.isAdmin)
       );
 
       return filteredRooms;

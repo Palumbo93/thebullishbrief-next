@@ -376,5 +376,4 @@ export async function moveCompanyLogoToPermanent(
 export async function ensureStorageBuckets(): Promise<void> {
   // Storage buckets are created via Supabase migration
   // No client-side bucket creation needed
-  console.log('Storage buckets are managed via Supabase migration');
 } 

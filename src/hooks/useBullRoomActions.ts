@@ -1,9 +1,9 @@
 import { useCreateMessage, useDeleteMessage, useToggleReaction } from './useBullRoomMessages';
 import { useConfirm } from './useConfirm';
 
-export const useBullRoomActions = (roomId?: string) => {
+export const useBullRoomActions = (roomId?: string, isMuted: boolean = false) => {
   // Message mutations
-  const createMessageMutation = useCreateMessage();
+  const createMessageMutation = useCreateMessage(isMuted);
   const deleteMessageMutation = useDeleteMessage();
   const toggleReactionMutation = useToggleReaction();
 

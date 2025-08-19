@@ -55,12 +55,10 @@ export const Button = Node.create<ButtonOptions>({
   },
 
   parseHTML() {
-    console.log('🔄 Button extension parseHTML called');
     return [
       {
         tag: 'div[data-button]',
         getAttrs: (node) => {
-          console.log('🔄 Button extension parsing div[data-button]:', node);
           if (typeof node === 'string') return false;
           const div = node as HTMLElement;
           const link = div.querySelector('a');

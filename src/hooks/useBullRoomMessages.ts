@@ -5,7 +5,7 @@ import { BullRoomMessage } from '../types/bullRoom.types';
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useToast } from './useToast';
-import { useUserRestrictions } from './useUserRestrictions';
+
 
 const messageService = new BullRoomMessageService();
 
@@ -132,12 +132,12 @@ export const useBullRoomMessagesInfinite = (roomId: string) => {
 
 /**
  * Hook for creating a new message
+ * @param isMuted - Whether the user is currently muted (passed from parent to avoid duplicate hook calls)
  */
-export const useCreateMessage = () => {
+export const useCreateMessage = (isMuted: boolean = false) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const toast = useToast();
-  const { isMuted } = useUserRestrictions();
   
   // Match the cache key structure from useBullRoomMessagesInfinite
   const batchSize = user ? 50 : 10;

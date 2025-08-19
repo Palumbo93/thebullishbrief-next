@@ -33,7 +33,6 @@ export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children }
   // Auto-close auth modal when user successfully authenticates
   useEffect(() => {
     if (user && showAuthModal) {
-      console.log('User authenticated, closing auth modal');
       setShowAuthModal(false);
     }
   }, [user, showAuthModal]);
@@ -42,9 +41,7 @@ export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children }
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (!user || authLoading) return;
-      
-      console.log('Checking onboarding status for user:', user.email);
-      
+            
       try {
         const { data: userProfile, error } = await supabase
           .from('user_profiles')
@@ -60,21 +57,13 @@ export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children }
         const preferences = userProfile?.preferences || {};
         const onboardingCompleted = preferences.onboardingCompleted === true;
         
-        console.log('Onboarding status:', { 
-          preferences, 
-          onboardingCompleted, 
-          showOnboarding 
-        });
         
         if (!onboardingCompleted) {
-          console.log('Setting onboarding modal to show with delay');
           // Add a small delay before showing the onboarding modal
           setTimeout(() => {
             setShowOnboarding(true);
           }, 500); // 500ms delay
-        } else {
-          console.log('Onboarding already completed');
-        }
+        } 
       } catch (error) {
         console.error('Error checking onboarding status:', error);
       }
@@ -85,13 +74,11 @@ export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children }
 
   // Auth modal handlers
   const handleSignUpClick = () => {
-    console.log('handleSignUpClick called');
     setAuthModalMode('signup');
     setShowAuthModal(true);
   };
 
   const handleSignInClick = () => {
-    console.log('handleSignInClick called');
     setAuthModalMode('signin');
     setShowAuthModal(true);
   };

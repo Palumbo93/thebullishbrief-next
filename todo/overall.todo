@@ -45,10 +45,6 @@ Misc:
     ✔ Next.JS Image Optimization @done(25-08-12 08:29)
 
     ✔ Article Page: Tags, Article Card no padding @done(25-08-11 09:02)
-
-    [] Enable Custom SMTP for Supabase Auth Emails
-    [] Article Meta Info on Mobile Still Sucks
-    [] Clean up Console logging
     
     ✔ Make more Bull Rooms, tie them to preferences @done(25-08-14 17:31)
 
@@ -103,16 +99,23 @@ Misc:
     ✔ Bull Room Chat Infinite Scroll: @done(25-08-16 14:32)
         ✔ Only load messages within the past 48 hours @done(25-08-16 14:32)
         ✔ Load X (x=100) messages at a time @done(25-08-16 14:32)
-    
-    [] Admin chat channel
-    
-    [] On window focus fetch latest and subscribe?
 
-    ✔ Layout doesnt adjust when Article Comments is hiden @done(25-08-16 23:21)
+    [] Enable Custom SMTP for Supabase Auth Emails
+    
+    ✔ Mobile Logo light mode @done(25-08-19 08:39)
+
+    [] Article Meta Info on Desktop & Mobile Still Sucks
+    
+    ✔ Clean up Console logging @done(25-08-19 08:10)
+    
+    ✔ Admin chat channel @done(25-08-19 08:07)
+
+    ✔ Admin security safeguards, can't just set isAdmin to true. @done(25-01-21 21:30)
 
     [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
 
-    
+    [] On window focus fetch latest and subscribe?
+
 Misc Bugs:
     ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)
     ✔ Articles flash "No artiles found" after loading @done(25-01-21 22:30)

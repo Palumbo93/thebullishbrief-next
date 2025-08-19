@@ -198,18 +198,18 @@
 :root.light,
 :root[data-theme="light"] {
   /* Background Colors - Clean whites and subtle greys */
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8f9fa;
+  --color-bg-primary: #fdfdfd;
+  --color-bg-secondary: #f4f4f4;
   --color-bg-tertiary: #f1f3f4;
   --color-bg-card: #ffffff;
   --color-bg-card-hover: #f8f9fa;
   --color-bg-surface: #ffffff;
   
   /* Text Colors - Deep blacks and refined greys */
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #4a4a4a;
-  --color-text-tertiary: #6a6a6a;
-  --color-text-muted: #8a8a8a;
+  --color-text-primary: #000000;
+  --color-text-secondary: #1c1d1d;
+  --color-text-tertiary: #2b2b2b;
+  --color-text-muted: #5b5b5b;
   --color-text-inverse: #ffffff;
   
   /* Brand Colors - Minimal dark-based palette for light theme */
@@ -437,7 +437,7 @@ body {
 .space-y-2 > * + * { margin-top: var(--space-2); }
 
 /* Prose utilities */
-.prose { color: var(--color-text-secondary); }
+.prose { color: var(--color-text-primary); }
 .prose-invert { color: var(--color-text-secondary); }
 .prose-lg { font-size: var(--text-lg); }
 

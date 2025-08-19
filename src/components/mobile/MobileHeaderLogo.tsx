@@ -116,8 +116,10 @@ export const MobileHeaderLogo: React.FC<MobileHeaderLogoProps> = ({
     >
       {type === 'main' ? (
         <BullLogoImg
-          style={getImageStyles()}
+          height={getSizeStyles().height === '24px' ? 24 : getSizeStyles().height === '32px' ? 32 : 40}
+          width={getSizeStyles().height === '24px' ? 120 : getSizeStyles().height === '32px' ? 160 : 200}
           alt={alt || 'The Bullish Brief Logo'}
+          className="mobile-header-logo"
         />
       ) : shouldShowImage ? (
         <img

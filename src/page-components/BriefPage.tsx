@@ -480,8 +480,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       
       {/* Mobile Scrolling Popup - Only shows on mobile */}
       <ScrollingPopup
-        triggerScrollPercentage={25}
-        hideAfterScrollPercentage={75}
+        triggerScrollPercentage={40}
+        hideAfterScrollPercentage={60}
         showDelay={0}
       >
         {(dismissPopup) => (

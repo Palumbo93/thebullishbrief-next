@@ -675,3 +675,10 @@ body {
 .html-content div[data-tweet] .twitter-tweet {
   margin: 0 auto;
 }
+
+/* Mobile Header Logo Styles */
+.mobile-header-logo {
+  object-fit: contain;
+  max-width: 100%;
+  height: auto;
+}

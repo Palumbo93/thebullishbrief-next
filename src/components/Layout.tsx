@@ -608,7 +608,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
             {/* Explore Widget - Only on Home, Articles, and Author Pages (not search or explore) */}
             {(actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/search') && !pathname?.startsWith('/explore')) || actualCurrentLocation === 'authors') && (
-              <ExploreWidget />
+              <ExploreWidget onCreateAccountClick={handleSignUpClick} />
             )}
           </aside>
         )}

@@ -81,7 +81,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({
       <style>{`
         .auth-modal-backdrop {
           ${FULL_HEIGHT_BACKDROP_CSS}
-          background: rgba(0, 0, 0, 0.85);
+          background: rgba(0, 0, 0, 0.65);
           backdrop-filter: blur(12px);
           display: flex;
           align-items: center;

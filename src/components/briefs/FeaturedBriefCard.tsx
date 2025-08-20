@@ -155,7 +155,8 @@ export const FeaturedBriefCard: React.FC<FeaturedBriefCardProps> = ({ className 
             alignItems: 'center',
             borderRadius: '999px',
             padding: '0.25rem 0.75rem 0.25rem 0.25rem',
-            width: 'fit-content'
+            width: 'fit-content',
+            gap: 'var(--space-2)'
           }}>
             {brief.company_logo_url ? (
             <CompanyLogoImage

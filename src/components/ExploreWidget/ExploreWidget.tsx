@@ -111,12 +111,7 @@ export const ExploreWidget: React.FC<ExploreWidgetProps> = ({
         gap: 'var(--space-2)'
       }}>
         {/* Join CTA - Only show if user is not logged in */}
-        {!user && (
-          <>
-            {console.log('ExploreWidget: Rendering SidebarJoinCTA, onCreateAccountClick:', typeof onCreateAccountClick)}
-            <SidebarJoinCTA onSignUpClick={onCreateAccountClick} showButton={true} />
-          </>
-        )}
+        {!user && <SidebarJoinCTA onSignUpClick={onCreateAccountClick} showButton={true} />}
         
         <div style={{
           padding: 'var(--space-4) var(--space-4) 0px var(--space-4)',

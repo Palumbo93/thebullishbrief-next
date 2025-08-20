@@ -193,3 +193,4 @@ INSERT INTO bull_rooms (
 ### Audit Trail
 - Track admin access to rooms for security purposes
 - Log admin actions in rooms for accountability
+

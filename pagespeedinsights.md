@@ -4,9 +4,9 @@ Requests are blocking the page's initial render, which may delay LCP. Deferring 
 URL
 Transfer Size
 Duration
-thebullishbrief.com 1st party
+bullishbrief.com 1st party
 7.8 KiB	480 ms
-…css/20b2e097de6aefde.css?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…css/20b2e097de6aefde.css?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 7.8 KiB
 480 ms
 Use efficient cache lifetimes Est savings of 9,290 KiB
@@ -101,23 +101,23 @@ Legacy JavaScript Est savings of 12 KiB
 Polyfills and transforms enable older browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile Baseline features, unless you know you must support older browsers. Learn why most sites can deploy ES6+ code without transpilingLCPFCP
 URL
 Wasted bytes
-thebullishbrief.com 1st party
+bullishbrief.com 1st party
 11.6 KiB
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 11.6 KiB
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103412(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103412(www.bullishbrief.com)
 Array.prototype.at
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102800(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102800(www.bullishbrief.com)
 Array.prototype.flat
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102913(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102913(www.bullishbrief.com)
 Array.prototype.flatMap
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103289(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103289(www.bullishbrief.com)
 Object.fromEntries
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103547(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103547(www.bullishbrief.com)
 Object.hasOwn
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102542(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102542(www.bullishbrief.com)
 String.prototype.trimEnd
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102457(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102457(www.bullishbrief.com)
 String.prototype.trimStart
 LCP request discovery
 Optimize LCP by making the LCP image discoverable from the HTML immediately, and avoiding lazy-loadingLCP
@@ -130,7 +130,7 @@ Network dependency tree
 Avoid chaining critical requests by reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load.LCP
 Maximum critical path latency: 1,755 ms
 Initial Navigation
-/briefs/is-this-the-smartest-crypto-stock-play-of-2025(www.thebullishbrief.com) - 265 ms, 4.56 KiB
+/briefs/is-this-the-smartest-crypto-stock-play-of-2025(www.bullishbrief.com) - 265 ms, 4.56 KiB
 …embed/64828.59dee6d….css(www.tradingview-widget.com) - 1,720 ms, 11.93 KiB
 …embed/98681.47fd08d….css(www.tradingview-widget.com) - 1,700 ms, 2.29 KiB
 …embed/80259.5f40fb3….css(www.tradingview-widget.com) - 1,721 ms, 1.43 KiB
@@ -151,9 +151,9 @@ Initial Navigation
 …embed/43142.2625280….css(www.tradingview-widget.com) - 1,739 ms, 1.51 KiB
 …embed/84540.921ed80….css(www.tradingview-widget.com) - 1,738 ms, 0.95 KiB
 …embed/9492.f2dfcce….css(www.tradingview-widget.com) - 1,715 ms, 3.25 KiB
-…css/20b2e097de6aefde.css?dpl=dpl_2nsgZ…(www.thebullishbrief.com) - 414 ms, 7.76 KiB
-…media/1a4aa50920b5315c-s.p.woff2(www.thebullishbrief.com) - 935 ms, 34.77 KiB
-…media/libre-caslon-condensed-latin-400-normal.6db61e16.woff2(www.thebullishbrief.com) - 956 ms, 49.90 KiB
+…css/20b2e097de6aefde.css?dpl=dpl_2nsgZ…(www.bullishbrief.com) - 414 ms, 7.76 KiB
+…media/1a4aa50920b5315c-s.p.woff2(www.bullishbrief.com) - 935 ms, 34.77 KiB
+…media/libre-caslon-condensed-latin-400-normal.6db61e16.woff2(www.bullishbrief.com) - 956 ms, 49.90 KiB
 Preconnected origins
 preconnect hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.
 no origins were preconnected
@@ -185,38 +185,38 @@ Twitter social
 /widgets/widget_iframe.2f70fb1….html?origin=…(platform.twitter.com)
 102.8 KiB
 99.2 KiB
-thebullishbrief.com 1st party
+bullishbrief.com 1st party
 133.7 KiB	95.4 KiB
-…chunks/736-90c1c….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/736-90c1c….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 59.6 KiB
 35.0 KiB
-…chunks/774-26663….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/774-26663….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 46.0 KiB
 33.8 KiB
-…chunks/412-34173….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/412-34173….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 28.1 KiB
 26.6 KiB
 Avoid serving legacy JavaScript to modern browsers Est savings of 12 KiB
 Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile Baseline features, unless you know you must support legacy browsers. Learn why most sites can deploy ES6+ code without transpilingLCPFCP
 URL
 Est Savings
-thebullishbrief.com 1st party
+bullishbrief.com 1st party
 11.3 KiB
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 11.3 KiB
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103412(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103412(www.bullishbrief.com)
 Array.prototype.at
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102800(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102800(www.bullishbrief.com)
 Array.prototype.flat
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102913(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102913(www.bullishbrief.com)
 Array.prototype.flatMap
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103289(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103289(www.bullishbrief.com)
 Object.fromEntries
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103547(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:103547(www.bullishbrief.com)
 Object.hasOwn
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102542(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102542(www.bullishbrief.com)
 String.prototype.trimEnd
-…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102457(www.thebullishbrief.com)
+…chunks/964-13d73….js?dpl=dpl_2nsgZ…:1:102457(www.bullishbrief.com)
 String.prototype.trimStart
 Avoid enormous network payloads Total size was 12,794 KiB
 Large network payloads cost users real money and are highly correlated with long load times. Learn how to reduce payload sizes.
@@ -238,11 +238,11 @@ supabase.co
 129.7 KiB
 …sonicstrategy/sonic_simplified_video_thumbnail.png(potsdvyvpwuycgocpivf.supabase.co)
 61.9 KiB
-thebullishbrief.com 1st party
+bullishbrief.com 1st party
 201.5 KiB
-/images/logo.png(www.thebullishbrief.com)
+/images/logo.png(www.bullishbrief.com)
 141.1 KiB
-…chunks/736-90c1c….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/736-90c1c….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 60.4 KiB
 Twitter social 
 103.5 KiB
@@ -253,18 +253,18 @@ Lists the longest tasks on the main thread, useful for identifying worst contrib
 URL
 Start Time
 Duration
-thebullishbrief.com 1st party
+bullishbrief.com 1st party
 239 ms
-…chunks/881-ab93a….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/881-ab93a….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 6,830 ms
 67 ms
-…chunks/4bd1b696-….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/4bd1b696-….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 7,741 ms
 62 ms
-…chunks/4bd1b696-….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/4bd1b696-….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 6,083 ms
 55 ms
-…chunks/774-26663….js?dpl=dpl_2nsgZ…(www.thebullishbrief.com)
+…chunks/774-26663….js?dpl=dpl_2nsgZ…(www.bullishbrief.com)
 8,676 ms
 55 ms
 User Timing marks and measures 2 user timings

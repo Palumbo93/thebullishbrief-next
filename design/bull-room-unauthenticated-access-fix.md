@@ -139,3 +139,4 @@ Apply the same pattern to `createMessage` and `updateMessage` methods.
 - Consider caching profile data to reduce API calls for frequently viewed profiles
 
 
+

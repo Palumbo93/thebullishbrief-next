@@ -90,7 +90,7 @@ export default function RootLayout({
           async 
           src="https://datafa.st/js/script.js" 
           data-website-id="689dde00a1c832b545b78a9f"
-          data-domain="thebullishbrief.com"
+          data-domain="bullishbrief.com"
         />
       </head>
       <body className={`${archivo.variable}`}>

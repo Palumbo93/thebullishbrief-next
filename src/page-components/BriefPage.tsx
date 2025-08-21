@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
+import { useTrackBriefView, useBriefViewCount } from '../hooks/useBriefViews';
 import { useTrackBriefEngagement } from '../hooks/useDatafastAnalytics';
 import { ArrowLeft, User, Calendar, Clock, Eye } from 'lucide-react';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
@@ -74,6 +75,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const { user } = useAuth();
   const { theme } = useTheme();
   const { data: brief, isLoading, error } = useBriefBySlug(briefSlug);
+  const trackView = useTrackBriefView();
+  const { data: viewCount } = useBriefViewCount(brief?.id ? String(brief.id) : '');
   
   const handleBack = () => {
     if (typeof window !== 'undefined') {
@@ -110,6 +113,14 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Track brief view when component mounts
+  React.useEffect(() => {
+    if (brief?.id && String(brief.id).trim() !== '') {
+      // Use the brief's UUID for tracking, not the slug
+      trackView.mutate(String(brief.id));
+    }
+  }, [brief?.id, brief?.title]);
 
 
 
@@ -418,6 +429,10 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Clock style={{ width: '14px', height: '14px' }} />
               <span>{formatReadingTime(readingTime)}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Eye style={{ width: '14px', height: '14px' }} />
+              <span>{viewCount?.toLocaleString() || brief?.view_count || 0}</span>
             </div>
           </div>
 

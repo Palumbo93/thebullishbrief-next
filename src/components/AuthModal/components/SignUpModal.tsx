@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock, User } from 'lucide-react';
+import { X, Mail, Lock } from 'lucide-react';
 import { SignUpModalProps } from '../types/auth.types';
 import { FormField } from '../../ui';
 import { AuthButton } from './AuthButton';
@@ -13,6 +13,7 @@ import { supabase } from '../../../lib/supabase';
 import { BRAND_COPY } from '../../../data/copy';
 import { useViewportHeightOnly } from '../../../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../../../utils/viewportUtils';
+import { generateUsernameFromEmail } from '../../../utils/usernameGeneration';
 
 export const SignUpModal: React.FC<SignUpModalProps> = ({
   onClose,
@@ -22,6 +23,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
   const { formData, errors, handleChange, validateForm, resetForm } = useAuthForm(true);
   const { handleSendOTP, isLoading, error, success, clearError, clearSuccess } = useAuthSubmit();
   const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [generatedUsername, setGeneratedUsername] = useState<string>('');
   const viewportHeight = useViewportHeightOnly();
 
   // Import Google Fonts for brand consistency
@@ -44,6 +46,23 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
     };
   }, []);
 
+  // Track user sign-up attempt (email submitted, OTP sent)
+  const trackSignUpAttempt = async (email: string, username: string) => {
+    try {
+      await supabase
+        .from('emails')
+        .insert({ 
+          email,
+          // You could add additional fields here if needed
+          // username: username,
+          // signup_step: 'email_submitted'
+        });
+    } catch (error) {
+      console.error('Error tracking sign-up attempt:', error);
+      // Don't block the process if tracking fails
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -52,11 +71,32 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
     clearError();
     clearSuccess();
     
-    const result = await handleSendOTP(formData.email, true, formData.username);
-    
-    // If OTP was sent successfully, show OTP verification
-    if (result.success) {
-      setShowOTPVerification(true);
+    try {
+      // Generate username from email
+      const username = await generateUsernameFromEmail(formData.email);
+      setGeneratedUsername(username);
+      
+      const result = await handleSendOTP(formData.email, true, username);
+      
+      // If OTP was sent successfully, track the sign-up attempt and show OTP verification
+      if (result.success) {
+        // Track successful email submission (OTP sent)
+        await trackSignUpAttempt(formData.email, username);
+        setShowOTPVerification(true);
+      }
+    } catch (error) {
+      console.error('Error generating username:', error);
+      // Fallback to email prefix if username generation fails
+      const fallbackUsername = formData.email.split('@')[0];
+      setGeneratedUsername(fallbackUsername);
+      
+      const result = await handleSendOTP(formData.email, true, fallbackUsername);
+      
+      if (result.success) {
+        // Track successful email submission with fallback username
+        await trackSignUpAttempt(formData.email, fallbackUsername);
+        setShowOTPVerification(true);
+      }
     }
   };
 
@@ -73,11 +113,13 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
   const handleSwitchToSignIn = () => {
     clearError();
     resetForm();
+    setGeneratedUsername('');
     onSwitchToSignIn();
   };
 
   const handleClose = () => {
     resetForm();
+    setGeneratedUsername('');
     onClose();
   };
 
@@ -199,18 +241,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
                 flexDirection: 'column',
                 gap: 'var(--space-5)',
               }}>
-                {/* Username Field */}
-                <FormField
-                  type="text"
-                  label="Username"
-                  value={formData.username}
-                  onChange={(value) => handleChange('username', value)}
-                  icon={User}
-                  placeholder="Your username"
-                  required
-                  error={errors.username}
-                />
-
                 {/* Email Field */}
                 <FormField
                   type="email"
@@ -308,7 +338,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
           onBack={handleOTPBack}
           onSuccess={handleOTPSuccess}
           email={formData.email}
-          username={formData.username}
+          username={generatedUsername}
           isSignUp={true}
         />
       )}

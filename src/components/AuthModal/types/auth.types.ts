@@ -13,7 +13,7 @@ export interface OTPVerificationData {
 }
 
 export interface AuthFormData {
-  username: string;
+  username?: string;
   email: string;
 }
 
@@ -95,7 +95,7 @@ export interface BrandingSectionProps {
 }
 
 export interface SignUpFormData {
-  username: string;
+  username?: string;
   email: string;
 }
 

@@ -4,7 +4,7 @@ import { validateSignInForm, validateSignUpForm, validateSignUpStep1, isFormVali
 
 export const useAuthForm = (isSignUp: boolean = false): UseAuthFormReturn => {
   const [formData, setFormData] = useState<AuthFormData>({
-    username: '',
+    username: isSignUp ? undefined : '',
     email: '',
   });
 
@@ -28,10 +28,13 @@ export const useAuthForm = (isSignUp: boolean = false): UseAuthFormReturn => {
 
     switch (field) {
       case 'username':
-        if (isSignUp && !formData.username.trim()) {
-          error = 'Username is required';
-        } else if (isSignUp && formData.username.length < 3) {
-          error = 'Username must be at least 3 characters';
+        // Only validate username if it's provided (for account settings context)
+        if (formData.username !== undefined) {
+          if (!formData.username.trim()) {
+            error = 'Username is required';
+          } else if (formData.username.length < 3) {
+            error = 'Username must be at least 3 characters';
+          }
         }
         break;
       case 'email':
@@ -44,7 +47,7 @@ export const useAuthForm = (isSignUp: boolean = false): UseAuthFormReturn => {
     }
 
     return error;
-  }, [formData, isSignUp]);
+  }, [formData]);
 
   const validateForm = useCallback((): boolean => {
     let newErrors: Record<string, string> = {};
@@ -73,11 +76,11 @@ export const useAuthForm = (isSignUp: boolean = false): UseAuthFormReturn => {
 
   const resetForm = useCallback(() => {
     setFormData({
-      username: '',
+      username: isSignUp ? undefined : '',
       email: '',
     });
     setErrors({});
-  }, []);
+  }, [isSignUp]);
 
   const isValid = Object.keys(errors).length === 0;
 

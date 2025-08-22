@@ -57,13 +57,16 @@ export const validateConfirmPassword = (password: string, confirmPassword: strin
 };
 
 export const validateSignUpForm = (formData: {
-  username: string;
+  username?: string;
   email: string;
 }): Record<string, string> => {
   const errors: Record<string, string> = {};
   
-  const usernameError = validateUsername(formData.username);
-  if (usernameError) errors.username = usernameError;
+  // Only validate username if it's provided (for account settings context)
+  if (formData.username !== undefined) {
+    const usernameError = validateUsername(formData.username);
+    if (usernameError) errors.username = usernameError;
+  }
   
   const emailError = validateEmail(formData.email);
   if (emailError) errors.email = emailError;
@@ -83,13 +86,16 @@ export const validateSignInForm = (formData: {
 };
 
 export const validateSignUpStep1 = (formData: {
-  username: string;
+  username?: string;
   email: string;
 }): Record<string, string> => {
   const errors: Record<string, string> = {};
   
-  const usernameError = validateUsername(formData.username);
-  if (usernameError) errors.username = usernameError;
+  // Only validate username if it's provided (for account settings context)
+  if (formData.username !== undefined) {
+    const usernameError = validateUsername(formData.username);
+    if (usernameError) errors.username = usernameError;
+  }
   
   const emailError = validateEmail(formData.email);
   if (emailError) errors.email = emailError;

@@ -115,27 +115,6 @@ export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => 
           </div>
         ))}
 
-        {/* Back to top link */}
-        <div style={{ 
-          padding: 'var(--space-4)',
-          borderTop: '1px solid var(--color-border-primary)'
-        }}>
-          <a
-            href="#top"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            style={{
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)',
-              textDecoration: 'none',
-              fontWeight: 'var(--font-medium)'
-            }}
-          >
-            ↑ Back to top
-          </a>
-        </div>
       </div>
     </div>
   );

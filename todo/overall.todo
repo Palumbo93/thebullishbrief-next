@@ -98,9 +98,7 @@ Misc:
 
     ✔ Bull Room Chat Infinite Scroll: @done(25-08-16 14:32)
         ✔ Only load messages within the past 48 hours @done(25-08-16 14:32)
-        ✔ Load X (x=100) messages at a time @done(25-08-16 14:32)
-
-    [] Enable Custom SMTP for Supabase Auth Emails
+        ✔ Load X (x=100) messages at a time @done(25-08-16 14:32)    
     
     ✔ Mobile Logo light mode @done(25-08-19 08:39)
 
@@ -112,9 +110,22 @@ Misc:
 
     ✔ Admin security safeguards, can't just set isAdmin to true. @done(25-01-21 21:30)
 
+
     [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
 
     [] On window focus fetch latest and subscribe?
+
+    TODAY: 
+
+    [] Enable Custom SMTP for Supabase Auth Emails with Postmark
+
+    [] Setup info@bullishbrief.com with Google Workspace
+
+    [] Contact Page
+
+    [] About Page
+
+    [] Link to X and LinkedIn
 
 Misc Bugs:
     ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)
@@ -124,9 +135,8 @@ Misc Bugs:
     ✔ Tries to fetch user profile even when no auth @done(25-08-08 12:20)
     ✔ Analytics already initited errors @done(25-08-13 21:53)
     ✔ Mobile has some weird scrolling issues @done(25-08-13 13:53)
-    ✘ Smart scrolling: clicking to new page doesnt scroll page to top but going back should maintain the scrolled height (do this smartly) @cancelled(25-08-13 13:53)
-    [] Article images are still stored in temp folder
     ✔ Login doesnt close modal or refresh auth state @done(25-08-12 15:34)
+    [] Article images are still stored in temp folder
 
 Refine/Polish/Mobile Polish: 
 

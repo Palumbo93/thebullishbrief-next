@@ -22,9 +22,10 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
   };
 
   const navItems: Array<{ slug: LegalDocument['slug']; label: string; to: string }> = [
+    { slug: 'contact', label: 'Contact', to: '/contact' },
+    { slug: 'about', label: 'About', to: '/about' },
     { slug: 'terms', label: 'Terms & Conditions', to: '/terms' },
     { slug: 'privacy', label: 'Privacy Policy', to: '/privacy' },
-
     { slug: 'disclaimer', label: 'Disclaimer', to: '/disclaimer' },
   ];
 
@@ -51,7 +52,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
         }
 
         .legal-sidebar {
-          width: 400px;
+          width: 300px;
           border-right: 0.5px solid var(--color-border-primary);
           display: flex;
           flex-direction: column;
@@ -175,7 +176,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
                 margin: 0,
                 color: 'var(--color-text-primary)',
               }}>
-                Legal
+                Company & Legal
               </h1>
             </div>
           </div>

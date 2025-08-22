@@ -119,13 +119,13 @@ Misc:
 
     [] Enable Custom SMTP for Supabase Auth Emails with Postmark
 
-    [] Setup info@bullishbrief.com with Google Workspace
+    ✔ Setup info@bullishbrief.com with Google Workspace @done(25-08-22 08:51)
 
-    [] Contact Page
+    ✔ Contact Page @done(25-08-22 09:21)
 
-    [] About Page
+    ✔ About Page @done(25-08-22 09:21)
 
-    [] Link to X and LinkedIn
+    ✔ Link to X and LinkedIn @done(25-08-22 09:21)
 
 Misc Bugs:
     ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)

@@ -31,7 +31,7 @@ export const aboutDocument: LegalDocument = {
         <div>
           <h4 style="color: var(--color-text-primary); font-weight: var(--font-semibold); margin-bottom: var(--space-2);">Austin Ladouceur</h4>
           <p style="color: var(--color-accent-primary); font-weight: var(--font-medium); margin-bottom: var(--space-3); font-size: var(--text-sm);">Content Architect</p>
-          <p>Austin leads content strategy and market analysis. His work focuses on Web3, macro strategy, and investor psychology. He blends technical insight with a sharp editorial lens to deliver content that cuts through the noise.</p>
+          <p>Austin leads content strategy and market analysis. His work focuses on small-cap stocks, Web3, macro strategy, and investor psychology. He blends technical insight with a sharp editorial lens to deliver content that cuts through the noise.</p>
         </div>
       `
     }

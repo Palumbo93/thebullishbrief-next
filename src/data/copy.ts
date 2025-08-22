@@ -48,9 +48,10 @@ export const BRAND_COPY = {
     title: "The Bullish Brief",
     description: "Always Ahead. Always Bullish.",
     features: [
-      "Early Market Briefings",
-      "Bull Room Strategy Chats",
-      "Exclusive AI Prompt Library"
+      "Get The Bullish Brief Sent Straight to Your Inbox",
+      "Access Real-time Market Discussions",
+      "Gain World-class AI Prompts for Better Analysis",
+      "Completely Free, No Credit Card Required"
     ],
     cta: "Secure Your Edge Now",
     // Variants for testing

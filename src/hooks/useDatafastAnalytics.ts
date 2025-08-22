@@ -138,3 +138,18 @@ export const useTrackPromptInteractions = () => {
     }
   };
 };
+
+/**
+ * Hook for tracking CTA button interactions with Datafa.st
+ */
+export const useTrackCTAInteractions = () => {
+  return {
+    trackCTAButtonClick: async (buttonLocation: string, buttonText?: string, additionalProperties?: Record<string, any>) => {
+      await trackGoal('cta_button_clicked', { 
+        button_location: buttonLocation,
+        button_text: buttonText || 'Join Free Now',
+        ...additionalProperties
+      });
+    }
+  };
+};

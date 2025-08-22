@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from './ui/Button';
 import { BullLogoImg } from './ui/BullLogo';
+import { useTrackCTAInteractions } from '../hooks/useDatafastAnalytics';
 
 interface CTABannerProps {
   onCreateAccountClick?: () => void;
@@ -14,6 +15,7 @@ export const CTABanner: React.FC<CTABannerProps> = ({
   position = 'top' 
 }) => {
   const isPrimary = variant === 'primary';
+  const { trackCTAButtonClick } = useTrackCTAInteractions();
   
   const features = [
     {
@@ -242,7 +244,18 @@ export const CTABanner: React.FC<CTABannerProps> = ({
         
         {/* Sign Up Button */}
         <Button
-          onClick={onCreateAccountClick}
+          onClick={async () => {
+            const buttonText = isPrimary ? 'Join Free Now' : 'Join Now';
+            
+            // Track the CTA button click
+            await trackCTAButtonClick('cta_banner', buttonText, {
+              variant,
+              position
+            });
+            
+            // Call the original click handler
+            onCreateAccountClick?.();
+          }}
           variant="primary"
           size="lg"
           fullWidth={false}

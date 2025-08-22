@@ -1,16 +1,27 @@
 import React from 'react';
 import { Button } from './ui/Button';
+import { useTrackCTAInteractions } from '../hooks/useDatafastAnalytics';
 
 interface JoinButtonProps {
   onSignUpClick?: () => void;
 }
 
 const JoinButton: React.FC<JoinButtonProps> = ({ onSignUpClick }) => {
+  const { trackCTAButtonClick } = useTrackCTAInteractions();
+
+  const handleClick = async () => {
+    // Track the CTA button click
+    await trackCTAButtonClick('join_button', 'Join Free Now');
+    
+    // Call the original click handler
+    onSignUpClick?.();
+  };
+
   return (
     <>
       <div className="join-button-container">
         <Button
-          onClick={onSignUpClick}
+          onClick={handleClick}
           variant="primary"
           fullWidth={true}
           className="join-button"

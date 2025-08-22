@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from './ui/Button';
 import { BRAND_COPY } from '../data/copy';
 import { BullLogoImg } from './ui/BullLogo';
+import { useTrackCTAInteractions } from '../hooks/useDatafastAnalytics';
 
 interface SidebarJoinCTAProps {
   onSignUpClick?: () => void;
@@ -9,6 +10,16 @@ interface SidebarJoinCTAProps {
 }
 
 const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButton = true }) => {
+  const { trackCTAButtonClick } = useTrackCTAInteractions();
+
+  const handleClick = async () => {
+    // Track the CTA button click
+    await trackCTAButtonClick('sidebar_join_cta', 'Join Free Now');
+    
+    // Call the original click handler
+    onSignUpClick?.();
+  };
+
   return (
     <>
       <div className="briefs-signup-cta">
@@ -44,7 +55,7 @@ const SidebarJoinCTA: React.FC<SidebarJoinCTAProps> = ({ onSignUpClick, showButt
           {/* Regular Button - Only show if showButton is true */}
           {showButton && (
             <Button
-              onClick={onSignUpClick}
+              onClick={handleClick}
               variant="primary"
               fullWidth={true}
             >

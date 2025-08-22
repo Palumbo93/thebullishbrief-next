@@ -194,7 +194,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({
                 disabled={isLoading}
                 loading={isLoading}
               >
-                {isLoading ? 'Sending Code...' : 'Send Code'}
+                {isLoading ? 'Sending Code...' : 'Sign In'}
               </AuthButton>
 
               {/* Switch to Sign Up */}

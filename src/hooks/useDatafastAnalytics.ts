@@ -14,12 +14,12 @@ const trackGoal = async (goal: string, properties: Record<string, any> = {}) => 
       })
     });
     
+    // Silently fail if tracking doesn't work
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Goal tracking failed:', errorData);
+      // Could add debug logging here if needed for development
     }
   } catch (error) {
-    console.error(`Failed to track ${goal}:`, error);
+    // Silently fail if tracking doesn't work
   }
 };
 

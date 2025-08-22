@@ -127,6 +127,8 @@ Misc:
 
     ✔ Link to X and LinkedIn @done(25-08-22 09:21)
 
+    [] hide the popup from authenticated users
+
 Misc Bugs:
     ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)
     ✔ Articles flash "No artiles found" after loading @done(25-01-21 22:30)

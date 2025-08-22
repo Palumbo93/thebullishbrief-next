@@ -153,3 +153,25 @@ export const useTrackCTAInteractions = () => {
     }
   };
 };
+
+/**
+ * Hook for tracking brief engagement and scroll behavior with Datafa.st
+ */
+export const useTrackBriefScrolling = () => {
+  return {
+    trackBriefScrolledHalfway: async (briefId: string, briefTitle: string) => {
+      await trackGoal('brief_scrolled_half_way', { 
+        brief_id: briefId,
+        brief_title: briefTitle
+      });
+    },
+    trackPopupView: async (briefId: string, briefTitle: string, popupType: string = 'mobile_signup') => {
+      await trackGoal('popup_viewed', { 
+        brief_id: briefId,
+        brief_title: briefTitle,
+        popup_type: popupType,
+        page_type: 'brief'
+      });
+    }
+  };
+};

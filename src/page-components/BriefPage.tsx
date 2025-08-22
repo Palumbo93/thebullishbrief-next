@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefView, useBriefViewCount } from '../hooks/useBriefViews';
-import { useTrackBriefEngagement } from '../hooks/useDatafastAnalytics';
+import { useTrackBriefEngagement, useTrackBriefScrolling } from '../hooks/useDatafastAnalytics';
 import { ArrowLeft, User, Calendar, Clock, Eye } from 'lucide-react';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 
@@ -88,9 +88,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     }
   };
   const { trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
+  const { trackBriefScrolledHalfway, trackPopupView } = useTrackBriefScrolling();
 
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
+  const [hasTrackedHalfway, setHasTrackedHalfway] = React.useState(false);
   
   // Calculate reading time from brief content
   const readingTime = React.useMemo(() => {
@@ -103,16 +105,27 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     return `linear-gradient(to bottom, rgba(${baseColor}, 0.3) 0%, rgba(${baseColor}, 0.6) 40%, rgba(${baseColor}, 0.85) 70%, rgba(${baseColor}, 0.95) 85%, rgba(${baseColor}, 1) 100%)`;
   }, [theme]);
   
-  // Handle scroll for header background
+  // Handle scroll for header background and tracking
   React.useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       setIsScrolled(scrollTop > 50);
+      
+      // Track halfway scroll for engagement analytics
+      if (!hasTrackedHalfway && brief?.id && brief?.title) {
+        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercentage = documentHeight > 0 ? (scrollTop / documentHeight) * 100 : 0;
+        
+        if (scrollPercentage >= 50) {
+          setHasTrackedHalfway(true);
+          trackBriefScrolledHalfway(String(brief.id), brief.title);
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [hasTrackedHalfway, brief?.id, brief?.title, trackBriefScrolledHalfway]);
 
   // Track brief view when component mounts
   React.useEffect(() => {
@@ -498,6 +511,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         triggerScrollPercentage={40}
         hideAfterScrollPercentage={60}
         showDelay={0}
+        onPopupViewed={() => {
+          if (brief?.id && brief?.title) {
+            trackPopupView(String(brief.id), brief.title, 'mobile_signup');
+          }
+        }}
       >
         {(dismissPopup) => (
           <SidebarJoinCTA 

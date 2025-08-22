@@ -9,6 +9,8 @@ interface ScrollingPopupProps {
   triggerScrollPercentage?: number;
   hideAfterScrollPercentage?: number;
   showDelay?: number;
+  // Optional tracking props
+  onPopupViewed?: () => void;
 }
 
 /**
@@ -25,7 +27,8 @@ export const ScrollingPopup: React.FC<ScrollingPopupProps> = ({
   children,
   triggerScrollPercentage = 30,
   hideAfterScrollPercentage = 70,
-  showDelay = 2000
+  showDelay = 2000,
+  onPopupViewed
 }) => {
   const isMobile = useIsMobile();
   const [isVisible, setIsVisible] = useState(false); // Controls DOM mounting
@@ -82,6 +85,8 @@ export const ScrollingPopup: React.FC<ScrollingPopupProps> = ({
               // Then: Trigger animation after a tiny delay to ensure DOM is ready
               animationTimeoutRef.current = setTimeout(() => {
                 setIsAnimatingVisible(true);
+                // Track popup view when it becomes visible to user
+                onPopupViewed?.();
               }, 10);
             };
             

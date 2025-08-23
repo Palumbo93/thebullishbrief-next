@@ -18,6 +18,7 @@ import { ShareSheet } from '../components/ShareSheet';
 import { DesktopBanner } from '../components/DesktopBanner';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 import { ArticleSkeleton } from '../components/ArticleSkeleton';
+import Image from 'next/image';
 
 interface ArticlePageProps {
   articleId: number | string;
@@ -150,21 +151,21 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
    * Optimizes images within HTML content for better performance
    * 
    * Features:
-   * - Adds responsive srcset and sizes attributes
-   * - Enables lazy loading for non-critical images
+   * - First image loads eagerly for better LCP
+   * - Subsequent images load lazily for performance
    * - Adds proper decoding attributes
-   * - Optimizes loading behavior
+   * - Adds responsive sizes
    * 
    * @param el - The HTML element containing images to optimize
    */
   const optimizeContentImages = (el: HTMLElement) => {
     const imgElements = el.querySelectorAll('img');
-    imgElements.forEach((img) => {
+    imgElements.forEach((img, index) => {
       // Skip if already optimized
       if (img.hasAttribute('data-optimized')) return;
       
-      // Add responsive loading attributes
-      img.loading = 'lazy';
+      // First image should load eagerly for better LCP, others lazily
+      img.loading = index === 0 ? 'eager' : 'lazy';
       img.decoding = 'async';
       
       // Add responsive sizes for better performance
@@ -295,17 +296,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       }}>
         {/* Optimized Featured Image */}
         {article.image && (
-          <img
+          <Image
             src={article.image}
             alt={article.title || 'Article featured image'}
-            loading="eager"
-            decoding="async"
+            fill
+            priority={true}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
               objectFit: 'cover',
               objectPosition: 'center',
               zIndex: 0

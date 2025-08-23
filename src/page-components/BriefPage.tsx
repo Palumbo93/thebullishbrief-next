@@ -59,6 +59,7 @@ import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import ScrollingPopup from '../components/ScrollingPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
+import Image from 'next/image';
 
 
 interface BriefPageProps {
@@ -145,21 +146,21 @@ export const BriefPage: React.FC<BriefPageProps> = ({
    * Optimizes images within HTML content for better performance
    * 
    * Features:
-   * - Adds responsive srcset and sizes attributes
-   * - Enables lazy loading for non-critical images
+   * - First image loads eagerly for better LCP
+   * - Subsequent images load lazily for performance
    * - Adds proper decoding attributes
-   * - Optimizes loading behavior
+   * - Adds responsive sizes
    * 
    * @param el - The HTML element containing images to optimize
    */
   const optimizeContentImages = (el: HTMLElement) => {
     const imgElements = el.querySelectorAll('img');
-    imgElements.forEach((img) => {
+    imgElements.forEach((img, index) => {
       // Skip if already optimized
       if (img.hasAttribute('data-optimized')) return;
       
-      // Add responsive loading attributes
-      img.loading = 'lazy';
+      // First image should load eagerly for better LCP, others lazily
+      img.loading = index === 0 ? 'eager' : 'lazy';
       img.decoding = 'async';
       
       // Add responsive sizes for better performance
@@ -323,17 +324,13 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         }}>
           {/* Optimized Featured Image */}
           {brief?.featured_image_url && (
-            <img
+            <Image
               src={brief.featured_image_url}
               alt={brief.title || 'Brief featured image'}
-              loading="eager"
-              decoding="async"
+              fill
+              priority={true}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
                 objectFit: 'cover',
                 objectPosition: 'center',
                 zIndex: 0

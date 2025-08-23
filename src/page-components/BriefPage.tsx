@@ -59,7 +59,6 @@ import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import ScrollingPopup from '../components/ScrollingPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
-import Image from 'next/image';
 
 
 interface BriefPageProps {
@@ -324,13 +323,17 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         }}>
           {/* Optimized Featured Image */}
           {brief?.featured_image_url && (
-            <Image
+            <img
               src={brief.featured_image_url}
               alt={brief.title || 'Brief featured image'}
-              fill
-              priority={true}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+              loading="eager"
+              decoding="async"
               style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
                 objectFit: 'cover',
                 objectPosition: 'center',
                 zIndex: 0

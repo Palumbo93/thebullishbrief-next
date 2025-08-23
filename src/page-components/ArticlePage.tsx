@@ -18,7 +18,6 @@ import { ShareSheet } from '../components/ShareSheet';
 import { DesktopBanner } from '../components/DesktopBanner';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 import { ArticleSkeleton } from '../components/ArticleSkeleton';
-import Image from 'next/image';
 
 interface ArticlePageProps {
   articleId: number | string;
@@ -296,13 +295,17 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       }}>
         {/* Optimized Featured Image */}
         {article.image && (
-          <Image
+          <img
             src={article.image}
             alt={article.title || 'Article featured image'}
-            fill
-            priority={true}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+            loading="eager"
+            decoding="async"
             style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
               objectFit: 'cover',
               objectPosition: 'center',
               zIndex: 0

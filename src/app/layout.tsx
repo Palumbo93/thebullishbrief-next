@@ -84,6 +84,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://s3.tradingview.com" />
         <link rel="preconnect" href="https://www.tradingview-widget.com" />
         <link rel="preconnect" href="https://s3-symbol-logo.tradingview.com" />
+        <link rel="preconnect" href="https://www.clarity.ms" />
         
         {/* Datafa.st Analytics */}
         <script 
@@ -91,6 +92,19 @@ export default function RootLayout({
           src="https://datafa.st/js/script.js" 
           data-website-id="689dde00a1c832b545b78a9f"
           data-domain="bullishbrief.com"
+        />
+        
+        {/* Microsoft Clarity - Heatmaps Only (Cookie-Free) */}
+        <script type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "t0h9wf1q4x");
+            `
+          }}
         />
       </head>
       <body className={`${archivo.variable}`}>

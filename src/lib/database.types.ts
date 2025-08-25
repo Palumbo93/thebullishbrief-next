@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -225,6 +225,20 @@ export type Database = {
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "article_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       articles: {
@@ -386,6 +400,20 @@ export type Database = {
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       brief_views: {
@@ -424,6 +452,20 @@ export type Database = {
             referencedRelation: "briefs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "brief_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brief_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       briefs: {
@@ -436,6 +478,7 @@ export type Database = {
           featured: boolean | null
           featured_image_alt: string | null
           featured_image_url: string | null
+          featured_video_thumbnail: string | null
           id: string
           investor_deck_url: string | null
           published_at: string | null
@@ -461,6 +504,7 @@ export type Database = {
           featured?: boolean | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
+          featured_video_thumbnail?: string | null
           id?: string
           investor_deck_url?: string | null
           published_at?: string | null
@@ -486,6 +530,7 @@ export type Database = {
           featured?: boolean | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
+          featured_video_thumbnail?: string | null
           id?: string
           investor_deck_url?: string | null
           published_at?: string | null
@@ -594,6 +639,7 @@ export type Database = {
           emoji: string
           id: string
           message_id: string
+          room_id: string
           user_id: string
         }
         Insert: {
@@ -601,6 +647,7 @@ export type Database = {
           emoji: string
           id?: string
           message_id: string
+          room_id: string
           user_id: string
         }
         Update: {
@@ -608,6 +655,7 @@ export type Database = {
           emoji?: string
           id?: string
           message_id?: string
+          room_id?: string
           user_id?: string
         }
         Relationships: [
@@ -616,6 +664,20 @@ export type Database = {
             columns: ["message_id"]
             isOneToOne: false
             referencedRelation: "bull_room_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bull_room_reactions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "bull_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bull_room_reactions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "bull_rooms_stats"
             referencedColumns: ["id"]
           },
           {
@@ -763,6 +825,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      emails: {
+        Row: {
+          created_date: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_date?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_date?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
       }
       profile_operation_logs: {
         Row: {
@@ -937,6 +1017,68 @@ export type Database = {
         }
         Relationships: []
       }
+      user_restrictions: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          reason: string | null
+          restricted_by: string
+          restriction_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          reason?: string | null
+          restricted_by: string
+          restriction_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          reason?: string | null
+          restricted_by?: string
+          restriction_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_restrictions_restricted_by_fkey"
+            columns: ["restricted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_restrictions_restricted_by_fkey"
+            columns: ["restricted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_restrictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_restrictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           expires_at: string | null
@@ -1035,16 +1177,16 @@ export type Database = {
         Returns: number
       }
       get_personalized_articles: {
-        Args: { user_uuid: string; limit_count?: number }
+        Args: { limit_count?: number; user_uuid: string }
         Returns: {
           article_id: string
-          title: string
-          subtitle: string
-          category_name: string
           author_name: string
+          category_name: string
           published_at: string
-          view_count: number
           relevance_score: number
+          subtitle: string
+          title: string
+          view_count: number
         }[]
       }
       get_user_preferences: {
@@ -1054,51 +1196,51 @@ export type Database = {
       get_user_profile_basic: {
         Args: { user_id: string }
         Returns: {
-          id: string
-          username: string
           created_at: string
+          id: string
           updated_at: string
+          username: string
         }[]
       }
       get_user_profile_by_email: {
         Args: { user_email: string }
         Returns: {
-          id: string
+          created_at: string
           email: string
-          username: string
           email_verified: boolean
-          subscription_tier: string
+          id: string
           newsletter_subscribed: boolean
           preferences: Json
-          created_at: string
+          subscription_tier: string
           updated_at: string
+          username: string
         }[]
       }
       get_user_profile_public: {
         Args: { user_id: string }
         Returns: {
-          id: string
-          username: string
           bio: string
+          created_at: string
+          id: string
           profile_image: string
           twitter_handle: string
-          created_at: string
+          username: string
         }[]
       }
       get_user_profiles_basic: {
         Args: { user_ids: string[] }
         Returns: {
-          id: string
-          username: string
           created_at: string
+          id: string
           updated_at: string
+          username: string
         }[]
       }
       get_user_roles: {
         Args: { user_uuid: string }
         Returns: {
-          role_name: string
           permissions: Json
+          role_name: string
         }[]
       }
       get_user_username: {
@@ -1114,10 +1256,10 @@ export type Database = {
       }
       log_profile_operation: {
         Args: {
-          operation: string
-          user_id?: string
-          profile_id?: string
           details?: Json
+          operation: string
+          profile_id?: string
+          user_id?: string
         }
         Returns: undefined
       }
@@ -1125,8 +1267,8 @@ export type Database = {
         Args: {
           p_brief_id: string
           p_ip_address: string
-          p_user_id?: string
           p_time_window?: unknown
+          p_user_id?: string
         }
         Returns: boolean
       }
@@ -1134,8 +1276,8 @@ export type Database = {
         Args: {
           p_article_id: string
           p_ip_address: string
-          p_user_id?: string
           p_time_window?: unknown
+          p_user_id?: string
         }
         Returns: boolean
       }
@@ -1156,15 +1298,19 @@ export type Database = {
         Returns: undefined
       }
       update_user_preferences: {
-        Args: { user_uuid: string; new_preferences: Json }
+        Args: { new_preferences: Json; user_uuid: string }
         Returns: boolean
       }
       user_has_permission: {
-        Args: { user_uuid: string; resource: string; action: string }
+        Args: { action: string; resource: string; user_uuid: string }
+        Returns: boolean
+      }
+      user_has_restriction: {
+        Args: { p_restriction_type: string; p_user_id: string }
         Returns: boolean
       }
       user_has_role: {
-        Args: { user_uuid: string; role_name: string }
+        Args: { role_name: string; user_uuid: string }
         Returns: boolean
       }
     }

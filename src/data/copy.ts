@@ -12,6 +12,7 @@ export const BRAND_COPY = {
     signUp: {
       title: "Always Ahead. Always Bullish.",
       features: [
+        "Get The Bullish Brief Sent Straight to Your Inbox",
         "Real-time market discussions with serious traders",
         "Elite AI prompts to get the most out of LLMs",
         "Free to join, no subscription required"

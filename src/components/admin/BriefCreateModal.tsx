@@ -43,6 +43,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     status: 'draft' as 'draft' | 'published',
     published_at: '',
     video_url: '',
+    featured_video_thumbnail: '',
     show_cta: false,
     tickers: '',
     widget_code: '',
@@ -801,7 +802,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
             {/* Brief Options */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
+              gridTemplateColumns: '1fr 1fr 1fr',
               gap: 'var(--space-4)'
             }}>
               {/* Video URL */}
@@ -834,6 +835,36 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 />
               </div>
 
+              {/* Video Thumbnail URL */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Video Thumbnail URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.featured_video_thumbnail}
+                  onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  placeholder="https://example.com/video-thumb.jpg"
+                />
+              </div>
+
               {/* Investor Deck URL */}
               <div>
                 <label style={{
@@ -863,8 +894,6 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   placeholder="https://example.com/deck.pdf"
                 />
               </div>
-
-
             </div>
 
             {/* Tickers and Widget */}

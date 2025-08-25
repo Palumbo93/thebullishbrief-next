@@ -172,6 +172,46 @@ export const useTrackBriefScrolling = () => {
         popup_type: popupType,
         page_type: 'brief'
       });
+    },
+    trackPageScrollStarted: async (briefId: string, briefTitle: string) => {
+      await trackGoal('page_scroll_started', { 
+        brief_id: briefId,
+        brief_title: briefTitle,
+        page_type: 'brief'
+      });
+    }
+  };
+};
+
+/**
+ * Hook for tracking video interactions with Datafa.st
+ */
+export const useTrackVideoInteractions = () => {
+  return {
+    trackVideoClick: async (briefId: string, briefTitle: string, videoUrl: string, clickSource: string = 'thumbnail') => {
+      await trackGoal('video_clicked', { 
+        brief_id: briefId,
+        brief_title: briefTitle,
+        video_url: videoUrl,
+        click_source: clickSource,
+        page_type: 'brief'
+      });
+    },
+    trackVideoModalOpened: async (briefId: string, briefTitle: string, videoUrl: string) => {
+      await trackGoal('video_modal_opened', { 
+        brief_id: briefId,
+        brief_title: briefTitle,
+        video_url: videoUrl,
+        page_type: 'brief'
+      });
+    },
+    trackVideoModalClosed: async (briefId: string, briefTitle: string, videoUrl: string) => {
+      await trackGoal('video_modal_closed', { 
+        brief_id: briefId,
+        brief_title: briefTitle,
+        video_url: videoUrl,
+        page_type: 'brief'
+      });
     }
   };
 };

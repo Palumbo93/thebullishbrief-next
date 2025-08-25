@@ -4,8 +4,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefView } from '../hooks/useBriefViews';
-import { useTrackBriefEngagement, useTrackBriefScrolling } from '../hooks/useDatafastAnalytics';
-import { ArrowLeft, User, Calendar } from 'lucide-react';
+import { useTrackBriefEngagement, useTrackBriefScrolling, useTrackVideoInteractions } from '../hooks/useDatafastAnalytics';
+import { ArrowLeft, User, Calendar, Clock, Play, Pause } from 'lucide-react';
 
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
@@ -59,6 +59,7 @@ import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import ScrollingPopup from '../components/ScrollingPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
+import { VideoModal } from '../components/VideoModal';
 import Image from 'next/image';
 
 
@@ -87,12 +88,15 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     }
   };
   const { trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
-  const { trackBriefScrolledHalfway, trackPopupView } = useTrackBriefScrolling();
+  const { trackBriefScrolledHalfway, trackPopupView, trackPageScrollStarted } = useTrackBriefScrolling();
+  const { trackVideoClick, trackVideoModalOpened, trackVideoModalClosed } = useTrackVideoInteractions();
 
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   const [hasTrackedHalfway, setHasTrackedHalfway] = React.useState(false);
   const [contentProcessed, setContentProcessed] = React.useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = React.useState(false);
+  const [hasTrackedScrollStart, setHasTrackedScrollStart] = React.useState(false);
   
 
 
@@ -108,6 +112,12 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       const scrollTop = window.scrollY;
       setIsScrolled(scrollTop > 50);
       
+      // Track initial scroll start (when user scrolls more than 100px)
+      if (!hasTrackedScrollStart && scrollTop > 100 && brief?.id && brief?.title) {
+        setHasTrackedScrollStart(true);
+        trackPageScrollStarted(String(brief.id), brief.title);
+      }
+      
       // Track halfway scroll for engagement analytics
       if (!hasTrackedHalfway && brief?.id && brief?.title) {
         const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -122,7 +132,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasTrackedHalfway, brief?.id, brief?.title, trackBriefScrolledHalfway]);
+  }, [hasTrackedHalfway, hasTrackedScrollStart, brief?.id, brief?.title, trackBriefScrolledHalfway, trackPageScrollStarted]);
 
   // Track brief view when component mounts
   React.useEffect(() => {
@@ -136,6 +146,28 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   React.useEffect(() => {
     setContentProcessed(false);
   }, [brief?.content]);
+
+  // Handle video modal open
+  const handleVideoClick = () => {
+    if (brief?.video_url && brief?.id && brief?.title) {
+      // Track video click
+      trackVideoClick(String(brief.id), brief.title, brief.video_url, 'thumbnail');
+      
+      // Track modal opened
+      trackVideoModalOpened(String(brief.id), brief.title, brief.video_url);
+      
+      setIsVideoModalOpen(true);
+    }
+  };
+
+  // Handle video modal close
+  const handleVideoModalClose = () => {
+    if (brief?.video_url && brief?.id && brief?.title) {
+      // Track modal closed
+      trackVideoModalClosed(String(brief.id), brief.title, brief.video_url);
+    }
+    setIsVideoModalOpen(false);
+  };
 
 
 
@@ -412,6 +444,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               </p>
             )}
             
+            
           </div>
         </div>
 
@@ -435,13 +468,125 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Calendar style={{ width: '14px', height: '14px' }} />
-              <span>{(brief as any)?.date || new Date(brief?.created_at || new Date()).toLocaleDateString('en-US', {
+              <span>{new Date().toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
               })}</span>
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Clock style={{ width: '14px', height: '14px' }} />
+              <span>4 min</span>
+            </div>
+            
           </div>
+
+          {/* Subtitle - Clean callout style */}
+          {brief?.subtitle && (
+            <div style={{
+              background: 'var(--color-bg-secondary)',
+              border: '0.5px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)',
+              padding: 'var(--space-6) var(--space-8)',
+              marginBottom: 'var(--space-8)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Subtle accent border */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '4px',
+                height: '100%',
+                background: 'var(--color-success)',
+                opacity: 0.6
+              }} />
+              
+              <div style={{
+                fontSize: 'var(--text-xl)',
+                fontWeight: 'var(--font-light)',
+                lineHeight: 'var(--leading-tight)',
+                color: 'var(--color-text-primary)',
+                letterSpacing: '-0.01em',
+                textAlign: 'left',
+                margin: 0
+              }}>
+                {brief.subtitle}
+              </div>
+            </div>
+          )}
+
+          {/* Video Thumbnail - Above Article Content */}
+          {brief?.video_url && (
+            <div 
+              style={{
+                position: 'relative',
+                overflow: 'hidden',
+                marginBottom: 'var(--space-8)',
+                borderRadius: 'var(--radius-lg)',
+                backgroundColor: 'var(--color-bg-secondary)',
+                cursor: 'pointer',
+                aspectRatio: '16/9', // Standard video aspect ratio
+                maxWidth: '100%'
+              }}
+              onClick={handleVideoClick}
+            >
+              {/* Video Thumbnail */}
+              <img
+                src={brief.featured_video_thumbnail || brief.featured_image_url || ''}
+                alt={brief.title || 'Video thumbnail'}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  zIndex: 0,
+                  borderRadius: 'var(--radius-lg)'
+                }}
+              />
+              
+              {/* Play Button Overlay */}
+              <button
+                onClick={handleVideoClick}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 2,
+                  background: 'rgba(0, 0, 0, 0.7)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '80px',
+                  height: '80px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
+                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
+                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                }}
+              >
+                <Play 
+                  size={32} 
+                  color="white" 
+                  fill="white"
+                  style={{ marginLeft: '4px' }} 
+                />
+              </button>
+            </div>
+          )}
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none brief-content-container">
@@ -503,8 +648,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       
       {/* Mobile Scrolling Popup - Only shows on mobile */}
       <ScrollingPopup
-        triggerScrollPercentage={40}
-        hideAfterScrollPercentage={60}
+        triggerScrollPercentage={30}
+        hideAfterScrollPercentage={50}
         showDelay={0}
         onPopupViewed={() => {
           if (brief?.id && brief?.title) {
@@ -545,6 +690,16 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               trackAnalyticsShare(String(brief.id), brief.title, platform);
             }
           }}
+        />
+      )}
+      
+      {/* Video Modal */}
+      {brief?.video_url && (
+        <VideoModal
+          isOpen={isVideoModalOpen}
+          onClose={handleVideoModalClose}
+          videoUrl={brief.video_url}
+          title={brief.title}
         />
       )}
       

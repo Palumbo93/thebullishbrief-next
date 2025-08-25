@@ -39,8 +39,8 @@ const MediaComponent: React.FC<MediaComponentProps> = ({ brief, isMobile = false
         // Video with play button overlay
         <>
           <video
-            src={brief.video_url}
-            poster={brief.featured_video_thumbnail || brief.featured_image_url || undefined}
+            src={brief.video_thumbnail_url || brief.video_url}
+            poster={brief.featured_video_thumbnail || undefined}
             style={{
               width: '100%',
               height: '100%',

@@ -47,6 +47,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     published_at: '',
     video_url: '',
     featured_video_thumbnail: '',
+    video_thumbnail_url: '',
     show_cta: false,
     tickers: '',
     widget_code: '',
@@ -73,6 +74,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         published_at: (brief as any).published_at ? new Date((brief as any).published_at).toISOString().slice(0, 16) : '',
         video_url: brief.video_url || '',
         featured_video_thumbnail: (brief as any).featured_video_thumbnail || '',
+        video_thumbnail_url: (brief as any).video_thumbnail_url || '',
         show_cta: brief.show_cta || false,
         tickers: brief.tickers ? JSON.stringify(brief.tickers, null, 2) : '',
         widget_code: brief.widget_code || '',
@@ -139,6 +141,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
       formData.disclaimer !== (brief.disclaimer || '') ||
       formData.video_url !== (brief.video_url || '') ||
       formData.featured_video_thumbnail !== ((brief as any).featured_video_thumbnail || '') ||
+      formData.video_thumbnail_url !== ((brief as any).video_thumbnail_url || '') ||
       formData.show_cta !== (brief.show_cta || false) ||
       formData.widget_code !== (brief.widget_code || '') ||
       formData.investor_deck_url !== (brief.investor_deck_url || '') ||
@@ -821,7 +824,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
             {/* Brief Options */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr 1fr',
+              gridTemplateColumns: '1fr 1fr 1fr',
               gap: 'var(--space-4)'
             }}>
               {/* Video URL */}
@@ -851,36 +854,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     transition: 'all var(--transition-base)'
                   }}
                   placeholder="https://example.com/video.mp4"
-                />
-              </div>
-
-              {/* Video Thumbnail URL */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Video Thumbnail URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.featured_video_thumbnail}
-                  onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/video-thumb.jpg"
                 />
               </div>
 
@@ -942,6 +915,87 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     transition: 'all var(--transition-base)'
                   }}
                 />
+              </div>
+            </div>
+
+            {/* Video Thumbnail Section */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 'var(--space-4)'
+            }}>
+              {/* Featured Video Thumbnail (for BriefPage modal) */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Featured Video Thumbnail
+                </label>
+                <input
+                  type="url"
+                  value={formData.featured_video_thumbnail}
+                  onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  placeholder="https://example.com/featured-video-thumb.jpg"
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Used for video thumbnail on BriefPage
+                </p>
+              </div>
+
+              {/* Card Preview Video */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Card Preview Video
+                </label>
+                <input
+                  type="url"
+                  value={formData.video_thumbnail_url}
+                  onChange={(e) => handleChange('video_thumbnail_url', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  placeholder="https://example.com/preview-video.mp4"
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Short video clip used as preview in FeaturedBriefCard
+                </p>
               </div>
             </div>
 

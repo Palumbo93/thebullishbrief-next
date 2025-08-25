@@ -491,6 +491,7 @@ export type Database = {
           tickers: Json | null
           title: string
           updated_at: string | null
+          video_thumbnail_url: string | null
           video_url: string | null
           view_count: number | null
           widget_code: string | null
@@ -517,6 +518,7 @@ export type Database = {
           tickers?: Json | null
           title: string
           updated_at?: string | null
+          video_thumbnail_url?: string | null
           video_url?: string | null
           view_count?: number | null
           widget_code?: string | null
@@ -543,6 +545,7 @@ export type Database = {
           tickers?: Json | null
           title?: string
           updated_at?: string | null
+          video_thumbnail_url?: string | null
           video_url?: string | null
           view_count?: number | null
           widget_code?: string | null

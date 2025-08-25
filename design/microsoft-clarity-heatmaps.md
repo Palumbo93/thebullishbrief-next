@@ -33,44 +33,59 @@ We want to gain deeper insights into user behavior through session recordings an
 
 ### Technical Implementation
 
-#### 1. Clarity Configuration
+#### 1. Page-Specific Loading Strategy
 ```typescript
-// Cookie-free Clarity configuration
-window.clarity = window.clarity || function() {
-  (window.clarity.q = window.clarity.q || []).push(arguments);
-};
+// ClarityScript Component - Only loads on specific pages
+'use client';
+import { useEffect } from 'react';
 
-// Disable cookies explicitly
-clarity('set', 'cookies', false);
-clarity('set', 'track', false); // Disable analytics tracking
+export function ClarityScript({ projectId = 't0h9wf1q4x' }) {
+  useEffect(() => {
+    // Load Clarity script with cookie-free configuration
+    (function(c, l, a, r, i, t, y) {
+      c[a] = c[a] || function() {
+        (c[a].q = c[a].q || []).push(arguments);
+      };
+      // ... script loading logic
+      // Configure for heatmaps only, no cookies
+      c[a]('set', 'cookies', false);
+      c[a]('set', 'track', false);
+    })(window, document, "clarity", "script", projectId);
+  }, [projectId]);
+  
+  return null;
+}
 ```
 
-#### 2. Script Loading Strategy
-```html
-<!-- Load Clarity script asynchronously -->
-<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        // Configure for heatmaps only, no cookies
-        c[a]('set', 'cookies', false);
-        c[a]('set', 'track', false);
-    })(window, document, "clarity", "script", "PROJECT_ID");
-</script>
+#### 2. Brief Page Integration
+```typescript
+// BriefPage.tsx - Load Clarity only on brief pages
+import { ClarityScript } from '../components/ClarityScript';
+
+export default function BriefPage({ briefSlug }: BriefPageProps) {
+  return (
+    <Layout>
+      {/* Brief content */}
+      
+      {/* Load Microsoft Clarity for heatmaps on brief pages */}
+      <ClarityScript />
+    </Layout>
+  );
+}
 ```
 
-#### 3. Integration Points
+#### 3. Configuration Benefits
 
-**Layout Integration (app/layout.tsx):**
-- Add Clarity script to `<head>` section
-- Configure cookie-free mode immediately
-- Load asynchronously to avoid blocking
+**Focused Data Collection:**
+- Only brief pages load Clarity
+- Reduced script loading across the site
+- More targeted heatmap and session recording data
+- Better performance on other pages
 
-**No Component Changes Required:**
-- Clarity automatically captures interactions
-- No manual event tracking needed
-- Works purely through DOM observation
+**Cookie-Free Configuration:**
+- `clarity('set', 'cookies', false)` - No cookies set
+- `clarity('set', 'track', false)` - No analytics tracking
+- Only heatmaps and session recordings captured
 
 ## Implementation Plan
 

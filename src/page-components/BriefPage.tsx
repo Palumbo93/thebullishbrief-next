@@ -3,9 +3,9 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
-import { useTrackBriefView, useBriefViewCount } from '../hooks/useBriefViews';
+import { useTrackBriefView } from '../hooks/useBriefViews';
 import { useTrackBriefEngagement, useTrackBriefScrolling } from '../hooks/useDatafastAnalytics';
-import { ArrowLeft, User, Calendar, Clock, Eye } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Clock } from 'lucide-react';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
@@ -76,7 +76,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const { theme } = useTheme();
   const { data: brief, isLoading, error } = useBriefBySlug(briefSlug);
   const trackView = useTrackBriefView();
-  const { data: viewCount } = useBriefViewCount(brief?.id ? String(brief.id) : '');
   
   const handleBack = () => {
     if (typeof window !== 'undefined') {
@@ -442,10 +441,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Clock style={{ width: '14px', height: '14px' }} />
               <span>{formatReadingTime(readingTime)}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-              <Eye style={{ width: '14px', height: '14px' }} />
-              <span>{viewCount?.toLocaleString() || brief?.view_count || 0}</span>
             </div>
           </div>
 

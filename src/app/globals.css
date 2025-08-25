@@ -443,6 +443,21 @@ body {
   height: auto;
   border-radius: var(--radius-md);
   margin: 1em 0;
+  display: block;
+  /* Prevent flickering during loading */
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Prevent layout shift in brief content */
+.brief-content-container .html-content img {
+  /* Reserve space for images to prevent layout shift */
+  min-height: 200px;
+  background-color: var(--color-bg-secondary);
+}
+
+.brief-content-container .html-content img[data-optimized] {
+  min-height: auto;
 }
 
 .html-content hr {

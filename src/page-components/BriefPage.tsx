@@ -92,6 +92,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   const [hasTrackedHalfway, setHasTrackedHalfway] = React.useState(false);
+  const [contentProcessed, setContentProcessed] = React.useState(false);
   
   // Calculate reading time from brief content
   const readingTime = React.useMemo(() => {
@@ -134,6 +135,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     }
   }, [brief?.id, brief?.title]);
 
+  // Reset content processing when brief content changes
+  React.useEffect(() => {
+    setContentProcessed(false);
+  }, [brief?.content]);
+
 
 
 
@@ -152,7 +158,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
    * 
    * @param el - The HTML element containing images to optimize
    */
-  const optimizeContentImages = (el: HTMLElement) => {
+  const optimizeContentImages = React.useCallback((el: HTMLElement) => {
     const imgElements = el.querySelectorAll('img');
     imgElements.forEach((img, index) => {
       // Skip if already optimized
@@ -175,7 +181,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       // Mark as optimized to prevent re-processing
       img.setAttribute('data-optimized', 'true');
     });
-  };
+  }, []);
 
   /**
    * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
@@ -445,7 +451,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           </div>
 
           {/* Content */}
-          <div className="prose prose-invert prose-lg max-w-none">
+          <div className="prose prose-invert prose-lg max-w-none brief-content-container">
             {brief?.content ? (
               <div 
                 className="html-content"
@@ -453,7 +459,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                   __html: brief.content
                 }}
                 ref={(el) => {
-                  if (el) {
+                  if (el && !contentProcessed) {
                     // Add IDs to H2 headings for TOC functionality
                     const h2Elements = el.querySelectorAll('h2');
                     h2Elements.forEach((h2, index) => {
@@ -475,6 +481,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
                     // Optimize images in content for better performance
                     optimizeContentImages(el);
+                    setContentProcessed(true);
                   }
                 }}
               />

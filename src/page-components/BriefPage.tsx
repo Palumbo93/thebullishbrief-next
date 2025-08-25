@@ -352,6 +352,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           overflow: 'hidden',
           marginBottom: 'var(--space-8)',
           minHeight: '250px',
+          
           display: 'flex',
           alignItems: 'flex-end',
           backgroundColor: 'var(--color-bg-secondary)', // Skeleton background

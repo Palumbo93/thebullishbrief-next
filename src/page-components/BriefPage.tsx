@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefView } from '../hooks/useBriefViews';
 import { useTrackBriefEngagement, useTrackBriefScrolling } from '../hooks/useDatafastAnalytics';
-import { ArrowLeft, User, Calendar, Clock } from 'lucide-react';
-import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import { ArrowLeft, User, Calendar } from 'lucide-react';
+
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
 import dynamic from 'next/dynamic';
@@ -94,10 +94,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const [hasTrackedHalfway, setHasTrackedHalfway] = React.useState(false);
   const [contentProcessed, setContentProcessed] = React.useState(false);
   
-  // Calculate reading time from brief content
-  const readingTime = React.useMemo(() => {
-    return brief?.content ? calculateReadingTime(brief.content) : 5;
-  }, [brief?.content]);
+
 
   // Theme-aware gradient overlay
   const getGradientOverlay = React.useMemo(() => {
@@ -425,7 +422,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           margin: '0 auto'
         }}>
 
-          {/* Meta Info - Date and Reading Time */}
+          {/* Meta Info - Date */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -443,10 +440,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 month: 'short',
                 day: 'numeric'
               })}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-              <Clock style={{ width: '14px', height: '14px' }} />
-              <span>{formatReadingTime(readingTime)}</span>
             </div>
           </div>
 

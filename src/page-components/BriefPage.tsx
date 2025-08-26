@@ -60,6 +60,7 @@ import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import ScrollingPopup from '../components/ScrollingPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
 import { VideoModal } from '../components/VideoModal';
+import { ClarityHead } from '../components/ClarityHead';
 
 import Image from 'next/image';
 
@@ -705,18 +706,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         />
       )}
       
-      {/* Microsoft Clarity - Heatmaps Only */}
-      <script type="text/javascript"
-        dangerouslySetInnerHTML={{
-          __html: `
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "t0h9wf1q4x");
-          `
-        }}
-      />
+      {/* Microsoft Clarity in <head> for brief pages */}
+      <ClarityHead />
     </Layout>
   );
 };

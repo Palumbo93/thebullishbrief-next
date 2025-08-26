@@ -60,7 +60,7 @@ import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import ScrollingPopup from '../components/ScrollingPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
 import { VideoModal } from '../components/VideoModal';
-import { ClarityHead } from '../components/ClarityHead';
+
 
 import Image from 'next/image';
 
@@ -705,9 +705,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           title={brief.title}
         />
       )}
-      
-      {/* Microsoft Clarity in <head> for brief pages */}
-      <ClarityHead />
+
     </Layout>
   );
 };

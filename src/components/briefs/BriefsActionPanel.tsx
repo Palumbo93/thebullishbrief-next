@@ -34,6 +34,10 @@ interface BriefsActionPanelProps {
   investorDeckUrl?: string; // Investor deck URL
   isMobileOverlay?: boolean; // Whether this panel is being used in mobile overlay
   onClose?: () => void; // Close handler for mobile overlay
+  videoUrl?: string; // Video URL when video should appear in action panel
+  videoThumbnail?: string; // Video thumbnail URL
+  videoTitle?: string; // Video title for accessibility
+  onVideoClick?: () => void; // Video click handler
 }
 
 const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({ 
@@ -47,7 +51,11 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   companyName = 'Company',
   investorDeckUrl,
   isMobileOverlay = false,
-  onClose
+  onClose,
+  videoUrl,
+  videoThumbnail,
+  videoTitle,
+  onVideoClick
 }) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const tocRef = useRef<HTMLDivElement>(null);
@@ -171,6 +179,72 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
         {/* Sticky Join Button - Only show if user is not logged in */}
         {!user && <JoinButton onSignUpClick={onSignUpClick} />}
+
+        {/* Featured Video - Only show when feature_featured_video is false */}
+        {videoUrl && videoThumbnail && onVideoClick && (
+          <div className="briefs-video-section">
+            <h3 className="briefs-section-title">Featured Video</h3>
+            <div 
+              className="briefs-video-thumbnail"
+              onClick={onVideoClick}
+              style={{
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--color-bg-secondary)',
+                cursor: 'pointer',
+                aspectRatio: '16/9',
+              }}
+            >
+              {/* Video Thumbnail */}
+              <img
+                src={videoThumbnail}
+                alt={videoTitle || 'Video thumbnail'}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  borderRadius: 'var(--radius-md)'
+                }}
+              />
+              
+              {/* Play Button Overlay */}
+              <button
+                onClick={onVideoClick}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 2,
+                  background: 'rgba(0, 0, 0, 0.7)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '60px',
+                  height: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
+                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
+                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Quick Links */}
         <div className="briefs-quick-links" style={{ padding: '2rem 1.5rem' }}>
@@ -451,6 +525,22 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           color: var(--color-success);
           font-size: 10px;
           font-weight: bold;
+        }
+        
+        /* Video Section Styles */
+        .briefs-video-section {
+          padding: 2rem 1.5rem;
+          border-top: 0.5px solid var(--color-border-primary);
+          border-bottom: 0.5px solid var(--color-border-primary);
+        }
+        
+        .briefs-video-thumbnail {
+          transition: all 0.3s ease;
+        }
+        
+        .briefs-video-thumbnail:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
         
 

@@ -102,11 +102,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   
 
 
-  // Theme-aware gradient overlay
-  const getGradientOverlay = React.useMemo(() => {
-    const baseColor = theme === 'light' ? '255, 255, 255' : '0, 0, 0';
-    return `linear-gradient(to bottom, rgba(${baseColor}, 0.3) 0%, rgba(${baseColor}, 0.6) 40%, rgba(${baseColor}, 0.85) 70%, rgba(${baseColor}, 0.95) 85%, rgba(${baseColor}, 1) 100%)`;
-  }, [theme]);
+
   
   // Handle scroll for header background and tracking
   React.useEffect(() => {
@@ -304,8 +300,26 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     tickers: brief.tickers,
     companyName: brief.company_name || undefined,
     companyLogoUrl: brief.company_logo_url || undefined,
-    investorDeckUrl: brief.investor_deck_url || undefined
+    investorDeckUrl: brief.investor_deck_url || undefined,
+    // Include video data when feature_featured_video is false (video goes in action panel)
+    videoUrl: (!brief.feature_featured_video && brief.video_url) ? brief.video_url : undefined,
+    videoThumbnail: (!brief.feature_featured_video && brief.video_url) ? (brief.featured_video_thumbnail || brief.featured_image_url) : undefined,
+    videoTitle: (!brief.feature_featured_video && brief.video_url) ? brief.title : undefined,
+    onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined
   } : undefined;
+
+  // Debug logging to check values
+  React.useEffect(() => {
+    if (brief) {
+      console.log('Brief data:', {
+        id: brief.id,
+        title: brief.title,
+        feature_featured_video: brief.feature_featured_video,
+        video_url: brief.video_url,
+        shouldShowVideoInPanel: !brief.feature_featured_video && !!brief.video_url
+      });
+    }
+  }, [brief]);
 
   const mobileHeaderProps = brief ? {
     companyName: brief.company_name || undefined,
@@ -348,106 +362,37 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           ]}
         />
 
-        {/* Brief Header with Background Image */}
+        {/* Brief Header - Clean text-only header */}
         <div style={{
-          position: 'relative',
-          overflow: 'hidden',
-          marginBottom: 'var(--space-8)',
-          minHeight: '250px',
-          
-          display: 'flex',
-          alignItems: 'flex-end',
-          backgroundColor: 'var(--color-bg-secondary)', // Skeleton background
+          padding: 'var(--space-16) var(--content-padding) var(--space-8) var(--content-padding)',
+          maxWidth: '800px',
+          margin: '0 auto',
         }}>
-          {/* Optimized Featured Image */}
-          {brief?.featured_image_url && (
-            <Image
-              src={brief.featured_image_url}
-              alt={brief.title || 'Brief featured image'}
-              fill
-              priority={true}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
-              style={{
-                objectFit: 'cover',
-                objectPosition: 'center',
-                zIndex: 0
-              }}
-            />
-          )}
-          
-          {/* Gradient Overlay */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: getGradientOverlay,
-            zIndex: 1
-          }} />
-          
-          {/* Grain Texture Overlay */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: theme === 'light' ? `
-              radial-gradient(circle at 25% 25%, rgba(0,0,0,0.02) 1px, transparent 1px),
-              radial-gradient(circle at 75% 75%, rgba(0,0,0,0.02) 1px, transparent 1px)
-            ` : `
-              radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px),
-              radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px)
-            `,
-            backgroundSize: '8px 8px, 8px 8px',
-            backgroundPosition: '0 0, 4px 4px',
-            opacity: 0.5,
-            pointerEvents: 'none',
-            zIndex: 2
-          }} />
-          
-          {/* Content */}
-          <div style={{
-            position: 'relative',
-            zIndex: 3,
-            height: '100%',
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            alignItems: 'flex-start',
-            padding: 'var(--space-16) var(--content-padding) 0 var(--content-padding)',
-            maxWidth: '800px',
-            margin: '0 auto',
+          {/* Title */}
+          <h1 style={{
+            fontSize: 'var(--brief-headline-size-desktop)',
+            fontWeight: 'var(--font-bold)',
+            lineHeight: 'var(--leading-tight)',
+            color: 'var(--color-text-primary)',
+            marginBottom: 'var(--space-4)',
+            letterSpacing: '-0.01em'
           }}>
+            {brief?.title}
+          </h1>
 
-
-            {/* Title */}
-            <h1 style={{
-              fontSize: 'var(--headline-size-desktop)',
-              fontWeight: 'var(--font-bold)',
-              lineHeight: 'var(--leading-tight)',
-              color: 'var(--color-text-primary)',
+          {/* Disclaimer - Simple one-liner */}
+          {brief?.disclaimer && (
+            <p style={{
+              fontSize: 'var(--text-base)',
+              color: 'var(--color-text-secondary)',
               marginBottom: 'var(--space-4)',
-              letterSpacing: '-0.01em'
+              opacity: 0.8,
+              fontStyle: 'italic',
+              fontWeight: 'var(--font-light)'
             }}>
-              {brief?.title}
-            </h1>
-
-            {/* Disclaimer - Simple one-liner */}
-            {brief?.disclaimer && (
-              <p style={{
-                fontSize: 'var(--text-base)',
-                color: 'var(--color-text-secondary)',
-                marginBottom: 'var(--space-4)',
-                opacity: 0.8,
-                fontStyle: 'italic',
-                fontWeight: 'var(--font-light)'
-              }}>
-                {brief.disclaimer}
-              </p>
-            )}
-            
-            
-          </div>
+              {brief.disclaimer}
+            </p>
+          )}
         </div>
 
         {/* Main Content */}
@@ -519,8 +464,9 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             </div>
           )}
 
-          {/* Video Thumbnail - Above Article Content */}
-          {brief?.video_url && (
+          {/* Featured Media - Video or Image based on feature_featured_video flag */}
+          {brief?.feature_featured_video && brief?.video_url ? (
+            // Featured Video - Replaces featured image when feature_featured_video is true
             <div 
               style={{
                 position: 'relative',
@@ -529,7 +475,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 borderRadius: 'var(--radius-lg)',
                 backgroundColor: 'var(--color-bg-secondary)',
                 cursor: 'pointer',
-                aspectRatio: '16/9', // Standard video aspect ratio
+                aspectRatio: '16/9',
                 maxWidth: '100%'
               }}
               onClick={handleVideoClick}
@@ -588,16 +534,41 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 />
               </button>
             </div>
-          )}
+          ) : brief?.featured_image_url ? (
+            // Featured Image - Shows when feature_featured_video is false or no video_url
+            <div style={{
+              marginBottom: 'var(--space-8)',
+              overflow: 'hidden'
+            }}>
+              <Image
+                src={brief.featured_image_url}
+                alt={brief.title || 'Brief featured image'}
+                width={800}
+                height={400}
+                priority={true}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '400px',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  borderRadius: 'var(--radius-md)'
+                }}
+              />
+            </div>
+          ) : null}
+
+
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none brief-content-container">
-            {brief?.content ? (
-              <div 
-                className="html-content"
-                dangerouslySetInnerHTML={{ 
-                  __html: brief.content
-                }}
+                          {brief?.content ? (
+                <div 
+                  className="html-content brief-html-content"
+                  dangerouslySetInnerHTML={{ 
+                    __html: brief.content
+                  }}
                 ref={(el) => {
                   if (el && !contentProcessed) {
                     // Add IDs to H2 headings for TOC functionality

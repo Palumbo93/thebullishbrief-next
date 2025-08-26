@@ -697,3 +697,12 @@ body {
   max-width: 100%;
   height: auto;
 }
+
+/* Brief-specific typography overrides */
+.brief-html-content h1,
+.brief-html-content h2,
+.brief-html-content h3,
+.brief-html-content h4 {
+  font-family: var(--font-primary) !important;
+  font-weight: var(--font-semibold) !important;
+}

@@ -475,6 +475,7 @@ export type Database = {
           content: string
           created_at: string | null
           disclaimer: string | null
+          feature_featured_video: boolean
           featured: boolean | null
           featured_image_alt: string | null
           featured_image_url: string | null
@@ -502,6 +503,7 @@ export type Database = {
           content: string
           created_at?: string | null
           disclaimer?: string | null
+          feature_featured_video?: boolean
           featured?: boolean | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
@@ -529,6 +531,7 @@ export type Database = {
           content?: string
           created_at?: string | null
           disclaimer?: string | null
+          feature_featured_video?: boolean
           featured?: boolean | null
           featured_image_alt?: string | null
           featured_image_url?: string | null

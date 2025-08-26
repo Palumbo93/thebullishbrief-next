@@ -59,6 +59,10 @@ interface LayoutProps {
     companyName?: string;
     companyLogoUrl?: string;
     investorDeckUrl?: string;
+    videoUrl?: string;
+    videoThumbnail?: string | null;
+    videoTitle?: string;
+    onVideoClick?: () => void;
   };
   
   // Mobile header specific props
@@ -603,6 +607,10 @@ export const Layout: React.FC<LayoutProps> = ({
                 tickers={briefActionPanel.tickers}
                 companyName={briefActionPanel.companyName}
                 investorDeckUrl={briefActionPanel.investorDeckUrl}
+                videoUrl={briefActionPanel.videoUrl}
+                videoThumbnail={briefActionPanel.videoThumbnail}
+                videoTitle={briefActionPanel.videoTitle}
+                onVideoClick={briefActionPanel.onVideoClick}
               />
             )}
 
@@ -656,6 +664,10 @@ export const Layout: React.FC<LayoutProps> = ({
             tickers={briefActionPanel.tickers}
             companyName={briefActionPanel.companyName}
             investorDeckUrl={briefActionPanel.investorDeckUrl}
+            videoUrl={briefActionPanel.videoUrl}
+            videoThumbnail={briefActionPanel.videoThumbnail}
+            videoTitle={briefActionPanel.videoTitle}
+            onVideoClick={briefActionPanel.onVideoClick}
             isMobileOverlay={true}
             onClose={() => setMobileActionPanelOpen(false)}
           />

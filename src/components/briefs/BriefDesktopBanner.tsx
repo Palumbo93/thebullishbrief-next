@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Share, Bookmark } from 'lucide-react';
 import { getTickers } from '../../utils/tickerUtils';
 import { CompanyLogoImage } from '../ui/OptimizedImage';
@@ -33,6 +34,7 @@ export const BriefDesktopBanner: React.FC<BriefDesktopBannerProps> = ({
   actions,
   isScrolled = false
 }) => {
+  const router = useRouter();
   const getBannerStyles = () => {
     return {
       display: 'flex',
@@ -176,6 +178,11 @@ export const BriefDesktopBanner: React.FC<BriefDesktopBannerProps> = ({
   // Separate back action from other actions
   const backAction = actions.find(action => action.type === 'back');
   const otherActions = actions.filter(action => action.type !== 'back');
+  
+  // Handle back button click - always go to home page
+  const handleBackClick = () => {
+    router.push('/');
+  };
 
   return (
     <>
@@ -197,11 +204,11 @@ export const BriefDesktopBanner: React.FC<BriefDesktopBannerProps> = ({
           {/* Back Arrow Button */}
           {backAction && (
             <button 
-              onClick={backAction.onClick}
+              onClick={handleBackClick}
               style={getBackButtonStyles()}
               onMouseEnter={handleBackButtonMouseEnter}
               onMouseLeave={handleBackButtonMouseLeave}
-              aria-label="Back to Briefs"
+              aria-label="Back to Home"
             >
               <ArrowLeft style={{ width: '24px', height: '24px' }} />
             </button>

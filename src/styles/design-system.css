@@ -60,6 +60,9 @@
   /* Headline Font Sizes */
   --headline-size-desktop: 2.4rem;  /* 38.4px - Desktop headline size */
   --headline-size-mobile: 1.8rem;   /* 28.8px - Mobile headline size */
+
+  --brief-headline-size-desktop: 2rem;  /* 32px - Desktop headline size */
+  --brief-headline-size-mobile: 1.5rem;  /* 24px - Mobile headline size */
   
   /* Font Weights */
   --font-light: 300;

@@ -94,16 +94,19 @@ export default function RootLayout({
           data-domain="bullishbrief.com"
         />
         
-        {/* Microsoft Clarity - Heatmaps Only (Cookie-Free) */}
+        {/* Microsoft Clarity - Heatmaps Only (Cookie-Free) - Block on bull-room pages */}
         <script type="text/javascript"
           dangerouslySetInnerHTML={{
-                    __html: `
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "t0h9wf1q4x");
-                    `
+            __html: `
+              // Only load if NOT on bull-room pages
+              if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/bull-room')) {
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "t0h9wf1q4x");
+              }
+            `
           }}
         />
       </head>

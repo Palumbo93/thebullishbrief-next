@@ -6,7 +6,7 @@ import { BRAND_COPY } from '../../data/copy';
 import { useAuth } from '../../contexts/AuthContext';
 import SidebarJoinCTA from '../SidebarJoinCTA';
 import JoinButton from '../JoinButton';
-import { useTrackBriefEngagement } from '../../hooks/useDatafastAnalytics';
+import { useTrackBriefEngagement } from '../../hooks/useClarityAnalytics';
 
 interface CompanyTicker {
   symbol: string;

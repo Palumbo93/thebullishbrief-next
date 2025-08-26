@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { datafastService } from '../services/datafast';
+import { clarityService } from '../services/clarity';
 
-interface DatafastContextType {
+interface ClarityContextType {
   trackPageView: (path: string, title?: string) => void;
   trackEvent: (eventName: string, properties?: Record<string, any>) => void;
   trackArticleView: (articleId: string, title: string, author?: string) => void;
@@ -19,75 +19,71 @@ interface DatafastContextType {
   debug: () => void;
 }
 
-const DatafastContext = createContext<DatafastContextType | undefined>(undefined);
+const ClarityContext = createContext<ClarityContextType | undefined>(undefined);
 
-interface DatafastProviderProps {
+interface ClarityProviderProps {
   children: ReactNode;
-  siteId: string;
 }
 
-export const DatafastProvider: React.FC<DatafastProviderProps> = ({ 
-  children, 
-  siteId 
-}) => {
+export const ClarityProvider: React.FC<ClarityProviderProps> = ({ children }) => {
   useEffect(() => {
-    // Initialize Datafa.st service
-    datafastService.initialize(siteId);
-  }, [siteId]);
+    // Initialize Microsoft Clarity service
+    clarityService.initialize();
+  }, []);
 
   const trackPageView = useCallback((path: string, title?: string) => {
-    datafastService.trackPageView(path, title);
+    clarityService.trackPageView(path, title);
   }, []);
 
   const trackEvent = useCallback((eventName: string, properties?: Record<string, any>) => {
-    datafastService.trackEvent({ event: eventName, properties });
+    clarityService.trackEvent({ event: eventName, properties });
   }, []);
 
   const trackArticleView = useCallback((articleId: string, title: string, author?: string) => {
-    datafastService.trackArticleView(articleId, title, author);
+    clarityService.trackArticleView(articleId, title, author);
   }, []);
 
   const trackArticleBookmark = useCallback((articleId: string, title: string) => {
-    datafastService.trackArticleBookmark(articleId, title);
+    clarityService.trackArticleBookmark(articleId, title);
   }, []);
 
   const trackArticleShare = useCallback((articleId: string, title: string, platform: string) => {
-    datafastService.trackArticleShare(articleId, title, platform);
+    clarityService.trackArticleShare(articleId, title, platform);
   }, []);
 
   const trackBriefView = useCallback((briefId: string, title: string) => {
-    datafastService.trackBriefView(briefId, title);
+    clarityService.trackBriefView(briefId, title);
   }, []);
 
   const trackBriefBookmark = useCallback((briefId: string, title: string) => {
-    datafastService.trackBriefBookmark(briefId, title);
+    clarityService.trackBriefBookmark(briefId, title);
   }, []);
 
   const trackBriefShare = useCallback((briefId: string, title: string, platform: string) => {
-    datafastService.trackBriefShare(briefId, title, platform);
+    clarityService.trackBriefShare(briefId, title, platform);
   }, []);
 
   const trackUserSignup = useCallback((method: string = 'email') => {
-    datafastService.trackUserSignup(method);
+    clarityService.trackUserSignup(method);
   }, []);
 
   const trackUserLogin = useCallback((method: string = 'email') => {
-    datafastService.trackUserLogin(method);
+    clarityService.trackUserLogin(method);
   }, []);
 
   const trackCommentPost = useCallback((contentType: string, contentId: string) => {
-    datafastService.trackCommentPost(contentType, contentId);
+    clarityService.trackCommentPost(contentType, contentId);
   }, []);
 
   const trackSearch = useCallback((query: string, resultsCount?: number) => {
-    datafastService.trackSearch(query, resultsCount);
+    clarityService.trackSearch(query, resultsCount);
   }, []);
 
   const debug = useCallback(() => {
-    datafastService.debug();
+    clarityService.debug();
   }, []);
 
-  const value: DatafastContextType = {
+  const value: ClarityContextType = {
     trackPageView,
     trackEvent,
     trackArticleView,
@@ -104,16 +100,16 @@ export const DatafastProvider: React.FC<DatafastProviderProps> = ({
   };
 
   return (
-    <DatafastContext.Provider value={value}>
+    <ClarityContext.Provider value={value}>
       {children}
-    </DatafastContext.Provider>
+    </ClarityContext.Provider>
   );
 };
 
-export const useDatafast = (): DatafastContextType => {
-  const context = useContext(DatafastContext);
+export const useClarity = (): ClarityContextType => {
+  const context = useContext(ClarityContext);
   if (context === undefined) {
-    throw new Error('useDatafast must be used within a DatafastProvider');
+    throw new Error('useClarity must be used within a ClarityProvider');
   }
   return context;
 };

@@ -13,12 +13,12 @@ export const privacyDocument: LegalDocument = {
     {
       id: 'information-collected',
       title: 'Information We Collect',
-      body: 'We collect only the personal information necessary to provide and improve our services:\n• Email Address – Required for account creation and service delivery; may also be shared or sold for marketing and business purposes\n• Account Information – Username, profile details, and any preferences you provide\n• Usage Data – Anonymous information about how you interact with our site, collected via Datafa.st (a cookie-free, GDPR-compliant analytics tool) and Microsoft Clarity (also configured cookie-free)\n• User-Generated Content – Comments, "bull room" messages, and other submissions you make'
+      body: 'We collect only the personal information necessary to provide and improve our services:\n• Email Address – Required for account creation and service delivery; may also be shared or sold for marketing and business purposes\n• Account Information – Username, profile details, and any preferences you provide\n• Usage Data – Anonymous information about how you interact with our site, collected via Microsoft Clarity (configured cookie-free for GDPR compliance)\n• User-Generated Content – Comments, "bull room" messages, and other submissions you make'
     },
     {
       id: 'how-we-collect',
       title: 'How We Collect Information',
-      body: 'Directly from you – When you create an account, submit content, or contact us.\nAutomatically – Through Datafa.st analytics and Microsoft Clarity, which collect anonymous, cookie-free data such as page views, session duration, and heatmaps to improve our user experience.\nFrom interactions – When you participate in bull rooms or engage with our content.'
+      body: 'Directly from you – When you create an account, submit content, or contact us.\nAutomatically – Through Microsoft Clarity analytics, which collects anonymous, cookie-free data including page views, user interactions, session recordings, and heatmaps to improve our user experience.\nFrom interactions – When you participate in bull rooms or engage with our content.'
     },
     {
       id: 'how-we-use',
@@ -48,7 +48,7 @@ export const privacyDocument: LegalDocument = {
     {
       id: 'cookies-tracking',
       title: 'Cookies & Tracking',
-      body: 'We do not use traditional tracking cookies. Analytics are collected via Datafa.st and Microsoft Clarity, both configured to be privacy-friendly and cookie-free. Clarity captures heatmaps and session recordings on our brief pages to help us improve user experience.'
+      body: 'We do not use traditional tracking cookies. Analytics are collected via Microsoft Clarity, configured to be privacy-friendly and cookie-free. Clarity captures user interactions, heatmaps, and session recordings to help us improve user experience and understand how visitors use our site.'
     },
     {
       id: 'children-privacy',

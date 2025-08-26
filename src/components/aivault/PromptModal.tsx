@@ -5,7 +5,7 @@ import { PromptField } from '../../services/database';
 import { useToast } from '../../hooks/useToast';
 import { useViewportHeightOnly } from '../../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../../utils/viewportUtils';
-import { useTrackPromptInteractions } from '../../hooks/useDatafastAnalytics';
+import { useTrackPromptInteractions } from '../../hooks/useClarityAnalytics';
 
 interface PromptWithFields {
   id: string;

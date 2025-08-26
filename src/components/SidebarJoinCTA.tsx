@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from './ui/Button';
 import { BRAND_COPY } from '../data/copy';
 import { BullLogoImg } from './ui/BullLogo';
-import { useTrackCTAInteractions } from '../hooks/useDatafastAnalytics';
+import { useTrackCTAInteractions } from '../hooks/useClarityAnalytics';
 
 interface SidebarJoinCTAProps {
   onSignUpClick?: () => void;

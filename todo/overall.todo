@@ -129,6 +129,10 @@ Misc:
 
     [] hide the popup from authenticated users
 
+    [] /authors I want to just be / , bullishbrief.com/GTAD instead of /authors/GTAD
+    [] authors can include mailchimp signup form in their bio
+    [] Author can have banner image
+
 Misc Bugs:
     ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)
     ✔ Articles flash "No artiles found" after loading @done(25-01-21 22:30)

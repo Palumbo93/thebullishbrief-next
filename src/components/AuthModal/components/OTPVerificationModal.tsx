@@ -5,7 +5,7 @@ import { AuthButton } from './AuthButton';
 import { BrandingSection } from './BrandingSection';
 import { useAuthSubmit } from '../hooks/useAuthSubmit';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTrackUserActions } from '../../../hooks/useDatafastAnalytics';
+import { useTrackUserActions } from '../../../hooks/useClarityAnalytics';
 import { FONT_URLS } from '../utils/constants';
 import { ModalCloseButton } from '../../ModalCloseButton';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '../../ui/input-otp';

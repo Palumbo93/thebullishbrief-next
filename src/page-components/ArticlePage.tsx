@@ -7,7 +7,7 @@ import { useArticleBySlug, useRelatedArticles, useToggleBookmark, useIsBookmarke
 import { useTrackArticleView, useArticleViewCount } from '../hooks/useArticleViews';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useTrackArticleEngagement } from '../hooks/useDatafastAnalytics';
+import { useTrackArticleEngagement } from '../hooks/useClarityAnalytics';
 import { useMobileHeader } from '../contexts/MobileHeaderContext';
 import { createMobileHeaderConfig } from '../utils/mobileHeaderConfigs';
 import { ArticleCard } from '../components/articles/ArticleCard';

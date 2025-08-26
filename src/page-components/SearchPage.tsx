@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Search, X } from 'lucide-react';
 import { useArticles, useTags } from '../hooks/useArticles';
-import { useTrackSearch } from '../hooks/useDatafastAnalytics';
+import { useTrackSearch } from '../hooks/useClarityAnalytics';
 import { ArticleCard } from '../components/articles/ArticleCard';
 import { AuthorAvatar } from '../components/articles/AuthorAvatar';
 import { FeaturedBriefCard } from '../components/briefs/FeaturedBriefCard';

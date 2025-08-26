@@ -550,7 +550,7 @@ export const Layout: React.FC<LayoutProps> = ({
           (actualCurrentLocation === 'article' && shouldShowSpace) || 
           showActionPanel || 
           actualCurrentLocation === 'home' || 
-          (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
+          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
           actualCurrentLocation === 'authors' || 
           pathname?.startsWith('/search') || 
           pathname?.startsWith('/explore')
@@ -576,7 +576,7 @@ export const Layout: React.FC<LayoutProps> = ({
           (actualCurrentLocation === 'article' && shouldShowSpace) || 
           showActionPanel || 
           actualCurrentLocation === 'home' || 
-          (actualCurrentLocation === 'articles' && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
+          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
           actualCurrentLocation === 'authors' || 
           pathname?.startsWith('/search') || 
           pathname?.startsWith('/explore')
@@ -607,7 +607,7 @@ export const Layout: React.FC<LayoutProps> = ({
             )}
 
             {/* Explore Widget - Only on Home, Articles, and Author Pages (not search or explore) */}
-            {(actualCurrentLocation === 'home' || (actualCurrentLocation === 'articles' && !pathname?.startsWith('/search') && !pathname?.startsWith('/explore')) || actualCurrentLocation === 'authors') && (
+            {(actualCurrentLocation === 'home' || ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/search') && !pathname?.startsWith('/explore')) || actualCurrentLocation === 'authors') && (
               <ExploreWidget onCreateAccountClick={handleSignUpClick} />
             )}
           </aside>

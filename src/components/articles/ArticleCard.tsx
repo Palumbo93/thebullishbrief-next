@@ -7,7 +7,7 @@ import { Eye, Bookmark, MessageSquare, Clock } from 'lucide-react';
 import { useToggleBookmark, useIsBookmarked } from '../../hooks/useArticles';
 import { useAuth } from '../../contexts/AuthContext';
 import { useArticleViewCount } from '../../hooks/useArticleViews';
-import { useTrackArticleEngagement } from '../../hooks/useDatafastAnalytics';
+import { useTrackArticleEngagement } from '../../hooks/useClarityAnalytics';
 import { ArticleCardImage } from '../ui/OptimizedImage';
 
 interface Article {

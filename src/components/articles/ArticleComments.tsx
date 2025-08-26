@@ -9,7 +9,7 @@ import { AuthorAvatarImage } from '../ui/OptimizedImage';
 import { Comment } from '../../types/comment.types';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useViewportHeightOnly } from '../../hooks/useViewportHeight';
-import { useTrackUserActions } from '../../hooks/useDatafastAnalytics';
+import { useTrackUserActions } from '../../hooks/useClarityAnalytics';
 
 // Mobile detection hook
 const useIsMobile = () => {

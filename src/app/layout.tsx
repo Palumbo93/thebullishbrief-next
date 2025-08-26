@@ -86,15 +86,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://s3-symbol-logo.tradingview.com" />
         <link rel="preconnect" href="https://www.clarity.ms" />
         
-        {/* Datafa.st Analytics */}
-        <script 
-          async 
-          src="https://datafa.st/js/script.js" 
-          data-website-id="689dde00a1c832b545b78a9f"
-          data-domain="bullishbrief.com"
-        />
-        
-        {/* Microsoft Clarity - Heatmaps Only (Cookie-Free) - Block on bull-room pages */}
+        {/* Microsoft Clarity - Analytics & Heatmaps (Cookie-Free) - Block on bull-room pages */}
         <script type="text/javascript"
           dangerouslySetInnerHTML={{
             __html: `
@@ -104,6 +96,10 @@ export default function RootLayout({
                   c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
                   t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                   y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                  
+                  // Configure for analytics + heatmaps while maintaining privacy
+                  c[a]('set', 'cookies', false);
+                  // Enable Smart Events and custom event tracking (removed track: false)
                 })(window, document, "clarity", "script", "t0h9wf1q4x");
               }
             `

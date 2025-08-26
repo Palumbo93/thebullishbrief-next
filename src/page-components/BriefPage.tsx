@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefView } from '../hooks/useBriefViews';
-import { useTrackBriefEngagement, useTrackBriefScrolling, useTrackVideoInteractions } from '../hooks/useDatafastAnalytics';
+import { useTrackBriefEngagement, useTrackBriefScrolling, useTrackVideoInteractions } from '../hooks/useClarityAnalytics';
 import { ArrowLeft, User, Calendar, Clock, Play, Pause } from 'lucide-react';
 
 
@@ -423,8 +423,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             {/* Title */}
             <h1 style={{
               fontSize: 'var(--headline-size-desktop)',
-              fontFamily: 'var(--font-editorial)',
-              fontWeight: 'var(--font-normal)',
+              fontWeight: 'var(--font-bold)',
               lineHeight: 'var(--leading-tight)',
               color: 'var(--color-text-primary)',
               marginBottom: 'var(--space-4)',

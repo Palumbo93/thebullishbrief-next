@@ -9,7 +9,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { AuthModalProvider } from '../contexts/AuthModalContext';
 import { AdminProvider } from '../contexts/AdminContext';
-import { DatafastProvider } from '../contexts/DatafastContext';
+import { ClarityProvider } from '../contexts/ClarityContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { ConfirmProvider } from '../contexts/ConfirmContext';
 import { MobileHeaderProvider } from '../contexts/MobileHeaderContext';
@@ -34,7 +34,7 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) =>
           <AuthProvider>
             <AuthModalProvider>
               <AdminProvider>
-                <DatafastProvider siteId="689dde00a1c832b545b78a9f">
+                <ClarityProvider>
                   <ToastProvider>
                     <ConfirmProvider>
                       <MobileHeaderProvider>
@@ -42,7 +42,7 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) =>
                       </MobileHeaderProvider>
                     </ConfirmProvider>
                   </ToastProvider>
-                </DatafastProvider>
+                </ClarityProvider>
               </AdminProvider>
             </AuthModalProvider>
           </AuthProvider>

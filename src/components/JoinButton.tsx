@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from './ui/Button';
-import { useTrackCTAInteractions } from '../hooks/useDatafastAnalytics';
+import { useTrackCTAInteractions } from '../hooks/useClarityAnalytics';
 
 interface JoinButtonProps {
   onSignUpClick?: () => void;

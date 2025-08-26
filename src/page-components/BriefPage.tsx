@@ -606,27 +606,29 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       </div>
       )}
       
-      {/* Mobile Scrolling Popup - Only shows on mobile */}
-      <ScrollingPopup
-        triggerScrollPercentage={30}
-        hideAfterScrollPercentage={50}
-        showDelay={0}
-        onPopupViewed={() => {
-          if (brief?.id && brief?.title) {
-            trackPopupView(String(brief.id), brief.title, 'mobile_signup');
-          }
-        }}
-      >
-        {(dismissPopup) => (
-          <SidebarJoinCTA 
-            onSignUpClick={() => {
-              onCreateAccountClick?.();
-              dismissPopup();
-            }}
-            showButton={true}
-          />
-        )}
-      </ScrollingPopup>
+      {/* Mobile Scrolling Popup - Only shows on mobile for unauthenticated users */}
+      {!user && (
+        <ScrollingPopup
+          triggerScrollPercentage={30}
+          hideAfterScrollPercentage={50}
+          showDelay={0}
+          onPopupViewed={() => {
+            if (brief?.id && brief?.title) {
+              trackPopupView(String(brief.id), brief.title, 'mobile_signup');
+            }
+          }}
+        >
+          {(dismissPopup) => (
+            <SidebarJoinCTA 
+              onSignUpClick={() => {
+                onCreateAccountClick?.();
+                dismissPopup();
+              }}
+              showButton={true}
+            />
+          )}
+        </ScrollingPopup>
+      )}
       
       
       {/* CTA Banner */}

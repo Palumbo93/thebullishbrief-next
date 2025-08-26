@@ -35,7 +35,7 @@ interface BriefsActionPanelProps {
   isMobileOverlay?: boolean; // Whether this panel is being used in mobile overlay
   onClose?: () => void; // Close handler for mobile overlay
   videoUrl?: string; // Video URL when video should appear in action panel
-  videoThumbnail?: string; // Video thumbnail URL
+  videoThumbnail?: string | null; // Video thumbnail URL
   videoTitle?: string; // Video title for accessibility
   onVideoClick?: () => void; // Video click handler
 }

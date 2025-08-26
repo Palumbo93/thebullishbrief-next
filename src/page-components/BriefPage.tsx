@@ -308,19 +308,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined
   } : undefined;
 
-  // Debug logging to check values
-  React.useEffect(() => {
-    if (brief) {
-      console.log('Brief data:', {
-        id: brief.id,
-        title: brief.title,
-        feature_featured_video: brief.feature_featured_video,
-        video_url: brief.video_url,
-        shouldShowVideoInPanel: !brief.feature_featured_video && !!brief.video_url
-      });
-    }
-  }, [brief]);
-
   const mobileHeaderProps = brief ? {
     companyName: brief.company_name || undefined,
     tickers: Array.isArray(brief.tickers) ? brief.tickers as string[] : undefined,
@@ -364,7 +351,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
         {/* Brief Header - Clean text-only header */}
         <div style={{
-          padding: 'var(--space-16) var(--content-padding) var(--space-8) var(--content-padding)',
+          padding: 'var(--space-10) var(--content-padding) var(--space-8) var(--content-padding)',
           maxWidth: '800px',
           margin: '0 auto',
         }}>

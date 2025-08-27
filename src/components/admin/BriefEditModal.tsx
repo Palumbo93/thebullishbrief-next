@@ -42,6 +42,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     disclaimer: '',
     featured_image_url: '',
     featured_image_alt: '',
+    popup_featured_image: '',
     reading_time_minutes: 5,
     status: 'draft' as 'draft' | 'published',
     published_at: '',
@@ -55,6 +56,9 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     featured: false,
     company_name: '',
     company_logo_url: '',
+    // Lead generation fields
+    mailchimp_audience_tag: '',
+    popup_copy: ''
   });
 
   // Load brief data when modal opens
@@ -69,6 +73,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         disclaimer: brief.disclaimer || '',
         featured_image_url: brief.featured_image_url || '',
         featured_image_alt: brief.featured_image_alt || '',
+        popup_featured_image: brief.popup_featured_image || '',
         reading_time_minutes: brief.reading_time_minutes || 5,
         status: brief.status as 'draft' | 'published' || 'draft',
         published_at: (brief as any).published_at ? new Date((brief as any).published_at).toISOString().slice(0, 16) : '',
@@ -82,6 +87,9 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         featured: brief.featured || false,
         company_name: brief.company_name || '',
         company_logo_url: brief.company_logo_url || '',
+        // Lead generation fields
+        mailchimp_audience_tag: brief.mailchimp_audience_tag || '',
+        popup_copy: brief.popup_copy ? JSON.stringify(brief.popup_copy, null, 2) : ''
       });
 
       // Load featured image if it exists
@@ -255,12 +263,25 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         return;
       }
 
+      // Parse and validate popup copy JSON
+      let popupCopy = null;
+      if (formData.popup_copy.trim()) {
+        try {
+          popupCopy = JSON.parse(formData.popup_copy);
+        } catch (error) {
+          alert('Invalid popup copy JSON format. Please check your JSON syntax.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       // Update brief data
       const { error } = await supabase
         .from('briefs')
         .update({
           ...formData,
           tickers,
+          popup_copy: popupCopy,
           reading_time_minutes: readingTimeMinutes,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
@@ -1093,6 +1114,184 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                 }}
                 placeholder="Enter disclaimer text..."
               />
+            </div>
+
+            {/* Lead Generation Settings */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)',
+              marginBottom: 'var(--space-6)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📧 Lead Generation Settings
+              </h3>
+
+              {/* Popup Featured Image URL Field */}
+              <div style={{ marginBottom: 'var(--space-4)' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Popup Featured Image URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={formData.popup_featured_image}
+                  onChange={(e) => handleChange('popup_featured_image', e.target.value)}
+                  placeholder="https://example.com/popup-image.jpg"
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    padding: '0 var(--space-4)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)',
+                  lineHeight: '1.4'
+                }}>
+                  Optional dedicated image for the lead generation popup. If not provided, will use the main featured image.
+                </p>
+              </div>
+
+              {/* Mailchimp Integration */}
+              <div style={{
+                marginBottom: 'var(--space-4)'
+              }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Mailchimp Audience Tag
+                </label>
+                <input
+                  type="text"
+                  value={formData.mailchimp_audience_tag}
+                  onChange={(e) => handleChange('mailchimp_audience_tag', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  placeholder="40174992"
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Mailchimp tag ID for this brief (e.g., 40174992 for Sonic Strategy)
+                </p>
+              </div>
+
+              {/* Popup Copy Configuration */}
+              <div>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Popup Copy Configuration (JSON)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const defaultCopy = {
+                        headline: `Get exclusive updates on ${formData.company_name || '[Company Name]'}`,
+                        subheadline: "Be the first to know about major developments",
+                        submitButton: "Get Updates",
+                        thankYouMessage: `You'll receive updates about ${formData.company_name || '[Company Name]'} directly in your inbox.`
+                      };
+                      handleChange('popup_copy', JSON.stringify(defaultCopy, null, 2));
+                    }}
+                    style={{
+                      padding: 'var(--space-2) var(--space-3)',
+                      backgroundColor: 'var(--color-primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 'var(--font-semibold)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    }}
+                  >
+                    Use Default
+                  </button>
+                </div>
+                <textarea
+                  value={formData.popup_copy}
+                  onChange={(e) => handleChange('popup_copy', e.target.value)}
+                  rows={8}
+                  placeholder={`{
+  "headline": "Get exclusive updates on ${formData.company_name || '[Company Name]'}",
+  "subheadline": "Be the first to know about major developments",
+  "submitButton": "Get Updates",
+  "thankYouMessage": "You'll receive updates about ${formData.company_name || '[Company Name]'} directly in your inbox."
+}`}
+                  style={{
+                    width: '100%',
+                    padding: 'var(--space-3)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-sm)',
+                    fontFamily: 'var(--font-mono)',
+                    transition: 'all var(--transition-base)',
+                    resize: 'vertical',
+                    minHeight: '200px'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Leave empty to use default copy. JSON format with headline, subheadline, buttons, and thank you messages.
+                </p>
+              </div>
             </div>
 
             {/* Brief Flags */}

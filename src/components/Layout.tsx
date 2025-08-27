@@ -605,6 +605,7 @@ export const Layout: React.FC<LayoutProps> = ({
             {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
               <BriefsActionPanel
                 briefId={briefActionPanel.briefId}
+                brief={briefActionPanel.brief}
                 onSignUpClick={handleSignUpClick}
                 tickerWidget={briefActionPanel.tickerWidget}
                 sections={briefActionPanel.sections || []}
@@ -662,6 +663,7 @@ export const Layout: React.FC<LayoutProps> = ({
           <div className={`mobile-action-panel-overlay ${mobileActionPanelOpen ? 'open' : ''}`}>
           <BriefsActionPanel
             briefId={briefActionPanel.briefId}
+            brief={briefActionPanel.brief}
             onSignUpClick={handleSignUpClick}
             tickerWidget={briefActionPanel.tickerWidget}
             sections={briefActionPanel.sections || []}

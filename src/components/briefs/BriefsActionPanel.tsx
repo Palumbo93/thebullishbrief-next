@@ -6,6 +6,7 @@ import { BRAND_COPY } from '../../data/copy';
 import { useAuth } from '../../contexts/AuthContext';
 import SidebarJoinCTA from '../SidebarJoinCTA';
 import JoinButton from '../JoinButton';
+import BriefLeadGenWidget from '../BriefLeadGenWidget';
 import { useTrackBriefEngagement } from '../../hooks/useClarityAnalytics';
 
 interface CompanyTicker {
@@ -24,6 +25,7 @@ interface TOCItem {
 
 interface BriefsActionPanelProps {
   briefId?: string; // Brief ID for analytics tracking
+  brief?: any; // Full brief object for lead generation widget
   onSignUpClick?: () => void;
   signUpForm?: React.ReactNode;
   tickerWidget?: React.ReactNode;
@@ -42,6 +44,7 @@ interface BriefsActionPanelProps {
 
 const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({ 
   briefId,
+  brief,
   onSignUpClick,
   signUpForm,
   tickerWidget,
@@ -174,11 +177,14 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
       
       {/* Content Container */}
       <div className="briefs-content-container">
-        {/* Bullish Brief Sign Up CTA - Only show if user is not logged in */}
-        {!user && <SidebarJoinCTA onSignUpClick={onSignUpClick} showButton={false} />}
+
+     
+      
+        {/* Bullish Brief Sign Up CTA - Only show if user is not logged in and no brief widget */}
+        {/* {!user && <SidebarJoinCTA onSignUpClick={onSignUpClick} showButton={false} />} */}
 
         {/* Sticky Join Button - Only show if user is not logged in */}
-        {!user && <JoinButton onSignUpClick={onSignUpClick} />}
+        {/* {!user && <JoinButton onSignUpClick={onSignUpClick} />} */}
 
         {/* Featured Video - Only show when feature_featured_video is false */}
         {videoUrl && videoThumbnail && onVideoClick && (
@@ -246,101 +252,25 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           </div>
         )}
 
-        {/* Quick Links */}
-        <div className="briefs-quick-links" style={{ padding: '2rem 1.5rem' }}>
-        <h3 className="briefs-section-title">Quick Links</h3>
-        <div className="briefs-links-list">
-          {/* Investor Brief Link */}
-          {investorDeckUrl && (
-            <a 
-              href={investorDeckUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="briefs-link-item"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-3)',
-                background: 'var(--color-bg-card)',
-                border: '0.5px solid var(--color-border-primary)',
-                borderRadius: 'var(--radius-lg)',
-                color: 'var(--color-text-primary)',
-                textDecoration: 'none',
-                transition: 'all var(--transition-base)',
-                marginBottom: 'var(--space-2)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-bg-card-hover)';
-                e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--color-bg-card)';
-                e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-              }}
-              onClick={() => {
-                // Track investor deck link click
-                if (briefId) {
-                  trackActionLinkClick(briefId, 'investor_deck');
-                }
-              }}
-            >
-              <ExternalLink style={{ width: '14px', height: '14px' }} />
-              <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-medium)' }}>
-                View Investor Deck
-              </span>
-            </a>
-          )}
+      {/* Brief Lead Generation Widget - Show for brief-specific email collection */}
+      {brief && (
           
-          {/* Ticker Chart Links */}
-          {dynamicTickers && dynamicTickers.map((ticker) => {
-            const chartUrl = `https://www.tradingview.com/symbols/${ticker.exchange}-${ticker.symbol}/`;
-            return (
-              <a 
-                key={`${ticker.exchange}-${ticker.symbol}`}
-                href={chartUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="briefs-link-item"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'var(--space-2)',
-                  padding: 'var(--space-3)',
-                  background: 'var(--color-bg-card)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  textDecoration: 'none',
-                  transition: 'all var(--transition-base)',
-                  marginBottom: 'var(--space-2)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--color-bg-card-hover)';
-                  e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--color-bg-card)';
-                  e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-                }}
-                onClick={() => {
-                  // Track ticker chart link click
-                  if (briefId) {
-                    trackActionLinkClick(briefId, `ticker_chart_${ticker.exchange}_${ticker.symbol}`);
-                  }
-                }}
-              >
-                <ExternalLink style={{ width: '14px', height: '14px' }} />
-                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-medium)' }}>
-                  {ticker.exchange}:{ticker.symbol} Chart
-                </span>
-              </a>
-            );
-          })}
-        </div>
-      </div>
+          <BriefLeadGenWidget
+            brief={brief}
+            onEmailSubmitted={(email, isAuthenticated) => {
+              // Track email submission for analytics
+              if (briefId) {
+                console.log('Widget email submitted:', email, 'Authenticated:', isAuthenticated, 'Brief:', briefId);
+              }
+            }}
+            onSignupClick={onSignUpClick}
+            compact={false}
+          />
+        
+      )}
 
-      {/* Table of Contents */}
+
+        {/* Table of Contents */}
       {sections.length > 0 && (
         <div className="briefs-toc-section">
           <h3 className="briefs-section-title">Contents</h3>

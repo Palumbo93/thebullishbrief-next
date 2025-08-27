@@ -482,6 +482,10 @@ export type Database = {
           featured_video_thumbnail: string | null
           id: string
           investor_deck_url: string | null
+          mailchimp_audience_tag: string | null
+          mailchimp_campaign_id: string | null
+          popup_copy: Json | null
+          popup_featured_image: string | null
           published_at: string | null
           reading_time_minutes: number | null
           show_cta: boolean | null
@@ -510,6 +514,10 @@ export type Database = {
           featured_video_thumbnail?: string | null
           id?: string
           investor_deck_url?: string | null
+          mailchimp_audience_tag?: string | null
+          mailchimp_campaign_id?: string | null
+          popup_copy?: Json | null
+          popup_featured_image?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
           show_cta?: boolean | null
@@ -538,6 +546,10 @@ export type Database = {
           featured_video_thumbnail?: string | null
           id?: string
           investor_deck_url?: string | null
+          mailchimp_audience_tag?: string | null
+          mailchimp_campaign_id?: string | null
+          popup_copy?: Json | null
+          popup_featured_image?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
           show_cta?: boolean | null
@@ -834,21 +846,41 @@ export type Database = {
       }
       emails: {
         Row: {
+          brief_id: string | null
           created_date: string | null
           email: string
           id: string
+          mailchimp_status: string | null
+          source: string | null
+          user_id: string | null
         }
         Insert: {
+          brief_id?: string | null
           created_date?: string | null
           email: string
           id?: string
+          mailchimp_status?: string | null
+          source?: string | null
+          user_id?: string | null
         }
         Update: {
+          brief_id?: string | null
           created_date?: string | null
           email?: string
           id?: string
+          mailchimp_status?: string | null
+          source?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "emails_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "briefs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_operation_logs: {
         Row: {
@@ -1302,6 +1334,10 @@ export type Database = {
       sync_all_view_counts: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      sync_email_to_mailchimp: {
+        Args: { email_id: string }
+        Returns: Json
       }
       update_user_preferences: {
         Args: { new_preferences: Json; user_uuid: string }

@@ -57,7 +57,7 @@ import { LegalFooter } from '../components/LegalFooter';
 import { BriefDesktopBanner } from '../components/briefs/BriefDesktopBanner';
 import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
-import ScrollingPopup from '../components/ScrollingPopup';
+import BriefLeadGenPopup from '../components/BriefLeadGenPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
 import { VideoModal } from '../components/VideoModal';
 import { FeaturedMedia } from '../components/briefs/FeaturedMedia';
@@ -328,6 +328,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   // Prepare action panel data
   const briefActionPanel = brief ? {
     briefId: String(brief.id),
+    brief: brief, // Pass the full brief object for lead generation widget
     tickerWidget,
     sections: tocSections,
     tickers: brief.tickers,
@@ -338,7 +339,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     videoUrl: (!brief.feature_featured_video && brief.video_url) ? brief.video_url : undefined,
     videoThumbnail: (!brief.feature_featured_video && brief.video_url) ? (brief.featured_video_thumbnail || brief.featured_image_url) : undefined,
     videoTitle: (!brief.feature_featured_video && brief.video_url) ? brief.title : undefined,
-    onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined
+    onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined,
+    onSignUpClick: onCreateAccountClick
   } : undefined;
 
   const mobileHeaderProps = brief ? {
@@ -573,28 +575,26 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       </div>
       )}
       
-      {/* Mobile Scrolling Popup - Only shows on mobile for unauthenticated users */}
-      {!user && (
-        <ScrollingPopup
+      {/* Brief Lead Generation Popup - Shows on both mobile and desktop */}
+      {brief && (
+        <BriefLeadGenPopup
+          brief={brief}
           triggerScrollPercentage={30}
-          hideAfterScrollPercentage={50}
-          showDelay={0}
+          triggerScrollPixels={800} // Also trigger after 800px scroll (better for mobile)
+          showDelay={2000}
           onPopupViewed={() => {
             if (brief?.id && brief?.title) {
-              trackPopupView(String(brief.id), brief.title, 'mobile_signup');
+              trackPopupView(String(brief.id), brief.title, 'lead_generation_popup');
             }
           }}
-        >
-          {(dismissPopup) => (
-            <SidebarJoinCTA 
-              onSignUpClick={() => {
-                onCreateAccountClick?.();
-                dismissPopup();
-              }}
-              showButton={true}
-            />
-          )}
-        </ScrollingPopup>
+          onEmailSubmitted={(email, isAuthenticated) => {
+            // Track email submission for analytics
+            console.log('Email submitted:', email, 'Authenticated:', isAuthenticated);
+          }}
+          onSignupClick={() => {
+            onCreateAccountClick?.();
+          }}
+        />
       )}
       
       

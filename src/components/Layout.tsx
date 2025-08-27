@@ -437,11 +437,15 @@ export const Layout: React.FC<LayoutProps> = ({
           
           .main-content {
             margin-left: 80px; /* Offset for collapsed sidebar */
-            margin-right: 0; /* No right panel offset on tablet */
+            margin-right: 0 !important; /* No right panel offset on tablet - override with-right-panel class */
           }
           
           .main-content.state-loaded {
             transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          
+          .main-content.with-right-panel {
+            margin-right: 0 !important; /* Ensure right panel spacing is removed even with the class */
           }
           
           .right-panel {

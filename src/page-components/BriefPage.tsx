@@ -145,6 +145,39 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     setContentProcessed(false);
   }, [brief?.content]);
 
+  // Prevent scrolling during loading state
+  React.useEffect(() => {
+    // Always start at top when component mounts
+    window.scrollTo(0, 0);
+    
+    if (isLoading) {
+      // Disable scrolling during loading
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = '0';
+      document.body.style.left = '0';
+      document.body.style.width = '100%';
+    } else if (brief) {
+      // Re-enable scrolling when loading completes and we have content
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.width = '';
+      // Ensure we're at the top after re-enabling scroll
+      window.scrollTo(0, 0);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.width = '';
+    };
+  }, [isLoading, brief]);
+
   // Handle video modal open
   const handleVideoClick = () => {
     if (brief?.video_url && brief?.id && brief?.title) {
@@ -631,12 +664,14 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       )}
       
       
-      {/* CTA Banner */}
-      <CTABanner 
-        onCreateAccountClick={onCreateAccountClick}
-        variant="secondary"
-        position="bottom"
-      />
+      {/* CTA Banner - Only show when content is loaded */}
+      {!isLoading && (
+        <CTABanner 
+          onCreateAccountClick={onCreateAccountClick}
+          variant="secondary"
+          position="bottom"
+        />
+      )}
       
       {/* Legal Footer */}
       <LegalFooter />

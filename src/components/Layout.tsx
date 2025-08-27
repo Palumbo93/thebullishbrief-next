@@ -53,6 +53,7 @@ interface LayoutProps {
   actionPanelType?: 'brief';
   briefActionPanel?: {
     briefId?: string;
+    brief?: any;
     tickerWidget?: ReactNode;
     sections?: Array<{ id: string; label: string; level: number }>;
     tickers?: any;

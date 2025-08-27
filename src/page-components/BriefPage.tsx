@@ -60,7 +60,7 @@ import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import ScrollingPopup from '../components/ScrollingPopup';
 import SidebarJoinCTA from '../components/SidebarJoinCTA';
 import { VideoModal } from '../components/VideoModal';
-
+import { FeaturedMedia } from '../components/briefs/FeaturedMedia';
 
 import Image from 'next/image';
 
@@ -384,7 +384,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
         {/* Brief Header - Clean text-only header */}
         <div style={{
-          padding: 'var(--space-10) var(--content-padding) var(--space-8) var(--content-padding)',
+          padding: 'var(--space-10) var(--content-padding) var(--space-4) var(--content-padding)',
           maxWidth: '800px',
           margin: '0 auto',
         }}>
@@ -403,16 +403,28 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           {/* Disclaimer - Simple one-liner */}
           {brief?.disclaimer && (
             <p style={{
-              fontSize: 'var(--text-base)',
-              color: 'var(--color-text-secondary)',
-              marginBottom: 'var(--space-4)',
-              opacity: 0.8,
-              fontStyle: 'italic',
-              fontWeight: 'var(--font-light)'
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-muted)',
+              // fontStyle: 'italic',
+              fontWeight: 'var(--font-light)',
+              marginBottom: 'var(--space-4)'
             }}>
               {brief.disclaimer}
             </p>
           )}
+
+          {/* Featured Media - Mobile Position (below headline, above info bar) */}
+          <div className="mobile-only">
+            <FeaturedMedia
+              featureFeaturedVideo={brief?.feature_featured_video}
+              videoUrl={brief?.video_url || undefined}
+              videoThumbnail={brief?.featured_video_thumbnail || undefined}
+              featuredImageUrl={brief?.featured_image_url || undefined}
+              title={brief?.title || undefined}
+              onVideoClick={handleVideoClick}
+            />
+          </div>
+
         </div>
 
         {/* Main Content */}
@@ -423,16 +435,18 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         }}>
 
           {/* Meta Info - Date */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-3)',
-            fontSize: 'var(--text-sm)',
-            color: 'var(--color-text-muted)',
-            marginBottom: 'var(--space-6)',
-            paddingBottom: 'var(--space-4)',
-            borderBottom: '0.5px solid var(--color-border-primary)'
-          }}>
+          <div 
+            className="meta-info-section"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-muted)',
+              marginBottom: 'var(--space-6)',
+              paddingBottom: 'var(--space-4)',
+              borderBottom: '0.5px solid var(--color-border-primary)'
+            }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Calendar style={{ width: '14px', height: '14px' }} />
               <span>{new Date().toLocaleDateString('en-US', {
@@ -445,6 +459,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               <Clock style={{ width: '14px', height: '14px' }} />
               <span>4 min</span>
             </div>
+
+     
             
           </div>
 
@@ -455,7 +471,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               border: '0.5px solid var(--color-border-primary)',
               borderRadius: 'var(--radius-lg)',
               padding: 'var(--space-6) var(--space-8)',
-              marginBottom: 'var(--space-8)',
+              marginBottom: 'var(--space-4)',
               position: 'relative',
               overflow: 'hidden'
             }}>
@@ -484,100 +500,18 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             </div>
           )}
 
-          {/* Featured Media - Video or Image based on feature_featured_video flag */}
-          {brief?.feature_featured_video && brief?.video_url ? (
-            // Featured Video - Replaces featured image when feature_featured_video is true
-            <div 
-              style={{
-                position: 'relative',
-                overflow: 'hidden',
-                marginBottom: 'var(--space-8)',
-                borderRadius: 'var(--radius-lg)',
-                backgroundColor: 'var(--color-bg-secondary)',
-                cursor: 'pointer',
-                aspectRatio: '16/9',
-                maxWidth: '100%'
-              }}
-              onClick={handleVideoClick}
-            >
-              {/* Video Thumbnail */}
-              <img
-                src={brief.featured_video_thumbnail || brief.featured_image_url || ''}
-                alt={brief.title || 'Video thumbnail'}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                  zIndex: 0,
-                  borderRadius: 'var(--radius-lg)'
-                }}
-              />
-              
-              {/* Play Button Overlay */}
-              <button
-                onClick={handleVideoClick}
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 2,
-                  background: 'rgba(0, 0, 0, 0.7)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '80px',
-                  height: '80px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
-                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
-                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
-                }}
-              >
-                <Play 
-                  size={32} 
-                  color="white" 
-                  fill="white"
-                  style={{ marginLeft: '4px' }} 
-                />
-              </button>
-            </div>
-          ) : brief?.featured_image_url ? (
-            // Featured Image - Shows when feature_featured_video is false or no video_url
-            <div style={{
-              marginBottom: 'var(--space-8)',
-              overflow: 'hidden'
-            }}>
-              <Image
-                src={brief.featured_image_url}
-                alt={brief.title || 'Brief featured image'}
-                width={800}
-                height={400}
-                priority={true}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  maxHeight: '400px',
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                  borderRadius: 'var(--radius-md)'
-                }}
-              />
-            </div>
-          ) : null}
+          {/* Featured Media - Desktop Position (current location) */}
+          <div style={{ display: 'none' }} className="desktop-only">
+            <FeaturedMedia
+              featureFeaturedVideo={brief?.feature_featured_video}
+              videoUrl={brief?.video_url || undefined}
+              videoThumbnail={brief?.featured_video_thumbnail || undefined}
+              featuredImageUrl={brief?.featured_image_url || undefined}
+              title={brief?.title || undefined}
+              onVideoClick={handleVideoClick}
+              style={{ marginBottom: 'var(--space-8)' }}
+            />
+          </div>
 
 
 

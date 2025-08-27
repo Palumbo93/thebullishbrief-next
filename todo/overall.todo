@@ -129,9 +129,7 @@ Misc:
 
     ✔ hide the popup from authenticated users @done(25-08-26 21:37)
 
-    [] Responsivness of Brief Page can be improved for small desktop sizes
-
-    [] When done loading, scroll to the top of the page for Brief
+    ✔ Responsivness of Brief Page can be improved for small desktop sizes @done(25-08-27 08:24)
 
     [] /authors I want to just be / , bullishbrief.com/GTAD instead of /authors/GTAD
     [] authors can include mailchimp signup form in their bio

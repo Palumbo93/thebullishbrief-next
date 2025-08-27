@@ -996,6 +996,17 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
   .text-responsive-lg { font-size: var(--text-lg); }
   .text-responsive-xl { font-size: var(--text-xl); }
   .text-responsive-2xl { font-size: var(--text-2xl); }
+  
+  /* Hide desktop-only elements on mobile */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Add top border to meta info on mobile */
+  .meta-info-section {
+    border-top: 0.5px solid var(--color-border-primary);
+    padding-top: var(--space-4);
+  }
   .text-responsive-3xl { font-size: var(--text-3xl); }
 }
 
@@ -1054,7 +1065,13 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
   .mobile-only {
     display: none !important;
   }
+  
+  /* Show desktop-only elements on desktop */
+  .desktop-only {
+    display: block !important;
+  }
 }
+
 
 /* ===== RICH TEXT EDITOR STYLES ===== */
 /* Ensure proper color handling for pasted content */

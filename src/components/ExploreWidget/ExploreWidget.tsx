@@ -73,7 +73,7 @@ export const ExploreWidget: React.FC<ExploreWidgetProps> = ({
   
   const handleAuthorClick = (authorName: string, authorSlug?: string) => {
     if (authorSlug) {
-      router.push(`/authors/${authorSlug}`);
+      router.push(`/${authorSlug}`);
     } else {
               router.push(`/search?author=${encodeURIComponent(authorName)}`);
     }

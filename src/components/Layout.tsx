@@ -136,6 +136,13 @@ export const Layout: React.FC<LayoutProps> = ({
     if (pathname && pathname.startsWith('/admin/')) {
       return 'admin';
     }
+    
+    // Check for root-level author pages (e.g., /GTAD)
+    if (pathname && pathname !== '/' && !pathname.includes('/')) {
+      // This is likely a root-level author page, treat as authors section
+      return 'authors';
+    }
+    
     switch (pathname) {
       case '/':
         return 'home';
@@ -151,6 +158,26 @@ export const Layout: React.FC<LayoutProps> = ({
         return 'admin';
       case '/account-settings':
         return 'account-settings';
+      case '/articles':
+        return 'articles';
+      case '/authors':
+        return 'authors';
+      case '/explore':
+        return 'articles';
+      case '/search':
+        return 'articles';
+      case '/bookmarks':
+        return 'articles';
+      case '/contact':
+        return 'articles';
+      case '/about':
+        return 'articles';
+      case '/privacy':
+        return 'articles';
+      case '/terms':
+        return 'articles';
+      case '/disclaimer':
+        return 'articles';
       default:
         return 'articles'; // Changed from 'home' to 'articles' to prevent ticker from showing on unknown routes
     }

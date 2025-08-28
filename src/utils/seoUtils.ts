@@ -179,7 +179,7 @@ export const generateArticleStructuredData = (article: Article, baseUrl: string,
     "author": {
       "@type": "Person",
       "name": article.author,
-      "url": article.authorSlug ? `${baseUrl}/authors/${article.authorSlug}` : undefined
+      "url": article.authorSlug ? `${baseUrl}/${article.authorSlug}` : undefined
     },
     "publisher": {
       "@type": "Organization",

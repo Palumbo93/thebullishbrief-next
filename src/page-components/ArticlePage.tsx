@@ -415,7 +415,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                <button
                  onClick={() => {
                    if (article.authorSlug) {
-                     router.push(`/authors/${article.authorSlug}`);
+                     router.push(`/${article.authorSlug}`);
                    }
                  }}
                  style={{
@@ -509,7 +509,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               <button
                 onClick={() => {
                   if (article.authorSlug) {
-                    router.push(`/authors/${article.authorSlug}`);
+                    router.push(`/${article.authorSlug}`);
                   }
                 }}
                 style={{

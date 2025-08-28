@@ -8,9 +8,16 @@ interface BuildTriggerProps {
   className?: string;
 }
 
+interface BuildResult {
+  type: string;
+  revalidatedPaths: string[];
+  triggeredDeploy: boolean;
+  timestamp: string;
+}
+
 export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [lastTriggered, setLastTriggered] = useState<string | null>(null);
+  const [lastResult, setLastResult] = useState<BuildResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const triggerBuild = async (type: 'all' | 'articles' | 'briefs' | 'authors') => {
@@ -39,10 +46,15 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
       }
 
       const result = await response.json();
-      setLastTriggered(type);
+      setLastResult({
+        type,
+        revalidatedPaths: result.revalidatedPaths || [],
+        triggeredDeploy: result.triggeredDeploy || false,
+        timestamp: result.timestamp
+      });
       
-      // Clear success message after 5 seconds
-      setTimeout(() => setLastTriggered(null), 5000);
+      // Clear success message after 10 seconds
+      setTimeout(() => setLastResult(null), 10000);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Build failed');
@@ -65,11 +77,20 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
       </div>
 
       {/* Status Messages */}
-      {lastTriggered && (
+      {lastResult && (
         <div className="bg-green-50 border border-green-200 rounded-md p-4">
           <p className="text-green-800 font-medium">
-            Build triggered successfully for {lastTriggered === 'all' ? 'all content' : lastTriggered}.
+            Build triggered successfully for {lastResult.type === 'all' ? 'all content' : lastResult.type}
           </p>
+          <div className="mt-2 text-sm text-green-700">
+            <p>• Revalidated {lastResult.revalidatedPaths.length} path{lastResult.revalidatedPaths.length !== 1 ? 's' : ''}</p>
+            {lastResult.triggeredDeploy && (
+              <p>• Full deployment triggered</p>
+            )}
+            <p className="text-xs mt-1 text-green-600">
+              Completed at {new Date(lastResult.timestamp).toLocaleTimeString()}
+            </p>
+          </div>
         </div>
       )}
 
@@ -149,11 +170,19 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
       <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
         <h4 className="text-sm font-medium text-gray-900 mb-2">What happens during a build?</h4>
         <ul className="text-sm text-gray-600 space-y-1">
-          <li>• Static pages are regenerated with latest content</li>
+          <li>• All existing pages are revalidated with latest content</li>
+          <li>• Individual article/brief/author pages are refreshed</li>
           <li>• CDN cache is cleared for updated pages</li>
-          <li>• SEO metadata and Open Graph tags are updated</li>
-          <li>• Build typically takes 30-60 seconds to complete</li>
+          <li>• New content becomes immediately accessible</li>
+          <li>• "Build All" triggers a full deployment for new pages</li>
+          <li>• Process typically completes in 10-30 seconds</li>
         </ul>
+        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+          <p className="text-xs text-blue-800">
+            <strong>For new articles/authors:</strong> Use "Build All" to ensure new pages are generated and accessible.
+            Individual builds only refresh existing content.
+          </p>
+        </div>
       </div>
     </div>
   );

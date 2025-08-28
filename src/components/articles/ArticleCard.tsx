@@ -92,7 +92,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     e.stopPropagation();
     e.preventDefault();
     if (article.authorSlug) {
-      router.push(`/authors/${article.authorSlug}`);
+      router.push(`/${article.authorSlug}`);
     }
   };
 

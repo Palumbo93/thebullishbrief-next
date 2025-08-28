@@ -198,7 +198,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   // Handle author selection
   const handleAuthorClick = (authorName: string, authorSlug?: string) => {
     if (authorSlug) {
-      router.push(`/authors/${authorSlug}`);
+      router.push(`/${authorSlug}`);
     } else {
       setSearchInput(authorName);
     }

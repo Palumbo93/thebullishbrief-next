@@ -217,7 +217,7 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
       key: 'created_at',
       header: 'Created',
       width: '15%',
-      render: (author) => formatDate(author.created_at)
+      render: (author) => author.created_at ? formatDate(author.created_at) : 'Unknown'
     }
   ];
 

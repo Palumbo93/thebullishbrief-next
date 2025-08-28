@@ -17,6 +17,17 @@ const nextConfig: NextConfig = {
     ];
   },
   
+  // Redirect old author URLs to new root-level paths
+  async redirects() {
+    return [
+      {
+        source: '/authors/:slug',
+        destination: '/:slug',
+        permanent: true,
+      },
+    ];
+  },
+  
   // Exclude Supabase directory from webpack compilation
   webpack: (config, { isServer }) => {
     if (!isServer) {

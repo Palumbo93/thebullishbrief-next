@@ -573,7 +573,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       {brief && (
         <BriefLeadGenPopup
           brief={brief}
-          triggerScrollPercentage={80}
+          triggerScrollPercentage={70}
           // triggerScrollPixels={2000} // Also trigger after 800px scroll (better for mobile)
           showDelay={2000}
           onPopupViewed={() => {

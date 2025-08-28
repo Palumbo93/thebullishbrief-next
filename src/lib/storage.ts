@@ -4,6 +4,7 @@ import { supabase } from './supabase';
 export const STORAGE_BUCKETS = {
   ARTICLE_IMAGES: 'article-images',
   AUTHOR_AVATARS: 'author-avatars',
+  AUTHOR_BANNERS: 'author-banners',
   FEATURED_IMAGES: 'featured-images',
   BRIEF_IMAGES: 'brief-images',
   COMPANY_LOGOS: 'company-logos',
@@ -35,6 +36,12 @@ export const IMAGE_TYPES = {
     maxSize: 10 * 1024 * 1024, // 10MB
     maxWidth: 1920,
     maxHeight: 1080
+  },
+  AUTHOR_BANNER: {
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+    maxSize: 10 * 1024 * 1024, // 10MB
+    maxWidth: 1500,
+    maxHeight: 500
   },
   COMPANY_LOGO: {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
@@ -177,6 +184,24 @@ export async function uploadAuthorAvatar(
   const path = `${authorId}/${fileName}`;
 
   return uploadImage(file, STORAGE_BUCKETS.AUTHOR_AVATARS, path);
+}
+
+// Upload author banner
+export async function uploadAuthorBanner(
+  file: File,
+  authorId: string
+): Promise<{ url: string; path: string }> {
+  // Validate image
+  const validation = validateImage(file, 'AUTHOR_BANNER');
+  if (!validation.isValid) {
+    throw new StorageError(validation.error || 'Invalid image file');
+  }
+
+  // Generate file path
+  const fileName = generateFileName(file.name, 'banner');
+  const path = `${authorId}/${fileName}`;
+
+  return uploadImage(file, STORAGE_BUCKETS.AUTHOR_BANNERS, path);
 }
 
 // Upload featured image

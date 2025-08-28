@@ -72,9 +72,11 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
       await create({
         name: `${author.name} (Copy)`,
         slug: `${author.slug}-copy`,
-        email: author.email,
+                email: author.email,
         bio: author.bio,
         avatar_url: author.avatar_url,
+        banner_url: author.banner_url,
+        audience_tag: author.audience_tag,
         linkedin_url: author.linkedin_url,
         twitter_handle: author.twitter_handle,
         website_url: author.website_url,
@@ -102,6 +104,7 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
     { key: 'email', label: 'Email', type: 'email', placeholder: 'Enter author email' },
     { key: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Enter author bio', rows: 4 },
     { key: 'featured', label: 'Featured', type: 'select', options: [{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+    { key: 'audience_tag', label: 'Mailchimp Audience Tag', type: 'text', placeholder: 'Enter Mailchimp audience tag (optional)' },
     { key: 'linkedin_url', label: 'LinkedIn URL', type: 'text', placeholder: 'Enter LinkedIn URL' },
     { key: 'twitter_handle', label: 'Twitter Handle', type: 'text', placeholder: 'Enter Twitter handle' },
     { key: 'website_url', label: 'Website URL', type: 'text', placeholder: 'Enter website URL' }
@@ -113,6 +116,7 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
     { key: 'email', label: 'Email', type: 'email', placeholder: 'Enter author email' },
     { key: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Enter author bio', rows: 4 },
     { key: 'featured', label: 'Featured', type: 'select', options: [{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }], defaultValue: 'false' },
+    { key: 'audience_tag', label: 'Mailchimp Audience Tag', type: 'text', placeholder: 'Enter Mailchimp audience tag (optional)' },
     { key: 'linkedin_url', label: 'LinkedIn URL', type: 'text', placeholder: 'Enter LinkedIn URL' },
     { key: 'twitter_handle', label: 'Twitter Handle', type: 'text', placeholder: 'Enter Twitter handle' },
     { key: 'website_url', label: 'Website URL', type: 'text', placeholder: 'Enter website URL' }
@@ -288,6 +292,11 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
           fieldKey: 'avatar_url',
           bucket: STORAGE_BUCKETS.AUTHOR_AVATARS,
           placeholder: 'Upload Author Avatar'
+        },
+        bannerUpload: {
+          fieldKey: 'banner_url',
+          bucket: STORAGE_BUCKETS.AUTHOR_BANNERS,
+          placeholder: 'Upload Author Banner (1500x500)'
         }
       })}
 
@@ -301,6 +310,11 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
           fieldKey: 'avatar_url',
           bucket: STORAGE_BUCKETS.AUTHOR_AVATARS,
           placeholder: 'Upload Author Avatar'
+        },
+        bannerUpload: {
+          fieldKey: 'banner_url',
+          bucket: STORAGE_BUCKETS.AUTHOR_BANNERS,
+          placeholder: 'Upload Author Banner (1500x500)'
         }
       })}
 

@@ -27,8 +27,9 @@ export const ManagerHeader: React.FC<ManagerHeaderProps> = ({
     }}>
       <div>
         <h2 style={{
-          fontSize: 'var(--text-xl)',
-          fontWeight: 'var(--font-semibold)',
+          fontSize: 'var(--text-3xl)',
+          fontFamily: 'var(--font-editorial)',
+          fontWeight: 'var(--font-normal)',
           color: 'var(--color-text-primary)',
           marginBottom: 'var(--space-1)'
         }}>
@@ -36,7 +37,8 @@ export const ManagerHeader: React.FC<ManagerHeaderProps> = ({
         </h2>
         <p style={{
           color: 'var(--color-text-tertiary)',
-          fontSize: 'var(--text-sm)'
+          fontSize: 'var(--text-sm)',
+          fontFamily: 'var(--font-editorial)'
         }}>
           {itemCount} of {totalCount} {title.toLowerCase()}
           {hasActiveFilters && (

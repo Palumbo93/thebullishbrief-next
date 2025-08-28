@@ -32,6 +32,11 @@ export interface EditModalProps<T> {
     bucket: string;
     placeholder?: string;
   };
+  bannerUpload?: {
+    fieldKey: string;
+    bucket: string;
+    placeholder?: string;
+  };
 }
 
 export function EditModal<T>({
@@ -46,7 +51,8 @@ export function EditModal<T>({
   onDuplicate,
   getItemId,
   loading = false,
-  imageUpload
+  imageUpload,
+  bannerUpload
 }: EditModalProps<T>) {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -54,8 +60,11 @@ export function EditModal<T>({
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadedBanner, setUploadedBanner] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize form data when item changes
   useEffect(() => {
@@ -82,8 +91,18 @@ export function EditModal<T>({
       } else {
         setUploadedImage(null);
       }
+
+      // Initialize uploaded banner if bannerUpload is configured
+      if (bannerUpload && (item as any)[bannerUpload.fieldKey]) {
+        setUploadedBanner({
+          url: (item as any)[bannerUpload.fieldKey],
+          alt: 'Uploaded banner'
+        });
+      } else {
+        setUploadedBanner(null);
+      }
     }
-  }, [item, fields, imageUpload]);
+  }, [item, fields, imageUpload, bannerUpload]);
 
   // Handle form field changes
   const handleFieldChange = (key: string, value: any) => {
@@ -204,6 +223,79 @@ export function EditModal<T>({
       setFormData(prev => ({
         ...prev,
         [imageUpload.fieldKey]: ''
+      }));
+    }
+  };
+
+  // Banner upload functions
+  const handleBannerUpload = async (file: File) => {
+    if (!file || !sessionId || !bannerUpload) return;
+
+    setUploadingBanner(true);
+    try {
+      const result = await uploadTemporaryFeaturedImage(file, sessionId);
+      
+      // Track the upload for cleanup
+      trackUpload(bannerUpload.bucket, result.path);
+      
+      setUploadedBanner({
+        url: result.url,
+        alt: file.name,
+        tempPath: result.path
+      });
+      
+      // Update form data with the banner URL
+      setFormData(prev => ({
+        ...prev,
+        [bannerUpload.fieldKey]: result.url
+      }));
+    } catch (error) {
+      console.error('Failed to upload banner:', error);
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
+
+  const handleBannerFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleBannerUpload(file);
+    }
+  };
+
+  const handleBannerDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-tertiary)';
+  };
+
+  const handleBannerDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
+  };
+
+  const handleBannerDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-primary)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-secondary)';
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      handleBannerUpload(file);
+    }
+  };
+
+  const removeUploadedBanner = () => {
+    setUploadedBanner(null);
+    if (bannerInputRef.current) {
+      bannerInputRef.current.value = '';
+    }
+    // Clear the banner URL from form data
+    if (bannerUpload) {
+      setFormData(prev => ({
+        ...prev,
+        [bannerUpload.fieldKey]: ''
       }));
     }
   };
@@ -457,6 +549,151 @@ export function EditModal<T>({
                             lineHeight: '1.4'
                           }}>
                             Drag and drop an image here, or click to browse.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Banner Upload Section */}
+            {bannerUpload && (
+              <div style={{ width: '100%' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-medium)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-2)'
+                }}>
+                  {bannerUpload.placeholder || 'Upload Banner'}
+                </label>
+                
+                {/* Hidden file input */}
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBannerFileSelect}
+                  style={{ display: 'none' }}
+                />
+
+                {uploadedBanner ? (
+                  /* Banner Preview */
+                  <div style={{
+                    position: 'relative',
+                    border: '1px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    overflow: 'hidden',
+                    background: 'var(--color-bg-secondary)'
+                  }}>
+                    <img
+                      src={uploadedBanner.url}
+                      alt={uploadedBanner.alt}
+                      style={{
+                        width: '100%',
+                        height: '150px',
+                        objectFit: 'cover'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={removeUploadedBanner}
+                      style={{
+                        position: 'absolute',
+                        top: 'var(--space-2)',
+                        right: 'var(--space-2)',
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 'var(--radius-full)',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: 'var(--text-sm)'
+                      }}
+                    >
+                      <X style={{ width: '16px', height: '16px' }} />
+                    </button>
+                  </div>
+                ) : (
+                  /* Banner Upload Area */
+                  <div
+                    onClick={() => bannerInputRef.current?.click()}
+                    onDragOver={handleBannerDragOver}
+                    onDragLeave={handleBannerDragLeave}
+                    onDrop={handleBannerDrop}
+                    style={{
+                      border: '2px dashed var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      padding: 'var(--space-6)',
+                      textAlign: 'center',
+                      background: 'var(--color-bg-secondary)',
+                      transition: 'all var(--transition-base)',
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                  >
+                    {uploadingBanner ? (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 'var(--space-3)'
+                      }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          border: '3px solid var(--color-border-primary)',
+                          borderTop: '3px solid var(--color-primary)',
+                          borderRadius: 'var(--radius-full)',
+                          animation: 'spin 1s linear infinite'
+                        }} />
+                        <p style={{
+                          fontSize: 'var(--text-sm)',
+                          color: 'var(--color-text-primary)'
+                        }}>
+                          Uploading banner...
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 'var(--space-3)'
+                      }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          background: 'var(--color-bg-tertiary)',
+                          borderRadius: 'var(--radius-full)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <ImageIcon style={{ width: '24px', height: '24px', color: 'var(--color-text-tertiary)' }} />
+                        </div>
+                        <div>
+                          <p style={{
+                            fontSize: 'var(--text-sm)',
+                            fontWeight: 'var(--font-medium)',
+                            color: 'var(--color-text-primary)',
+                            marginBottom: 'var(--space-1)'
+                          }}>
+                            Upload Banner
+                          </p>
+                          <p style={{
+                            fontSize: 'var(--text-xs)',
+                            color: 'var(--color-text-tertiary)',
+                            lineHeight: '1.4'
+                          }}>
+                            Drag and drop a banner image here, or click to browse. Recommended: 1500x500px.
                           </p>
                         </div>
                       </div>

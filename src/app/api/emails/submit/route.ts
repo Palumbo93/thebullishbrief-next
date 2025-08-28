@@ -4,7 +4,8 @@ import { isValidEmail } from '../../../../services/mailchimp';
 
 interface SubmitEmailRequest {
   email: string;
-  briefId: string;
+  briefId?: string;
+  authorId?: string;
   source?: string;
   userId?: string;
 }
@@ -16,12 +17,12 @@ interface SubmitEmailRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: SubmitEmailRequest = await request.json();
-    const { email, briefId, source = 'popup', userId } = body;
+    const { email, briefId, authorId, source = 'popup', userId } = body;
 
     // Validate required fields
-    if (!email || !briefId) {
+    if (!email || (!briefId && !authorId)) {
       return NextResponse.json(
-        { success: false, error: 'Email and briefId are required' },
+        { success: false, error: 'Email and either briefId or authorId are required' },
         { status: 400 }
       );
     }
@@ -46,12 +47,19 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // Check if email already exists for this brief
-    const { data: existingEmails, error: checkError } = await supabase
+    // Check if email already exists for this brief or author
+    let existingEmailsQuery = supabase
       .from('emails')
       .select('id')
-      .eq('email', email)
-      .eq('brief_id', briefId);
+      .eq('email', email);
+    
+    if (briefId) {
+      existingEmailsQuery = existingEmailsQuery.eq('brief_id', briefId);
+    } else if (authorId) {
+      existingEmailsQuery = existingEmailsQuery.eq('author_id', authorId);
+    }
+
+    const { data: existingEmails, error: checkError } = await existingEmailsQuery;
 
     if (checkError) {
       console.error('Database check error:', checkError);
@@ -62,21 +70,29 @@ export async function POST(request: NextRequest) {
     }
 
     if (existingEmails && existingEmails.length > 0) {
+      const entityType = briefId ? 'brief' : 'author';
       return NextResponse.json(
-        { success: false, error: 'You\'re already subscribed to updates for this brief' },
+        { success: false, error: `You're already subscribed to updates for this ${entityType}` },
         { status: 409 }
       );
     }
 
     // Insert email into database
+    const insertData: any = {
+      email,
+      source,
+      user_id: userId || null
+    };
+    
+    if (briefId) {
+      insertData.brief_id = briefId;
+    } else if (authorId) {
+      insertData.author_id = authorId;
+    }
+
     const { data: insertedEmail, error: insertError } = await supabase
       .from('emails')
-      .insert({
-        email,
-        brief_id: briefId,
-        source,
-        user_id: userId || null
-      })
+      .insert(insertData)
       .select('id')
       .single();
 

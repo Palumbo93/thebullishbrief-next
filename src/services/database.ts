@@ -18,17 +18,19 @@ export interface Author {
   id: string;
   name: string;
   slug: string;
-  email?: string;
-  bio?: string;
-  avatar_url?: string;
-  featured: boolean;
-  article_count: number;
-  total_views: number;
-  linkedin_url?: string;
-  twitter_handle?: string;
-  website_url?: string;
-  created_at: string;
-  updated_at: string;
+  email: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  banner_url: string | null;
+  featured: boolean | null;
+  article_count: number | null;
+  total_views: number | null;
+  linkedin_url: string | null;
+  twitter_handle: string | null;
+  website_url: string | null;
+  audience_tag: string | null; // Mailchimp audience tag for author-specific signups
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Tag {

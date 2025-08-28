@@ -77,12 +77,19 @@ export async function POST(request: NextRequest) {
         revalidateTag('briefs');
         break;
         
+      case 'authors':
+        revalidatePath('/authors');
+        revalidateTag('authors');
+        break;
+        
       case 'all':
       default:
         revalidatePath('/articles');
         revalidatePath('/briefs');
+        revalidatePath('/authors');
         revalidateTag('articles');
         revalidateTag('briefs');
+        revalidateTag('authors');
         break;
     }
 

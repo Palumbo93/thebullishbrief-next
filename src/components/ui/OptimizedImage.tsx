@@ -135,14 +135,15 @@ export const ArticleHeroImage: React.FC<{
 export const AuthorAvatarImage: React.FC<{
   src: string;
   alt: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'profile';
   className?: string;
 }> = ({ src, alt, size = 'md', className = '' }) => {
   const sizeMap = {
     xs: 24,
     sm: 32,
     md: 40,
-    lg: 48
+    lg: 48,
+    profile: 128
   };
 
   return (

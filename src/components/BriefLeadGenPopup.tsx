@@ -194,7 +194,7 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
       return;
     }
 
-    const result = await submitEmail(emailInput, brief.id, isMobile ? 'mobile_popup' : 'desktop_popup');
+    const result = await submitEmail(emailInput, brief.id, isMobile ? 'mobile_popup' : 'desktop_popup', false);
     
     if (result.success) {
       // Submit directly to Mailchimp using the form data we already have
@@ -218,7 +218,7 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
   const handleAuthenticatedSignup = async () => {
     setSubmitError(null);
 
-    const result = await submitAuthenticatedUser(brief.id, isMobile ? 'mobile_popup' : 'desktop_popup');
+    const result = await submitAuthenticatedUser(brief.id, isMobile ? 'mobile_popup' : 'desktop_popup', false);
     
     if (result.success) {
       // Submit directly to Mailchimp using the user's email

@@ -10,14 +10,27 @@ export interface EmailWithBrief extends EmailRow {
     title: string;
     company_name: string;
   } | null;
+  author?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
 }
 
-export interface EmailsByBrief {
+export interface EmailsByEntity {
+  id: string | null;
+  type: 'brief' | 'author' | 'unassigned';
+  title: string;
+  subtitle?: string; // company name for briefs, author slug for authors
+  emails: EmailWithBrief[];
+  count: number;
+}
+
+// Keep the old interface for backward compatibility
+export interface EmailsByBrief extends EmailsByEntity {
   briefId: string | null;
   briefTitle: string;
   companyName?: string;
-  emails: EmailWithBrief[];
-  count: number;
 }
 
 /**
@@ -25,7 +38,7 @@ export interface EmailsByBrief {
  */
 export async function fetchEmailsGroupedByBrief(): Promise<EmailsByBrief[]> {
   
-  // Fetch emails with brief information
+  // Fetch emails with brief and author information
   const { data: emails, error } = await supabase
     .from('emails')
     .select(`
@@ -34,6 +47,11 @@ export async function fetchEmailsGroupedByBrief(): Promise<EmailsByBrief[]> {
         id,
         title,
         company_name
+      ),
+      author:authors(
+        id,
+        name,
+        slug
       )
     `)
     .order('created_date', { ascending: false });
@@ -61,7 +79,12 @@ export async function fetchEmailsGroupedByBrief(): Promise<EmailsByBrief[]> {
         briefTitle,
         companyName,
         emails: [],
-        count: 0
+        count: 0,
+        // Required fields from EmailsByEntity
+        id: email.brief_id,
+        type: email.brief_id ? 'brief' : 'unassigned',
+        title: briefTitle,
+        subtitle: companyName
       });
     }
 
@@ -72,6 +95,92 @@ export async function fetchEmailsGroupedByBrief(): Promise<EmailsByBrief[]> {
 
   // Convert to array and sort by count (descending)
   return Array.from(emailsByBrief.values()).sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Fetch all emails grouped by both briefs and authors
+ */
+export async function fetchEmailsGroupedByEntity(): Promise<EmailsByEntity[]> {
+  // Fetch emails with brief and author information
+  const { data: emails, error } = await supabase
+    .from('emails')
+    .select(`
+      *,
+      brief:briefs(
+        id,
+        title,
+        company_name
+      ),
+      author:authors(
+        id,
+        name,
+        slug
+      )
+    `)
+    .order('created_date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching emails:', error);
+    throw new Error('Failed to fetch emails');
+  }
+
+  if (!emails) {
+    return [];
+  }
+
+  // Group emails by entity (brief or author)
+  const emailsByEntity = new Map<string, EmailsByEntity>();
+
+  for (const email of emails) {
+    let entityKey: string;
+    let entity: EmailsByEntity;
+
+    if (email.brief_id && email.brief) {
+      // Brief-associated email
+      entityKey = `brief-${email.brief_id}`;
+      entity = {
+        id: email.brief_id,
+        type: 'brief',
+        title: email.brief.title,
+        subtitle: email.brief.company_name || undefined,
+        emails: [],
+        count: 0
+      };
+    } else if (email.author_id && email.author) {
+      // Author-associated email
+      entityKey = `author-${email.author_id}`;
+      entity = {
+        id: email.author_id,
+        type: 'author',
+        title: email.author.name,
+        subtitle: `@${email.author.slug}`,
+        emails: [],
+        count: 0
+      };
+    } else {
+      // Unassigned email
+      entityKey = 'unassigned';
+      entity = {
+        id: null,
+        type: 'unassigned',
+        title: 'Unassigned',
+        subtitle: 'No brief or author associated',
+        emails: [],
+        count: 0
+      };
+    }
+
+    if (!emailsByEntity.has(entityKey)) {
+      emailsByEntity.set(entityKey, entity);
+    }
+
+    const group = emailsByEntity.get(entityKey)!;
+    group.emails.push(email as EmailWithBrief);
+    group.count++;
+  }
+
+  // Convert to array and sort by count (descending)
+  return Array.from(emailsByEntity.values()).sort((a, b) => b.count - a.count);
 }
 
 /**

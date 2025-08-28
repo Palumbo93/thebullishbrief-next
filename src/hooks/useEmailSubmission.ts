@@ -5,8 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { submitToMailchimp, isValidEmail } from '../services/mailchimp';
 
 interface UseEmailSubmissionReturn {
-  submitEmail: (email: string, briefId: string, source?: string) => Promise<{success: boolean, error?: string}>;
-  submitAuthenticatedUser: (briefId: string, source?: string) => Promise<{success: boolean, error?: string}>; // Uses auth context email
+  submitEmail: (email: string, briefIdOrAuthorId: string, source?: string, isAuthor?: boolean) => Promise<{success: boolean, error?: string}>;
+  submitAuthenticatedUser: (briefIdOrAuthorId: string, source?: string, isAuthor?: boolean) => Promise<{success: boolean, error?: string}>; // Uses auth context email
   syncToMailchimp: (emailId: string, briefId: string) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
@@ -14,8 +14,9 @@ interface UseEmailSubmissionReturn {
 
 interface EmailSubmissionData {
   email: string;
-  brief_id: string;
-  source: 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual';
+  brief_id?: string;
+  author_id?: string;
+  source: 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author';
   user_id?: string;
 }
 
@@ -38,6 +39,7 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         body: JSON.stringify({
           email: data.email,
           briefId: data.brief_id,
+          authorId: data.author_id,
           source: data.source,
           userId: data.user_id
         }),
@@ -99,8 +101,9 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
   // Submit email for unauthenticated users or manual entry
   const submitEmail = async (
     email: string, 
-    briefId: string, 
-    source: string = 'popup'
+    briefIdOrAuthorId: string, 
+    source: string = 'popup',
+    isAuthor: boolean = false
   ): Promise<{success: boolean, error?: string}> => {
     try {
       // Validate email format
@@ -110,30 +113,45 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         return { success: false, error: errorMsg };
       }
 
-      // Check if email already exists for this brief
-      const { data: existingEmails, error: checkError } = await supabase
+      // Check if email already exists for this brief/author
+      let existingEmailsQuery = supabase
         .from('emails')
         .select('id')
-        .eq('email', email)
-        .eq('brief_id', briefId);
+        .eq('email', email);
+      
+      if (isAuthor) {
+        existingEmailsQuery = existingEmailsQuery.eq('author_id', briefIdOrAuthorId);
+      } else {
+        existingEmailsQuery = existingEmailsQuery.eq('brief_id', briefIdOrAuthorId);
+      }
+
+      const { data: existingEmails, error: checkError } = await existingEmailsQuery;
 
       if (checkError) {
         throw new Error(checkError.message);
       }
 
       if (existingEmails && existingEmails.length > 0) {
-        const errorMsg = 'You\'re already subscribed to updates for this brief';
+        const entityType = isAuthor ? 'author' : 'brief';
+        const errorMsg = `You're already subscribed to updates for this ${entityType}`;
         setError(errorMsg);
         return { success: false, error: errorMsg };
       }
 
       // Submit the email
-      const result = await emailMutation.mutateAsync({
+      const submissionData: any = {
         email,
-        brief_id: briefId,
-        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual',
-        user_id: user?.id || undefined // Use authenticated user ID if available
-      });
+        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author',
+        user_id: user?.id || undefined
+      };
+
+      if (isAuthor) {
+        submissionData.author_id = briefIdOrAuthorId;
+      } else {
+        submissionData.brief_id = briefIdOrAuthorId;
+      }
+
+      const result = await emailMutation.mutateAsync(submissionData);
 
       // Note: Mailchimp submission now handled directly in components
 
@@ -147,8 +165,9 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
 
   // Submit for authenticated users (uses their account email)
   const submitAuthenticatedUser = async (
-    briefId: string,
-    source: string = 'popup'
+    briefIdOrAuthorId: string,
+    source: string = 'popup',
+    isAuthor: boolean = false
   ): Promise<{success: boolean, error?: string}> => {
     try {
       if (!user?.email) {
@@ -157,30 +176,45 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         return { success: false, error: errorMsg };
       }
 
-      // Check if user already subscribed to this brief
-      const { data: existingEmails, error: checkError } = await supabase
+      // Check if user already subscribed to this brief/author
+      let existingEmailsQuery = supabase
         .from('emails')
         .select('id')
-        .eq('email', user.email)
-        .eq('brief_id', briefId);
+        .eq('email', user.email);
+      
+      if (isAuthor) {
+        existingEmailsQuery = existingEmailsQuery.eq('author_id', briefIdOrAuthorId);
+      } else {
+        existingEmailsQuery = existingEmailsQuery.eq('brief_id', briefIdOrAuthorId);
+      }
+
+      const { data: existingEmails, error: checkError } = await existingEmailsQuery;
 
       if (checkError) {
         throw new Error(checkError.message);
       }
 
       if (existingEmails && existingEmails.length > 0) {
-        const errorMsg = 'You\'re already subscribed to updates for this brief';
+        const entityType = isAuthor ? 'author' : 'brief';
+        const errorMsg = `You're already subscribed to updates for this ${entityType}`;
         setError(errorMsg);
         return { success: false, error: errorMsg };
       }
 
       // Submit with user's authenticated email
-      const result = await emailMutation.mutateAsync({
+      const submissionData: any = {
         email: user.email,
-        brief_id: briefId,
-        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual',
+        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author',
         user_id: user.id
-      });
+      };
+
+      if (isAuthor) {
+        submissionData.author_id = briefIdOrAuthorId;
+      } else {
+        submissionData.brief_id = briefIdOrAuthorId;
+      }
+
+      const result = await emailMutation.mutateAsync(submissionData);
 
       // Note: Mailchimp submission now handled directly in components
 

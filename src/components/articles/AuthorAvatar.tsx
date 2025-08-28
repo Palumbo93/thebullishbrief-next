@@ -4,7 +4,7 @@ import { AuthorAvatarImage } from '../ui/OptimizedImage';
 interface AuthorAvatarProps {
   author: string;
   image?: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'profile';
   className?: string;
 }
 
@@ -22,6 +22,8 @@ export const AuthorAvatar: React.FC<AuthorAvatarProps> = ({
         return 'w-8 h-8 text-sm';
       case 'lg':
         return 'w-12 h-12 text-lg';
+      case 'profile':
+        return 'w-32 h-32 text-xl';
       default:
         return 'w-10 h-10 text-base';
     }
@@ -46,8 +48,8 @@ export const AuthorAvatar: React.FC<AuthorAvatarProps> = ({
     <div
       className={`rounded-full flex items-center justify-center font-bold text-primary bg-tertiary ${getSizeClasses()} ${className}`}
       style={{
-        width: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'lg' ? '48px' : '40px',
-        height: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'lg' ? '48px' : '40px',
+        width: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'lg' ? '48px' : size === 'profile' ? '128px' : '40px',
+        height: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'lg' ? '48px' : size === 'profile' ? '128px' : '40px',
         borderRadius: 'var(--radius-full)',
         background: 'var(--color-bg-tertiary)',
         color: 'var(--color-text-primary)',

@@ -128,9 +128,7 @@ export const PromptCategoryManager: React.FC<PromptCategoryManagerProps> = () =>
   ];
 
   return (
-    <div>
-      <DatabaseTest />
-      
+    <div>      
       <ManagerHeader
         title="Prompt Categories"
         itemCount={filteredCategories.length}

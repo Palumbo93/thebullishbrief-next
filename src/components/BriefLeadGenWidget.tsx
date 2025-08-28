@@ -70,7 +70,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
       return;
     }
 
-    const result = await submitEmail(emailInput, brief.id, isMobile ? 'mobile_widget' : 'desktop_widget');
+    const result = await submitEmail(emailInput, brief.id, isMobile ? 'mobile_widget' : 'desktop_widget', false);
     
     if (result.success) {
       // Submit directly to Mailchimp using the form data we already have
@@ -94,7 +94,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
   const handleAuthenticatedSignup = async () => {
     setSubmitError(null);
 
-    const result = await submitAuthenticatedUser(brief.id, isMobile ? 'mobile_widget' : 'desktop_widget');
+    const result = await submitAuthenticatedUser(brief.id, isMobile ? 'mobile_widget' : 'desktop_widget', false);
     
     if (result.success) {
       // Submit directly to Mailchimp using the user's email

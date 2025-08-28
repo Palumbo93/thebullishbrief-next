@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          client_info: Json | null
+          created_at: string | null
+          id: string
+          performed_by: string | null
+          performed_by_email: string | null
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          client_info?: Json | null
+          created_at?: string | null
+          id?: string
+          performed_by?: string | null
+          performed_by_email?: string | null
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          client_info?: Json | null
+          created_at?: string | null
+          id?: string
+          performed_by?: string | null
+          performed_by_email?: string | null
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_prompt_categories: {
         Row: {
           created_at: string | null
@@ -325,7 +387,9 @@ export type Database = {
       authors: {
         Row: {
           article_count: number | null
+          audience_tag: string | null
           avatar_url: string | null
+          banner_url: string | null
           bio: string | null
           created_at: string | null
           email: string | null
@@ -341,7 +405,9 @@ export type Database = {
         }
         Insert: {
           article_count?: number | null
+          audience_tag?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           created_at?: string | null
           email?: string | null
@@ -357,7 +423,9 @@ export type Database = {
         }
         Update: {
           article_count?: number | null
+          audience_tag?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           created_at?: string | null
           email?: string | null
@@ -514,7 +582,6 @@ export type Database = {
           id?: string
           investor_deck_url?: string | null
           mailchimp_audience_tag?: string | null
-
           popup_copy?: Json | null
           popup_featured_image?: string | null
           published_at?: string | null
@@ -546,7 +613,6 @@ export type Database = {
           id?: string
           investor_deck_url?: string | null
           mailchimp_audience_tag?: string | null
-
           popup_copy?: Json | null
           popup_featured_image?: string | null
           published_at?: string | null
@@ -845,33 +911,40 @@ export type Database = {
       }
       emails: {
         Row: {
+          author_id: string | null
           brief_id: string | null
           created_date: string | null
           email: string
           id: string
-
           source: string | null
           user_id: string | null
         }
         Insert: {
+          author_id?: string | null
           brief_id?: string | null
           created_date?: string | null
           email: string
           id?: string
-
           source?: string | null
           user_id?: string | null
         }
         Update: {
+          author_id?: string | null
           brief_id?: string | null
           created_date?: string | null
           email?: string
           id?: string
-
           source?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "emails_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "emails_brief_id_fkey"
             columns: ["brief_id"]
@@ -1291,6 +1364,18 @@ export type Database = {
           username: string
         }[]
       }
+      grant_admin_privileges: {
+        Args: {
+          granting_admin_id: string
+          reason?: string
+          target_user_id: string
+        }
+        Returns: Json
+      }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       log_profile_operation: {
         Args: {
           details?: Json
@@ -1299,6 +1384,18 @@ export type Database = {
           user_id?: string
         }
         Returns: undefined
+      }
+      revoke_admin_privileges: {
+        Args: {
+          reason?: string
+          revoking_admin_id: string
+          target_user_id: string
+        }
+        Returns: Json
+      }
+      secure_admin_check: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       should_count_brief_view: {
         Args: {

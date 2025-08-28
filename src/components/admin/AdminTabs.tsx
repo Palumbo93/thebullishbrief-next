@@ -48,18 +48,6 @@ const tabConfigs: TabConfig[] = [
     description: 'Manage investor briefs'
   },
   {
-    id: 'users',
-    label: 'Users',
-    icon: <Settings style={{ width: '16px', height: '16px' }} />,
-    description: 'Manage user accounts'
-  },
-  {
-    id: 'emails',
-    label: 'Emails',
-    icon: <Mail style={{ width: '16px', height: '16px' }} />,
-    description: 'View collected email addresses'
-  },
-  {
     id: 'prompts',
     label: 'AI Prompts',
     icon: <Brain style={{ width: '16px', height: '16px' }} />,
@@ -78,11 +66,23 @@ const tabConfigs: TabConfig[] = [
     description: 'Manage chat rooms'
   },
   {
+    id: 'emails',
+    label: 'Emails',
+    icon: <Mail style={{ width: '16px', height: '16px' }} />,
+    description: 'View collected email addresses'
+  },
+  {
+    id: 'users',
+    label: 'Users',
+    icon: <Settings style={{ width: '16px', height: '16px' }} />,
+    description: 'Manage user accounts'
+  },
+  {
     id: 'build',
     label: 'Build',
     icon: <RefreshCw style={{ width: '16px', height: '16px' }} />,
     description: 'Trigger site rebuilds'
-  }
+  },
 ];
 
 export const AdminTabs: React.FC<AdminTabsProps> = ({ activeTab, onTabChange }) => {

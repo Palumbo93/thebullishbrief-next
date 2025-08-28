@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Author } from '../services/database';
+import { Author } from '../lib/database.aliases';
 
 interface UseAuthorBySlugReturn {
   author: Author | null;

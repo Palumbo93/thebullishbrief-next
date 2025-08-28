@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
+import { supabase } from '@/lib/supabase';
 
 interface BuildTriggerProps {
   className?: string;
@@ -12,15 +13,23 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
   const [lastTriggered, setLastTriggered] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const triggerBuild = async (type: 'all' | 'articles' | 'briefs') => {
+  const triggerBuild = async (type: 'all' | 'articles' | 'briefs' | 'authors') => {
     setIsLoading(true);
     setError(null);
     
     try {
+      // Get current session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication token available');
+      }
+      
       const response = await fetch('/api/trigger-build', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({ type }),
       });
@@ -86,11 +95,11 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
               {isLoading ? 'Building...' : 'Build All Content'}
             </Button>
             <p className="text-sm text-gray-500 mt-1">
-              Rebuild all articles and briefs
+              Rebuild all articles, briefs, and authors
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <Button
                 onClick={() => triggerBuild('articles')}
@@ -116,6 +125,20 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
               </Button>
               <p className="text-sm text-gray-500 mt-1">
                 Rebuild brief pages only
+              </p>
+            </div>
+
+            <div>
+              <Button
+                onClick={() => triggerBuild('authors')}
+                disabled={isLoading}
+                className="w-full justify-center"
+                variant="secondary"
+              >
+                {isLoading ? 'Building...' : 'Build Authors'}
+              </Button>
+              <p className="text-sm text-gray-500 mt-1">
+                Rebuild author pages only
               </p>
             </div>
           </div>

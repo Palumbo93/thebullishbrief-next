@@ -9,6 +9,7 @@ import { useMobileHeader } from '../contexts/MobileHeaderContext';
 import { createMobileHeaderConfig } from '../utils/mobileHeaderConfigs';
 import { AuthorAvatar } from '../components/articles/AuthorAvatar';
 import { ArticleCard } from '../components/articles/ArticleCard';
+import { AuthorNewsletterSignup } from '../components/AuthorNewsletterSignup';
 import { LegalFooter } from '../components/LegalFooter';
 import { ShareSheet } from '../components/ShareSheet';
 import { DesktopBanner } from '../components/DesktopBanner';
@@ -254,144 +255,256 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
           ]}
         />
 
-      {/* Author Header */}
-      <div style={{ 
-        padding: 'var(--space-8) var(--content-padding)',
-        borderBottom: '0.5px solid var(--color-border-primary)'
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          {/* Author Avatar */}
-          <div style={{ marginBottom: 'var(--space-4)' }}>
-            <AuthorAvatar 
-              author={author.name} 
-              image={author.avatar_url} 
-              size="lg" 
-            />
-          </div>
-          
-          {/* Author Info */}
-          <div style={{ maxWidth: '600px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
-              <h1 style={{
-                fontSize: 'var(--text-3xl)',
-                fontWeight: 'var(--font-bold)',
-                color: 'var(--color-text-primary)',
-                margin: 0
-              }}>
-                {author.name}
-              </h1>
-              
-              {author.featured && (
-                <div style={{
-                  display: 'inline-block',
-                  padding: 'var(--space-1) var(--space-3)',
-                  backgroundColor: 'var(--color-brand-primary)',
-                  color: 'var(--color-bg-primary)',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-medium)'
-                }}>
-                  Featured
-                </div>
-              )}
+        {/* Author Header with Banner & Overlapping Avatar */}
+        <div style={{ position: 'relative' }}>
+          {/* Banner Section */}
+          {author.banner_url ? (
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '250px',
+              overflow: 'hidden',
+              background: 'linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%)',
+        
+            }}>
+              <img
+                src={author.banner_url}
+                alt={`${author.name} banner`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center'
+                }}
+                onError={(e) => {
+                  // Fallback to gradient background if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+              {/* Gradient overlay for better text contrast */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.4) 100%)'
+              }} />
             </div>
-            
-            {/* Stats inline with name */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                <span style={{
-                  fontSize: 'var(--text-lg)',
-                  fontWeight: 'var(--font-bold)',
-                  color: 'var(--color-text-primary)'
-                }}>
-                  {author.article_count || 0}
-                </span>
-                <span style={{
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--color-text-tertiary)'
-                }}>
-                  articles
-                </span>
-              </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                <span style={{
-                  fontSize: 'var(--text-lg)',
-                  fontWeight: 'var(--font-bold)',
-                  color: 'var(--color-text-primary)'
-                }}>
-                  {author.total_views || 0}
-                </span>
-                <span style={{
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--color-text-tertiary)'
-                }}>
-                  views
-                </span>
-              </div>
-            </div>
-            
-            {author.bio && (
-              <p style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: 'var(--text-lg)',
-                lineHeight: 'var(--leading-relaxed)',
+          ) : (
+            /* Fallback gradient when no banner */
+            <div style={{
+              width: '100%',
+              height: '200px',
+              background: 'linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%)',
+              opacity: 0.1
+            }} />
+          )}
+
+          {/* Content Container with Overlapping Avatar */}
+          <div style={{ 
+            position: 'relative',
+            marginTop: author.banner_url ? '-60px' : '-50px', // Overlap the banner/gradient
+            padding: '0 var(--content-padding) var(--space-8)',
+            zIndex: 10
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textAlign: 'center',
+              maxWidth: '600px',
+              margin: '0 auto'
+            }}>
+              {/* Overlapping Avatar with Enhanced Styling */}
+              <div style={{ 
                 marginBottom: 'var(--space-6)',
-                textAlign: 'center'
+                position: 'relative'
               }}>
-                {author.bio}
-              </p>
-            )}
-            
-            {/* Social Links */}
-            {(author.linkedin_url || author.twitter_handle || author.website_url) && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-4)' }}>
-                {author.linkedin_url && (
-                  <a
-                    href={author.linkedin_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
-                  >
-                    LinkedIn
-                    <ExternalLink style={{ width: '14px', height: '14px' }} />
-                  </a>
+                <div style={{
+                  padding: '6px',
+                  background: 'var(--color-bg-primary)',
+                  borderRadius: 'var(--radius-full)'
+                }}>
+                  <AuthorAvatar 
+                    author={author.name} 
+                    image={author.avatar_url || undefined} 
+                    size="profile" 
+                  />
+                </div>
+               
+              </div>
+          
+              {/* Author Info */}
+              <div style={{ maxWidth: '600px' }}>
+                {/* Author Name */}
+                <div style={{ marginBottom: 'var(--space-4)' }}>
+                  <h1 style={{
+                    fontSize: 'var(--text-4xl)',
+                    fontFamily: 'var(--font-editorial)',
+                    fontWeight: 'var(--font-regular)',
+                    color: 'var(--color-text-primary)',
+                    margin: 0,
+                    lineHeight: '1.2'
+                  }}>
+                    {author.name}
+                  </h1>
+                </div>
+              
+              
+                {author.bio && (
+                  <p style={{
+                    color: 'var(--color-text-secondary)',
+                    fontSize: 'var(--text-lg)',
+                    lineHeight: 'var(--leading-relaxed)',
+                    marginBottom: 'var(--space-6)',
+                    textAlign: 'center',
+                    fontWeight: 'var(--font-regular)'
+                  }}>
+                    {author.bio}
+                  </p>
                 )}
                 
-                {author.twitter_handle && (
-                  <a
-                    href={`https://twitter.com/${author.twitter_handle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
-                  >
-                    Twitter
-                    <ExternalLink style={{ width: '14px', height: '14px' }} />
-                  </a>
-                )}
-                
-                {author.website_url && (
-                  <a
-                    href={author.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
-                  >
-                    Website
-                    <ExternalLink style={{ width: '14px', height: '14px' }} />
-                  </a>
+                {/* Enhanced Social Links */}
+                {(author.linkedin_url || author.twitter_handle || author.website_url) && (
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    gap: 'var(--space-3)',
+                    flexWrap: 'wrap'
+                  }}>
+                    {author.linkedin_url && (
+                      <a
+                        href={author.linkedin_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: 'var(--space-2)',
+                          padding: 'var(--space-2) var(--space-4)',
+                          background: 'var(--color-bg-primary)',
+                          border: '1px solid var(--color-border-primary)',
+                          borderRadius: 'var(--radius-full)',
+                          color: 'var(--color-text-secondary)',
+                          textDecoration: 'none',
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-medium)',
+                          transition: 'all var(--transition-base)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
+                          e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)';
+                          e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                        }}
+                      >
+                        LinkedIn
+                        <ExternalLink style={{ width: '14px', height: '14px' }} />
+                      </a>
+                    )}
+                  
+                    {author.twitter_handle && (
+                      <a
+                        href={`https://twitter.com/${author.twitter_handle}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: 'var(--space-2)',
+                          padding: 'var(--space-2) var(--space-4)',
+                          background: 'var(--color-bg-primary)',
+                          border: '1px solid var(--color-border-primary)',
+                          borderRadius: 'var(--radius-full)',
+                          color: 'var(--color-text-secondary)',
+                          textDecoration: 'none',
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-medium)',
+                          transition: 'all var(--transition-base)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
+                          e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)';
+                          e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                        }}
+                      >
+                        Twitter
+                        <ExternalLink style={{ width: '14px', height: '14px' }} />
+                      </a>
+                    )}
+                    
+                    {author.website_url && (
+                      <a
+                        href={author.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: 'var(--space-2)',
+                          padding: 'var(--space-2) var(--space-4)',
+                          background: 'var(--color-bg-primary)',
+                          border: '1px solid var(--color-border-primary)',
+                          borderRadius: 'var(--radius-full)',
+                          color: 'var(--color-text-secondary)',
+                          textDecoration: 'none',
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-medium)',
+                          transition: 'all var(--transition-base)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
+                          e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)';
+                          e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                        }}
+                      >
+                        Website
+                        <ExternalLink style={{ width: '14px', height: '14px' }} />
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Author's Articles */}
-      <div>
+        {/* Newsletter Signup Section */}
+        {author.audience_tag && (
+          <div style={{
+            marginBottom: 'var(--space-8)',
+          }}>
+            <AuthorNewsletterSignup 
+              author={author}
+              onEmailSubmitted={(email, isAuthenticated) => {
+                console.log('Newsletter signup:', { email, isAuthenticated, author: author.name });
+              }}
+            />
+          </div>
+        )}
+
+        {/* Articles Section */}
+      <div
+      style={{
+        borderTop: '0.5px solid var(--color-border-primary)',
+      }}
+      >
         
         {articlesLoading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -531,7 +644,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
                   title: article.title,
                   subtitle: article.subtitle || '',
                   author: author.name,
-                  authorAvatar: author.avatar_url,
+                  authorAvatar: author.avatar_url || undefined,
                   authorSlug: author.slug,
                   date: article.published_at ? new Date(article.published_at).toLocaleDateString() : '',
                   category: (article as any).category?.name || '',
@@ -554,7 +667,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
       <ShareSheet
         isOpen={isShareSheetOpen}
         onClose={() => setIsShareSheetOpen(false)}
-        url={window.location.href}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
       />
     </div>
   );

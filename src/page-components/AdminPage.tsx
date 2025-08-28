@@ -45,10 +45,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onCreateAccountClick }) =>
     switch (activeTab) {
       case 'articles':
         return <ArticleManager />;
-      case 'categories':
-        return <CategoryManager />;
       case 'authors':
         return <AuthorManager />;
+      case 'categories':
+        return <CategoryManager />;
       case 'tags':
         return <TagManager />;
       case 'briefs':

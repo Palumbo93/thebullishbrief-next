@@ -275,7 +275,7 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
                   : 'var(--radius-sm) 0 0 var(--radius-sm)'
               }}>
                 <img
-                  src={brief.popup_featured_image || brief.featured_image_url}
+                  src={brief.popup_featured_image || brief.featured_image_url || ''}
                   alt={`${brief.company_name || 'Company'} featured image`}
                   loading="eager"
                   decoding="async"
@@ -442,7 +442,7 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
                   : 'var(--radius-sm) 0 0 var(--radius-sm)'
               }}>
                 <img
-                  src={brief.popup_featured_image || brief.featured_image_url}
+                  src={brief.popup_featured_image || brief.featured_image_url || ''}
                   alt={`${brief.company_name || 'Company'} featured image`}
                   loading="eager"
                   decoding="async"

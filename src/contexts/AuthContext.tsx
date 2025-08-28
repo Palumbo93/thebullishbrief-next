@@ -155,41 +155,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setLoading(false);
     },
+    // SECURITY: Admin role management moved to secure server-side APIs
+    // These functions have been removed to prevent client-side privilege escalation
     grantRole: async (userId: string, roleName: string) => {
-      try {
-        const { error } = await supabase
-          .from('user_profiles')
-          .update({ is_admin: roleName === 'admin' })
-          .eq('id', userId);
-
-        if (error) {
-          console.error('Error granting role:', error);
-          return { error };
-        }
-
-        return { success: true };
-      } catch (error) {
-        console.error('Error granting role:', error);
-        return { error };
-      }
+      console.error('SECURITY VIOLATION: Client-side admin role assignment attempted');
+      return { error: { message: 'Admin role assignment must be done server-side for security' } };
     },
     revokeRole: async (userId: string, roleName: string) => {
-      try {
-        const { error } = await supabase
-          .from('user_profiles')
-          .update({ is_admin: false })
-          .eq('id', userId);
-
-        if (error) {
-          console.error('Error revoking role:', error);
-          return { error };
-        }
-
-        return { success: true };
-      } catch (error) {
-        console.error('Error revoking role:', error);
-        return { error };
-      }
+      console.error('SECURITY VIOLATION: Client-side admin role revocation attempted');
+      return { error: { message: 'Admin role revocation must be done server-side for security' } };
     },
     // Manual token refresh for when we need a fresh token
     refreshToken: async () => {

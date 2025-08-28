@@ -1,24 +1,39 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus,  Users } from 'lucide-react';
-import { useUsers } from '../../hooks/useDatabase';
+import { Plus, Users, Eye, Activity, MessageSquare, Clock, Info, Shield, ShieldOff } from 'lucide-react';
+import { useAdminUsers } from '../../hooks/useAdminUsers';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';
 import { DataTable, Column } from './DataTable';
 import { EditModal, FormField } from './EditModal';
 import { DeleteModal } from './DeleteModal';
 import { CreateModal } from './CreateModal';
+import { UserInfoModal } from './UserInfoModal';
 import { User } from '../../services/database';
+import { secureAdminService } from '../../services/secureAdminService';
+import { useToastContext } from '../../contexts/ToastContext';
 
 interface UserManagerProps {}
 
 export const UserManager: React.FC<UserManagerProps> = () => {
-  const { data: users, loading, create, update, delete: deleteUser } = useUsers();
+  const { 
+    users, 
+    loading, 
+    error,
+    getUserInfo,
+    updateUser, 
+    deleteUser, 
+    createUser,
+    refreshUsers
+  } = useAdminUsers();
+  const { showToast } = useToastContext();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserInfoModal, setShowUserInfoModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter users based on search
@@ -36,7 +51,7 @@ export const UserManager: React.FC<UserManagerProps> = () => {
 
   const handleCreateUser = async (userData: Partial<User>) => {
     try {
-      await create(userData);
+      await createUser(userData);
       setShowCreateModal(false);
     } catch (error) {
       console.error('Error creating user:', error);
@@ -45,7 +60,7 @@ export const UserManager: React.FC<UserManagerProps> = () => {
 
   const handleUpdateUser = async (id: string, userData: Partial<User>) => {
     try {
-      await update(id, userData);
+      await updateUser(id, userData);
       setShowEditModal(false);
       setSelectedUser(null);
     } catch (error) {
@@ -63,9 +78,49 @@ export const UserManager: React.FC<UserManagerProps> = () => {
     }
   };
 
-  const handleDuplicateUser = async (user: User) => {
+  const handleViewUserInfo = (user: any) => {
+    setSelectedUserId(user.id);
+    setShowUserInfoModal(true);
+  };
+
+  // Secure admin role management functions
+  const handleGrantAdmin = async (user: any) => {
     try {
-      await create({
+      await secureAdminService.grantAdminRole(
+        user.id, 
+        `Admin role granted to ${user.email} via admin panel`
+      );
+      showToast('Admin privileges granted successfully', 'success');
+      await refreshUsers(); // Refresh the user list
+    } catch (error) {
+      console.error('Error granting admin role:', error);
+      showToast(
+        error instanceof Error ? error.message : 'Failed to grant admin privileges',
+        'error'
+      );
+    }
+  };
+
+  const handleRevokeAdmin = async (user: any) => {
+    try {
+      await secureAdminService.revokeAdminRole(
+        user.id, 
+        `Admin role revoked from ${user.email} via admin panel`
+      );
+      showToast('Admin privileges revoked successfully', 'success');
+      await refreshUsers(); // Refresh the user list
+    } catch (error) {
+      console.error('Error revoking admin role:', error);
+      showToast(
+        error instanceof Error ? error.message : 'Failed to revoke admin privileges',
+        'error'
+      );
+    }
+  };
+
+  const handleDuplicateUser = async (user: any) => {
+    try {
+      await createUser({
         email: `${user.email.split('@')[0]}_copy@${user.email.split('@')[1]}`,
         username: `${user.username}_copy`,
         is_admin: user.is_admin,
@@ -113,6 +168,19 @@ export const UserManager: React.FC<UserManagerProps> = () => {
     });
   };
 
+  const formatRelativeTime = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+    return `${Math.floor(diffDays / 30)}mo ago`;
+  };
+
   // Define form fields for modals
   const editFields: FormField[] = [
     { key: 'email', label: 'Email', type: 'email', required: true, placeholder: 'Enter user email' },
@@ -151,11 +219,11 @@ export const UserManager: React.FC<UserManagerProps> = () => {
   ];
 
   // Define table columns
-  const columns: Column<User>[] = [
+  const columns: Column<any>[] = [
     {
       key: 'name',
-      header: 'Name',
-      width: '25%',
+      header: 'User',
+      width: '20%',
       render: (user) => (
         <div style={{
           display: 'flex',
@@ -174,46 +242,206 @@ export const UserManager: React.FC<UserManagerProps> = () => {
             fontSize: 'var(--text-sm)',
             fontWeight: 'var(--font-semibold)'
           }}>
-            {user.email.split('@')[0].split('.').map(n => n[0]).join('').toUpperCase()}
+            {user.email.split('@')[0].split('.').map((n: string) => n[0]).join('').toUpperCase()}
           </div>
-          <span>{user.email.split('@')[0]}</span>
+          <div>
+            <div style={{
+              fontSize: 'var(--text-sm)',
+              fontWeight: 'var(--font-medium)',
+              color: 'var(--color-text-primary)'
+            }}>
+              {user.username}
+            </div>
+            <div style={{
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text-secondary)'
+            }}>
+              {user.email}
+            </div>
+          </div>
         </div>
       )
     },
     {
-      key: 'email',
-      header: 'Email',
-      width: '25%',
-      render: (user) => user.email
-    },
-    {
-      key: 'username',
-      header: 'Username',
-      width: '15%',
-      render: (user) => user.username
-    },
-    {
       key: 'status',
       header: 'Status',
-      width: '15%',
+      width: '12%',
       render: (user) => (
-        <span style={{
-          padding: 'var(--space-1) var(--space-2)',
-          background: 'var(--color-bg-tertiary)',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: 'var(--text-xs)',
-          color: getStatusColor(user),
-          fontWeight: 'var(--font-medium)'
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <span style={{
+            padding: 'var(--space-1) var(--space-2)',
+            background: 'var(--color-bg-tertiary)',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: 'var(--text-xs)',
+            color: getStatusColor(user),
+            fontWeight: 'var(--font-medium)',
+            textAlign: 'center'
+          }}>
+            {user.is_admin ? 'Admin' : 'User'}
+          </span>
+          {user.subscription_tier && user.subscription_tier !== 'free' && (
+            <span style={{
+              padding: 'var(--space-1) var(--space-2)',
+              background: user.subscription_tier === 'premium' ? 'var(--color-warning)' : 'var(--color-brand-primary)',
+              color: 'white',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: 'var(--text-xs)',
+              textAlign: 'center',
+              textTransform: 'capitalize'
+            }}>
+              {user.subscription_tier}
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'activity',
+      header: 'Activity',
+      width: '18%',
+      render: (user) => (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 'var(--space-2)',
+          fontSize: 'var(--text-xs)'
         }}>
-          {user.is_admin ? 'Admin' : 'User'}
-        </span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-1)',
+            color: 'var(--color-text-secondary)'
+          }}>
+            <Eye style={{ width: '12px', height: '12px' }} />
+            {user.total_views}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-1)',
+            color: 'var(--color-text-secondary)'
+          }}>
+            <MessageSquare style={{ width: '12px', height: '12px' }} />
+            {user.total_messages}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-1)',
+            color: 'var(--color-text-secondary)'
+          }}>
+            <Activity style={{ width: '12px', height: '12px' }} />
+            {user.total_bookmarks}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-1)',
+            color: 'var(--color-text-secondary)'
+          }}>
+            <Clock style={{ width: '12px', height: '12px' }} />
+            {user.last_activity_at ? formatRelativeTime(user.last_activity_at) : 'Never'}
+          </div>
+        </div>
       )
     },
     {
       key: 'created_at',
-      header: 'Created',
-      width: '20%',
-      render: (user) => formatDate(user.created_at)
+      header: 'Joined',
+      width: '15%',
+      render: (user) => (
+        <div>
+          <div style={{
+            fontSize: 'var(--text-sm)',
+            color: 'var(--color-text-primary)'
+          }}>
+            {formatDate(user.created_at)}
+          </div>
+          <div style={{
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-secondary)'
+          }}>
+            {formatRelativeTime(user.created_at)}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      width: '15%',
+      render: (user) => (
+        <div style={{
+          display: 'flex',
+          gap: 'var(--space-1)'
+        }}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewUserInfo(user);
+            }}
+            style={{
+              background: 'var(--color-brand-primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-sm)',
+              padding: 'var(--space-1)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="View detailed user information"
+          >
+            <Info style={{ width: '14px', height: '14px' }} />
+          </button>
+          
+          {/* Secure Admin Role Management */}
+          {user.is_admin ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRevokeAdmin(user);
+              }}
+              style={{
+                background: 'var(--color-red-500)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                padding: 'var(--space-1)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="Revoke admin privileges (secure server-side)"
+            >
+              <ShieldOff style={{ width: '14px', height: '14px' }} />
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleGrantAdmin(user);
+              }}
+              style={{
+                background: 'var(--color-green-500)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                padding: 'var(--space-1)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="Grant admin privileges (secure server-side)"
+            >
+              <Shield style={{ width: '14px', height: '14px' }} />
+            </button>
+          )}
+        </div>
+      )
     }
   ];
 
@@ -307,6 +535,17 @@ export const UserManager: React.FC<UserManagerProps> = () => {
         getItemId: (user: User) => user.id,
         getItemName: (user: User) => user.email
       })}
+
+      {/* User Info Modal */}
+      <UserInfoModal
+        isOpen={showUserInfoModal}
+        onClose={() => {
+          setShowUserInfoModal(false);
+          setSelectedUserId(null);
+        }}
+        userId={selectedUserId}
+        getUserInfo={getUserInfo}
+      />
     </div>
   );
 };

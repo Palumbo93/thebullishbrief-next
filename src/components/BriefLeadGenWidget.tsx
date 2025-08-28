@@ -128,7 +128,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
           </h3>
           
           <p style={{
-            fontSize: 'var(--text-xs)',
+            fontSize: 'var(--text-sm)',
             color: 'var(--color-text-secondary)',
             lineHeight: 1.4,
             marginBottom: isAuthenticatedThankYou ? 0 : 'var(--space-3)'
@@ -147,7 +147,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
                 marginTop: 'var(--space-3)'
               }}>
                 <p style={{
-                  fontSize: 'var(--text-xs)',
+                  fontSize: 'var(--text-sm)',
                   color: 'var(--color-text-primary)',
                   marginBottom: 'var(--space-2)',
                   fontWeight: 'var(--font-medium)'
@@ -168,7 +168,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       gap: 'var(--space-2)',
-                      fontSize: 'var(--text-xs)',
+                      fontSize: 'var(--text-sm)',
                       color: 'var(--color-text-secondary)'
                     }}>
                       <span style={{ color: 'var(--color-success)', fontSize: '10px', fontWeight: 'bold' }}>✓</span>
@@ -220,7 +220,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
                     <span
                       key={`${ticker.exchange}-${ticker.symbol}`}
                       style={{
-                        fontSize: 'var(--text-xs)',
+                        fontSize: 'var(--text-sm)',
                         color: 'var(--color-text-secondary)',
                         fontWeight: 'var(--font-bold)',
                         fontFamily: 'monospace',
@@ -251,7 +251,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
           </h3>
           
           <p style={{
-            fontSize: 'var(--text-xs)',
+            fontSize: 'var(--text-sm)',
             color: 'var(--color-text-secondary)',
             marginBottom: 'var(--space-3)',
             lineHeight: 1.4,
@@ -269,14 +269,14 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
             textAlign: 'center'
           }}>
             <p style={{
-              fontSize: 'var(--text-xs)',
+              fontSize: 'var(--text-sm)',
               color: 'var(--color-text-secondary)',
               marginBottom: 'var(--space-1)'
             }}>
               Updates will be sent to:
             </p>
             <p style={{
-              fontSize: 'var(--text-xs)',
+              fontSize: 'var(--text-sm)',
               color: 'var(--color-text-primary)',
               fontWeight: 'var(--font-medium)',
               margin: 0
@@ -288,7 +288,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
           {(submitError || error) && (
             <p style={{
               color: 'var(--color-danger)',
-              fontSize: 'var(--text-xs)',
+              fontSize: 'var(--text-sm)',
               marginBottom: 'var(--space-3)',
               textAlign: 'center',
               padding: 'var(--space-2)',
@@ -337,7 +337,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
                     <span
                       key={`${ticker.exchange}-${ticker.symbol}`}
                       style={{
-                        fontSize: 'var(--text-xs)',
+                        fontSize: 'var(--text-sm)',
                         color: 'var(--color-text-secondary)',
                         fontWeight: 'var(--font-bold)',
                         fontFamily: 'monospace',
@@ -368,7 +368,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
           </h3>
           
           <p style={{
-            fontSize: 'var(--text-xs)',
+            fontSize: 'var(--text-sm)',
             color: 'var(--color-text-secondary)',
             marginBottom: 'var(--space-3)',
             lineHeight: 1.4,

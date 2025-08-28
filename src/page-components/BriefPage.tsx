@@ -9,6 +9,7 @@ import { ArrowLeft, User, Calendar, Clock, Play, Pause } from 'lucide-react';
 
 
 import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
+import { ProcessedContent } from '../utils/contentProcessor';
 import dynamic from 'next/dynamic';
 
 // Lazy load TradingView widgets to reduce initial bundle size
@@ -506,13 +507,18 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none brief-content-container">
-                          {brief?.content ? (
-                <div 
-                  className="html-content brief-html-content"
-                  dangerouslySetInnerHTML={{ 
-                    __html: brief.content
-                  }}
-                ref={(el) => {
+            {brief?.content ? (
+              <ProcessedContent
+                content={brief.content}
+                brief={brief}
+                onEmailSubmitted={(email, isAuthenticated) => {
+                  // Track widget lead generation signup for analytics
+                  if (brief?.id && brief?.title && trackLeadGenSignup) {
+                    trackLeadGenSignup(String(brief.id), brief.title, 'inline_content_widget', isAuthenticated ? 'authenticated' : 'guest');
+                  }
+                }}
+                onSignupClick={onCreateAccountClick}
+                onContentReady={(el) => {
                   if (el && !contentProcessed) {
                     // Add IDs to H2 headings for TOC functionality
                     const h2Elements = el.querySelectorAll('h2');
@@ -538,6 +544,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                     setContentProcessed(true);
                   }
                 }}
+                className="html-content brief-html-content"
               />
             ) : (
               <div className="text-center py-12 bg-tertiary rounded-xl mb-8">
@@ -566,8 +573,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       {brief && (
         <BriefLeadGenPopup
           brief={brief}
-          triggerScrollPercentage={40}
-          triggerScrollPixels={800} // Also trigger after 800px scroll (better for mobile)
+          triggerScrollPercentage={80}
+          // triggerScrollPixels={2000} // Also trigger after 800px scroll (better for mobile)
           showDelay={2000}
           onPopupViewed={() => {
             if (brief?.id && brief?.title) {

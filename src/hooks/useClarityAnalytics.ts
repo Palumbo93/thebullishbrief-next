@@ -69,6 +69,14 @@ export const useTrackBriefEngagement = () => {
         briefId: briefId, 
         actionType: actionType 
       });
+    },
+    trackLeadGenSignup: async (briefId: string, title: string, source: string, userType: string) => {
+      trackClarityEvent('Lead Generation Signup', { 
+        briefId: briefId, 
+        title, 
+        source: source, // 'popup' or 'sidebar_widget'
+        userType: userType // 'authenticated' or 'guest'
+      });
     }
   };
 };

@@ -121,16 +121,7 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
           const scrollableHeight = documentHeight - windowHeight;
           const scrollPercentage = scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0;
 
-          // Debug logging for mobile
-          console.log('Scroll Debug:', {
-            scrollTop,
-            windowHeight,
-            documentHeight,
-            scrollableHeight,
-            scrollPercentage: Math.round(scrollPercentage),
-            triggerAt: triggerScrollPercentage,
-            isMobile
-          });
+
 
           // Check if popup should trigger (percentage OR pixel-based)
           const shouldTriggerByPercentage = scrollPercentage >= triggerScrollPercentage;

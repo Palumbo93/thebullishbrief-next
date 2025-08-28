@@ -64,6 +64,7 @@ interface LayoutProps {
     videoThumbnail?: string | null;
     videoTitle?: string;
     onVideoClick?: () => void;
+    onWidgetEmailSubmitted?: (email: string, isAuthenticated: boolean) => void;
   };
   
   // Mobile header specific props
@@ -617,6 +618,7 @@ export const Layout: React.FC<LayoutProps> = ({
                 videoThumbnail={briefActionPanel.videoThumbnail}
                 videoTitle={briefActionPanel.videoTitle}
                 onVideoClick={briefActionPanel.onVideoClick}
+                onWidgetEmailSubmitted={briefActionPanel.onWidgetEmailSubmitted}
               />
             )}
 
@@ -675,6 +677,7 @@ export const Layout: React.FC<LayoutProps> = ({
             videoThumbnail={briefActionPanel.videoThumbnail}
             videoTitle={briefActionPanel.videoTitle}
             onVideoClick={briefActionPanel.onVideoClick}
+            onWidgetEmailSubmitted={briefActionPanel.onWidgetEmailSubmitted}
             isMobileOverlay={true}
             onClose={() => setMobileActionPanelOpen(false)}
           />

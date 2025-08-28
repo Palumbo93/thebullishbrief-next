@@ -89,48 +89,29 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       }
     }
   };
-  const { trackShare: trackAnalyticsShare } = useTrackBriefEngagement();
-  const { trackBriefScrolledHalfway, trackPopupView, trackPageScrollStarted } = useTrackBriefScrolling();
+  const { trackShare: trackAnalyticsShare, trackLeadGenSignup } = useTrackBriefEngagement();
+  const { trackPopupView } = useTrackBriefScrolling();
   const { trackVideoClick, trackVideoModalOpened, trackVideoModalClosed } = useTrackVideoInteractions();
 
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
-  const [hasTrackedHalfway, setHasTrackedHalfway] = React.useState(false);
   const [contentProcessed, setContentProcessed] = React.useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = React.useState(false);
-  const [hasTrackedScrollStart, setHasTrackedScrollStart] = React.useState(false);
   
 
 
 
   
-  // Handle scroll for header background and tracking
+  // Handle scroll for header background only
   React.useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       setIsScrolled(scrollTop > 50);
-      
-      // Track initial scroll start (when user scrolls more than 100px)
-      if (!hasTrackedScrollStart && scrollTop > 100 && brief?.id && brief?.title) {
-        setHasTrackedScrollStart(true);
-        trackPageScrollStarted(String(brief.id), brief.title);
-      }
-      
-      // Track halfway scroll for engagement analytics
-      if (!hasTrackedHalfway && brief?.id && brief?.title) {
-        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercentage = documentHeight > 0 ? (scrollTop / documentHeight) * 100 : 0;
-        
-        if (scrollPercentage >= 50) {
-          setHasTrackedHalfway(true);
-          trackBriefScrolledHalfway(String(brief.id), brief.title);
-        }
-      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasTrackedHalfway, hasTrackedScrollStart, brief?.id, brief?.title, trackBriefScrolledHalfway, trackPageScrollStarted]);
+  }, []);
 
   // Track brief view when component mounts
   React.useEffect(() => {
@@ -340,7 +321,13 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     videoThumbnail: (!brief.feature_featured_video && brief.video_url) ? (brief.featured_video_thumbnail || brief.featured_image_url) : undefined,
     videoTitle: (!brief.feature_featured_video && brief.video_url) ? brief.title : undefined,
     onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined,
-    onSignUpClick: onCreateAccountClick
+    onSignUpClick: onCreateAccountClick,
+    onWidgetEmailSubmitted: (email: string, isAuthenticated: boolean) => {
+      // Track widget lead generation signup for analytics
+      if (brief?.id && brief?.title && trackLeadGenSignup) {
+        trackLeadGenSignup(String(brief.id), brief.title, 'sidebar_widget', isAuthenticated ? 'authenticated' : 'guest');
+      }
+    }
   } : undefined;
 
   const mobileHeaderProps = brief ? {
@@ -579,7 +566,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       {brief && (
         <BriefLeadGenPopup
           brief={brief}
-          triggerScrollPercentage={30}
+          triggerScrollPercentage={40}
           triggerScrollPixels={800} // Also trigger after 800px scroll (better for mobile)
           showDelay={2000}
           onPopupViewed={() => {
@@ -588,8 +575,10 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             }
           }}
           onEmailSubmitted={(email, isAuthenticated) => {
-            // Track email submission for analytics
-            console.log('Email submitted:', email, 'Authenticated:', isAuthenticated);
+            // Track lead generation signup for analytics
+            if (brief?.id && brief?.title && trackLeadGenSignup) {
+              trackLeadGenSignup(String(brief.id), brief.title, 'popup', isAuthenticated ? 'authenticated' : 'guest');
+            }
           }}
           onSignupClick={() => {
             onCreateAccountClick?.();

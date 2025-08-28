@@ -40,6 +40,7 @@ interface BriefsActionPanelProps {
   videoThumbnail?: string | null; // Video thumbnail URL
   videoTitle?: string; // Video title for accessibility
   onVideoClick?: () => void; // Video click handler
+  onWidgetEmailSubmitted?: (email: string, isAuthenticated: boolean) => void; // Widget email submission tracking
 }
 
 const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({ 
@@ -58,7 +59,8 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   videoUrl,
   videoThumbnail,
   videoTitle,
-  onVideoClick
+  onVideoClick,
+  onWidgetEmailSubmitted
 }) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const tocRef = useRef<HTMLDivElement>(null);
@@ -259,8 +261,8 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             brief={brief}
             onEmailSubmitted={(email, isAuthenticated) => {
               // Track email submission for analytics
-              if (briefId) {
-                console.log('Widget email submitted:', email, 'Authenticated:', isAuthenticated, 'Brief:', briefId);
+              if (onWidgetEmailSubmitted) {
+                onWidgetEmailSubmitted(email, isAuthenticated);
               }
             }}
             onSignupClick={onSignUpClick}

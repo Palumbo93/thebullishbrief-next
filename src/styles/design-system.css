@@ -201,7 +201,7 @@
 :root.light,
 :root[data-theme="light"] {
   /* Background Colors - Clean whites and subtle greys */
-  --color-bg-primary: #fdfdfd;
+  --color-bg-primary: #fafafa;
   --color-bg-secondary: #f4f4f4;
   --color-bg-tertiary: #f1f3f4;
   --color-bg-card: #ffffff;

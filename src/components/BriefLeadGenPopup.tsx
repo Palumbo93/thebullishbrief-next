@@ -268,13 +268,25 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
               <div style={{
                 width: '100%',
                 height: isMobile ? '200px' : '100%',
-                background: `url(${brief.popup_featured_image || brief.featured_image_url})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                position: 'relative',
+                overflow: 'hidden',
                 borderRadius: isMobile 
                   ? 'var(--radius-sm) var(--radius-sm) 0 0'
                   : 'var(--radius-sm) 0 0 var(--radius-sm)'
-              }} />
+              }}>
+                <img
+                  src={brief.popup_featured_image || brief.featured_image_url}
+                  alt={`${brief.company_name || 'Company'} featured image`}
+                  loading="eager"
+                  decoding="async"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                  }}
+                />
+              </div>
             )}
 
             {/* Content section - right side on desktop, bottom on mobile */}
@@ -423,13 +435,25 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
               <div style={{
                 width: '100%',
                 height: isMobile ? '200px' : '100%',
-                background: `url(${brief.popup_featured_image || brief.featured_image_url})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                position: 'relative',
+                overflow: 'hidden',
                 borderRadius: isMobile 
                   ? 'var(--radius-sm) var(--radius-sm) 0 0'
                   : 'var(--radius-sm) 0 0 var(--radius-sm)'
-              }} />
+              }}>
+                <img
+                  src={brief.popup_featured_image || brief.featured_image_url}
+                  alt={`${brief.company_name || 'Company'} featured image`}
+                  loading="eager"
+                  decoding="async"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                  }}
+                />
+              </div>
             )}
 
             {/* Content section - right side on desktop, bottom on mobile */}
@@ -729,7 +753,6 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
     <>
       {/* Backdrop with fade-in */}
       <div
-        onClick={handleDismiss}
         style={{
           position: 'fixed',
           top: 0,
@@ -781,37 +804,53 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
           opacity: isAnimatingVisible ? 1 : 0
         }}
       >
-        {/* Close Button */}
+        {/* Relative wrapper for absolute positioning */}
         <div style={{
-          position: 'absolute',
-          top: 'var(--space-3)',
-          right: 'var(--space-3)',
-          zIndex: 1
+          position: 'relative',
+          width: '100%',
+          height: '100%'
         }}>
-          <button
-            onClick={handleDismiss}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: 'var(--radius-full)',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: 'var(--color-text-secondary)',
-              transition: 'all 0.2s ease'
-            }}
-            aria-label="Close popup"
-          >
-            <X size={16} />
-          </button>
-        </div>
+          {/* Close Button - Absolute relative to wrapper */}
+          <div style={{
+            position: 'absolute',
+            top: 'var(--space-3)',
+            right: 'var(--space-3)',
+            zIndex: 10
+          }}>
+            <button
+              onClick={handleDismiss}
+              style={{
+                background: 'rgba(0, 0, 0, 0.6)',
+                border: 'none',
+                borderRadius: 'var(--radius-full)',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'white',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(4px)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
+              }}
+              aria-label="Close popup"
+            >
+              <X size={16} />
+            </button>
+          </div>
 
           {renderContent()}
+        </div>
         
       </div>
+
+
     </>
   );
 };

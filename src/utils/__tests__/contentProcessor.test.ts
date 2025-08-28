@@ -32,7 +32,7 @@ const mockBrief: Brief = {
   popup_copy: null,
   popup_featured_image: null,
   mailchimp_audience_tag: null,
-  mailchimp_campaign_id: null
+
 };
 
 describe('contentProcessor', () => {

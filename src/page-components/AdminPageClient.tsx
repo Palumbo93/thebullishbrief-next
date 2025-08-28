@@ -9,6 +9,7 @@ import { AuthorManager } from '../components/admin/AuthorManager';
 import { TagManager } from '../components/admin/TagManager';
 import { BriefManager } from '../components/admin/BriefManager';
 import { UserManager } from '../components/admin/UserManager';
+import { EmailManager } from '../components/admin/EmailManager';
 import { PromptManager } from '../components/admin/PromptManager';
 import { PromptCategoryManager } from '../components/admin/PromptCategoryManager';
 import { BullRoomManager } from '../components/admin/BullRoomManager';
@@ -30,7 +31,7 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
   // Handle URL-based routing - simplified to avoid page reloads
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'prompts', 'prompt-categories', 'bull-rooms', 'build'].includes(hash)) {
+    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'emails', 'prompts', 'prompt-categories', 'bull-rooms', 'build'].includes(hash)) {
       setActiveTab(hash as AdminTab);
     } else {
       // Set default tab if no valid hash
@@ -56,6 +57,8 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
         return <BriefManager />;
       case 'users':
         return <UserManager />;
+      case 'emails':
+        return <EmailManager />;
       case 'prompts':
         return <PromptManager />;
       case 'prompt-categories':
@@ -83,6 +86,8 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
         return 'Manage brief content, daily market updates, and featured financial insights.';
       case 'users':
         return 'Monitor user activity, manage accounts, and oversee community engagement.';
+      case 'emails':
+        return 'View and analyze collected email addresses organized by brief for lead generation tracking.';
       case 'prompts':
         return 'Curate AI prompts for the vault, organize by categories, and manage accessibility.';
       case 'prompt-categories':

@@ -16,8 +16,25 @@ interface MailchimpSubmissionResult {
 
 /**
  * Submit email to Mailchimp audience with optional brief-specific tag
+ * Uses fetch API only to avoid popup windows
  */
 export async function submitToMailchimp(
+  data: MailchimpSubmissionData
+): Promise<MailchimpSubmissionResult> {
+  try {
+    return await submitToMailchimpFetch(data);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to submit to Mailchimp'
+    };
+  }
+}
+
+/**
+ * Submit to Mailchimp using fetch API
+ */
+async function submitToMailchimpFetch(
   data: MailchimpSubmissionData
 ): Promise<MailchimpSubmissionResult> {
   try {
@@ -43,24 +60,17 @@ export async function submitToMailchimp(
       mode: 'no-cors', // Mailchimp doesn't support CORS for form submissions
     });
 
-    // Note: Due to no-cors mode, we can't read the response body
-    // Mailchimp submissions will always appear successful from the client side
-    // This is normal behavior for Mailchimp form submissions
-    
     return {
       success: true,
-      mailchimpResponse: 'Submitted successfully (no-cors mode)'
+      mailchimpResponse: 'Submitted successfully via fetch (no-cors mode - cannot verify actual success)'
     };
 
   } catch (error) {
-    console.error('Mailchimp submission error:', error);
-    
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to submit to Mailchimp'
-    };
+    throw error;
   }
 }
+
+
 
 /**
  * Validate email format before submission

@@ -483,7 +483,6 @@ export type Database = {
           id: string
           investor_deck_url: string | null
           mailchimp_audience_tag: string | null
-          mailchimp_campaign_id: string | null
           popup_copy: Json | null
           popup_featured_image: string | null
           published_at: string | null
@@ -515,7 +514,7 @@ export type Database = {
           id?: string
           investor_deck_url?: string | null
           mailchimp_audience_tag?: string | null
-          mailchimp_campaign_id?: string | null
+
           popup_copy?: Json | null
           popup_featured_image?: string | null
           published_at?: string | null
@@ -547,7 +546,7 @@ export type Database = {
           id?: string
           investor_deck_url?: string | null
           mailchimp_audience_tag?: string | null
-          mailchimp_campaign_id?: string | null
+
           popup_copy?: Json | null
           popup_featured_image?: string | null
           published_at?: string | null
@@ -850,7 +849,7 @@ export type Database = {
           created_date: string | null
           email: string
           id: string
-          mailchimp_status: string | null
+
           source: string | null
           user_id: string | null
         }
@@ -859,7 +858,7 @@ export type Database = {
           created_date?: string | null
           email: string
           id?: string
-          mailchimp_status?: string | null
+
           source?: string | null
           user_id?: string | null
         }
@@ -868,7 +867,7 @@ export type Database = {
           created_date?: string | null
           email?: string
           id?: string
-          mailchimp_status?: string | null
+
           source?: string | null
           user_id?: string | null
         }

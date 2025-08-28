@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { submitToMailchimp, isValidEmail } from '../../../../services/mailchimp';
+import { isValidEmail } from '../../../../services/mailchimp';
 
 interface SubmitEmailRequest {
   email: string;
@@ -75,8 +75,7 @@ export async function POST(request: NextRequest) {
         email,
         brief_id: briefId,
         source,
-        user_id: userId || null,
-        mailchimp_status: 'pending'
+        user_id: userId || null
       })
       .select('id')
       .single();
@@ -96,21 +95,8 @@ export async function POST(request: NextRequest) {
       .eq('id', briefId)
       .single();
 
-    // Sync to Mailchimp in background (don't wait for it)
-    if (brief?.mailchimp_audience_tag && insertedEmail?.id) {
-      submitToMailchimp({
-        email,
-        audienceTag: brief.mailchimp_audience_tag
-      }).then(async (mailchimpResult) => {
-        // Update sync status
-        await supabase
-          .from('emails')
-          .update({ 
-            mailchimp_status: mailchimpResult.success ? 'synced' : 'failed' 
-          })
-          .eq('id', insertedEmail.id);
-      }).catch(console.error);
-    }
+    // Note: Mailchimp submission will be handled client-side in useEmailSubmission hook
+    // Server-side submission to Mailchimp doesn't work reliably due to CORS and form requirements
 
     return NextResponse.json({
       success: true,

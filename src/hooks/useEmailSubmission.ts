@@ -5,8 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { submitToMailchimp, isValidEmail } from '../services/mailchimp';
 
 interface UseEmailSubmissionReturn {
-  submitEmail: (email: string, briefId: string, userId?: string) => Promise<{success: boolean, error?: string}>;
-  submitAuthenticatedUser: (briefId: string) => Promise<{success: boolean, error?: string}>; // Uses auth context email
+  submitEmail: (email: string, briefId: string, source?: string) => Promise<{success: boolean, error?: string}>;
+  submitAuthenticatedUser: (briefId: string, source?: string) => Promise<{success: boolean, error?: string}>; // Uses auth context email
   syncToMailchimp: (emailId: string, briefId: string) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
@@ -15,9 +15,8 @@ interface UseEmailSubmissionReturn {
 interface EmailSubmissionData {
   email: string;
   brief_id: string;
-  source: 'popup' | 'widget' | 'newsletter' | 'manual';
+  source: 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual';
   user_id?: string;
-  mailchimp_status?: 'pending' | 'synced' | 'failed';
 }
 
 /**
@@ -71,7 +70,6 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         .single();
 
       if (briefError || !brief) {
-        console.warn('Could not fetch brief for Mailchimp sync:', briefError);
         return;
       }
 
@@ -83,7 +81,6 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         .single();
 
       if (emailError || !emailRecord) {
-        console.warn('Could not fetch email for Mailchimp sync:', emailError);
         return;
       }
 
@@ -93,25 +90,9 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         audienceTag: brief.mailchimp_audience_tag || undefined
       });
 
-      // Update sync status in database
-      await supabase
-        .from('emails')
-        .update({ 
-          mailchimp_status: mailchimpResult.success ? 'synced' : 'failed' 
-        })
-        .eq('id', emailId);
-
-      if (!mailchimpResult.success) {
-        console.error('Mailchimp submission failed:', mailchimpResult.error);
-      }
+      // Note: mailchimp_status field removed - no longer tracking sync status in database
     } catch (error) {
-      console.error('Mailchimp sync error:', error);
-      
-      // Update status to failed
-      await supabase
-        .from('emails')
-        .update({ mailchimp_status: 'failed' })
-        .eq('id', emailId);
+      // Note: mailchimp_status field removed - no longer tracking sync status in database
     }
   };
 
@@ -119,7 +100,7 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
   const submitEmail = async (
     email: string, 
     briefId: string, 
-    userId?: string
+    source: string = 'popup'
   ): Promise<{success: boolean, error?: string}> => {
     try {
       // Validate email format
@@ -150,10 +131,11 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
       const result = await emailMutation.mutateAsync({
         email,
         brief_id: briefId,
-        source: 'popup', // Default source, can be customized
-        user_id: userId,
-        mailchimp_status: 'pending'
+        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual',
+        user_id: user?.id || undefined // Use authenticated user ID if available
       });
+
+      // Note: Mailchimp submission now handled directly in components
 
       return { success: true };
     } catch (error) {
@@ -165,7 +147,8 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
 
   // Submit for authenticated users (uses their account email)
   const submitAuthenticatedUser = async (
-    briefId: string
+    briefId: string,
+    source: string = 'popup'
   ): Promise<{success: boolean, error?: string}> => {
     try {
       if (!user?.email) {
@@ -195,10 +178,11 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
       const result = await emailMutation.mutateAsync({
         email: user.email,
         brief_id: briefId,
-        source: 'popup', // Default source, can be customized
-        user_id: user.id,
-        mailchimp_status: 'pending'
+        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual',
+        user_id: user.id
       });
+
+      // Note: Mailchimp submission now handled directly in components
 
       return { success: true };
     } catch (error) {

@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 import { Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEmailSubmission } from '../hooks/useEmailSubmission';
+import { submitToMailchimp } from '../services/mailchimp';
 import { Brief } from '../lib/database.aliases';
 import { FormField } from './ui/FormField';
 import { Button } from './ui/Button';
 import { getTickers } from '../utils/tickerUtils';
 import { BRAND_COPY } from '../data/copy';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 interface BriefLeadGenWidgetProps {
   brief: Brief;
@@ -43,7 +45,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
 }) => {
   const { user } = useAuth();
   const { submitEmail, submitAuthenticatedUser, isSubmitting, error } = useEmailSubmission();
-  
+  const isMobile = useIsMobile(); 
   const [currentState, setCurrentState] = useState<WidgetState>('form');
   const [emailInput, setEmailInput] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -68,9 +70,19 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
       return;
     }
 
-    const result = await submitEmail(emailInput, brief.id);
+    const result = await submitEmail(emailInput, brief.id, isMobile ? 'mobile_widget' : 'desktop_widget');
     
     if (result.success) {
+      // Submit directly to Mailchimp using the form data we already have
+      if (brief.mailchimp_audience_tag) {
+        submitToMailchimp({
+          email: emailInput,
+          audienceTag: brief.mailchimp_audience_tag
+        }).catch(() => {
+          // Silent fail - don't interrupt user experience
+        });
+      }
+      
       setCurrentState('thank-you');
       onEmailSubmitted?.(emailInput, false);
     } else {
@@ -82,9 +94,19 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
   const handleAuthenticatedSignup = async () => {
     setSubmitError(null);
 
-    const result = await submitAuthenticatedUser(brief.id);
+    const result = await submitAuthenticatedUser(brief.id, isMobile ? 'mobile_widget' : 'desktop_widget');
     
     if (result.success) {
+      // Submit directly to Mailchimp using the user's email
+      if (brief.mailchimp_audience_tag && user?.email) {
+        submitToMailchimp({
+          email: user.email,
+          audienceTag: brief.mailchimp_audience_tag
+        }).catch(() => {
+          // Silent fail - don't interrupt user experience
+        });
+      }
+      
       setCurrentState('thank-you');
       onEmailSubmitted?.(user?.email || '', true);
     } else {

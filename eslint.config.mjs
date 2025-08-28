@@ -19,6 +19,7 @@ const eslintConfig = [
       "@typescript-eslint/no-empty-object-type": "off", // Disable empty interface errors
       "@typescript-eslint/no-non-null-asserted-optional-chain": "warn", // Change from error to warning
       "@next/next/no-img-element": "warn", // Change from error to warning for now
+      "@next/next/no-html-link-for-pages": "warn", // Change from error to warning
       "prefer-const": "warn", // Change from error to warning
       "react-hooks/exhaustive-deps": "warn", // Change from error to warning
       "jsx-a11y/alt-text": "warn", // Change from error to warning

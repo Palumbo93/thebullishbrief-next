@@ -1,11 +1,15 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTrackBriefEngagement } from '../hooks/useClarityAnalytics';
 import brokerageConfig from '../data/brokerageConfig.json';
 
 interface BrokerageWidgetProps {
   brokerageLinks: BrokerageLinksData | null;
   className?: string;
+  briefId?: string;
+  briefTitle?: string;
+  location?: 'action_panel' | 'inline';
 }
 
 interface BrokerageLinksData {
@@ -21,9 +25,13 @@ interface BrokerageConfig {
 
 const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({ 
   brokerageLinks, 
-  className = '' 
+  className = '',
+  briefId,
+  briefTitle,
+  location = 'action_panel'
 }) => {
   const { theme } = useTheme();
+  const { trackBrokerageClick } = useTrackBriefEngagement();
   
   if (!brokerageLinks || Object.keys(brokerageLinks).length === 0) {
     return null;
@@ -54,6 +62,11 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
             rel="noopener noreferrer"
             className="brokerage-item"
             aria-label={`View on ${config.name}`}
+            onClick={() => {
+              if (briefId && briefTitle) {
+                trackBrokerageClick(briefId, briefTitle, config.name, config.id, location);
+              }
+            }}
           >
             <div className="brokerage-logo-container">
               <img

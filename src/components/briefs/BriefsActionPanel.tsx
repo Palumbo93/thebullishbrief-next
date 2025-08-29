@@ -276,7 +276,12 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
       {/* Brokerage Widget */}
       {brief?.brokerage_links && (
-        <BrokerageWidget brokerageLinks={brief.brokerage_links as { [key: string]: string } | null} />
+        <BrokerageWidget 
+          brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
+          briefId={brief?.slug}
+          briefTitle={brief?.title}
+          location="action_panel"
+        />
       )}
 
         {/* Table of Contents */}

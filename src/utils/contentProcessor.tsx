@@ -47,6 +47,9 @@ export const processContentWithWidgets = (
         >
           <BrokerageWidget 
             brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
+            briefId={brief.slug}
+            briefTitle={brief.title}
+            location="inline"
           />
         </div>
       ),

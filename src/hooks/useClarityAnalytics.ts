@@ -77,6 +77,15 @@ export const useTrackBriefEngagement = () => {
         source: source, // 'popup' or 'sidebar_widget'
         userType: userType // 'authenticated' or 'guest'
       });
+    },
+    trackBrokerageClick: async (briefId: string, title: string, brokerageName: string, brokerageId: string, location: string = 'action_panel') => {
+      trackClarityEvent('Brokerage Link Clicked', { 
+        briefId: briefId, 
+        title, 
+        brokerageName: brokerageName,
+        brokerageId: brokerageId,
+        location: location // 'action_panel' or 'inline'
+      });
     }
   };
 };

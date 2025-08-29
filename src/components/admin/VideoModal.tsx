@@ -24,7 +24,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
   const [videoUrl, setVideoUrl] = useState('');
   const [title, setTitle] = useState('');
   const [width, setWidth] = useState('100%');
-  const [height, setHeight] = useState('400px');
+  const [height, setHeight] = useState('auto');
   const [controls, setControls] = useState(true);
   const [autoplay, setAutoplay] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -73,7 +73,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
     setVideoUrl('');
     setTitle('');
     setWidth('100%');
-    setHeight('400px');
+    setHeight('auto');
     setControls(true);
     setAutoplay(false);
     setMuted(false);
@@ -329,7 +329,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
                   type="text"
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  placeholder="400px"
+                  placeholder="auto"
                   style={{
                     width: '100%',
                     height: 'var(--input-height)',

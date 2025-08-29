@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import SidebarJoinCTA from '../SidebarJoinCTA';
 import JoinButton from '../JoinButton';
 import BriefLeadGenWidget from '../BriefLeadGenWidget';
+import BrokerageWidget from '../BrokerageWidget';
 import { useTrackBriefEngagement } from '../../hooks/useClarityAnalytics';
 
 interface CompanyTicker {
@@ -272,6 +273,12 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
       )}
 
 
+
+      {/* Brokerage Widget */}
+      {brief?.brokerage_links && (
+        <BrokerageWidget brokerageLinks={brief.brokerage_links as { [key: string]: string } | null} />
+      )}
+
         {/* Table of Contents */}
       {sections.length > 0 && (
         <div className="briefs-toc-section">
@@ -303,6 +310,8 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         </div>
       )}
 
+
+
       {/* Company Tickers */}
       <div className="briefs-tickers-section">
         <h3 className="briefs-section-title">Related Tickers</h3>
@@ -328,6 +337,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           ))}
         </div>
       </div>
+
       </div>
 
 

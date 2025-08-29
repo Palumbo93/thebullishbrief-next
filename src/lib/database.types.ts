@@ -538,6 +538,7 @@ export type Database = {
       }
       briefs: {
         Row: {
+          brokerage_links: Json | null
           company_logo_url: string | null
           company_name: string | null
           content: string
@@ -569,6 +570,7 @@ export type Database = {
           widget_code: string | null
         }
         Insert: {
+          brokerage_links?: Json | null
           company_logo_url?: string | null
           company_name?: string | null
           content: string
@@ -600,6 +602,7 @@ export type Database = {
           widget_code?: string | null
         }
         Update: {
+          brokerage_links?: Json | null
           company_logo_url?: string | null
           company_name?: string | null
           content?: string

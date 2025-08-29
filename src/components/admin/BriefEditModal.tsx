@@ -58,7 +58,8 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     company_logo_url: '',
     // Lead generation fields
     mailchimp_audience_tag: '',
-    popup_copy: ''
+    popup_copy: '',
+    brokerage_links: ''
   });
 
   // Load brief data when modal opens
@@ -89,7 +90,8 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         company_logo_url: brief.company_logo_url || '',
         // Lead generation fields
         mailchimp_audience_tag: brief.mailchimp_audience_tag || '',
-        popup_copy: brief.popup_copy ? JSON.stringify(brief.popup_copy, null, 2) : ''
+        popup_copy: brief.popup_copy ? JSON.stringify(brief.popup_copy, null, 2) : '',
+        brokerage_links: brief.brokerage_links ? JSON.stringify(brief.brokerage_links, null, 2) : ''
       });
 
       // Load featured image if it exists
@@ -275,6 +277,18 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         }
       }
 
+      // Parse and validate brokerage links JSON
+      let brokerageLinks = null;
+      if (formData.brokerage_links.trim()) {
+        try {
+          brokerageLinks = JSON.parse(formData.brokerage_links);
+        } catch (error) {
+          alert('Invalid brokerage links JSON format. Please check your JSON syntax.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       // Update brief data
       const { error } = await supabase
         .from('briefs')
@@ -282,6 +296,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
           ...formData,
           tickers,
           popup_copy: popupCopy,
+          brokerage_links: brokerageLinks,
           reading_time_minutes: readingTimeMinutes,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
@@ -1290,6 +1305,84 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                   marginTop: 'var(--space-1)'
                 }}>
                   Leave empty to use default copy. JSON format with headline, subheadline, buttons, and thank you messages.
+                </p>
+              </div>
+
+              {/* Brokerage Links Configuration */}
+              <div>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Brokerage Links (JSON)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const defaultBrokerageLinks = {
+                        "questrade": "https://myportal.questrade.com/investing/summary/quote/TICKER",
+                        "wealthsimple": "https://www.wealthsimple.com/en-ca/trade/stock/TICKER",
+                        "td": "https://webbroker.td.com/waw/brk/quote?symbol=TICKER"
+                      };
+                      handleChange('brokerage_links', JSON.stringify(defaultBrokerageLinks, null, 2));
+                    }}
+                    style={{
+                      padding: 'var(--space-2) var(--space-3)',
+                      backgroundColor: 'var(--color-primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 'var(--font-semibold)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    }}
+                  >
+                    Use Default
+                  </button>
+                </div>
+                <textarea
+                  value={formData.brokerage_links}
+                  onChange={(e) => handleChange('brokerage_links', e.target.value)}
+                  rows={6}
+                  placeholder={`{
+  "questrade": "https://myportal.questrade.com/investing/summary/quote/TICKER",
+  "wealthsimple": "https://www.wealthsimple.com/en-ca/trade/stock/TICKER",
+  "td": "https://webbroker.td.com/waw/brk/quote?symbol=TICKER"
+}`}
+                  style={{
+                    width: '100%',
+                    padding: 'var(--space-3)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-sm)',
+                    fontFamily: 'var(--font-mono)',
+                    transition: 'all var(--transition-base)',
+                    resize: 'vertical',
+                    minHeight: '150px'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  JSON object mapping brokerage IDs to direct links. Replace TICKER with actual ticker symbol.
                 </p>
               </div>
             </div>

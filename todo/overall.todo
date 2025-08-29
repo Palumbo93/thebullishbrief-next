@@ -101,41 +101,22 @@ Misc:
         ✔ Load X (x=100) messages at a time @done(25-08-16 14:32)    
     
     ✔ Mobile Logo light mode @done(25-08-19 08:39)
-
     ✔ Article Meta Info on Desktop & Mobile Still Sucks @done(25-08-19 08:39)
-    
     ✔ Clean up Console logging @done(25-08-19 08:10)
-    
     ✔ Admin chat channel @done(25-08-19 08:07)
-
     ✔ Admin security safeguards, can't just set isAdmin to true. @done(25-01-21 21:30)
 
-
-    [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
-
-    [] On window focus fetch latest and subscribe?
-
-    TODAY: 
-
-    [] Enable Custom SMTP for Supabase Auth Emails with Postmark
-
+    ✔ Enable Custom SMTP for Supabase Auth Emails with Postmark @done(25-08-29 08:59)
     ✔ Setup info@bullishbrief.com with Google Workspace @done(25-08-22 08:51)
-
     ✔ Contact Page @done(25-08-22 09:21)
-
     ✔ About Page @done(25-08-22 09:21)
-
     ✔ Link to X and LinkedIn @done(25-08-22 09:21)
-
     ✔ hide the popup from authenticated users @done(25-08-26 21:37)
-
     ✔ Responsivness of Brief Page can be improved for small desktop sizes @done(25-08-27 08:24)
-
-    [] /authors I want to just be / , bullishbrief.com/GTAD instead of /authors/GTAD
-    [] authors can include mailchimp signup form in their bio
-    [] Author can have banner image
-
-    [] Mobile inject sign up
+    ✔ /authors I want to just be / , bullishbrief.com/GTAD instead of /authors/GTAD @done(25-08-29 08:59)
+    ✔ authors can include mailchimp signup form in their bio @done(25-08-29 08:59)
+    ✔ Author can have banner image @done(25-08-29 08:59)
+    ✔ Mobile inject sign up @done(25-08-29 08:59)
 
 Misc Bugs:
     ✔ Bullet lists in articles and briefs are not rendering correctly @done(25-08-08 11:25)
@@ -146,14 +127,10 @@ Misc Bugs:
     ✔ Analytics already initited errors @done(25-08-13 21:53)
     ✔ Mobile has some weird scrolling issues @done(25-08-13 13:53)
     ✔ Login doesnt close modal or refresh auth state @done(25-08-12 15:34)
-    [] Article images are still stored in temp folder
 
 Refine/Polish/Mobile Polish: 
-
     ✔ Layout: Sidebar, Header, Footer @done(25-08-10 14:15)
     ✔ Clean up code @done(25-08-10 14:15)
-
-
     ✔ Login Modal @done(25-08-10 20:14)
     ✔ Signup Modal @done(25-08-10 20:14)
     ✔ Onboarding Survey @done(25-08-11 09:56)
@@ -172,3 +149,9 @@ Refine/Polish/Mobile Polish:
     ✔ Share Sheet @done(25-08-13 13:53)
     ✔ Legal Pages @done(25-08-13 13:53)
 
+Admin Page:
+    [] Article images are still stored in temp folder
+    [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
+
+Bullroom Improvements:
+    [] On window focus fetch latest and subscribe?

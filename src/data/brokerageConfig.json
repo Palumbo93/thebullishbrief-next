@@ -1,0 +1,22 @@
+{
+  "brokerages": [
+    {
+      "id": "questrade",
+      "name": "Questrade",
+      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/questrade.png",
+      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/questradeDark.png"
+    },
+    {
+      "id": "wealthsimple",
+      "name": "Wealthsimple",
+      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/wealthsimple.png",
+      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/wealthsimpleDark.png"
+    },
+    {
+      "id": "td",
+      "name": "TD Direct",
+      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/td.png",
+      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/tdDark.png"
+    }
+  ]
+}

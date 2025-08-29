@@ -89,7 +89,11 @@ export const AdminTabs: React.FC<AdminTabsProps> = ({ activeTab, onTabChange }) 
   return (
     <div style={{
       borderBottom: '0.5px solid var(--color-border-primary)',
-      padding: '0 var(--content-padding)'
+      padding: '0 var(--content-padding)',
+      position: 'sticky',
+      top: 0,
+      background: 'var(--color-bg-primary)',
+      zIndex: 1000
     }}>
       <div style={{
         display: 'flex',

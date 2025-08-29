@@ -124,7 +124,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
               </Link>
             </nav>
             <div className="legal-footer-social">
-              <a 
+              <Link
                 href="https://x.com/thebullishbrief" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -138,8 +138,8 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
                   fgColor="var(--color-text-muted)" 
                   bgColor="transparent" 
                 />
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="https://www.linkedin.com/company/the-bullish-brief/about/" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -153,7 +153,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
                   fgColor="var(--color-text-muted)" 
                   bgColor="transparent" 
                 />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -29,12 +29,11 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
     return null;
   }
 
-  // Get available brokerages that have links
-  const availableBrokerages = Object.keys(brokerageLinks)
-    .map(brokerageId => {
-      const config = brokerageConfig.brokerages.find(b => b.id === brokerageId);
-      const url = brokerageLinks[brokerageId];
-      return config ? { config, url } : null;
+  // Get available brokerages that have links, maintaining order from config
+  const availableBrokerages = brokerageConfig.brokerages
+    .map(config => {
+      const url = brokerageLinks[config.id];
+      return url ? { config, url } : null;
     })
     .filter(Boolean) as Array<{ config: BrokerageConfig; url: string }>;
 
@@ -43,7 +42,7 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
   }
 
   return (
-    <div className={`brokerage-widget ${className}`}>
+    <div className={`brokerage-widget brokerage-widget-isolated ${className}`}>
       <h3 className="brokerage-section-title">Quick Links To Preferred Brokerages</h3>
       
       <div className="brokerage-grid">
@@ -94,12 +93,12 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
           align-items: center;
           justify-content: center;
           background: var(--color-bg-tertiary);
+          border: 0.5px solid var(--color-border-primary);
           transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
           text-decoration: none;
           position: relative;
           aspect-ratio: 1;
           min-height: 80px;
-          border: 0.5px solid var(--color-border-primary);
         }
 
         .brokerage-item:hover {
@@ -110,8 +109,7 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
         }
 
         .brokerage-logo-container {
-          width: 100%;
-          height: 100%;
+          display: flex;
           align-items: center;
           justify-content: center;
         }
@@ -120,8 +118,8 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
           width: 100%;
           height: 100%;
           object-fit: contain;
+          border-radius: 4px;
         }
-
 
         .brokerage-item:hover .brokerage-external-icon {
           opacity: 1;
@@ -132,25 +130,26 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
           color: var(--color-text-primary);
         }
 
+        /* Override html-content styles that interfere with brokerage widget */
+        .brokerage-widget-isolated .brokerage-logo {
+          margin: 0 !important;
+          opacity: 1 !important;
+          transition: none !important;
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 480px) {
+        .brokerage-widget {
+          padding: 1rem var(--container-padding);
+          border-top: 0.5px solid var(--color-border-primary);
+        }
+          
           .brokerage-grid {
-            gap: 0.5rem;
+            gap: 2px;
           }
           
           .brokerage-item {
-            padding: 0.75rem;
             min-height: 70px;
-          }
-          
-          .brokerage-logo-container {
-            width: 28px;
-            height: 28px;
-            margin-bottom: 0.375rem;
-          }
-          
-          .brokerage-name {
-            font-size: 0.7rem;
           }
         }
       `}</style>

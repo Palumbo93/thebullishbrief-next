@@ -187,26 +187,50 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
    * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
    * 
    * Features:
-   * - @username → links to https://x.com/username (blue color)
-   * - $TICKER → links to https://x.com/search?q=%24TICKER&src=cashtag_click (green color)
+   * - @username → links to https://x.com/username
+   * - $TICKER → links to https://x.com/search?q=%24TICKER&src=cashtag_click
+   * - Avoids creating nested links by checking if text is already within <a> tags
    * 
    * @param text - The raw text content to process
-   * @returns Text with markdown link syntax for handles and tickers
+   * @returns Text with HTML link tags for handles and tickers
    */
   const processTextWithLinks = (text: string) => {
-    // Replace Twitter handles (@username) with links
-    // Matches @ followed by alphanumeric characters and underscores, 1-15 characters long
-    const withHandles = text.replace(/@([a-zA-Z0-9_]{1,15})\b/g, (match, username) => {
-      return `[${match}](https://x.com/${username})`;
+    // First, we need to process the text while avoiding areas that are already within link tags
+    // We'll split the text by <a> tags and process each non-link segment
+    
+    const linkTagRegex = /<a\b[^>]*>.*?<\/a>/gi;
+    const parts = text.split(linkTagRegex);
+    const linkTags = text.match(linkTagRegex) || [];
+    
+    // Process each non-link part
+    const processedParts = parts.map((part, index) => {
+      if (!part) return part;
+      
+      // Replace Twitter handles (@username) with HTML links
+      // Matches @ followed by alphanumeric characters and underscores, 1-15 characters long
+      let processed = part.replace(/@([a-zA-Z0-9_]{1,15})\b/g, (match, username) => {
+        return `<a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" style="color: #1d9bf0; text-decoration: none;">${match}</a>`;
+      });
+      
+      // Replace stock tickers ($TICKER) with HTML links
+      // Matches $ followed by 1-5 uppercase letters, ensuring it's not part of a larger word
+      processed = processed.replace(/\$([A-Z]{1,5})\b/g, (match, ticker) => {
+        return `<a href="https://x.com/search?q=%24${ticker}&src=cashtag_click" target="_blank" rel="noopener noreferrer" style="color: #00ba7c; text-decoration: none;">${match}</a>`;
+      });
+      
+      return processed;
     });
     
-    // Replace stock tickers ($TICKER) with links
-    // Matches $ followed by 1-5 uppercase letters, ensuring it's not part of a larger word
-    const withTickers = withHandles.replace(/\$([A-Z]{1,5})\b/g, (match, ticker) => {
-      return `[${match}](https://x.com/search?q=%24${ticker}&src=cashtag_click)`;
-    });
+    // Reconstruct the text by interleaving processed parts with original link tags
+    let result = '';
+    for (let i = 0; i < processedParts.length; i++) {
+      result += processedParts[i];
+      if (i < linkTags.length) {
+        result += linkTags[i];
+      }
+    }
     
-    return withTickers;
+    return result;
   };
 
   // Loading state

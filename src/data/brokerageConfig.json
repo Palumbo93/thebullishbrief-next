@@ -1,46 +1,80 @@
 {
-  "brokerages": [
-    {
-      "id": "questrade",
-      "name": "Questrade",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/questrade.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/questradeDark.png"
-    },
-    {
-      "id": "wealthsimple",
-      "name": "Wealthsimple",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/wealthsimple.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/wealthsimpleDark.png"
-    },
-    {
-      "id": "td",
-      "name": "TD Direct",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/td.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/tdDark.png"
-    },
-    {
-      "id": "rbc",
-      "name": "RBC Direct",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/rbc.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/rbcDark.png"
-    },
-    {
-      "id": "cibc",
-      "name": "CIBC Investor's Edge",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/cibc.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/cibcDark.png"
-    },
-    {
-      "id": "fidelity",
-      "name": "Fidelity",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/fidelity.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/fidelityDark.png"
-    },
-    {
-      "id": "interactive",
-      "name": "Interactive Brokers",
-      "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactive.png",
-      "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactiveDark.png"
-    }
-  ]
+  "brokerages": {
+    "CA": [
+      {
+        "id": "questrade",
+        "name": "Questrade",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/questrade.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/questradeDark.png"
+      },
+      {
+        "id": "wealthsimple",
+        "name": "Wealthsimple",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/wealthsimple.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/wealthsimpleDark.png"
+      },
+      {
+        "id": "td",
+        "name": "TD Direct",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/td.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/tdDark.png"
+      },
+      {
+        "id": "rbc",
+        "name": "RBC Direct",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/rbc.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/rbcDark.png"
+      },
+      {
+        "id": "cibc",
+        "name": "CIBC Investor's Edge",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/cibc.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/cibcDark.png"
+      },
+      {
+        "id": "interactive",
+        "name": "Interactive Brokers",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactive.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactiveDark.png"
+      }
+    ],
+    "US": [
+      {
+        "id": "schwab",
+        "name": "Charles Schwab",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/schwab.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/schwabDark.png"
+      },
+      {
+        "id": "fidelity",
+        "name": "Fidelity",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/fidelity.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/fidelityDark.png"
+      },
+      {
+        "id": "etrade",
+        "name": "E*TRADE",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/etrade.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/etradeDark.png"
+      },
+      {
+        "id": "ameritrade",
+        "name": "TD Ameritrade",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/ameritrade.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/ameritradeDark.png"
+      },
+      {
+        "id": "robinhood",
+        "name": "Robinhood",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/robinhood.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/robinhoodDark.png"
+      },
+      {
+        "id": "interactive",
+        "name": "Interactive Brokers",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactive.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactiveDark.png"
+      }
+    ]
+  }
 }

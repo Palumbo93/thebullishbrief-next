@@ -150,8 +150,12 @@ Refine/Polish/Mobile Polish:
     ✔ Legal Pages @done(25-08-13 13:53)
 
 Admin Page:
+    [] Articles List Management
     [] Article images are still stored in temp folder
     [] User list in Admin Page with controls to mute/unmute users, see preferences with filter list, date signup lists, exports etc,
 
 Bullroom Improvements:
     [] On window focus fetch latest and subscribe?
+
+Misc:
+    [] Brief View Tracking Broken

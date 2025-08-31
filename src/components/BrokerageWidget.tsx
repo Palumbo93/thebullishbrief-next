@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTrackBriefEngagement } from '../hooks/useClarityAnalytics';
@@ -23,6 +23,11 @@ interface BrokerageConfig {
   logoUrlDark?: string;
 }
 
+interface GeolocationResponse {
+  country: string;
+  source: string;
+}
+
 const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({ 
   brokerageLinks, 
   className = '',
@@ -32,13 +37,43 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
 }) => {
   const { theme } = useTheme();
   const { trackBrokerageClick } = useTrackBriefEngagement();
+  const [country, setCountry] = useState<string>('CA'); // Default to Canada
+  const [loading, setLoading] = useState(true);
+  const [geolocationError, setGeolocationError] = useState<string | null>(null);
+  
+  // Fetch user's country on component mount
+  useEffect(() => {
+    const fetchUserCountry = async () => {
+      try {
+        const response = await fetch('/api/geolocation/brokerages');
+        if (!response.ok) {
+          throw new Error('Failed to fetch geolocation data');
+        }
+        
+        const data: GeolocationResponse = await response.json();
+        setCountry(data.country);
+        setGeolocationError(null);
+      } catch (error) {
+        console.error('Error fetching user country:', error);
+        setGeolocationError('Unable to detect location');
+        // Keep default country (CA)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserCountry();
+  }, []);
   
   if (!brokerageLinks || Object.keys(brokerageLinks).length === 0) {
     return null;
   }
 
+  // Get brokerages for the detected country
+  const countryBrokerages = brokerageConfig.brokerages[country as keyof typeof brokerageConfig.brokerages] || brokerageConfig.brokerages.CA;
+  
   // Get available brokerages that have links, maintaining order from config
-  const availableBrokerages = brokerageConfig.brokerages
+  const availableBrokerages = countryBrokerages
     .map(config => {
       const url = brokerageLinks[config.id];
       return url ? { config, url } : null;
@@ -49,9 +84,27 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
     return null;
   }
 
+  // Show loading state while fetching geolocation
+  if (loading) {
+    return (
+      <div className={`brokerage-widget brokerage-widget-isolated ${className}`}>
+        <h3 className="brokerage-section-title">Quick Links To Preferred Brokerages</h3>
+        <div className="brokerage-loading">
+          <div className="brokerage-loading-spinner"></div>
+          <p>Loading brokerages...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`brokerage-widget brokerage-widget-isolated ${className}`}>
-      <h3 className="brokerage-section-title">Quick Links To Preferred Brokerages</h3>
+      <h3 className="brokerage-section-title">
+        Quick Links To Preferred Brokerages
+        {geolocationError && (
+          <span className="geolocation-error"> (Showing {country === 'US' ? 'US' : 'Canadian'} brokerages)</span>
+        )}
+      </h3>
       
       <div className="brokerage-grid">
         {availableBrokerages.map(({ config, url }) => (
@@ -92,6 +145,37 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
           color: var(--color-text-primary);
           margin: 0 0 1rem 0;
           letter-spacing: 0.02em;
+        }
+
+        .geolocation-error {
+          font-size: 0.85rem;
+          font-weight: 400;
+          color: var(--color-text-secondary);
+          font-style: italic;
+        }
+
+        .brokerage-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+          color: var(--color-text-secondary);
+        }
+
+        .brokerage-loading-spinner {
+          width: 24px;
+          height: 24px;
+          border: 2px solid var(--color-border-primary);
+          border-top: 2px solid var(--color-brand-primary);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 0.5rem;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
 
         .brokerage-grid {

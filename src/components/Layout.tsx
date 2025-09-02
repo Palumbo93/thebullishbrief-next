@@ -216,7 +216,18 @@ export const Layout: React.FC<LayoutProps> = ({
       // Override key handlers to use Layout's handlers while preserving page-specific config
       const updatedConfig = {
         ...mobileHeaderOverride,
-        onMenuClick: () => setIsMobileSidebarOpen(true)
+        onMenuClick: () => setIsMobileSidebarOpen(true),
+        onLogoClick: () => {
+          // Open the appropriate action panel based on current location
+          if (actualCurrentLocation === 'brief') {
+            setMobileActionPanelOpen(true);
+          } else if (actualCurrentLocation === 'article') {
+            setMobileCommentsOpen(true);
+          } else {
+            // For other pages, default to home navigation
+            router.push('/');
+          }
+        }
       };
       
       // For article pages, ensure comment functionality is properly wired
@@ -260,7 +271,15 @@ export const Layout: React.FC<LayoutProps> = ({
     const baseProps: MobileHeaderFactoryProps = {
       onMenuClick: () => setIsMobileSidebarOpen(true),
       onSearchClick: (path?: string) => router.push(path || '/search'),
-      onLogoClick: () => router.push('/'),
+      onLogoClick: () => {
+        // Open the appropriate action panel based on current location
+        if (actualCurrentLocation === 'brief') {
+          setMobileActionPanelOpen(true);
+        } else {
+          // For other pages, default to home navigation
+          router.push('/');
+        }
+      },
       
       // Article/Brief specific props from mobileHeader prop
       isBookmarked: mobileHeader?.isBookmarked,

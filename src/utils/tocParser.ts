@@ -94,4 +94,68 @@ export const getFirstTickerSymbol = (tickers: any): string | null => {
   }
   
   return null;
+};
+
+/**
+ * Get country-appropriate ticker symbol based on user's location
+ * Prioritizes exchanges relevant to the user's country
+ * @param tickers Ticker data (array or object)
+ * @param country User's country code (default: 'CA')
+ * @returns Formatted ticker symbol (e.g., "CSE:SPTZ") or null
+ */
+export const getCountryAppropriateTickerSymbol = (
+  tickers: any, 
+  country: string = 'CA'
+): string | null => {
+  if (!tickers) return null;
+
+  // Import exchange mapping dynamically
+  let getBestExchangeForCountry: any;
+  try {
+    getBestExchangeForCountry = require('./exchangeMapping').getBestExchangeForCountry;
+  } catch (error) {
+    console.error('Error importing exchange mapping:', error);
+    return getFirstTickerSymbol(tickers);
+  }
+
+  try {
+    let availableExchanges: string[] = [];
+    let tickerMap: { [exchange: string]: string } = {};
+
+    if (Array.isArray(tickers)) {
+      // Extract all available exchanges from array format
+      for (const ticker of tickers) {
+        if (typeof ticker === 'object' && ticker !== null) {
+          Object.entries(ticker).forEach(([exchange, symbol]) => {
+            availableExchanges.push(exchange);
+            tickerMap[exchange] = symbol as string;
+          });
+        }
+      }
+    } else if (typeof tickers === 'object' && tickers !== null) {
+      // Extract from single object format
+      Object.entries(tickers).forEach(([exchange, symbol]) => {
+        availableExchanges.push(exchange);
+        tickerMap[exchange] = symbol as string;
+      });
+    }
+
+    if (availableExchanges.length === 0) {
+      return null;
+    }
+
+    // Get the best exchange for the user's country
+    const bestExchange = getBestExchangeForCountry(availableExchanges, country);
+    
+    if (bestExchange && tickerMap[bestExchange]) {
+      return `${bestExchange}:${tickerMap[bestExchange]}`;
+    }
+
+    // Fallback to first available ticker if no country-specific match
+    return getFirstTickerSymbol(tickers);
+  } catch (error) {
+    console.error('Error getting country-appropriate ticker symbol:', error);
+    // Fallback to original logic on error
+    return getFirstTickerSymbol(tickers);
+  }
 }; 

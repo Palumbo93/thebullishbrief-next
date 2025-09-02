@@ -8,7 +8,8 @@ import { useTrackBriefEngagement, useTrackBriefScrolling, useTrackVideoInteracti
 import { ArrowLeft, User, Calendar, Clock, Play, Pause } from 'lucide-react';
 
 
-import { parseTOCFromContent, getFirstTickerSymbol } from '../utils/tocParser';
+import { parseTOCFromContent, getFirstTickerSymbol, getCountryAppropriateTickerSymbol } from '../utils/tocParser';
+import { fetchUserCountry } from '../utils/geolocation';
 import { ProcessedContent } from '../utils/contentProcessor';
 import dynamic from 'next/dynamic';
 
@@ -81,6 +82,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const { data: brief, isLoading, error } = useBriefBySlug(briefSlug);
   const trackView = useTrackBriefView();
   
+  // Country detection state for geolocation-based features
+  const [country, setCountry] = React.useState<string>('CA'); // Default to Canada
+  const [countryLoading, setCountryLoading] = React.useState(true);
+  const [geolocationError, setGeolocationError] = React.useState<string | null>(null);
+  
   const handleBack = () => {
     if (typeof window !== 'undefined') {
       if (window.history.length > 1) {
@@ -112,6 +118,26 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch user's country on component mount
+  React.useEffect(() => {
+    const fetchCountry = async () => {
+      try {
+        const userCountry = await fetchUserCountry();
+        console.log('🌍 Fetched country:', userCountry);
+        setCountry(userCountry);
+        setGeolocationError(null);
+      } catch (error) {
+        console.error('Error fetching user country:', error);
+        setGeolocationError('Unable to detect location');
+        // Keep default country (CA)
+      } finally {
+        setCountryLoading(false);
+      }
+    };
+
+    fetchCountry();
   }, []);
 
   // Track brief view when component mounts
@@ -292,7 +318,21 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const tocSections = brief ? parseTOCFromContent(brief.content) : [];
   
   // Generate ticker widget - TradingView first, then custom widget if available
-  const firstTickerSymbol = brief ? getFirstTickerSymbol(brief.tickers) : null;
+  // Use country-appropriate ticker selection when country is available
+  const firstTickerSymbol = brief ? 
+    (!countryLoading ? getCountryAppropriateTickerSymbol(brief.tickers, country) : getFirstTickerSymbol(brief.tickers)) : null;
+  
+  // Debug logging
+  React.useEffect(() => {
+    if (brief?.tickers && !countryLoading) {
+      console.log('🎯 Debug ticker selection:', {
+        country,
+        tickers: brief.tickers,
+        selectedSymbol: firstTickerSymbol,
+        countryLoading
+      });
+    }
+  }, [brief?.tickers, country, countryLoading, firstTickerSymbol]);
   const tickerWidget = (
     <div>
       {/* TradingView Widget (always shows if tickers exist) */}
@@ -328,7 +368,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       if (brief?.id && brief?.title && trackLeadGenSignup) {
         trackLeadGenSignup(String(brief.id), brief.title, 'sidebar_widget', isAuthenticated ? 'authenticated' : 'guest');
       }
-    }
+    },
+    // Pass country context for geolocation-based features
+    country,
+    countryLoading,
+    geolocationError
   } : undefined;
 
   const mobileHeaderProps = brief ? {

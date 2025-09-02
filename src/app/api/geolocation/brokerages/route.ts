@@ -44,7 +44,7 @@ function getClientIP(request: NextRequest): string {
 async function fetchCountryFromIP(ip: string): Promise<string> {
   try {
     const token = process.env.IPINFO_TOKEN || 'cb6e27f2e4a175';
-    const response = await fetch(`https://api.ipinfo.io/lite/${ip}?token=${token}`, {
+    const response = await fetch(`https://ipinfo.io/${ip}?token=${token}`, {
       headers: {
         'User-Agent': 'TheBullishBrief/1.0',
       },
@@ -58,8 +58,8 @@ async function fetchCountryFromIP(ip: string): Promise<string> {
 
     const data = await response.json();
     
-    // IPinfo Lite returns country_code field
-    return data.country_code || 'CA'; // Default to Canada if no country code
+    // IPinfo returns country field
+    return data.country || 'CA'; // Default to Canada if no country code
   } catch (error) {
     console.error('Error fetching country from IPinfo:', error);
     return 'CA'; // Default to Canada on error

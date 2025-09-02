@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTrackBriefEngagement } from '../hooks/useClarityAnalytics';
@@ -10,6 +10,10 @@ interface BrokerageWidgetProps {
   briefId?: string;
   briefTitle?: string;
   location?: 'action_panel' | 'inline';
+  // Country context (passed from parent)
+  country?: string;
+  countryLoading?: boolean;
+  geolocationError?: string | null;
 }
 
 interface BrokerageLinksData {
@@ -23,47 +27,36 @@ interface BrokerageConfig {
   logoUrlDark?: string;
 }
 
-interface GeolocationResponse {
-  country: string;
-  source: string;
-}
+
 
 const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({ 
   brokerageLinks, 
   className = '',
   briefId,
   briefTitle,
-  location = 'action_panel'
+  location = 'action_panel',
+  country: propCountry,
+  countryLoading: propCountryLoading,
+  geolocationError: propGeolocationError
 }) => {
   const { theme } = useTheme();
   const { trackBrokerageClick } = useTrackBriefEngagement();
-  const [country, setCountry] = useState<string>('CA'); // Default to Canada
-  const [loading, setLoading] = useState(true);
-  const [geolocationError, setGeolocationError] = useState<string | null>(null);
   
-  // Fetch user's country on component mount
-  useEffect(() => {
-    const fetchUserCountry = async () => {
-      try {
-        const response = await fetch('/api/geolocation/brokerages');
-        if (!response.ok) {
-          throw new Error('Failed to fetch geolocation data');
-        }
-        
-        const data: GeolocationResponse = await response.json();
-        setCountry(data.country);
-        setGeolocationError(null);
-      } catch (error) {
-        console.error('Error fetching user country:', error);
-        setGeolocationError('Unable to detect location');
-        // Keep default country (CA)
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserCountry();
-  }, []);
+  // Use props for country context, with fallback defaults
+  const country = propCountry || 'CA';
+  const loading = propCountryLoading || false;
+  const geolocationError = propGeolocationError || null;
+  
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🏪 BrokerageWidget debug:', {
+      propCountry,
+      country,
+      loading,
+      geolocationError,
+      brokerageLinks: Object.keys(brokerageLinks || {})
+    });
+  }, [propCountry, country, loading, geolocationError, brokerageLinks]);
   
   if (!brokerageLinks || Object.keys(brokerageLinks).length === 0) {
     return null;

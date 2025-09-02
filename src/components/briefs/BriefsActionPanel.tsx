@@ -42,6 +42,10 @@ interface BriefsActionPanelProps {
   videoTitle?: string; // Video title for accessibility
   onVideoClick?: () => void; // Video click handler
   onWidgetEmailSubmitted?: (email: string, isAuthenticated: boolean) => void; // Widget email submission tracking
+  // Country context for geolocation-based features
+  country?: string; // User's country code
+  countryLoading?: boolean; // Whether country is still being fetched
+  geolocationError?: string | null; // Geolocation error message
 }
 
 const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({ 
@@ -61,7 +65,10 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   videoThumbnail,
   videoTitle,
   onVideoClick,
-  onWidgetEmailSubmitted
+  onWidgetEmailSubmitted,
+  country = 'CA',
+  countryLoading = false,
+  geolocationError
 }) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const tocRef = useRef<HTMLDivElement>(null);
@@ -281,6 +288,9 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           briefId={brief?.slug}
           briefTitle={brief?.title}
           location="action_panel"
+          country={country}
+          countryLoading={countryLoading}
+          geolocationError={geolocationError}
         />
       )}
 

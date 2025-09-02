@@ -470,7 +470,11 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Calendar style={{ width: '14px', height: '14px' }} />
-              <span>{new Date().toLocaleDateString('en-US', {
+              <span>{brief?.published_at ? new Date(brief.published_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              }) : new Date(brief?.created_at || '').toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
@@ -478,7 +482,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Clock style={{ width: '14px', height: '14px' }} />
-              <span>4 min</span>
+              <span>{brief?.reading_time_minutes ? `${brief.reading_time_minutes} min` : '4 min'}</span>
             </div>
 
      

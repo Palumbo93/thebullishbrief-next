@@ -185,20 +185,27 @@ export const Video = Node.create<VideoOptions>({
     }
     
     // Direct video file
+    const videoAttributes: Record<string, any> = {
+      src,
+      style: 'width: 100%; height: 100%; border-radius: var(--radius-lg);',
+      playsinline: 'playsinline', // Prevent fullscreen on mobile
+      'webkit-playsinline': 'webkit-playsinline', // iOS Safari support
+    };
+
+    // Only add attributes if they are true
+    if (poster) videoAttributes.poster = poster;
+    if (controls) videoAttributes.controls = 'controls';
+    if (autoplay) {
+      videoAttributes.autoplay = 'autoplay';
+      videoAttributes.muted = 'muted'; // Always mute autoplay videos for browser compliance
+    } else if (muted) {
+      videoAttributes.muted = 'muted';
+    }
+    if (loop) videoAttributes.loop = 'loop';
+
     const videoElement = [
       'video',
-      mergeAttributes(this.options.HTMLAttributes, {
-        src,
-        poster: poster || undefined,
-        controls: controls ? 'controls' : undefined,
-        autoplay: autoplay ? 'autoplay' : undefined,
-        muted: muted || autoplay ? 'muted' : undefined, // Always mute autoplay videos
-        loop: loop ? 'loop' : undefined,
-        playsinline: 'playsinline', // Prevent fullscreen on mobile
-        'webkit-playsinline': 'webkit-playsinline', // iOS Safari support
-        style: 'width: 100%; height: 100%; border-radius: var(--radius-lg);',
-
-      }),
+      mergeAttributes(this.options.HTMLAttributes, videoAttributes),
     ];
 
     // Add play button overlay if controls are enabled

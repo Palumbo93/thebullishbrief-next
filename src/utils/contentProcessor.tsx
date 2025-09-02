@@ -211,10 +211,17 @@ export const contentHasWidgets = (content: string): boolean => {
  */
 export const removeWidgetMarkers = (content: string): string => {
   return content
-    .replace(/\{INLINE_CTA\}/g, '')
-    .replace(/\{BROKERAGE_LINKS\}/g, '')
-    .replace(/\{FEATURED_VIDEO\}/g, '')
-    .replace(/\{TRADING_VIEW\}/g, '');
+    // Remove markers with surrounding newlines/whitespace
+    .replace(/\s*\{INLINE_CTA\}\s*/g, '')
+    .replace(/\s*\{BROKERAGE_LINKS\}\s*/g, '')
+    .replace(/\s*\{FEATURED_VIDEO\}\s*/g, '')
+    .replace(/\s*\{TRADING_VIEW\}\s*/g, '')
+    // Remove empty paragraph tags that might be left behind
+    .replace(/<p>\s*<\/p>/g, '')
+    .replace(/<p><\/p>/g, '')
+    // Clean up any remaining double newlines that might be left
+    .replace(/\n\s*\n\s*\n/g, '\n\n')
+    .replace(/^\s+|\s+$/g, ''); // Trim leading/trailing whitespace
 };
 
 /**

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clock, Briefcase, Files } from 'lucide-react';
+import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clock, Briefcase, Files, ExternalLink } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
@@ -250,9 +250,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     setIsLoading(true);
 
     try {
-      // Calculate reading time based on content
-      const readingTimeMinutes = calculateReadingTime(formData.content);
-      
       // Parse and validate tickers JSON
       const tickers = validateTickerInput(formData.tickers);
       if (formData.tickers.trim() && tickers === null) {
@@ -306,7 +303,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
           popup_copy: popupCopy,
           brokerage_links: brokerageLinks,
           additional_copy: additionalCopy,
-          reading_time_minutes: readingTimeMinutes,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
           published_at: formData.status === 'published' && formData.published_at ? formData.published_at : null,
@@ -388,9 +384,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         }
       }
 
-      // Calculate reading time based on content
-      const readingTimeMinutes = calculateReadingTime(formData.content);
-      
       // Create duplicated brief data
       const duplicatedBrief = {
         title: `${formData.title} (Copy)`,
@@ -402,7 +395,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         featured_image_url: formData.featured_image_url,
         featured_image_alt: formData.featured_image_alt,
         popup_featured_image: formData.popup_featured_image,
-        reading_time_minutes: readingTimeMinutes,
+        reading_time_minutes: formData.reading_time_minutes,
         status: 'draft', // Always create duplicates as drafts
         published_at: null, // Never auto-publish duplicates
         video_url: formData.video_url,
@@ -504,12 +497,51 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
             }}>
               Edit Brief
             </h1>
-            <p style={{
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-tertiary)'
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+              flexWrap: 'wrap'
             }}>
-              ID: {brief.id} • Last updated: {new Date(brief.updated_at || brief.created_at || '').toLocaleDateString()}
-            </p>
+              <p style={{
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-tertiary)',
+                margin: 0
+              }}>
+                ID: {brief.id} • Last updated: {new Date(brief.updated_at || brief.created_at || '').toLocaleDateString()}
+              </p>
+              {brief.slug && (
+                <a
+                  href={`/briefs/${brief.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-1)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-primary)',
+                    textDecoration: 'none',
+                    padding: 'var(--space-1) var(--space-2)',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border-primary)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--color-bg-tertiary)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                  }}
+                  title={brief.status === 'published' ? 'View published brief' : 'Preview draft (admin only)'}
+                >
+                  <ExternalLink style={{ width: '14px', height: '14px' }} />
+                  <span>{brief.status === 'published' ? 'View Live' : 'Preview'}</span>
+                </a>
+              )}
+            </div>
           </div>
         </div>
         

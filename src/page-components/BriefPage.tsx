@@ -570,28 +570,41 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       )}
       
       {/* Brief Lead Generation Popup - Shows on both mobile and desktop */}
-      {brief && (
-        <BriefLeadGenPopup
-          brief={brief}
-          triggerScrollPercentage={70}
-          // triggerScrollPixels={2000} // Also trigger after 800px scroll (better for mobile)
-          showDelay={2000}
-          onPopupViewed={() => {
-            if (brief?.id && brief?.title) {
-              trackPopupView(String(brief.id), brief.title, 'lead_generation_popup');
-            }
-          }}
-          onEmailSubmitted={(email, isAuthenticated) => {
-            // Track lead generation signup for analytics
-            if (brief?.id && brief?.title && trackLeadGenSignup) {
-              trackLeadGenSignup(String(brief.id), brief.title, 'popup', isAuthenticated ? 'authenticated' : 'guest');
-            }
-          }}
-          onSignupClick={() => {
-            onCreateAccountClick?.();
-          }}
-        />
-      )}
+      {brief && (() => {
+        // Extract popup configuration from brief.popup_copy
+        const popupConfig = brief.popup_copy && typeof brief.popup_copy === 'object' && !Array.isArray(brief.popup_copy) 
+          ? brief.popup_copy as any 
+          : {};
+        
+        // Get configuration values with defaults
+        const showPopup = popupConfig.showPopup !== false; // Default to true if not specified
+        const triggerScrollPercentage = popupConfig.popupScrollPercentage ?? 70; // Default to 70%
+        const showDelay = popupConfig.popupDelay ?? 2000; // Default to 2000ms
+
+        // Only render popup if showPopup is true
+        return showPopup ? (
+          <BriefLeadGenPopup
+            brief={brief}
+            triggerScrollPercentage={triggerScrollPercentage}
+            // triggerScrollPixels={2000} // Also trigger after 800px scroll (better for mobile)
+            showDelay={showDelay}
+            onPopupViewed={() => {
+              if (brief?.id && brief?.title) {
+                trackPopupView(String(brief.id), brief.title, 'lead_generation_popup');
+              }
+            }}
+            onEmailSubmitted={(email, isAuthenticated) => {
+              // Track lead generation signup for analytics
+              if (brief?.id && brief?.title && trackLeadGenSignup) {
+                trackLeadGenSignup(String(brief.id), brief.title, 'popup', isAuthenticated ? 'authenticated' : 'guest');
+              }
+            }}
+            onSignupClick={() => {
+              onCreateAccountClick?.();
+            }}
+          />
+        ) : null;
+      })()}
       
       
       {/* CTA Banner - Only show when content is loaded */}

@@ -31,6 +31,9 @@ interface PopupCopy {
   subheadline: string;
   submitButton: string;
   thankYouMessage: string;
+  showPopup?: boolean;
+  popupScrollPercentage?: number;
+  popupDelay?: number;
 }
 
 type PopupState = 'hidden' | 'email-form' | 'one-click-signup' | 'thank-you';

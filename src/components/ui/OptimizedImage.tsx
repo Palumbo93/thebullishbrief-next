@@ -174,9 +174,9 @@ export const BriefCardImage: React.FC<{
   <OptimizedImage
     src={src}
     alt={alt}
-    width={220}
+    width={240}
     height={140}
-    sizes="(max-width: 768px) 100vw, 220px"
+    sizes="(max-width: 768px) 100vw, 240px"
     className={className}
     style={{
       width: '100%',

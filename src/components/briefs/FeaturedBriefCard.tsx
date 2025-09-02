@@ -16,7 +16,7 @@ interface MediaComponentProps {
 const MediaComponent: React.FC<MediaComponentProps> = ({ brief, isMobile = false }) => {
   const containerStyle: React.CSSProperties = isMobile ? {
     width: '100%',
-    height: '200px',
+    height: '240px',
     borderRadius: 'var(--radius-sm)',
     overflow: 'hidden',
     background: 'var(--color-bg-tertiary)',
@@ -24,7 +24,7 @@ const MediaComponent: React.FC<MediaComponentProps> = ({ brief, isMobile = false
     position: 'relative',
     marginBottom: 'var(--space-4)'
   } : {
-    width: '220px',
+    width: '240px',
     height: '140px',
     borderRadius: 'var(--radius-sm)',
     overflow: 'hidden',
@@ -35,43 +35,7 @@ const MediaComponent: React.FC<MediaComponentProps> = ({ brief, isMobile = false
 
   return (
     <div style={containerStyle}>
-      {brief.video_url ? (
-        // Video with play button overlay
-        <>
-          <video
-            src={brief.video_thumbnail_url || brief.video_url}
-            poster={brief.featured_video_thumbnail || undefined}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-            autoPlay
-            muted
-            loop
-            playsInline
-          />
-          {/* Play button overlay */}
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'rgba(0,0,0,0.18)',
-            }}
-          >
-            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="22" cy="22" r="22" fill="rgba(0,0,0,0.55)" />
-              <polygon points="18,14 32,22 18,30" fill="#FFD700" />
-            </svg>
-          </div>
-        </>
-      ) : brief.featured_image_url ? (
+      {brief.featured_image_url ? (
         // Featured image
         <BriefCardImage
           src={brief.featured_image_url}

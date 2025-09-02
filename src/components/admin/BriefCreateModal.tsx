@@ -1192,7 +1192,10 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                         headline: `Get exclusive updates on ${formData.company_name || '[Company Name]'}`,
                         subheadline: "Be the first to know about major developments",
                         submitButton: "Get Updates",
-                        thankYouMessage: `You'll receive updates about ${formData.company_name || '[Company Name]'} directly in your inbox.`
+                        thankYouMessage: `You'll receive updates about ${formData.company_name || '[Company Name]'} directly in your inbox.`,
+                        showPopup: true,
+                        popupScrollPercentage: 70,
+                        popupDelay: 2000
                       };
                       handleChange('popup_copy', JSON.stringify(defaultCopy, null, 2));
                     }}
@@ -1225,7 +1228,10 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
   "headline": "Get exclusive updates on ${formData.company_name || '[Company Name]'}",
   "subheadline": "Be the first to know about major developments",
   "submitButton": "Get Updates",
-  "thankYouMessage": "You'll receive updates about ${formData.company_name || '[Company Name]'} directly in your inbox."
+  "thankYouMessage": "You'll receive updates about ${formData.company_name || '[Company Name]'} directly in your inbox.",
+  "showPopup": true,
+  "popupScrollPercentage": 70,
+  "popupDelay": 2000
 }`}
                   style={{
                     width: '100%',

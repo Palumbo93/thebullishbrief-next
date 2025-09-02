@@ -437,60 +437,60 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
               </h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {/* Status */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Status
-                  </label>
-                  <StatusSelector
-                    value={formData.status}
-                    onChange={(status) => handleChange('status', status)}
-                  />
-                </div>
+            {/* Status */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-3)'
+              }}>
+                Status
+              </label>
+              <StatusSelector
+                value={formData.status}
+                onChange={(status) => handleChange('status', status)}
+              />
+            </div>
 
-                {/* Published Date */}
-                {formData.status === 'published' && (
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 'var(--font-semibold)',
-                      color: 'var(--color-text-primary)',
-                      marginBottom: 'var(--space-3)'
-                    }}>
-                      Published Date
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={formData.published_at}
-                      onChange={(e) => handleChange('published_at', e.target.value)}
-                      style={{
-                        width: '100%',
-                        height: '50px',
-                        padding: '0 var(--space-4)',
-                        background: 'var(--color-bg-tertiary)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--color-text-primary)',
-                        fontSize: 'var(--text-base)',
-                        transition: 'all var(--transition-base)'
-                      }}
-                    />
-                    <p style={{
-                      fontSize: 'var(--text-xs)',
-                      color: 'var(--color-text-tertiary)',
-                      marginTop: 'var(--space-1)'
-                    }}>
-                      Leave empty to publish immediately
-                    </p>
-                  </div>
-                )}
+            {/* Published Date */}
+            {formData.status === 'published' && (
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Published Date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={formData.published_at}
+                  onChange={(e) => handleChange('published_at', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    padding: '0 var(--space-4)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)'
+                }}>
+                  Leave empty to publish immediately
+                </p>
+              </div>
+            )}
               </div>
             </div>
 
@@ -514,97 +514,97 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
               </h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {/* Title */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => handleChange('title', e.target.value)}
-                    required
-                    style={{
-                      width: '100%',
-                      height: '60px',
-                      padding: '0 var(--space-4)',
-                      background: 'var(--color-bg-tertiary)',
-                      border: '0.5px solid var(--color-border-primary)',
-                      borderRadius: 'var(--radius-lg)',
-                      color: 'var(--color-text-primary)',
-                      fontSize: 'var(--text-xl)',
-                      fontWeight: 'var(--font-semibold)',
-                      transition: 'all var(--transition-base)'
-                    }}
-                    placeholder="Enter your brief title..."
-                  />
-                </div>
+            {/* Title */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-3)'
+              }}>
+                Title *
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => handleChange('title', e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  height: '60px',
+                  padding: '0 var(--space-4)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-xl)',
+                  fontWeight: 'var(--font-semibold)',
+                  transition: 'all var(--transition-base)'
+                }}
+                placeholder="Enter your brief title..."
+              />
+            </div>
 
-                {/* Subtitle */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Subtitle
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.subtitle}
-                    onChange={(e) => handleChange('subtitle', e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '50px',
-                      padding: '0 var(--space-4)',
-                      background: 'var(--color-bg-tertiary)',
-                      border: '0.5px solid var(--color-border-primary)',
-                      borderRadius: 'var(--radius-lg)',
-                      color: 'var(--color-text-primary)',
-                      fontSize: 'var(--text-lg)',
-                      transition: 'all var(--transition-base)'
-                    }}
-                    placeholder="Enter brief subtitle..."
-                  />
-                </div>
+            {/* Subtitle */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-3)'
+              }}>
+                Subtitle
+              </label>
+              <input
+                type="text"
+                value={formData.subtitle}
+                onChange={(e) => handleChange('subtitle', e.target.value)}
+                style={{
+                  width: '100%',
+                  height: '50px',
+                  padding: '0 var(--space-4)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-lg)',
+                  transition: 'all var(--transition-base)'
+                }}
+                placeholder="Enter brief subtitle..."
+              />
+            </div>
 
-                {/* Slug */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Slug *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => handleChange('slug', e.target.value)}
-                    required
-                    style={{
-                      width: '100%',
-                      height: '50px',
-                      padding: '0 var(--space-4)',
-                      background: 'var(--color-bg-tertiary)',
-                      border: '0.5px solid var(--color-border-primary)',
-                      borderRadius: 'var(--radius-lg)',
-                      color: 'var(--color-text-primary)',
-                      fontSize: 'var(--text-base)',
-                      transition: 'all var(--transition-base)'
-                    }}
-                    placeholder="brief-slug-url"
-                  />
+            {/* Slug */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-3)'
+              }}>
+                Slug *
+              </label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => handleChange('slug', e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  height: '50px',
+                  padding: '0 var(--space-4)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-base)',
+                  transition: 'all var(--transition-base)'
+                }}
+                placeholder="brief-slug-url"
+              />
                 </div>
               </div>
             </div>
@@ -628,58 +628,58 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 🏢 Company Information
               </h3>
               
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 'var(--space-4)'
-              }}>
-                {/* Company Name */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 'var(--space-4)'
+            }}>
+              {/* Company Name */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.company_name}
+                  onChange={(e) => handleChange('company_name', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
                     color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.company_name}
-                    onChange={(e) => handleChange('company_name', e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: 'var(--input-height)',
-                      padding: '0 var(--input-padding-x)',
-                      background: 'var(--color-bg-tertiary)',
-                      border: '0.5px solid var(--color-border-primary)',
-                      borderRadius: 'var(--radius-lg)',
-                      color: 'var(--color-text-primary)',
-                      fontSize: 'var(--text-base)',
-                      transition: 'all var(--transition-base)'
-                    }}
-                    placeholder="Enter company name..."
-                  />
-                </div>
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  placeholder="Enter company name..."
+                />
+              </div>
 
                 {/* Company Logo URL */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
                     Company Logo URL
-                  </label>
-                  <input
+                </label>
+                <input
                     type="url"
                     value={formData.company_logo_url}
                     onChange={(e) => handleChange('company_logo_url', e.target.value)}
-                    style={{
-                      width: '100%',
+                      style={{
+                        width: '100%',
                       height: 'var(--input-height)',
                       padding: '0 var(--input-padding-x)',
                       background: 'var(--color-bg-tertiary)',
@@ -691,13 +691,13 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                     }}
                     placeholder="https://example.com/logo.png"
                   />
-                </div>
+                  </div>
               </div>
             </div>
 
             {/* ===== MEDIA ASSETS ===== */}
             <div style={{
-              padding: 'var(--space-4)',
+                      padding: 'var(--space-4)',
               backgroundColor: 'var(--color-bg-secondary)',
               border: '1px solid var(--color-border-primary)',
               borderRadius: 'var(--radius-lg)'
@@ -707,25 +707,25 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
                 marginBottom: 'var(--space-4)',
-                display: 'flex',
-                alignItems: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
                 gap: 'var(--space-2)'
               }}>
                 🎬 Media Assets
               </h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {/* Featured Image */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Featured Image
-                  </label>
+            {/* Featured Image */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-3)'
+              }}>
+                Featured Image
+              </label>
               
               {/* Hidden file input */}
               <input
@@ -858,67 +858,67 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
               )}
 
                 {/* Video Fields */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 'var(--space-4)'
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 'var(--space-4)'
+            }}>
+              {/* Video URL */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
                 }}>
-                  {/* Video URL */}
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 'var(--font-semibold)',
-                      color: 'var(--color-text-primary)',
-                      marginBottom: 'var(--space-3)'
-                    }}>
-                      Video URL
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.video_url}
-                      onChange={(e) => handleChange('video_url', e.target.value)}
-                      style={{
-                        width: '100%',
-                        height: 'var(--input-height)',
-                        padding: '0 var(--input-padding-x)',
-                        background: 'var(--color-bg-tertiary)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--color-text-primary)',
-                        fontSize: 'var(--text-base)',
-                        transition: 'all var(--transition-base)'
-                      }}
-                      placeholder="https://example.com/video.mp4"
-                    />
-                  </div>
+                  Video URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.video_url}
+                  onChange={(e) => handleChange('video_url', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  placeholder="https://example.com/video.mp4"
+                />
+              </div>
 
                   {/* Featured Video Thumbnail */}
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 'var(--font-semibold)',
-                      color: 'var(--color-text-primary)',
-                      marginBottom: 'var(--space-3)'
-                    }}>
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-3)'
+                }}>
                       Featured Video Thumbnail
-                    </label>
-                    <input
-                      type="url"
+                </label>
+                <input
+                  type="url"
                       value={formData.featured_video_thumbnail}
                       onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
-                      style={{
-                        width: '100%',
-                        height: 'var(--input-height)',
-                        padding: '0 var(--input-padding-x)',
-                        background: 'var(--color-bg-tertiary)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--color-text-primary)',
-                        fontSize: 'var(--text-base)',
-                        transition: 'all var(--transition-base)'
-                      }}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
                       placeholder="https://example.com/featured-video-thumb.jpg"
                     />
                     <p style={{
@@ -952,11 +952,11 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 ⚙️ Brief Settings
               </h3>
               
-              <div style={{
-                display: 'grid',
+            <div style={{
+              display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: 'var(--space-4)'
-              }}>
+              gap: 'var(--space-4)'
+            }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -971,13 +971,13 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                       height: '16px'
                     }}
                   />
-                  <label style={{
-                    fontSize: 'var(--text-sm)',
+                <label style={{
+                  fontSize: 'var(--text-sm)',
                     fontWeight: 'var(--font-medium)',
                     color: 'var(--color-text-primary)'
-                  }}>
+                }}>
                     Featured Brief
-                  </label>
+                </label>
                 </div>
 
                 <div style={{
@@ -985,11 +985,11 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   alignItems: 'center',
                   gap: 'var(--space-2)'
                 }}>
-                  <input
+                <input
                     type="checkbox"
                     checked={formData.sponsored}
                     onChange={(e) => handleChange('sponsored', e.target.checked)}
-                    style={{
+                  style={{
                       width: '16px',
                       height: '16px'
                     }}
@@ -1001,7 +1001,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   }}>
                     Sponsored Content
                   </label>
-                </div>
+              </div>
 
                 <div style={{
                   display: 'flex',
@@ -1027,32 +1027,32 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 </div>
 
                 {/* Reading Time */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
                     marginBottom: 'var(--space-2)'
-                  }}>
+                }}>
                     Reading Time (minutes)
-                  </label>
-                  <input
+                </label>
+                <input
                     type="number"
                     value={formData.reading_time_minutes}
                     onChange={(e) => handleChange('reading_time_minutes', parseInt(e.target.value))}
                     min="1"
-                    style={{
-                      width: '100%',
-                      height: 'var(--input-height)',
-                      padding: '0 var(--input-padding-x)',
-                      background: 'var(--color-bg-tertiary)',
-                      border: '0.5px solid var(--color-border-primary)',
-                      borderRadius: 'var(--radius-lg)',
-                      color: 'var(--color-text-primary)',
-                      fontSize: 'var(--text-base)',
-                      transition: 'all var(--transition-base)'
-                    }}
+                  style={{
+                    width: '100%',
+                    height: 'var(--input-height)',
+                    padding: '0 var(--input-padding-x)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
                   />
                 </div>
               </div>
@@ -1106,7 +1106,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   }}
                 />
               </div>
-            </div>
+              </div>
 
             {/* ===== ADDITIONAL INFORMATION ===== */}
             <div style={{
@@ -1155,33 +1155,33 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   }}
                   placeholder="Enter disclaimer text..."
                 />
-              </div>
+            </div>
 
               {/* Popup Featured Image URL Field */}
               <div style={{ marginTop: 'var(--space-4)' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-3)'
+              }}>
                   Popup Featured Image URL (Optional)
-                </label>
+              </label>
                 <input
                   type="url"
                   value={formData.popup_featured_image}
                   onChange={(e) => handleChange('popup_featured_image', e.target.value)}
                   placeholder="https://example.com/popup-image.jpg"
-                  style={{
-                    width: '100%',
+                style={{
+                  width: '100%',
                     height: '50px',
                     padding: '0 var(--space-4)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-base)',
                     transition: 'all var(--transition-base)'
                   }}
                 />
@@ -1522,26 +1522,92 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   </p>
                 </div>
 
-                {/* Main Content Editor */}
-                <div>
-                  <div 
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: 'var(--space-3)'
-                  }}
-                  >
-                  <label style={{
-                    display: 'block',
+                {/* Available Inject Keys */}
+                <div style={{
+                  padding: 'var(--space-3)',
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  border: '1px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-md)',
+                  marginBottom: 'var(--space-4)'
+                }}>
+                  <h4 style={{
                     fontSize: 'var(--text-sm)',
                     fontWeight: 'var(--font-semibold)',
                     color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-2)'
                   }}>
-                    Main Content *
-                  </label>
-
+                    📝 Available Inject Keys
+                  </h4>
                   <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: 'var(--space-2)',
+                    fontSize: 'var(--text-xs)',
+                    fontFamily: 'var(--font-mono)'
+                  }}>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{INLINE_CTA}'}
+                    </code>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{BROKERAGE_LINKS}'}
+                    </code>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{FEATURED_VIDEO}'}
+                    </code>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{TRADING_VIEW}'}
+                    </code>
+                  </div>
+                  <p style={{
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-tertiary)',
+                    marginTop: 'var(--space-2)',
+                    fontStyle: 'italic'
+                  }}>
+                    Copy and paste these keys into your content where you want dynamic components to appear. {'{INLINE_CTA}'} injects BriefLeadGenWidget, {'{BROKERAGE_LINKS}'} injects BrokerageWidget, {'{FEATURED_VIDEO}'} injects FeaturedVideoWidget, and {'{TRADING_VIEW}'} injects TradingViewWidget (all mobile-only).
+                  </p>
+            </div>
+
+                {/* Main Content Editor */}
+            <div>
+                  <div 
+                  style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 'var(--space-3)'
+                  }}
+                  >
+                <label style={{
+                    display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                }}>
+                    Main Content *
+                </label>
+
+                <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 'var(--space-2)',
@@ -1562,13 +1628,13 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                     {formatReadingTime(calculateReadingTime(formData.content))}
                   </span>
                 </div>
-                </div>
-                  <RichTextEditor
-                    content={formData.content}
-                    onChange={(content) => handleChange('content', content)}
-                    placeholder="Start writing your brief content here..."
-                    articleId={undefined}
-                  />
+              </div>
+              <RichTextEditor
+                content={formData.content}
+                onChange={(content) => handleChange('content', content)}
+                placeholder="Start writing your brief content here..."
+                articleId={undefined}
+              />
                 </div>
               </div>
             </div>

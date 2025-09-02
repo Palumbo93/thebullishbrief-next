@@ -549,6 +549,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                   }
                 }}
                 onSignupClick={onCreateAccountClick}
+                onVideoClick={handleVideoClick}
                 onContentReady={(el) => {
                   if (el && !contentProcessed) {
                     // Add IDs to H2 headings for TOC functionality

@@ -2,11 +2,14 @@ import React from 'react';
 import { Brief } from '../lib/database.aliases';
 import { BriefLeadGenWidget } from '../components/BriefLeadGenWidget';
 import BrokerageWidget from '../components/BrokerageWidget';
+import { FeaturedVideoWidget } from '../components/FeaturedVideoWidget';
+import TradingViewWidget from '../components/TradingViewWidget';
 
 interface ContentProcessorOptions {
   brief: Brief;
   onEmailSubmitted?: (email: string, isAuthenticated: boolean) => void;
   onSignupClick?: () => void;
+  onVideoClick?: () => void;
   country?: string;
   countryLoading?: boolean;
   geolocationError?: string | null;
@@ -16,8 +19,10 @@ interface ContentProcessorOptions {
  * Processes HTML content and injects React components at specified points
  * 
  * Currently supports:
- * - {INSERT_CTA_BLOCK} - Injects BriefLeadGenWidget (mobile-only)
- * - {QUICK_LINKS} - Injects BrokerageWidget
+ * - {INLINE_CTA} - Injects BriefLeadGenWidget (mobile-only)
+ * - {BROKERAGE_LINKS} - Injects BrokerageWidget (mobile-only)
+ * - {FEATURED_VIDEO} - Injects FeaturedVideoWidget (mobile-only)
+ * - {TRADING_VIEW} - Injects TradingViewWidget (mobile-only)
  * 
  * @param content - The raw HTML content
  * @param options - Configuration options including brief data and callbacks
@@ -27,104 +32,161 @@ export const processContentWithWidgets = (
   content: string,
   options: ContentProcessorOptions
 ): Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> => {
-  const { brief, onEmailSubmitted, onSignupClick, country, countryLoading, geolocationError } = options;
+  const { brief, onEmailSubmitted, onSignupClick, onVideoClick, country, countryLoading, geolocationError } = options;
   
-  // Split content by widget markers and build result
+  // Process content by splitting on all widget markers
+  const widgetMarkers = [
+    'INLINE_CTA',
+    'BROKERAGE_LINKS', 
+    'FEATURED_VIDEO',
+    'TRADING_VIEW'
+  ];
+  
+  // Create regex pattern to match any of the widget markers
+  const markerPattern = new RegExp(`\\{(${widgetMarkers.join('|')})\\}`, 'g');
+  
+  // Split content while keeping the markers
+  const parts = content.split(markerPattern);
   const result: Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> = [];
   
-  // Split content by INSERT_CTA_BLOCK markers
-  const ctaParts = content.split(/\{INSERT_CTA_BLOCK\}/);
   let htmlSegmentCount = 0;
+  let widgetCounts = {
+    INLINE_CTA: 0,
+    BROKERAGE_LINKS: 0,
+    FEATURED_VIDEO: 0,
+    TRADING_VIEW: 0
+  };
   
-  ctaParts.forEach((part, index) => {
-    // Add HTML content before the widget
-    if (part.trim()) {
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    
+    // Check if this part is a widget marker
+    if (widgetMarkers.includes(part)) {
+      const widgetType = part as keyof typeof widgetCounts;
+      const widgetIndex = widgetCounts[widgetType]++;
+      
+      // Create the appropriate widget component
+      let widgetComponent: React.ReactElement | null = null;
+      
+      switch (widgetType) {
+        case 'INLINE_CTA':
+          widgetComponent = (
+            <div 
+              key={`cta-widget-${widgetIndex}`}
+              className="mobile-only"
+              style={{
+                margin: 'var(--space-8) 0',
+                padding: '0'
+              }}
+            >
+              <BriefLeadGenWidget
+                brief={brief}
+                onEmailSubmitted={onEmailSubmitted}
+                onSignupClick={onSignupClick}
+                compact={true}
+              />
+            </div>
+          );
+          break;
+          
+        case 'BROKERAGE_LINKS':
+          widgetComponent = (
+            <div 
+              key={`brokerage-widget-${widgetIndex}`}
+              className="mobile-only"
+              style={{
+                margin: 'var(--space-8) 0',
+                padding: '0'
+              }}
+            >
+              <BrokerageWidget 
+                brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
+                briefId={brief.slug}
+                briefTitle={brief.title}
+                location="inline"
+                country={country}
+                countryLoading={countryLoading}
+                geolocationError={geolocationError}
+              />
+            </div>
+          );
+          break;
+          
+        case 'FEATURED_VIDEO':
+          if (brief.video_url && (brief as any).featured_video_thumbnail && onVideoClick) {
+            widgetComponent = (
+              <div 
+                key={`featured-video-${widgetIndex}`}
+                className="mobile-only"
+                style={{
+                  margin: 'var(--space-8) 0',
+                  padding: '0'
+                }}
+              >
+                <FeaturedVideoWidget
+                  videoUrl={brief.video_url}
+                  videoThumbnail={(brief as any).featured_video_thumbnail}
+                  videoTitle={(brief.additional_copy as any)?.featuredVideoTitle || 'Featured Video'}
+                  onVideoClick={onVideoClick}
+                />
+              </div>
+            );
+          }
+          break;
+          
+        case 'TRADING_VIEW':
+          // Get the first ticker symbol for TradingView
+          const tickers = brief.tickers as any;
+          let symbol = 'CSE:SPTZ'; // Default symbol
+          
+          if (tickers && Array.isArray(tickers) && tickers.length > 0) {
+            const firstTicker = tickers[0];
+            if (typeof firstTicker === 'object') {
+              // Handle format like [{"CSE":"SONC"}]
+              const exchange = Object.keys(firstTicker)[0];
+              const tickerSymbol = firstTicker[exchange];
+              symbol = `${exchange}:${tickerSymbol}`;
+            }
+          } else if (tickers && typeof tickers === 'object' && !Array.isArray(tickers)) {
+            // Handle format like {"CSE":"SONC","OTC":"SONCF"}
+            const exchange = Object.keys(tickers)[0];
+            const tickerSymbol = tickers[exchange];
+            symbol = `${exchange}:${tickerSymbol}`;
+          }
+          
+          widgetComponent = (
+            <div 
+              key={`trading-view-${widgetIndex}`}
+              className="mobile-only"
+              style={{
+                margin: 'var(--space-8) 0',
+                padding: '0'
+              }}
+            >
+              <TradingViewWidget symbol={symbol} />
+            </div>
+          );
+          break;
+      }
+      
+      if (widgetComponent) {
+        result.push({
+          type: 'component',
+          content: widgetComponent,
+          key: `${widgetType.toLowerCase()}-${widgetIndex}`
+        });
+      }
+    } else if (part.trim()) {
+      // This is HTML content
       result.push({
         type: 'html',
         content: part,
         key: `html-segment-${htmlSegmentCount++}`
       });
     }
-    
-    // Add CTA widget after each part (except the last one)
-    if (index < ctaParts.length - 1) {
-      result.push({
-        type: 'component',
-        content: (
-          <div 
-            key={`cta-widget-${index}`}
-            className="mobile-only"
-            style={{
-              margin: 'var(--space-8) 0',
-              padding: '0'
-            }}
-          >
-            <BriefLeadGenWidget
-              brief={brief}
-              onEmailSubmitted={onEmailSubmitted}
-              onSignupClick={onSignupClick}
-              compact={true}
-            />
-          </div>
-        ),
-        key: `cta-widget-${index}`
-      });
-    }
-  });
+  }
   
-  // Now process QUICK_LINKS markers within each HTML segment
-  const finalResult: Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> = [];
-  
-  result.forEach((segment) => {
-    if (segment.type === 'component') {
-      // Keep component segments as-is
-      finalResult.push(segment);
-    } else {
-      // Process HTML segments for QUICK_LINKS
-      const quickLinksParts = (segment.content as string).split(/\{QUICK_LINKS\}/);
-      
-      quickLinksParts.forEach((part, index) => {
-        // Add HTML content before the widget
-        if (part.trim()) {
-          finalResult.push({
-            type: 'html',
-            content: part,
-            key: `html-segment-${htmlSegmentCount++}`
-          });
-        }
-        
-                 // Add QUICK_LINKS widget after each part (except the last one)
-         if (index < quickLinksParts.length - 1) {
-           finalResult.push({
-             type: 'component',
-             content: (
-               <div 
-                 key={`brokerage-widget-${index}`}
-                 className="mobile-only"
-                 style={{
-                   margin: 'var(--space-8) 0',
-                   padding: '0'
-                 }}
-               >
-                 <BrokerageWidget 
-                   brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
-                   briefId={brief.slug}
-                   briefTitle={brief.title}
-                   location="inline"
-                   country={country}
-                   countryLoading={countryLoading}
-                   geolocationError={geolocationError}
-                 />
-               </div>
-             ),
-             key: `brokerage-widget-${index}`
-           });
-         }
-      });
-    }
-  });
-  
-  return finalResult;
+  return result;
 };
 
 /**
@@ -134,7 +196,10 @@ export const processContentWithWidgets = (
  * @returns True if content contains widget markers
  */
 export const contentHasWidgets = (content: string): boolean => {
-  return content.includes('{INSERT_CTA_BLOCK}') || content.includes('{QUICK_LINKS}');
+  return content.includes('{INLINE_CTA}') || 
+         content.includes('{BROKERAGE_LINKS}') || 
+         content.includes('{FEATURED_VIDEO}') || 
+         content.includes('{TRADING_VIEW}');
 };
 
 /**
@@ -146,8 +211,10 @@ export const contentHasWidgets = (content: string): boolean => {
  */
 export const removeWidgetMarkers = (content: string): string => {
   return content
-    .replace(/\{INSERT_CTA_BLOCK\}/g, '')
-    .replace(/\{QUICK_LINKS\}/g, '');
+    .replace(/\{INLINE_CTA\}/g, '')
+    .replace(/\{BROKERAGE_LINKS\}/g, '')
+    .replace(/\{FEATURED_VIDEO\}/g, '')
+    .replace(/\{TRADING_VIEW\}/g, '');
 };
 
 /**
@@ -158,6 +225,7 @@ interface ProcessedContentProps {
   brief: Brief;
   onEmailSubmitted?: (email: string, isAuthenticated: boolean) => void;
   onSignupClick?: () => void;
+  onVideoClick?: () => void;
   onContentReady?: (element: HTMLElement) => void;
   className?: string;
   injectWidgets?: boolean; // Whether to inject widgets or just remove markers
@@ -171,6 +239,7 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
   brief,
   onEmailSubmitted,
   onSignupClick,
+  onVideoClick,
   onContentReady,
   className,
   injectWidgets = true,
@@ -187,7 +256,7 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
   // If widgets should be injected, process with widgets; otherwise just clean
   const processedSegments = hasWidgets
     ? (injectWidgets 
-       ? processContentWithWidgets(content, { brief, onEmailSubmitted, onSignupClick, country, countryLoading, geolocationError })
+       ? processContentWithWidgets(content, { brief, onEmailSubmitted, onSignupClick, onVideoClick, country, countryLoading, geolocationError })
        : [{
            type: 'html' as const,
            content: removeWidgetMarkers(content),

@@ -118,10 +118,7 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
       </div>
 
       <style jsx>{`
-        .brokerage-widget {
-          padding: 2rem 1.5rem;
-          border-top: 0.5px solid var(--color-border-primary);
-        }
+    
 
         .brokerage-section-title {
           font-size: 1.1rem;
@@ -220,10 +217,6 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
 
         /* Mobile responsiveness */
         @media (max-width: 480px) {
-        .brokerage-widget {
-          padding: 1rem var(--container-padding);
-          border-top: 0.5px solid var(--color-border-primary);
-        }
           
           .brokerage-grid {
             gap: 2px;

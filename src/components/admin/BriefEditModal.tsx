@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clock, Briefcase } from 'lucide-react';
+import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clock, Briefcase, Files } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
@@ -351,6 +351,96 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     }
   };
 
+  const handleDuplicate = async () => {
+    if (!brief) return;
+    
+    try {
+      // Parse JSON fields before duplicating
+      const tickers = validateTickerInput(formData.tickers);
+      
+      let popupCopy = null;
+      if (formData.popup_copy.trim()) {
+        try {
+          popupCopy = JSON.parse(formData.popup_copy);
+        } catch (error) {
+          alert('Invalid popup copy JSON format. Please check your JSON syntax.');
+          return;
+        }
+      }
+
+      let brokerageLinks = null;
+      if (formData.brokerage_links.trim()) {
+        try {
+          brokerageLinks = JSON.parse(formData.brokerage_links);
+        } catch (error) {
+          alert('Invalid brokerage links JSON format. Please check your JSON syntax.');
+          return;
+        }
+      }
+
+      let additionalCopy = null;
+      if (formData.additional_copy.trim()) {
+        try {
+          additionalCopy = JSON.parse(formData.additional_copy);
+        } catch (error) {
+          alert('Invalid additional copy JSON format. Please check your JSON syntax.');
+          return;
+        }
+      }
+
+      // Calculate reading time based on content
+      const readingTimeMinutes = calculateReadingTime(formData.content);
+      
+      // Create duplicated brief data
+      const duplicatedBrief = {
+        title: `${formData.title} (Copy)`,
+        slug: `${formData.slug}-copy-${Date.now()}`,
+        subtitle: formData.subtitle,
+        content: formData.content,
+        sponsored: formData.sponsored,
+        disclaimer: formData.disclaimer,
+        featured_image_url: formData.featured_image_url,
+        featured_image_alt: formData.featured_image_alt,
+        popup_featured_image: formData.popup_featured_image,
+        reading_time_minutes: readingTimeMinutes,
+        status: 'draft', // Always create duplicates as drafts
+        published_at: null, // Never auto-publish duplicates
+        video_url: formData.video_url,
+        featured_video_thumbnail: formData.featured_video_thumbnail,
+        show_cta: formData.show_cta,
+        tickers,
+        featured: false, // Don't duplicate as featured
+        company_name: formData.company_name,
+        company_logo_url: formData.company_logo_url,
+        mailchimp_audience_tag: formData.mailchimp_audience_tag,
+        popup_copy: popupCopy,
+        brokerage_links: brokerageLinks,
+        additional_copy: additionalCopy
+      };
+
+      const { data, error } = await supabase
+        .from('briefs')
+        .insert(duplicatedBrief)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error duplicating brief:', error);
+        alert('Error duplicating brief: ' + error.message);
+      } else {
+        // Invalidate and refetch briefs
+        queryClient.invalidateQueries({ queryKey: queryKeys.briefs.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.briefs.featured() });
+        
+        alert(`Brief duplicated successfully! New brief created with ID: ${data.id}`);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error duplicating brief:', error);
+      alert('Error duplicating brief');
+    }
+  };
+
   const handleDelete = async () => {
     if (!brief) return;
     
@@ -437,6 +527,23 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
               Unsaved changes
             </span>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm('Are you sure you want to duplicate this brief? This will create a new draft copy.')) {
+                handleDuplicate();
+              }
+            }}
+            className="btn btn-ghost"
+            style={{ 
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-secondary)'
+            }}
+            title="Duplicate Brief"
+          >
+            <Files style={{ width: '16px', height: '16px' }} />
+            <span>Duplicate</span>
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -1612,6 +1719,72 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     marginTop: 'var(--space-1)'
                   }}>
                     JSON object for storing additional copy/content that can be used flexibly throughout the brief.
+                  </p>
+                </div>
+
+                {/* Available Inject Keys */}
+                <div style={{
+                  padding: 'var(--space-3)',
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  border: '1px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-md)',
+                  marginBottom: 'var(--space-4)'
+                }}>
+                  <h4 style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-2)'
+                  }}>
+                    📝 Available Inject Keys
+                  </h4>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: 'var(--space-2)',
+                    fontSize: 'var(--text-xs)',
+                    fontFamily: 'var(--font-mono)'
+                  }}>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{INLINE_CTA}'}
+                    </code>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{BROKERAGE_LINKS}'}
+                    </code>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{FEATURED_VIDEO}'}
+                    </code>
+                    <code style={{ 
+                      padding: 'var(--space-1) var(--space-2)', 
+                      backgroundColor: 'var(--color-bg-secondary)', 
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--color-primary)'
+                    }}>
+                      {'{TRADING_VIEW}'}
+                    </code>
+                  </div>
+                  <p style={{
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-tertiary)',
+                    marginTop: 'var(--space-2)',
+                    fontStyle: 'italic'
+                  }}>
+                    Copy and paste these keys into your content where you want dynamic components to appear. {'{INLINE_CTA}'} injects BriefLeadGenWidget, {'{BROKERAGE_LINKS}'} injects BrokerageWidget, {'{FEATURED_VIDEO}'} injects FeaturedVideoWidget, and {'{TRADING_VIEW}'} injects TradingViewWidget (all mobile-only).
                   </p>
                 </div>
 

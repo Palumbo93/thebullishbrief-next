@@ -228,6 +228,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
       {/* Brokerage Widget */}
       {brief?.brokerage_links && (
+        <div className="briefs-brokerage-section">
         <BrokerageWidget 
           brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
           briefId={brief?.slug}
@@ -237,6 +238,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           countryLoading={countryLoading}
           geolocationError={geolocationError}
         />
+        </div>
       )}
 
         {/* Table of Contents */}
@@ -387,6 +389,11 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: .5; }
+        }
+
+        .briefs-brokerage-section {
+          padding: 2rem 1.5rem;
+          border-top: 0.5px solid var(--color-border-primary);
         }
         
         .briefs-signup-title {
@@ -665,6 +672,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
           }
+
         }
         
         /* Desktop styles */

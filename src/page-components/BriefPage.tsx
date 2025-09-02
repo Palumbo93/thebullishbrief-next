@@ -277,6 +277,17 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     return withTickers;
   };
 
+  // Debug logging (moved before early return to fix hooks order)
+  React.useEffect(() => {
+    console.log('🎯 Debug ticker selection:', {
+      country,
+      tickers: brief?.tickers,
+      selectedSymbol: brief ? (!countryLoading ? getCountryAppropriateTickerSymbol(brief.tickers, country) : getFirstTickerSymbol(brief.tickers)) : null,
+      countryLoading,
+      hasTickersAndNotLoading: !!(brief?.tickers && !countryLoading)
+    });
+  }, [brief?.tickers, country, countryLoading]);
+
   if (!isLoading && (error || !brief)) {
     return (
       <div style={{
@@ -321,18 +332,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   // Use country-appropriate ticker selection when country is available
   const firstTickerSymbol = brief ? 
     (!countryLoading ? getCountryAppropriateTickerSymbol(brief.tickers, country) : getFirstTickerSymbol(brief.tickers)) : null;
-  
-  // Debug logging
-  React.useEffect(() => {
-    if (brief?.tickers && !countryLoading) {
-      console.log('🎯 Debug ticker selection:', {
-        country,
-        tickers: brief.tickers,
-        selectedSymbol: firstTickerSymbol,
-        countryLoading
-      });
-    }
-  }, [brief?.tickers, country, countryLoading, firstTickerSymbol]);
   const tickerWidget = (
     <div>
       {/* TradingView Widget (always shows if tickers exist) */}

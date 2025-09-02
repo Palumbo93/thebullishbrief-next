@@ -109,9 +109,10 @@ export const getCountryAppropriateTickerSymbol = (
 ): string | null => {
   if (!tickers) return null;
 
-  // Import exchange mapping dynamically
+  // Import exchange mapping
   let getBestExchangeForCountry: any;
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     getBestExchangeForCountry = require('./exchangeMapping').getBestExchangeForCountry;
   } catch (error) {
     console.error('Error importing exchange mapping:', error);
@@ -119,8 +120,8 @@ export const getCountryAppropriateTickerSymbol = (
   }
 
   try {
-    let availableExchanges: string[] = [];
-    let tickerMap: { [exchange: string]: string } = {};
+    const availableExchanges: string[] = [];
+    const tickerMap: { [exchange: string]: string } = {};
 
     if (Array.isArray(tickers)) {
       // Extract all available exchanges from array format

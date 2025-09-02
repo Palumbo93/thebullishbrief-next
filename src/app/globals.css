@@ -450,7 +450,7 @@ body {
 }
 
 /* Prevent layout shift in brief content */
-.brief-content-container .html-content img {
+.brief-content-container .html-content img:not(.brokerage-logo) {
   /* Reserve space for images to prevent layout shift */
   min-height: 200px;
   background-color: var(--color-bg-secondary);

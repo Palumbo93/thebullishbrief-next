@@ -26,116 +26,99 @@ export const processContentWithWidgets = (
 ): Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> => {
   const { brief, onEmailSubmitted, onSignupClick } = options;
   
-  // Process content by splitting on all widget markers
-  // We'll use a simple approach: replace all markers with unique placeholders first
-  let processedContent = content;
-  const widgets: Array<{ placeholder: string; component: React.ReactElement; key: string }> = [];
-  
-  // Replace QUICK_LINKS markers
-  let quickLinksCount = 0;
-  processedContent = processedContent.replace(/\{QUICK_LINKS\}/g, () => {
-    const placeholder = `__BROKERAGE_WIDGET_${quickLinksCount}__`;
-    widgets.push({
-      placeholder,
-      component: (
-        <div 
-          key={`brokerage-widget-${quickLinksCount}`}
-          style={{
-            margin: 'var(--space-8) 0',
-            padding: '0'
-          }}
-        >
-          <BrokerageWidget 
-            brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
-            briefId={brief.slug}
-            briefTitle={brief.title}
-            location="inline"
-          />
-        </div>
-      ),
-      key: `brokerage-widget-${quickLinksCount}`
-    });
-    quickLinksCount++;
-    return placeholder;
-  });
-  
-  // Replace INSERT_CTA_BLOCK markers
-  let ctaCount = 0;
-  processedContent = processedContent.replace(/\{INSERT_CTA_BLOCK\}/g, () => {
-    const placeholder = `__CTA_WIDGET_${ctaCount}__`;
-    widgets.push({
-      placeholder,
-      component: (
-        <div 
-          key={`cta-widget-${ctaCount}`}
-          className="mobile-only"
-          style={{
-            margin: 'var(--space-8) 0',
-            padding: '0'
-          }}
-        >
-          <BriefLeadGenWidget
-            brief={brief}
-            onEmailSubmitted={onEmailSubmitted}
-            onSignupClick={onSignupClick}
-            compact={true}
-          />
-        </div>
-      ),
-      key: `cta-widget-${ctaCount}`
-    });
-    ctaCount++;
-    return placeholder;
-  });
-  
-  // If no widgets were found, return original content
-  if (widgets.length === 0) {
-    return [{
-      type: 'html',
-      content: content,
-      key: 'original-content'
-    }];
-  }
-  
-  // Split content by all placeholders and build result
+  // Split content by widget markers and build result
   const result: Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> = [];
-  let remainingContent = processedContent;
+  
+  // Split content by INSERT_CTA_BLOCK markers
+  const ctaParts = content.split(/\{INSERT_CTA_BLOCK\}/);
   let htmlSegmentCount = 0;
   
-  widgets.forEach((widget) => {
-    const parts = remainingContent.split(widget.placeholder);
-    if (parts.length > 1) {
-      // Add HTML content before the widget
-      if (parts[0].trim()) {
-        result.push({
-          type: 'html',
-          content: parts[0],
-          key: `html-segment-${htmlSegmentCount++}`
-        });
-      }
-      
-      // Add the widget
+  ctaParts.forEach((part, index) => {
+    // Add HTML content before the widget
+    if (part.trim()) {
+      result.push({
+        type: 'html',
+        content: part,
+        key: `html-segment-${htmlSegmentCount++}`
+      });
+    }
+    
+    // Add CTA widget after each part (except the last one)
+    if (index < ctaParts.length - 1) {
       result.push({
         type: 'component',
-        content: widget.component,
-        key: widget.key
+        content: (
+          <div 
+            key={`cta-widget-${index}`}
+            className="mobile-only"
+            style={{
+              margin: 'var(--space-8) 0',
+              padding: '0'
+            }}
+          >
+            <BriefLeadGenWidget
+              brief={brief}
+              onEmailSubmitted={onEmailSubmitted}
+              onSignupClick={onSignupClick}
+              compact={true}
+            />
+          </div>
+        ),
+        key: `cta-widget-${index}`
       });
-      
-      // Continue with the remaining content after the first placeholder
-      remainingContent = parts.slice(1).join(widget.placeholder);
     }
   });
   
-  // Add any remaining HTML content
-  if (remainingContent.trim()) {
-    result.push({
-      type: 'html',
-      content: remainingContent,
-      key: `html-segment-${htmlSegmentCount}`
-    });
-  }
+  // Now process QUICK_LINKS markers within each HTML segment
+  const finalResult: Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> = [];
   
-  return result;
+  result.forEach((segment) => {
+    if (segment.type === 'component') {
+      // Keep component segments as-is
+      finalResult.push(segment);
+    } else {
+      // Process HTML segments for QUICK_LINKS
+      const quickLinksParts = (segment.content as string).split(/\{QUICK_LINKS\}/);
+      
+      quickLinksParts.forEach((part, index) => {
+        // Add HTML content before the widget
+        if (part.trim()) {
+          finalResult.push({
+            type: 'html',
+            content: part,
+            key: `html-segment-${htmlSegmentCount++}`
+          });
+        }
+        
+                 // Add QUICK_LINKS widget after each part (except the last one)
+         if (index < quickLinksParts.length - 1) {
+           finalResult.push({
+             type: 'component',
+             content: (
+               <div 
+                 key={`brokerage-widget-${index}`}
+                 className="mobile-only"
+                 style={{
+                   margin: 'var(--space-8) 0',
+                   padding: '0'
+                 }}
+               >
+                 <BrokerageWidget 
+                   brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
+                   briefId={brief.slug}
+                   briefTitle={brief.title}
+                   location="inline"
+                 />
+               </div>
+             ),
+             key: `brokerage-widget-${index}`
+           });
+         }
+      });
+    }
+  });
+  
+  return finalResult;
 };
 
 /**

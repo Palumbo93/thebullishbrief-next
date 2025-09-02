@@ -7,6 +7,9 @@ interface ContentProcessorOptions {
   brief: Brief;
   onEmailSubmitted?: (email: string, isAuthenticated: boolean) => void;
   onSignupClick?: () => void;
+  country?: string;
+  countryLoading?: boolean;
+  geolocationError?: string | null;
 }
 
 /**
@@ -24,7 +27,7 @@ export const processContentWithWidgets = (
   content: string,
   options: ContentProcessorOptions
 ): Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> => {
-  const { brief, onEmailSubmitted, onSignupClick } = options;
+  const { brief, onEmailSubmitted, onSignupClick, country, countryLoading, geolocationError } = options;
   
   // Split content by widget markers and build result
   const result: Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> = [];
@@ -108,6 +111,9 @@ export const processContentWithWidgets = (
                    briefId={brief.slug}
                    briefTitle={brief.title}
                    location="inline"
+                   country={country}
+                   countryLoading={countryLoading}
+                   geolocationError={geolocationError}
                  />
                </div>
              ),
@@ -155,6 +161,9 @@ interface ProcessedContentProps {
   onContentReady?: (element: HTMLElement) => void;
   className?: string;
   injectWidgets?: boolean; // Whether to inject widgets or just remove markers
+  country?: string;
+  countryLoading?: boolean;
+  geolocationError?: string | null;
 }
 
 export const ProcessedContent: React.FC<ProcessedContentProps> = ({
@@ -164,7 +173,10 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
   onSignupClick,
   onContentReady,
   className,
-  injectWidgets = true
+  injectWidgets = true,
+  country,
+  countryLoading,
+  geolocationError
 }) => {
   const contentRef = React.useRef<HTMLDivElement>(null);
   
@@ -175,7 +187,7 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
   // If widgets should be injected, process with widgets; otherwise just clean
   const processedSegments = hasWidgets
     ? (injectWidgets 
-       ? processContentWithWidgets(content, { brief, onEmailSubmitted, onSignupClick })
+       ? processContentWithWidgets(content, { brief, onEmailSubmitted, onSignupClick, country, countryLoading, geolocationError })
        : [{
            type: 'html' as const,
            content: removeWidgetMarkers(content),

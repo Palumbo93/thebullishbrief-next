@@ -578,6 +578,9 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                   }
                 }}
                 className="html-content brief-html-content"
+                country={country}
+                countryLoading={countryLoading}
+                geolocationError={geolocationError}
               />
             ) : (
               <div className="text-center py-12 bg-tertiary rounded-xl mb-8">

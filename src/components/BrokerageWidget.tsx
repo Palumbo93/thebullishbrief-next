@@ -47,16 +47,7 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
   const loading = propCountryLoading || false;
   const geolocationError = propGeolocationError || null;
   
-  // Debug logging
-  React.useEffect(() => {
-    console.log('🏪 BrokerageWidget debug:', {
-      propCountry,
-      country,
-      loading,
-      geolocationError,
-      brokerageLinks: Object.keys(brokerageLinks || {})
-    });
-  }, [propCountry, country, loading, geolocationError, brokerageLinks]);
+
   
   if (!brokerageLinks || Object.keys(brokerageLinks).length === 0) {
     return null;

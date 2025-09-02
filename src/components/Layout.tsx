@@ -57,6 +57,9 @@ interface LayoutProps {
     tickerWidget?: ReactNode;
     sections?: Array<{ id: string; label: string; level: number }>;
     tickers?: any;
+    country?: string;
+    countryLoading?: boolean;
+    geolocationError?: string | null;
     companyName?: string;
     companyLogoUrl?: string;
     investorDeckUrl?: string;
@@ -646,6 +649,9 @@ export const Layout: React.FC<LayoutProps> = ({
                 videoTitle={briefActionPanel.videoTitle}
                 onVideoClick={briefActionPanel.onVideoClick}
                 onWidgetEmailSubmitted={briefActionPanel.onWidgetEmailSubmitted}
+                country={briefActionPanel.country}
+                countryLoading={briefActionPanel.countryLoading}
+                geolocationError={briefActionPanel.geolocationError}
               />
             )}
 
@@ -705,6 +711,9 @@ export const Layout: React.FC<LayoutProps> = ({
             videoTitle={briefActionPanel.videoTitle}
             onVideoClick={briefActionPanel.onVideoClick}
             onWidgetEmailSubmitted={briefActionPanel.onWidgetEmailSubmitted}
+            country={briefActionPanel.country}
+            countryLoading={briefActionPanel.countryLoading}
+            geolocationError={briefActionPanel.geolocationError}
             isMobileOverlay={true}
             onClose={() => setMobileActionPanelOpen(false)}
           />

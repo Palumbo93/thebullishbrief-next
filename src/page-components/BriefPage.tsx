@@ -125,7 +125,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     const fetchCountry = async () => {
       try {
         const userCountry = await fetchUserCountry();
-        console.log('🌍 Fetched country:', userCountry);
         setCountry(userCountry);
         setGeolocationError(null);
       } catch (error) {
@@ -277,16 +276,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     return withTickers;
   };
 
-  // Debug logging (moved before early return to fix hooks order)
-  React.useEffect(() => {
-    console.log('🎯 Debug ticker selection:', {
-      country,
-      tickers: brief?.tickers,
-      selectedSymbol: brief ? (!countryLoading ? getCountryAppropriateTickerSymbol(brief.tickers, country) : getFirstTickerSymbol(brief.tickers)) : null,
-      countryLoading,
-      hasTickersAndNotLoading: !!(brief?.tickers && !countryLoading)
-    });
-  }, [brief?.tickers, country, countryLoading]);
+
 
   if (!isLoading && (error || !brief)) {
     return (

@@ -98,22 +98,13 @@ export const getBestExchangeForCountry = (
 ): string | null => {
   const priority = getExchangePriorityForCountry(country);
   
-  console.log('🔍 Exchange selection debug:', {
-    country,
-    availableExchanges,
-    priority,
-  });
-  
   // Find the first exchange from the priority list that's available
   for (const exchange of priority) {
     if (availableExchanges.includes(exchange)) {
-      console.log(`✅ Found matching exchange: ${exchange} for country ${country}`);
       return exchange;
     }
   }
   
   // If no priority match found, return the first available exchange
-  const fallback = availableExchanges.length > 0 ? availableExchanges[0] : null;
-  console.log(`⚠️ No priority match, using fallback: ${fallback}`);
-  return fallback;
+  return availableExchanges.length > 0 ? availableExchanges[0] : null;
 };

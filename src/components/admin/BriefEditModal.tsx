@@ -48,18 +48,17 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     published_at: '',
     video_url: '',
     featured_video_thumbnail: '',
-    video_thumbnail_url: '',
     show_cta: false,
     tickers: '',
-    widget_code: '',
-    investor_deck_url: '',
     featured: false,
     company_name: '',
     company_logo_url: '',
     // Lead generation fields
     mailchimp_audience_tag: '',
     popup_copy: '',
-    brokerage_links: ''
+    brokerage_links: '',
+    // Additional copy field
+    additional_copy: ''
   });
 
   // Load brief data when modal opens
@@ -80,18 +79,17 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         published_at: (brief as any).published_at ? new Date((brief as any).published_at).toISOString().slice(0, 16) : '',
         video_url: brief.video_url || '',
         featured_video_thumbnail: (brief as any).featured_video_thumbnail || '',
-        video_thumbnail_url: (brief as any).video_thumbnail_url || '',
         show_cta: brief.show_cta || false,
         tickers: brief.tickers ? JSON.stringify(brief.tickers, null, 2) : '',
-        widget_code: brief.widget_code || '',
-        investor_deck_url: brief.investor_deck_url || '',
         featured: brief.featured || false,
         company_name: brief.company_name || '',
         company_logo_url: brief.company_logo_url || '',
         // Lead generation fields
         mailchimp_audience_tag: brief.mailchimp_audience_tag || '',
         popup_copy: brief.popup_copy ? JSON.stringify(brief.popup_copy, null, 2) : '',
-        brokerage_links: brief.brokerage_links ? JSON.stringify(brief.brokerage_links, null, 2) : ''
+        brokerage_links: brief.brokerage_links ? JSON.stringify(brief.brokerage_links, null, 2) : '',
+        // Additional copy field
+        additional_copy: (brief as any).additional_copy ? JSON.stringify((brief as any).additional_copy, null, 2) : JSON.stringify({ "featuredVideoTitle": "Featured Video" }, null, 2)
       });
 
       // Load featured image if it exists
@@ -151,13 +149,11 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
       formData.disclaimer !== (brief.disclaimer || '') ||
       formData.video_url !== (brief.video_url || '') ||
       formData.featured_video_thumbnail !== ((brief as any).featured_video_thumbnail || '') ||
-      formData.video_thumbnail_url !== ((brief as any).video_thumbnail_url || '') ||
       formData.show_cta !== (brief.show_cta || false) ||
-      formData.widget_code !== (brief.widget_code || '') ||
-      formData.investor_deck_url !== (brief.investor_deck_url || '') ||
       formData.featured !== (brief.featured || false) ||
       formData.company_name !== (brief.company_name || '') ||
       formData.company_logo_url !== (brief.company_logo_url || '') ||
+      formData.additional_copy !== ((brief as any).additional_copy ? JSON.stringify((brief as any).additional_copy, null, 2) : JSON.stringify({ "featuredVideoTitle": "Featured Video" }, null, 2)) ||
       featuredImageChanged;
     setHasUnsavedChanges(hasChanges);
   }, [formData, brief, featuredImage]);
@@ -289,6 +285,18 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         }
       }
 
+      // Parse and validate additional copy JSON
+      let additionalCopy = null;
+      if (formData.additional_copy.trim()) {
+        try {
+          additionalCopy = JSON.parse(formData.additional_copy);
+        } catch (error) {
+          alert('Invalid additional copy JSON format. Please check your JSON syntax.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       // Update brief data
       const { error } = await supabase
         .from('briefs')
@@ -297,6 +305,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
           tickers,
           popup_copy: popupCopy,
           brokerage_links: brokerageLinks,
+          additional_copy: additionalCopy,
           reading_time_minutes: readingTimeMinutes,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
@@ -498,549 +507,669 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         `}</style>
 
         <form id="brief-edit-form" onSubmit={handleSubmit}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-            {/* Status */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Status
-              </label>
-              <StatusSelector
-                value={formData.status}
-                onChange={(status) => handleChange('status', status)}
-              />
-            </div>
-
-            {/* Published Date */}
-            {formData.status === 'published' && (
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Published Date
-                </label>
-                <input
-                  type="datetime-local"
-                  value={formData.published_at}
-                  onChange={(e) => handleChange('published_at', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '50px',
-                    padding: '0 var(--space-4)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                />
-                <p style={{
-                  fontSize: 'var(--text-xs)',
-                  color: 'var(--color-text-tertiary)',
-                  marginTop: 'var(--space-1)'
-                }}>
-                  Leave empty to publish immediately
-                </p>
-              </div>
-            )}
-
-            {/* Title */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Title *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleChange('title', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: '60px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-semibold)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="Enter your brief title..."
-              />
-            </div>
-
-            {/* Subtitle */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Subtitle
-              </label>
-              <input
-                type="text"
-                value={formData.subtitle}
-                onChange={(e) => handleChange('subtitle', e.target.value)}
-                style={{
-                  width: '100%',
-                  height: '50px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-lg)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="Enter brief subtitle..."
-              />
-            </div>
-
-            {/* Slug */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Slug *
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => handleChange('slug', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: '50px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-base)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="brief-slug-url"
-              />
-            </div>
-
-            {/* Company Information */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
+            
+            {/* ===== PUBLISHING SETTINGS ===== */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
-              {/* Company Name */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_name}
-                  onChange={(e) => handleChange('company_name', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📝 Publishing Settings
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Status */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
                     color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="Enter company name..."
-                />
-              </div>
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Status
+                  </label>
+                  <StatusSelector
+                    value={formData.status}
+                    onChange={(status) => handleChange('status', status)}
+                  />
+                </div>
 
-              {/* Company Logo URL */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Company Logo URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.company_logo_url}
-                  onChange={(e) => handleChange('company_logo_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/logo.png"
-                />
+                {/* Published Date */}
+                {formData.status === 'published' && (
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Published Date
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={formData.published_at}
+                      onChange={(e) => handleChange('published_at', e.target.value)}
+                      style={{
+                        width: '100%',
+                        height: '50px',
+                        padding: '0 var(--space-4)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                    />
+                    <p style={{
+                      fontSize: 'var(--text-xs)',
+                      color: 'var(--color-text-tertiary)',
+                      marginTop: 'var(--space-1)'
+                    }}>
+                      Leave empty to publish immediately
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Featured Image */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
+            {/* ===== BASIC INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Featured Image
-              </label>
+                📄 Basic Information
+              </h3>
               
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                style={{ display: 'none' }}
-              />
-
-              {featuredImage ? (
-                /* Image Preview */
-                <div style={{
-                  position: 'relative',
-                  border: '1px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  overflow: 'hidden',
-                  background: 'var(--color-bg-secondary)'
-                }}>
-                  <img
-                    src={featuredImage.url}
-                    alt={featuredImage.alt}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Title */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => handleChange('title', e.target.value)}
+                    required
                     style={{
                       width: '100%',
-                      height: '200px',
-                      objectFit: 'cover'
+                      height: '60px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-xl)',
+                      fontWeight: 'var(--font-semibold)',
+                      transition: 'all var(--transition-base)'
                     }}
+                    placeholder="Enter your brief title..."
                   />
-                  <button
-                    type="button"
-                    onClick={removeFeaturedImage}
-                    style={{
-                      position: 'absolute',
-                      top: 'var(--space-2)',
-                      right: 'var(--space-2)',
-                      background: 'rgba(0, 0, 0, 0.7)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: 'var(--radius-full)',
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: 'var(--text-sm)'
-                    }}
-                  >
-                    <X style={{ width: '16px', height: '16px' }} />
-                  </button>
                 </div>
-              ) : (
-                /* Upload Area */
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  style={{
-                    border: '2px dashed var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: 'var(--space-6)',
-                    textAlign: 'center',
-                    background: 'var(--color-bg-secondary)',
-                    transition: 'all var(--transition-base)',
-                    cursor: 'pointer',
-                    position: 'relative'
-                  }}
-                >
-                  {uploadingImage ? (
+
+                {/* Subtitle */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Subtitle
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subtitle}
+                    onChange={(e) => handleChange('subtitle', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-lg)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter brief subtitle..."
+                  />
+                </div>
+
+                {/* Slug */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Slug *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => handleChange('slug', e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="brief-slug-url"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ===== COMPANY INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                🏢 Company Information
+              </h3>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 'var(--space-4)'
+              }}>
+                {/* Company Name */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.company_name}
+                    onChange={(e) => handleChange('company_name', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter company name..."
+                  />
+                </div>
+
+                {/* Company Logo URL */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Company Logo URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.company_logo_url}
+                    onChange={(e) => handleChange('company_logo_url', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="https://example.com/logo.png"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ===== MEDIA ASSETS ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                🎬 Media Assets
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Featured Image */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Featured Image
+                  </label>
+                  
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
+                  />
+
+                  {featuredImage ? (
+                    /* Image Preview */
                     <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 'var(--space-3)'
+                      position: 'relative',
+                      border: '1px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      overflow: 'hidden',
+                      background: 'var(--color-bg-secondary)'
                     }}>
-                      <div style={{
-                        width: '48px',
-                        height: '48px',
-                        border: '3px solid var(--color-border-primary)',
-                        borderTop: '3px solid var(--color-primary)',
-                        borderRadius: 'var(--radius-full)',
-                        animation: 'spin 1s linear infinite'
-                      }} />
-                      <p style={{
-                        fontSize: 'var(--text-sm)',
-                        color: 'var(--color-text-primary)'
-                      }}>
-                        Uploading image...
-                      </p>
+                      <img
+                        src={featuredImage.url}
+                        alt={featuredImage.alt}
+                        style={{
+                          width: '100%',
+                          height: '200px',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={removeFeaturedImage}
+                        style={{
+                          position: 'absolute',
+                          top: 'var(--space-2)',
+                          right: 'var(--space-2)',
+                          background: 'rgba(0, 0, 0, 0.7)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: 'var(--radius-full)',
+                          width: '32px',
+                          height: '32px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: 'var(--text-sm)'
+                        }}
+                      >
+                        <X style={{ width: '16px', height: '16px' }} />
+                      </button>
                     </div>
                   ) : (
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 'var(--space-3)'
-                    }}>
-                      <div style={{
-                        width: '48px',
-                        height: '48px',
-                        background: 'var(--color-bg-tertiary)',
-                        borderRadius: 'var(--radius-full)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <ImageIcon style={{ width: '24px', height: '24px', color: 'var(--color-text-tertiary)' }} />
-                      </div>
-                      <div>
-                        <p style={{
-                          fontSize: 'var(--text-sm)',
-                          fontWeight: 'var(--font-medium)',
-                          color: 'var(--color-text-primary)',
-                          marginBottom: 'var(--space-1)'
+                    /* Upload Area */
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      style={{
+                        border: '2px dashed var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--space-6)',
+                        textAlign: 'center',
+                        background: 'var(--color-bg-secondary)',
+                        transition: 'all var(--transition-base)',
+                        cursor: 'pointer',
+                        position: 'relative'
+                      }}
+                    >
+                      {uploadingImage ? (
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: 'var(--space-3)'
                         }}>
-                          Upload Featured Image
-                        </p>
-                        <p style={{
-                          fontSize: 'var(--text-xs)',
-                          color: 'var(--color-text-tertiary)',
-                          lineHeight: '1.4'
+                          <div style={{
+                            width: '48px',
+                            height: '48px',
+                            border: '3px solid var(--color-border-primary)',
+                            borderTop: '3px solid var(--color-primary)',
+                            borderRadius: 'var(--radius-full)',
+                            animation: 'spin 1s linear infinite'
+                          }} />
+                          <p style={{
+                            fontSize: 'var(--text-sm)',
+                            color: 'var(--color-text-primary)'
+                          }}>
+                            Uploading image...
+                          </p>
+                        </div>
+                      ) : (
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: 'var(--space-3)'
                         }}>
-                          Drag and drop an image here, or click to browse. Recommended size: 1200x630px.
-                        </p>
-                      </div>
+                          <div style={{
+                            width: '48px',
+                            height: '48px',
+                            background: 'var(--color-bg-tertiary)',
+                            borderRadius: 'var(--radius-full)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            <ImageIcon style={{ width: '24px', height: '24px', color: 'var(--color-text-tertiary)' }} />
+                          </div>
+                          <div>
+                            <p style={{
+                              fontSize: 'var(--text-sm)',
+                              fontWeight: 'var(--font-medium)',
+                              color: 'var(--color-text-primary)',
+                              marginBottom: 'var(--space-1)'
+                            }}>
+                              Upload Featured Image
+                            </p>
+                            <p style={{
+                              fontSize: 'var(--text-xs)',
+                              color: 'var(--color-text-tertiary)',
+                              lineHeight: '1.4'
+                            }}>
+                              Drag and drop an image here, or click to browse. Recommended size: 1200x630px.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* Brief Options */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: 'var(--space-4)'
-            }}>
-              {/* Video URL */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
+                {/* Video Fields */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 'var(--space-4)'
                 }}>
-                  Video URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.video_url}
-                  onChange={(e) => handleChange('video_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/video.mp4"
-                />
-              </div>
+                  {/* Video URL */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Video URL
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.video_url}
+                      onChange={(e) => handleChange('video_url', e.target.value)}
+                      style={{
+                        width: '100%',
+                        height: 'var(--input-height)',
+                        padding: '0 var(--input-padding-x)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                      placeholder="https://example.com/video.mp4"
+                    />
+                  </div>
 
-              {/* Investor Deck URL */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Investor Deck URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.investor_deck_url}
-                  onChange={(e) => handleChange('investor_deck_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/deck.pdf"
-                />
-              </div>
-
-              {/* Reading Time */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Reading Time (minutes)
-                </label>
-                <input
-                  type="number"
-                  value={formData.reading_time_minutes}
-                  onChange={(e) => handleChange('reading_time_minutes', parseInt(e.target.value))}
-                  min="1"
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                />
+                  {/* Featured Video Thumbnail */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Featured Video Thumbnail
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.featured_video_thumbnail}
+                      onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
+                      style={{
+                        width: '100%',
+                        height: 'var(--input-height)',
+                        padding: '0 var(--input-padding-x)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                      placeholder="https://example.com/featured-video-thumb.jpg"
+                    />
+                    <p style={{
+                      fontSize: 'var(--text-xs)',
+                      color: 'var(--color-text-tertiary)',
+                      marginTop: 'var(--space-1)'
+                    }}>
+                      Used for video thumbnail on BriefPage
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Video Thumbnail Section */}
+            {/* ===== BRIEF SETTINGS ===== */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
-              {/* Featured Video Thumbnail (for BriefPage modal) */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                ⚙️ Brief Settings
+              </h3>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: 'var(--space-4)'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
                 }}>
-                  Featured Video Thumbnail
-                </label>
-                <input
-                  type="url"
-                  value={formData.featured_video_thumbnail}
-                  onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/featured-video-thumb.jpg"
-                />
-                <p style={{
-                  fontSize: 'var(--text-xs)',
-                  color: 'var(--color-text-tertiary)',
-                  marginTop: 'var(--space-1)'
-                }}>
-                  Used for video thumbnail on BriefPage
-                </p>
-              </div>
+                  <input
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => handleChange('featured', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Featured Brief
+                  </label>
+                </div>
 
-              {/* Card Preview Video */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
                 }}>
-                  Card Preview Video
-                </label>
-                <input
-                  type="url"
-                  value={formData.video_thumbnail_url}
-                  onChange={(e) => handleChange('video_thumbnail_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
+                  <input
+                    type="checkbox"
+                    checked={formData.sponsored}
+                    onChange={(e) => handleChange('sponsored', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Sponsored Content
+                  </label>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.show_cta}
+                    onChange={(e) => handleChange('show_cta', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Show CTA
+                  </label>
+                </div>
+
+                {/* Reading Time */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
                     color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/preview-video.mp4"
-                />
-                <p style={{
-                  fontSize: 'var(--text-xs)',
-                  color: 'var(--color-text-tertiary)',
-                  marginTop: 'var(--space-1)'
-                }}>
-                  Short video clip used as preview in FeaturedBriefCard
-                </p>
+                    marginBottom: 'var(--space-2)'
+                  }}>
+                    Reading Time (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.reading_time_minutes}
+                    onChange={(e) => handleChange('reading_time_minutes', parseInt(e.target.value))}
+                    min="1"
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Tickers and Widget */}
+            {/* ===== TRADING INFORMATION ===== */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📈 Trading Information
+              </h3>
+              
               {/* Tickers */}
               <div>
                 <label style={{
@@ -1070,8 +1199,28 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                   }}
                 />
               </div>
+            </div>
 
-              {/* Widget Code */}
+            {/* ===== ADDITIONAL INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📋 Additional Information
+              </h3>
+              
+              {/* Disclaimer */}
               <div>
                 <label style={{
                   display: 'block',
@@ -1080,11 +1229,11 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                   color: 'var(--color-text-primary)',
                   marginBottom: 'var(--space-3)'
                 }}>
-                  Widget Code
+                  Disclaimer
                 </label>
                 <textarea
-                  value={formData.widget_code}
-                  onChange={(e) => handleChange('widget_code', e.target.value)}
+                  value={formData.disclaimer}
+                  onChange={(e) => handleChange('disclaimer', e.target.value)}
                   rows={3}
                   style={{
                     width: '100%',
@@ -1097,38 +1246,9 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     transition: 'all var(--transition-base)',
                     resize: 'vertical'
                   }}
+                  placeholder="Enter disclaimer text..."
                 />
               </div>
-            </div>
-
-            {/* Disclaimer */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Disclaimer
-              </label>
-              <textarea
-                value={formData.disclaimer}
-                onChange={(e) => handleChange('disclaimer', e.target.value)}
-                rows={3}
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-3)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-base)',
-                  transition: 'all var(--transition-base)',
-                  resize: 'vertical'
-                }}
-                placeholder="Enter disclaimer text..."
-              />
             </div>
 
             {/* Lead Generation Settings */}
@@ -1393,98 +1513,128 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
               </div>
             </div>
 
-            {/* Brief Flags */}
+
+            {/* ===== CONTENT ===== */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 'var(--space-2)'
-              }}>
-                <input
-                  type="checkbox"
-                  checked={formData.sponsored}
-                  onChange={(e) => handleChange('sponsored', e.target.checked)}
-                  style={{
-                    width: '16px',
-                    height: '16px'
-                  }}
-                />
-                <label style={{
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-medium)',
-                  color: 'var(--color-text-primary)'
-                }}>
-                  Sponsored Content
-                </label>
-              </div>
-
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)'
-              }}>
-                <input
-                  type="checkbox"
-                  checked={formData.show_cta}
-                  onChange={(e) => handleChange('show_cta', e.target.checked)}
-                  style={{
-                    width: '16px',
-                    height: '16px'
-                  }}
-                />
-                <label style={{
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-medium)',
-                  color: 'var(--color-text-primary)'
-                }}>
-                  Show CTA
-                </label>
-              </div>
-
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)'
-              }}>
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => handleChange('featured', e.target.checked)}
-                  style={{
-                    width: '16px',
-                    height: '16px'
-                  }}
-                />
-                <label style={{
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-medium)',
-                  color: 'var(--color-text-primary)'
-                }}>
-                  Featured Brief
-                </label>
-              </div>
-            </div>
-
-            {/* Content Editor */}
-            <div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)'
               }}>
-                <label style={{
-                  fontSize: 'var(--text-sm)',
+                <h3 style={{
+                  fontSize: 'var(--text-lg)',
                   fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)'
+                  color: 'var(--color-text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
                 }}>
-                  Content *
-                </label>
-                <div style={{
+                  ✏️ Content *
+                </h3>
+               
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Additional Copy Configuration */}
+                <div>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    <label style={{
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)'
+                    }}>
+                      Additional Copy Configuration (JSON)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const defaultCopy = {
+                          "featuredVideoTitle": "Featured Video"
+                        };
+                        handleChange('additional_copy', JSON.stringify(defaultCopy, null, 2));
+                      }}
+                      style={{
+                        padding: 'var(--space-2) var(--space-3)',
+                        backgroundColor: 'var(--color-primary)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 'var(--font-semibold)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                      }}
+                    >
+                      Use Default
+                    </button>
+                  </div>
+                  <textarea
+                    value={formData.additional_copy}
+                    onChange={(e) => handleChange('additional_copy', e.target.value)}
+                    rows={6}
+                    placeholder={`{
+  "featuredVideoTitle": "Featured Video"
+}`}
+                    style={{
+                      width: '100%',
+                      padding: 'var(--space-3)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-sm)',
+                      fontFamily: 'var(--font-mono)',
+                      transition: 'all var(--transition-base)',
+                      resize: 'vertical',
+                      minHeight: '150px'
+                    }}
+                  />
+                  <p style={{
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-tertiary)',
+                    marginTop: 'var(--space-1)'
+                  }}>
+                    JSON object for storing additional copy/content that can be used flexibly throughout the brief.
+                  </p>
+                </div>
+
+                {/* Main Content Editor */}
+                <div>
+                  <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 'var(--space-3)'
+                  }}
+                  >
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                  }}>
+                    Main Content *
+                  </label>
+
+                  <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 'var(--space-2)',
@@ -1505,30 +1655,35 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     {formatReadingTime(calculateReadingTime(formData.content))}
                   </span>
                 </div>
+                </div>
+                  <RichTextEditor
+                    content={formData.content}
+                    onChange={(content) => handleChange('content', content)}
+                    placeholder="Start writing your brief content here..."
+                    articleId={brief.id}
+                  />
+                </div>
               </div>
-              
-              <RichTextEditor
-                content={formData.content}
-                onChange={(content) => handleChange('content', content)}
-                placeholder="Start writing your brief content here..."
-                articleId={brief.id}
-              />
             </div>
 
-            {/* Brief Stats */}
+
+            {/* ===== BRIEF STATISTICS ===== */}
             <div style={{
-              background: 'var(--color-bg-secondary)',
-              border: '0.5px solid var(--color-border-primary)',
-              borderRadius: 'var(--radius-lg)',
-              padding: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
               <h3 style={{
-                fontSize: 'var(--text-sm)',
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Brief Statistics
+                📊 Brief Statistics
               </h3>
               <div style={{
                 display: 'grid',

@@ -151,8 +151,10 @@ export const VideoModal: React.FC<VideoModalProps> = ({
           style={{
             width: '100%',
             height: 'auto',
+            minHeight: '80vh',
             maxHeight: '80vh',
-            display: 'block'
+            display: 'block',
+            backgroundColor: 'var(--color-bg-secondary)'
           }}
           onEnded={() => {
             // Optionally close modal when video ends

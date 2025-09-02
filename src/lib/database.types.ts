@@ -538,6 +538,7 @@ export type Database = {
       }
       briefs: {
         Row: {
+          additional_copy: Json | null
           brokerage_links: Json | null
           company_logo_url: string | null
           company_name: string | null
@@ -550,7 +551,6 @@ export type Database = {
           featured_image_url: string | null
           featured_video_thumbnail: string | null
           id: string
-          investor_deck_url: string | null
           mailchimp_audience_tag: string | null
           popup_copy: Json | null
           popup_featured_image: string | null
@@ -564,12 +564,11 @@ export type Database = {
           tickers: Json | null
           title: string
           updated_at: string | null
-          video_thumbnail_url: string | null
           video_url: string | null
           view_count: number | null
-          widget_code: string | null
         }
         Insert: {
+          additional_copy?: Json | null
           brokerage_links?: Json | null
           company_logo_url?: string | null
           company_name?: string | null
@@ -582,7 +581,6 @@ export type Database = {
           featured_image_url?: string | null
           featured_video_thumbnail?: string | null
           id?: string
-          investor_deck_url?: string | null
           mailchimp_audience_tag?: string | null
           popup_copy?: Json | null
           popup_featured_image?: string | null
@@ -596,12 +594,11 @@ export type Database = {
           tickers?: Json | null
           title: string
           updated_at?: string | null
-          video_thumbnail_url?: string | null
           video_url?: string | null
           view_count?: number | null
-          widget_code?: string | null
         }
         Update: {
+          additional_copy?: Json | null
           brokerage_links?: Json | null
           company_logo_url?: string | null
           company_name?: string | null
@@ -614,7 +611,6 @@ export type Database = {
           featured_image_url?: string | null
           featured_video_thumbnail?: string | null
           id?: string
-          investor_deck_url?: string | null
           mailchimp_audience_tag?: string | null
           popup_copy?: Json | null
           popup_featured_image?: string | null
@@ -628,10 +624,8 @@ export type Database = {
           tickers?: Json | null
           title?: string
           updated_at?: string | null
-          video_thumbnail_url?: string | null
           video_url?: string | null
           view_count?: number | null
-          widget_code?: string | null
         }
         Relationships: []
       }

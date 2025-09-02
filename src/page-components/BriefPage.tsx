@@ -329,10 +329,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         <TradingViewWidget symbol={firstTickerSymbol} />
       )}
       
-      {/* Custom Widget (shows below TradingView if widget_code exists) */}
-      {brief?.widget_code && (
-        <CustomWidget code={brief.widget_code} title="Additional Widget" />
-      )}
+
     </div>
   );
 
@@ -345,11 +342,12 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     tickers: brief.tickers,
     companyName: brief.company_name || undefined,
     companyLogoUrl: brief.company_logo_url || undefined,
-    investorDeckUrl: brief.investor_deck_url || undefined,
+
     // Include video data when feature_featured_video is false (video goes in action panel)
     videoUrl: (!brief.feature_featured_video && brief.video_url) ? brief.video_url : undefined,
     videoThumbnail: (!brief.feature_featured_video && brief.video_url) ? (brief.featured_video_thumbnail || brief.featured_image_url) : undefined,
-    videoTitle: (!brief.feature_featured_video && brief.video_url) ? brief.title : undefined,
+    videoTitle: (!brief.feature_featured_video && brief.video_url) ? 
+      ((brief.additional_copy as any)?.featuredVideoTitle || 'Featured Video') : undefined,
     onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined,
     onSignUpClick: onCreateAccountClick,
     onWidgetEmailSubmitted: (email: string, isAuthenticated: boolean) => {
@@ -675,7 +673,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           isOpen={isVideoModalOpen}
           onClose={handleVideoModalClose}
           videoUrl={brief.video_url}
-          title={brief.title}
+          title={(brief.additional_copy as any)?.featuredVideoTitle || 'Featured Video'}
         />
       )}
 

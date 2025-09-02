@@ -45,18 +45,17 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     published_at: '',
     video_url: '',
     featured_video_thumbnail: '',
-    video_thumbnail_url: '',
     show_cta: false,
     tickers: '',
-    widget_code: '',
-    investor_deck_url: '',
     featured: false,
     company_name: '',
     company_logo_url: '',
     // Lead generation fields
     mailchimp_audience_tag: '',
     popup_copy: '',
-    brokerage_links: ''
+    brokerage_links: '',
+    // Additional copy field
+    additional_copy: JSON.stringify({ "featuredVideoTitle": "Featured Video" }, null, 2)
   });
 
   // Handle keyboard shortcuts
@@ -255,6 +254,18 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
         }
       }
 
+      // Parse and validate additional copy JSON
+      let additionalCopy = null;
+      if (formData.additional_copy.trim()) {
+        try {
+          additionalCopy = JSON.parse(formData.additional_copy);
+        } catch (error) {
+          alert('Invalid additional copy JSON format. Please check your JSON syntax.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('briefs')
         .insert({
@@ -262,6 +273,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
           tickers,
           popup_copy: popupCopy,
           brokerage_links: brokerageLinks,
+          additional_copy: additionalCopy,
           reading_time_minutes: readingTimeMinutes,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
@@ -403,302 +415,317 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
           }
         `}</style>
         <form id="brief-form" onSubmit={handleSubmit}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-            {/* Status */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Status
-              </label>
-              <StatusSelector
-                value={formData.status}
-                onChange={(status) => handleChange('status', status)}
-              />
-            </div>
-
-            {/* Published Date */}
-            {formData.status === 'published' && (
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Published Date
-                </label>
-                <input
-                  type="datetime-local"
-                  value={formData.published_at}
-                  onChange={(e) => handleChange('published_at', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '50px',
-                    padding: '0 var(--space-4)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                />
-                <p style={{
-                  fontSize: 'var(--text-xs)',
-                  color: 'var(--color-text-tertiary)',
-                  marginTop: 'var(--space-1)'
-                }}>
-                  Leave empty to publish immediately
-                </p>
-              </div>
-            )}
-
-            {/* Title */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Title *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleChange('title', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: '60px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-semibold)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="Enter your brief title..."
-              />
-            </div>
-
-            {/* Subtitle */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Subtitle
-              </label>
-              <input
-                type="text"
-                value={formData.subtitle}
-                onChange={(e) => handleChange('subtitle', e.target.value)}
-                style={{
-                  width: '100%',
-                  height: '50px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-lg)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="Enter brief subtitle..."
-              />
-            </div>
-
-            {/* Slug */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Slug *
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => handleChange('slug', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: '50px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-base)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="brief-slug-url"
-              />
-            </div>
-
-            {/* Company Information */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
+            
+            {/* ===== PUBLISHING SETTINGS ===== */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
-              {/* Company Name */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_name}
-                  onChange={(e) => handleChange('company_name', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📝 Publishing Settings
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Status */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
                     color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="Enter company name..."
-                />
-              </div>
-
-              {/* Company Logo */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Company Logo
-                </label>
-                
-                {/* Hidden file input for logo */}
-                <input
-                  ref={logoFileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoSelect}
-                  style={{ display: 'none' }}
-                />
-
-                {companyLogo ? (
-                  /* Logo Preview */
-                  <div style={{
-                    position: 'relative',
-                    border: '1px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    overflow: 'hidden',
-                    background: 'var(--color-bg-secondary)',
-                    width: '100px',
-                    height: '100px'
+                    marginBottom: 'var(--space-3)'
                   }}>
-                    <img
-                      src={companyLogo.url}
-                      alt={companyLogo.alt}
+                    Status
+                  </label>
+                  <StatusSelector
+                    value={formData.status}
+                    onChange={(status) => handleChange('status', status)}
+                  />
+                </div>
+
+                {/* Published Date */}
+                {formData.status === 'published' && (
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Published Date
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={formData.published_at}
+                      onChange={(e) => handleChange('published_at', e.target.value)}
                       style={{
                         width: '100%',
-                        height: '100%',
-                        objectFit: 'contain'
+                        height: '50px',
+                        padding: '0 var(--space-4)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
                       }}
                     />
-                    <button
-                      type="button"
-                      onClick={removeCompanyLogo}
-                      style={{
-                        position: 'absolute',
-                        top: 'var(--space-1)',
-                        right: 'var(--space-1)',
-                        background: 'rgba(0, 0, 0, 0.7)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 'var(--radius-full)',
-                        width: '24px',
-                        height: '24px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        fontSize: 'var(--text-xs)'
-                      }}
-                    >
-                      <X style={{ width: '12px', height: '12px' }} />
-                    </button>
-                  </div>
-                ) : (
-                  /* Upload Area for Logo */
-                  <div
-                    onClick={() => logoFileInputRef.current?.click()}
-                    style={{
-                      border: '2px dashed var(--color-border-primary)',
-                      borderRadius: 'var(--radius-lg)',
-                      padding: 'var(--space-4)',
-                      textAlign: 'center',
-                      background: 'var(--color-bg-secondary)',
-                      transition: 'all var(--transition-base)',
-                      cursor: 'pointer',
-                      width: '100px',
-                      height: '100px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    {uploadingLogo ? (
-                      <div style={{
-                        width: '32px',
-                        height: '32px',
-                        border: '3px solid var(--color-border-primary)',
-                        borderTop: '3px solid var(--color-primary)',
-                        borderRadius: 'var(--radius-full)',
-                        animation: 'spin 1s linear infinite'
-                      }} />
-                    ) : (
-                      <ImageIcon style={{ width: '24px', height: '24px', color: 'var(--color-text-tertiary)' }} />
-                    )}
+                    <p style={{
+                      fontSize: 'var(--text-xs)',
+                      color: 'var(--color-text-tertiary)',
+                      marginTop: 'var(--space-1)'
+                    }}>
+                      Leave empty to publish immediately
+                    </p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Featured Image */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
+            {/* ===== BASIC INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Featured Image
-              </label>
+                📄 Basic Information
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Title */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => handleChange('title', e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      height: '60px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-xl)',
+                      fontWeight: 'var(--font-semibold)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter your brief title..."
+                  />
+                </div>
+
+                {/* Subtitle */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Subtitle
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subtitle}
+                    onChange={(e) => handleChange('subtitle', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-lg)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter brief subtitle..."
+                  />
+                </div>
+
+                {/* Slug */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Slug *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => handleChange('slug', e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="brief-slug-url"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ===== COMPANY INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                🏢 Company Information
+              </h3>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 'var(--space-4)'
+              }}>
+                {/* Company Name */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.company_name}
+                    onChange={(e) => handleChange('company_name', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter company name..."
+                  />
+                </div>
+
+                {/* Company Logo URL */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Company Logo URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.company_logo_url}
+                    onChange={(e) => handleChange('company_logo_url', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="https://example.com/logo.png"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ===== MEDIA ASSETS ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                🎬 Media Assets
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Featured Image */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Featured Image
+                  </label>
               
               {/* Hidden file input */}
               <input
@@ -829,198 +856,227 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   )}
                 </div>
               )}
+
+                {/* Video Fields */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 'var(--space-4)'
+                }}>
+                  {/* Video URL */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Video URL
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.video_url}
+                      onChange={(e) => handleChange('video_url', e.target.value)}
+                      style={{
+                        width: '100%',
+                        height: 'var(--input-height)',
+                        padding: '0 var(--input-padding-x)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                      placeholder="https://example.com/video.mp4"
+                    />
+                  </div>
+
+                  {/* Featured Video Thumbnail */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Featured Video Thumbnail
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.featured_video_thumbnail}
+                      onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
+                      style={{
+                        width: '100%',
+                        height: 'var(--input-height)',
+                        padding: '0 var(--input-padding-x)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                      placeholder="https://example.com/featured-video-thumb.jpg"
+                    />
+                    <p style={{
+                      fontSize: 'var(--text-xs)',
+                      color: 'var(--color-text-tertiary)',
+                      marginTop: 'var(--space-1)'
+                    }}>
+                      Used for video thumbnail on BriefPage
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Popup Featured Image URL Field */}
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-medium)',
+            {/* ===== BRIEF SETTINGS ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-2)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Popup Featured Image URL (Optional)
-              </label>
-              <input
-                type="url"
-                value={formData.popup_featured_image}
-                onChange={(e) => setFormData(prev => ({ ...prev, popup_featured_image: e.target.value }))}
-                placeholder="https://example.com/popup-image.jpg"
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-3)',
-                  border: '1px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'var(--color-bg-primary)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-sm)'
-                }}
-              />
-              <p style={{
-                fontSize: 'var(--text-xs)',
-                color: 'var(--color-text-tertiary)',
-                marginTop: 'var(--space-1)',
-                lineHeight: '1.4'
+                ⚙️ Brief Settings
+              </h3>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: 'var(--space-4)'
               }}>
-                Optional dedicated image for the lead generation popup. If not provided, will use the main featured image.
-              </p>
-            </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => handleChange('featured', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Featured Brief
+                  </label>
+                </div>
 
-            {/* Brief Options */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
-            }}>
-              {/* Video URL */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
                 }}>
-                  Video URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.video_url}
-                  onChange={(e) => handleChange('video_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/video.mp4"
-                />
-              </div>
+                  <input
+                    type="checkbox"
+                    checked={formData.sponsored}
+                    onChange={(e) => handleChange('sponsored', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Sponsored Content
+                  </label>
+                </div>
 
-              {/* Investor Deck URL */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
                 }}>
-                  Investor Deck URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.investor_deck_url}
-                  onChange={(e) => handleChange('investor_deck_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/deck.pdf"
-                />
-              </div>
-            </div>
+                  <input
+                    type="checkbox"
+                    checked={formData.show_cta}
+                    onChange={(e) => handleChange('show_cta', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Show CTA
+                  </label>
+                </div>
 
-            {/* Video Thumbnail Section */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
-            }}>
-              {/* Featured Video Thumbnail (for BriefPage modal) */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Featured Video Thumbnail
-                </label>
-                <input
-                  type="url"
-                  value={formData.featured_video_thumbnail}
-                  onChange={(e) => handleChange('featured_video_thumbnail', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
+                {/* Reading Time */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
                     color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/featured-video-thumb.jpg"
-                />
-                <p style={{
-                  fontSize: 'var(--text-xs)',
-                  color: 'var(--color-text-tertiary)',
-                  marginTop: 'var(--space-1)'
-                }}>
-                  Used for video thumbnail on BriefPage
-                </p>
-              </div>
-
-              {/* Video Thumbnail (for FeaturedBriefCard) */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Card Preview Video
-                </label>
-                <input
-                  type="url"
-                  value={formData.video_thumbnail_url}
-                  onChange={(e) => handleChange('video_thumbnail_url', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  placeholder="https://example.com/preview-video.mp4"
-                />
-                <p style={{
-                  fontSize: 'var(--text-xs)',
-                  color: 'var(--color-text-tertiary)',
-                  marginTop: 'var(--space-1)'
-                }}>
-                  Short video clip used as preview in FeaturedBriefCard
-                </p>
+                    marginBottom: 'var(--space-2)'
+                  }}>
+                    Reading Time (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.reading_time_minutes}
+                    onChange={(e) => handleChange('reading_time_minutes', parseInt(e.target.value))}
+                    min="1"
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Tickers and Widget */}
+            {/* ===== TRADING INFORMATION ===== */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--space-4)'
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
             }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📈 Trading Information
+              </h3>
+              
               {/* Tickers */}
               <div>
                 <label style={{
@@ -1050,8 +1106,28 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   }}
                 />
               </div>
+            </div>
 
-              {/* Widget Code */}
+            {/* ===== ADDITIONAL INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                📋 Additional Information
+              </h3>
+              
+              {/* Disclaimer */}
               <div>
                 <label style={{
                   display: 'block',
@@ -1060,11 +1136,11 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   color: 'var(--color-text-primary)',
                   marginBottom: 'var(--space-3)'
                 }}>
-                  Widget Code
+                  Disclaimer
                 </label>
                 <textarea
-                  value={formData.widget_code}
-                  onChange={(e) => handleChange('widget_code', e.target.value)}
+                  value={formData.disclaimer}
+                  onChange={(e) => handleChange('disclaimer', e.target.value)}
                   rows={3}
                   style={{
                     width: '100%',
@@ -1077,38 +1153,47 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                     transition: 'all var(--transition-base)',
                     resize: 'vertical'
                   }}
+                  placeholder="Enter disclaimer text..."
                 />
               </div>
-            </div>
 
-            {/* Disclaimer */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Disclaimer
-              </label>
-              <textarea
-                value={formData.disclaimer}
-                onChange={(e) => handleChange('disclaimer', e.target.value)}
-                rows={3}
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-3)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
+              {/* Popup Featured Image URL Field */}
+              <div style={{ marginTop: 'var(--space-4)' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-base)',
-                  transition: 'all var(--transition-base)',
-                  resize: 'vertical'
-                }}
-                placeholder="Enter disclaimer text..."
-              />
+                  marginBottom: 'var(--space-3)'
+                }}>
+                  Popup Featured Image URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={formData.popup_featured_image}
+                  onChange={(e) => handleChange('popup_featured_image', e.target.value)}
+                  placeholder="https://example.com/popup-image.jpg"
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    padding: '0 var(--space-4)',
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--text-base)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                />
+                <p style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-tertiary)',
+                  marginTop: 'var(--space-1)',
+                  lineHeight: '1.4'
+                }}>
+                  Optional dedicated image for the lead generation popup. If not provided, will use the main featured image.
+                </p>
+              </div>
             </div>
 
             {/* Lead Generation Settings */}
@@ -1335,47 +1420,128 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
               </div>
             </div>
 
-            {/* Brief Flags */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 'var(--space-4)'
-            }}>
-              <ToggleSwitch
-                checked={formData.sponsored}
-                onChange={(checked) => handleChange('sponsored', checked)}
-                label="Sponsored Content"
-              />
-              
-              <ToggleSwitch
-                checked={formData.show_cta}
-                onChange={(checked) => handleChange('show_cta', checked)}
-                label="Show CTA"
-              />
-              
-              <ToggleSwitch
-                checked={formData.featured}
-                onChange={(checked) => handleChange('featured', checked)}
-                label="Featured Brief"
-              />
-            </div>
 
-            {/* Content Editor */}
-            <div>
+
+            {/* ===== CONTENT ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)'
               }}>
-                <label style={{
-                  fontSize: 'var(--text-sm)',
+                <h3 style={{
+                  fontSize: 'var(--text-lg)',
                   fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)'
+                  color: 'var(--color-text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
                 }}>
-                  Content *
-                </label>
-                <div style={{
+                  ✏️ Content *
+                </h3>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Additional Copy Configuration */}
+                <div>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    <label style={{
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)'
+                    }}>
+                      Additional Copy Configuration (JSON)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const defaultCopy = {
+                          "featuredVideoTitle": "Featured Video"
+                        };
+                        handleChange('additional_copy', JSON.stringify(defaultCopy, null, 2));
+                      }}
+                      style={{
+                        padding: 'var(--space-2) var(--space-3)',
+                        backgroundColor: 'var(--color-primary)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 'var(--font-semibold)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                      }}
+                    >
+                      Use Default
+                    </button>
+                  </div>
+                  <textarea
+                    value={formData.additional_copy}
+                    onChange={(e) => handleChange('additional_copy', e.target.value)}
+                    rows={6}
+                    placeholder={`{
+  "featuredVideoTitle": "Featured Video"
+}`}
+                    style={{
+                      width: '100%',
+                      padding: 'var(--space-3)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-sm)',
+                      fontFamily: 'var(--font-mono)',
+                      transition: 'all var(--transition-base)',
+                      resize: 'vertical',
+                      minHeight: '150px'
+                    }}
+                  />
+                  <p style={{
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-tertiary)',
+                    marginTop: 'var(--space-1)'
+                  }}>
+                    JSON object for storing additional copy/content that can be used flexibly throughout the brief.
+                  </p>
+                </div>
+
+                {/* Main Content Editor */}
+                <div>
+                  <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 'var(--space-3)'
+                  }}
+                  >
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                  }}>
+                    Main Content *
+                  </label>
+
+                  <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 'var(--space-2)',
@@ -1396,14 +1562,16 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                     {formatReadingTime(calculateReadingTime(formData.content))}
                   </span>
                 </div>
+                </div>
+                  <RichTextEditor
+                    content={formData.content}
+                    onChange={(content) => handleChange('content', content)}
+                    placeholder="Start writing your brief content here..."
+                    articleId={undefined}
+                  />
+                </div>
               </div>
-              
-              <RichTextEditor
-                content={formData.content}
-                onChange={(content) => handleChange('content', content)}
-                placeholder="Start writing your brief content here..."
-                articleId={undefined}
-              />
+            </div>
             </div>
           </div>
         </form>

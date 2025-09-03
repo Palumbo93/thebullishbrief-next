@@ -46,6 +46,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     video_url: '',
     featured_video_thumbnail: '',
     show_cta: false,
+    show_featured_media: true,
     tickers: '',
     featured: false,
     company_name: '',
@@ -1023,6 +1024,29 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                     color: 'var(--color-text-primary)'
                   }}>
                     Show CTA
+                  </label>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.show_featured_media}
+                    onChange={(e) => handleChange('show_featured_media', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Show Featured Media
                   </label>
                 </div>
 

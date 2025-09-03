@@ -435,16 +435,18 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           )}
 
           {/* Featured Media - Mobile Position (below headline, above info bar) */}
-          <div className="mobile-only">
-            <FeaturedMedia
-              featureFeaturedVideo={brief?.feature_featured_video}
-              videoUrl={brief?.video_url || undefined}
-              videoThumbnail={brief?.featured_video_thumbnail || undefined}
-              featuredImageUrl={brief?.featured_image_url || undefined}
-              title={brief?.title || undefined}
-              onVideoClick={handleVideoClick}
-            />
-          </div>
+          {(brief as any)?.show_featured_media !== false && (
+            <div className="mobile-only">
+              <FeaturedMedia
+                featureFeaturedVideo={brief?.feature_featured_video}
+                videoUrl={brief?.video_url || undefined}
+                videoThumbnail={brief?.featured_video_thumbnail || undefined}
+                featuredImageUrl={brief?.featured_image_url || undefined}
+                title={brief?.title || undefined}
+                onVideoClick={handleVideoClick}
+              />
+            </div>
+          )}
 
         </div>
 
@@ -526,17 +528,19 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           )}
 
           {/* Featured Media - Desktop Position (current location) */}
-          <div style={{ display: 'none' }} className="desktop-only">
-            <FeaturedMedia
-              featureFeaturedVideo={brief?.feature_featured_video}
-              videoUrl={brief?.video_url || undefined}
-              videoThumbnail={brief?.featured_video_thumbnail || undefined}
-              featuredImageUrl={brief?.featured_image_url || undefined}
-              title={brief?.title || undefined}
-              onVideoClick={handleVideoClick}
-              style={{ marginBottom: 'var(--space-8)' }}
-            />
-          </div>
+          {(brief as any)?.show_featured_media !== false && (
+            <div style={{ display: 'none' }} className="desktop-only">
+              <FeaturedMedia
+                featureFeaturedVideo={brief?.feature_featured_video}
+                videoUrl={brief?.video_url || undefined}
+                videoThumbnail={brief?.featured_video_thumbnail || undefined}
+                featuredImageUrl={brief?.featured_image_url || undefined}
+                title={brief?.title || undefined}
+                onVideoClick={handleVideoClick}
+                style={{ marginBottom: 'var(--space-8)' }}
+              />
+            </div>
+          )}
 
 
 

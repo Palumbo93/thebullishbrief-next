@@ -49,6 +49,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     video_url: '',
     featured_video_thumbnail: '',
     show_cta: false,
+    show_featured_media: true,
     tickers: '',
     featured: false,
     company_name: '',
@@ -80,6 +81,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         video_url: brief.video_url || '',
         featured_video_thumbnail: (brief as any).featured_video_thumbnail || '',
         show_cta: brief.show_cta || false,
+        show_featured_media: (brief as any).show_featured_media !== undefined ? (brief as any).show_featured_media : true,
         tickers: brief.tickers ? JSON.stringify(brief.tickers, null, 2) : '',
         featured: brief.featured || false,
         company_name: brief.company_name || '',
@@ -1255,6 +1257,29 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     color: 'var(--color-text-primary)'
                   }}>
                     Show CTA
+                  </label>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.show_featured_media}
+                    onChange={(e) => handleChange('show_featured_media', e.target.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px'
+                    }}
+                  />
+                  <label style={{
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-medium)',
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    Show Featured Media
                   </label>
                 </div>
 

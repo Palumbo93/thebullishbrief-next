@@ -813,47 +813,37 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
     },
     editorProps: {
-      handlePaste: (view, event, slice) => {
-        // Get the pasted content
-        const html = event.clipboardData?.getData('text/html');
+      transformPastedHTML: (html: string) => {
+        // Create a temporary div to parse the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
         
-        if (html) {
-          // Create a temporary div to parse the HTML
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = html;
+        // Remove only color-related attributes and styles, preserving other formatting
+        const elements = tempDiv.querySelectorAll('*');
+        elements.forEach(element => {
+          // Remove color attributes
+          element.removeAttribute('color');
+          element.removeAttribute('bgcolor');
           
-          // Remove all color-related attributes and styles
-          const elements = tempDiv.querySelectorAll('*');
-          elements.forEach(element => {
-            // Remove color attributes
-            element.removeAttribute('color');
-            element.removeAttribute('bgcolor');
+          // Remove only color-related styles, preserving other styles
+          const style = element.getAttribute('style');
+          if (style) {
+            const newStyle = style
+              .replace(/color\s*:\s*[^;]+;?/gi, '')
+              .replace(/background-color\s*:\s*[^;]+;?/gi, '')
+              .replace(/background\s*:\s*[^;]+;?/gi, '')
+              .trim();
             
-            // Remove color-related styles
-            const style = element.getAttribute('style');
-            if (style) {
-              const newStyle = style
-                .replace(/color\s*:\s*[^;]+;?/gi, '')
-                .replace(/background-color\s*:\s*[^;]+;?/gi, '')
-                .replace(/background\s*:\s*[^;]+;?/gi, '')
-                .trim();
-              
-              if (newStyle) {
-                element.setAttribute('style', newStyle);
-              } else {
-                element.removeAttribute('style');
-              }
+            if (newStyle) {
+              element.setAttribute('style', newStyle);
+            } else {
+              element.removeAttribute('style');
             }
-          });
-          
-          // Insert the cleaned HTML using TipTap's insertContent
-          const cleanedHtml = tempDiv.innerHTML;
-          editor?.commands.insertContent(cleanedHtml as string);
-          
-          return true; // Prevent default paste behavior
-        }
+          }
+        });
         
-        return false; // Allow default paste behavior for plain text
+        // Return the cleaned HTML for TipTap to process normally
+        return tempDiv.innerHTML;
       },
     },
     immediatelyRender: false,

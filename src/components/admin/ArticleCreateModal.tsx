@@ -338,118 +338,219 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
           }
         `}</style>
         <form id="article-form" onSubmit={handleSubmit}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-            {/* Status */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
+            
+            {/* ===== PUBLISHING SETTINGS ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Status
-              </label>
-              <StatusSelector
-                value={formData.status}
-                onChange={(status) => handleChange('status', status)}
-              />
+                📝 Publishing Settings
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Status */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Status
+                  </label>
+                  <StatusSelector
+                    value={formData.status}
+                    onChange={(status) => handleChange('status', status)}
+                  />
+                </div>
+
+                {/* Published Date */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Published Date
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={formData.published_at}
+                    onChange={(e) => handleChange('published_at', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: 'var(--input-height)',
+                      padding: '0 var(--input-padding-x)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                  />
+                  <p style={{
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-tertiary)',
+                    marginTop: 'var(--space-1)'
+                  }}>
+                    Leave empty to use current date/time
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Title */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
+            {/* ===== BASIC INFORMATION ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Title *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleChange('title', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: '60px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-semibold)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="Enter your article title..."
-              />
+                📄 Basic Information
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Title */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => handleChange('title', e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      height: '60px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-xl)',
+                      fontWeight: 'var(--font-semibold)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter your article title..."
+                  />
+                </div>
+
+                {/* Subtitle */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Subtitle
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subtitle}
+                    onChange={(e) => handleChange('subtitle', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-lg)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="Enter article subtitle..."
+                  />
+                </div>
+
+                {/* Slug */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Slug *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => handleChange('slug', e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      padding: '0 var(--space-4)',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--text-base)',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    placeholder="article-slug-url"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Subtitle */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
+            {/* ===== MEDIA ASSETS ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Subtitle
-              </label>
-              <input
-                type="text"
-                value={formData.subtitle}
-                onChange={(e) => handleChange('subtitle', e.target.value)}
-                style={{
-                  width: '100%',
-                  height: '50px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-lg)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="Enter article subtitle..."
-              />
-            </div>
-
-            {/* Slug */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                Slug *
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => handleChange('slug', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: '50px',
-                  padding: '0 var(--space-4)',
-                  background: 'var(--color-bg-tertiary)',
-                  border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-base)',
-                  transition: 'all var(--transition-base)'
-                }}
-                placeholder="article-slug-url"
-              />
-            </div>
-
-            {/* Featured Image */}
+                🎬 Media Assets
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Featured Image */}
             <div>
               <label style={{
                 display: 'block',
@@ -592,136 +693,156 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
               )}
             </div>
 
-            {/* Metadata Row */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: 'var(--space-4)'
-            }}>
-              {/* Author */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Author *
-                </label>
-                <select
-                  value={formData.author}
-                  onChange={(e) => handleChange('author', e.target.value)}
-                  required
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                >
-                  <option value="">Select an author...</option>
-                  {authors?.map((author) => (
-                    <option key={author.id} value={author.id}>
-                      {author.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Category */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Category *
-                </label>
-                <select
-                value={formData.category}
-                onChange={(e) => handleChange('category', e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  height: 'var(--input-height)',
-                  padding: '0 var(--input-padding-x)',
-                  background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--text-base)',
-                  transition: 'all var(--transition-base)'
-                }}
-                >
-                  <option value="">Select a category...</option>
-                  {categories?.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Published Date */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-3)'
-                }}>
-                  Published Date
-                </label>
-                <input
-                  type="datetime-local"
-                  value={formData.published_at}
-                  onChange={(e) => handleChange('published_at', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 'var(--input-height)',
-                    padding: '0 var(--input-padding-x)',
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--text-base)',
-                    transition: 'all var(--transition-base)'
-                  }}
-                />
               </div>
             </div>
 
-            {/* Tags */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
+            {/* ===== ARTICLE METADATA ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <h3 style={{
+                fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
               }}>
-                Tags
-              </label>
-              <TagSelectorButton
-                selectedTags={selectedTags}
-                onTagsChange={setSelectedTags}
-                placeholder="Select tags for this article..."
-                maxTags={5}
-              />
-          </div>
+                📊 Article Metadata
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Author and Category Row */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 'var(--space-4)'
+                }}>
+                  {/* Author */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Author *
+                    </label>
+                    <select
+                      value={formData.author}
+                      onChange={(e) => handleChange('author', e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        height: 'var(--input-height)',
+                        padding: '0 var(--input-padding-x)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                    >
+                      <option value="">Select an author...</option>
+                      {authors?.map((author) => (
+                        <option key={author.id} value={author.id}>
+                          {author.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-            {/* Content Editor */}
-            <div>
-                              <div style={{
+                  {/* Category */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-semibold)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)'
+                    }}>
+                      Category *
+                    </label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => handleChange('category', e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        height: 'var(--input-height)',
+                        padding: '0 var(--input-padding-x)',
+                        background: 'var(--color-bg-tertiary)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--text-base)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                    >
+                      <option value="">Select a category...</option>
+                      {categories?.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Tags */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-3)'
+                  }}>
+                    Tags
+                  </label>
+                  <TagSelectorButton
+                    selectedTags={selectedTags}
+                    onTagsChange={setSelectedTags}
+                    placeholder="Select tags for this article..."
+                    maxTags={5}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ===== CONTENT ===== */}
+            <div style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-border-primary)',
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 'var(--space-4)'
+              }}>
+                <h3 style={{
+                  fontSize: 'var(--text-lg)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
+                }}>
+                  ✏️ Content *
+                </h3>
+              </div>
+              
+              <div>
+                <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -732,7 +853,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
                     fontWeight: 'var(--font-semibold)',
                     color: 'var(--color-text-primary)'
                   }}>
-                    Content *
+                    Main Content *
                   </label>
                   <div style={{
                     display: 'flex',
@@ -756,16 +877,15 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
                     </span>
                   </div>
                 </div>
-              
-              <RichTextEditor
-                content={formData.content}
-                onChange={(content) => handleChange('content', content)}
-                placeholder="Start writing your article content here..."
-                articleId={undefined}
-              />
+                
+                <RichTextEditor
+                  content={formData.content}
+                  onChange={(content) => handleChange('content', content)}
+                  placeholder="Start writing your article content here..."
+                  articleId={undefined}
+                />
+              </div>
             </div>
-
-
           </div>
         </form>
       </div>

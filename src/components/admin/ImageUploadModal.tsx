@@ -12,6 +12,7 @@ interface ImageUploadModalProps {
   initialUrl?: string;
   initialAltText?: string;
   articleId?: string;
+  zIndex?: number;
 }
 
 export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
@@ -20,7 +21,8 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   onSubmit,
   initialUrl = '',
   initialAltText = '',
-  articleId
+  articleId,
+  zIndex
 }) => {
   const [altText, setAltText] = useState(initialAltText);
   const [error, setError] = useState('');
@@ -141,7 +143,7 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 'var(--z-modal)',
+        zIndex: zIndex || 'var(--z-modal)',
         padding: 'var(--space-4)'
       }}
       onClick={handleModalClick}

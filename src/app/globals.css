@@ -574,122 +574,18 @@ body {
   transition: opacity var(--transition-base);
 }
 
-/* GIF Elements */
-.html-content div[data-gif] {
-  margin: 1.5em 0;
-  margin-bottom: 1.5em;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
 
-.html-content div[data-gif] img {
-  width: 100%;
-  height: auto;
-  display: block;
-  margin: 0;
-}
 
-/* Button Elements */
-.html-content div[data-button] {
-  margin: 1.5em 0;
-  text-align: center;
-}
 
-.html-content div[data-button] a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  text-decoration: none;
-  transition: all var(--transition-base);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-  height: var(--btn-height-base);
-  padding: 0 var(--btn-padding-x-base);
-  font-family: var(--font-primary);
-  font-size: var(--text-sm);
-  line-height: 1;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-/* Button variant styles in HTML content */
-.html-content div[data-button] a.btn-primary {
-  background: var(--color-text-primary);
-  color: var(--color-bg-primary);
-  border: none;
-}
-
-.html-content div[data-button] a.btn-primary:hover {
-  background: var(--color-text-secondary);
-  color: var(--color-bg-primary);
-  transform: translateY(-1px);
-}
-
-.html-content div[data-button] a.btn-secondary {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border: none;
-}
-
-.html-content div[data-button] a.btn-secondary:hover {
-  background: var(--color-border-secondary);
-  transform: translateY(-1px);
-}
-
-.html-content div[data-button] a.btn-ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: none;
-}
-
-.html-content div[data-button] a.btn-ghost:hover {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  transform: translateY(-1px);
-}
-
-/* Button size styles in HTML content */
-.html-content div[data-button] a.btn-sm {
-  height: var(--btn-height-sm);
-  padding: 0 var(--btn-padding-x-sm);
-  font-size: var(--text-xs);
-}
-
-.html-content div[data-button] a.btn-lg {
-  height: var(--btn-height-lg);
-  padding: 0 var(--btn-padding-x-lg);
-  font-size: var(--text-base);
-}
 
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
-  .html-content div[data-video],
-  .html-content div[data-gif] {
+  .html-content div[data-video] {
     margin: 1em 0;
-  }
-  
-  .html-content div[data-button] {
-    margin: 1em 0;
-  }
-  
-  .html-content div[data-button] a {
-    width: 100%;
-    max-width: 300px;
   }
 }
 
-/* Tweet Styling */
-.html-content div[data-tweet] {
-  margin: var(--space-4) 0;
-  display: flex;
-  justify-content: center;
-}
 
-.html-content div[data-tweet] .twitter-tweet {
-  margin: 0 auto;
-}
 
 /* Mobile Header Logo Styles */
 .mobile-header-logo {

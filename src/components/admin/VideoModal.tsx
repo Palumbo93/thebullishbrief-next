@@ -18,9 +18,10 @@ interface VideoModalProps {
     loop?: boolean;
     poster?: string;
   }) => void;
+  zIndex?: number;
 }
 
-export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmit }) => {
+export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmit, zIndex }) => {
   const [videoUrl, setVideoUrl] = useState('');
   const [title, setTitle] = useState('');
   const [width, setWidth] = useState('100%');
@@ -97,7 +98,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 'var(--z-modal)',
+      zIndex: zIndex || 'var(--z-modal)',
       padding: 'var(--space-4)'
     }} onClick={onClose}>
       <div style={{

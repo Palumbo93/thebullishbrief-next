@@ -265,7 +265,9 @@ export function useAllTags() {
   const createTag = useCallback(async (tagData: Partial<Tag>) => {
     try {
       const newTag = await tagService.create(tagData);
-      // Refresh the tags list after creating
+      // Immediately add to local state for instant UI update
+      setTags(prev => [newTag, ...prev]);
+      // Also refresh the tags list to ensure consistency
       await fetchTags();
       return newTag;
     } catch (err) {

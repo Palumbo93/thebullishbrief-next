@@ -9,6 +9,7 @@ interface UrlInputModalProps {
   onSubmit: (url: string, displayText: string) => void;
   initialUrl?: string;
   initialDisplayText?: string;
+  zIndex?: number;
 }
 
 export const UrlInputModal: React.FC<UrlInputModalProps> = ({
@@ -16,7 +17,8 @@ export const UrlInputModal: React.FC<UrlInputModalProps> = ({
   onClose,
   onSubmit,
   initialUrl = '',
-  initialDisplayText = ''
+  initialDisplayText = '',
+  zIndex
 }) => {
   const [url, setUrl] = useState(initialUrl);
   const [displayText, setDisplayText] = useState(initialDisplayText);
@@ -72,7 +74,7 @@ export const UrlInputModal: React.FC<UrlInputModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 'var(--z-modal)',
+        zIndex: zIndex || 'var(--z-modal)',
         padding: 'var(--space-4)'
       }}
       onClick={handleModalClick}

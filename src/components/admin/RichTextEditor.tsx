@@ -18,15 +18,15 @@ import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { Video } from '../../lib/tiptap/video-extension';
-import { Gif } from '../../lib/tiptap/gif-extension';
-import { Button } from '../../lib/tiptap/button-extension';
-import { Tweet } from '../../lib/tiptap/tweet-extension';
+
+
+
 import { UrlInputModal } from './UrlInputModal';
 import { ImageUploadModal } from './ImageUploadModal';
 import { VideoModal } from './VideoModal';
-import { GifModal } from './GifModal';
-import { ButtonModal } from './ButtonModal';
-import { TweetModal } from './TweetModal';
+
+
+
 import {
   Bold,
   Italic,
@@ -48,13 +48,14 @@ import {
   Table as TableIcon,
   Undo,
   Redo,
-  Heading1,
+
   Heading2,
   Heading3,
   Minus,
   Play,
-  MousePointer,
-  Twitter
+
+  Maximize,
+  Minimize
 } from 'lucide-react';
 
 interface RichTextEditorProps {
@@ -65,13 +66,13 @@ interface RichTextEditorProps {
   articleId?: string; // For image uploads
 }
 
-const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articleId }) => {
+const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean; onToggleFullscreen: () => void }> = ({ editor, articleId, isFullscreen, onToggleFullscreen }) => {
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [isGifModalOpen, setIsGifModalOpen] = useState(false);
-  const [isButtonModalOpen, setIsButtonModalOpen] = useState(false);
-  const [isTweetModalOpen, setIsTweetModalOpen] = useState(false);
+
+
+
   const [currentLinkUrl, setCurrentLinkUrl] = useState('');
   const [currentLinkText, setCurrentLinkText] = useState('');
 
@@ -132,51 +133,11 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
     editor.chain().focus().setVideo(videoData).run();
   }, [editor]);
 
-  const addGif = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsGifModalOpen(true);
-  }, []);
 
-  const handleGifSubmit = useCallback((gifData: {
-    src: string;
-    alt?: string;
-    width?: string;
-    height?: string;
-  }) => {
-    editor.chain().focus().setGif(gifData).run();
-  }, [editor]);
 
-  const addButton = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsButtonModalOpen(true);
-  }, []);
 
-  const handleButtonSubmit = useCallback((buttonData: {
-    text: string;
-    href: string;
-    variant?: 'primary' | 'secondary' | 'ghost';
-    size?: 'sm' | 'base' | 'lg';
-    target?: '_blank' | '_self';
-    icon?: string;
-    iconSide?: 'left' | 'right';
-  }) => {
-    editor.chain().focus().setButton(buttonData).run();
-  }, [editor]);
 
-  const addTweet = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsTweetModalOpen(true);
-  }, []);
 
-  const handleTweetSubmit = useCallback((tweetData: {
-    embedCode: string;
-  }) => {
-    // Insert the embed code as plain text content
-    editor.chain().focus().insertContent(`<pre><code>${tweetData.embedCode}</code></pre>`).run();
-  }, [editor]);
 
   const addDivider = useCallback(() => {
     editor.chain().focus().insertContent('<hr>').run();
@@ -299,27 +260,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
 
       {/* Headings */}
       <div style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center' }}>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
-          style={{
-            padding: 'var(--space-2)',
-            borderRadius: 'var(--radius-sm)',
-            border: 'none',
-            background: editor.isActive('heading', { level: 1 }) ? 'var(--color-primary)' : 'transparent',
-            color: editor.isActive('heading', { level: 1 }) ? 'white' : 'var(--color-text-primary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 'var(--text-sm)',
-            fontWeight: 'bold',
-            transition: 'all var(--transition-base)'
-          }}
-        >
-          H1
-        </button>
+
 
         <button
           type="button"
@@ -634,68 +575,11 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
           <Play style={{ width: '16px', height: '16px' }} />
         </button>
 
-        <button
-          type="button"
-          onClick={addGif}
-          style={{
-            padding: 'var(--space-2)',
-            borderRadius: 'var(--radius-sm)',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--color-text-primary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 'var(--text-sm)',
-            transition: 'all var(--transition-base)'
-          }}
-          title="Add GIF"
-        >
-          <ImageIcon style={{ width: '16px', height: '16px' }} />
-        </button>
 
-        <button
-          type="button"
-          onClick={addButton}
-          style={{
-            padding: 'var(--space-2)',
-            borderRadius: 'var(--radius-sm)',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--color-text-primary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 'var(--text-sm)',
-            transition: 'all var(--transition-base)'
-          }}
-          title="Add Button"
-        >
-          <MousePointer style={{ width: '16px', height: '16px' }} />
-        </button>
 
-        <button
-          type="button"
-          onClick={addTweet}
-          style={{
-            padding: 'var(--space-2)',
-            borderRadius: 'var(--radius-sm)',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--color-text-primary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 'var(--text-sm)',
-            transition: 'all var(--transition-base)'
-          }}
-          title="Add Tweet"
-        >
-          <Twitter style={{ width: '16px', height: '16px' }} />
-        </button>
+
+
+
 
         <button
           type="button"
@@ -784,7 +668,38 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
         >
           <Redo style={{ width: '16px', height: '16px' }} />
         </button>
-              </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ width: '1px', height: '24px', background: 'var(--color-border-primary)' }} />
+
+      {/* Fullscreen */}
+      <div style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center', marginLeft: 'auto' }}>
+        <button
+          type="button"
+          onClick={onToggleFullscreen}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: isFullscreen ? 'var(--color-primary)' : 'transparent',
+            color: isFullscreen ? 'white' : 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+        >
+          {isFullscreen ? (
+            <Minimize style={{ width: '16px', height: '16px' }} />
+          ) : (
+            <Maximize style={{ width: '16px', height: '16px' }} />
+          )}
+        </button>
+      </div>
       </div>
 
       {/* Native Modals - Rendered via Portal outside form hierarchy */}
@@ -795,6 +710,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
           onSubmit={handleUrlSubmit}
           initialUrl={currentLinkUrl}
           initialDisplayText={currentLinkText}
+          zIndex={isFullscreen ? 10000 : undefined}
         />,
         document.body
       )}
@@ -805,6 +721,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
           onClose={() => setIsImageModalOpen(false)}
           onSubmit={handleImageSubmit}
           articleId={articleId}
+          zIndex={isFullscreen ? 10000 : undefined}
         />,
         document.body
       )}
@@ -814,36 +731,16 @@ const MenuBar: React.FC<{ editor: any; articleId?: string }> = ({ editor, articl
           isOpen={isVideoModalOpen}
           onClose={() => setIsVideoModalOpen(false)}
           onSubmit={handleVideoSubmit}
+          zIndex={isFullscreen ? 10000 : undefined}
         />,
         document.body
       )}
 
-      {isGifModalOpen && createPortal(
-        <GifModal
-          isOpen={isGifModalOpen}
-          onClose={() => setIsGifModalOpen(false)}
-          onSubmit={handleGifSubmit}
-        />,
-        document.body
-      )}
 
-      {isButtonModalOpen && createPortal(
-        <ButtonModal
-          isOpen={isButtonModalOpen}
-          onClose={() => setIsButtonModalOpen(false)}
-          onSubmit={handleButtonSubmit}
-        />,
-        document.body
-      )}
 
-      {isTweetModalOpen && createPortal(
-        <TweetModal
-          isOpen={isTweetModalOpen}
-          onClose={() => setIsTweetModalOpen(false)}
-          onSubmit={handleTweetSubmit}
-        />,
-        document.body
-      )}
+
+
+
     </>
   );
 };
@@ -855,6 +752,26 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   className = '',
   articleId
 }) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+  }, []);
+
+  // Handle escape key to exit fullscreen
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    if (isFullscreen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isFullscreen]);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -885,9 +802,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       TableHeader,
       TableCell,
       Video,
-      Gif,
-      Button,
-      Tweet,
     ],
     content,
     onUpdate: ({ editor }) => {
@@ -982,17 +896,33 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [editor]);
 
-  return (
+  const editorComponent = (
     <div className={className} style={{
       border: '1px solid var(--color-border-primary)',
       borderRadius: 'var(--radius-lg)',
       overflow: 'hidden',
       background: 'var(--color-bg-primary)',
-      height: '600px',
+      height: isFullscreen ? '100vh' : '600px',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      ...(isFullscreen && {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        borderRadius: 0,
+        width: '100vw',
+        height: '100vh'
+      })
     }}>
-      <MenuBar editor={editor} articleId={articleId} />
+      <MenuBar 
+        editor={editor} 
+        articleId={articleId} 
+        isFullscreen={isFullscreen} 
+        onToggleFullscreen={toggleFullscreen} 
+      />
       <div style={{
         height: '0.5px',
         background: 'var(--color-border-primary)',
@@ -1006,14 +936,23 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <EditorContent 
           editor={editor} 
           style={{
-            padding: 'var(--space-4)',
-            minHeight: '400px',
+            padding: isFullscreen ? 'var(--space-4) var(--content-padding)' : 'var(--space-4)',
+            minHeight: isFullscreen ? 'calc(100vh - 60px)' : '400px',
             fontSize: 'var(--text-base)',
             lineHeight: '1.6',
-            color: 'var(--color-text-primary)'
+            color: 'var(--color-text-primary)',
+            maxWidth: isFullscreen ? '800px' : 'none',
+            margin: isFullscreen ? '0 auto' : '0'
           }}
         />
       </div>
     </div>
   );
+
+  // If fullscreen, render in a portal
+  if (isFullscreen) {
+    return createPortal(editorComponent, document.body);
+  }
+
+  return editorComponent;
 }; 

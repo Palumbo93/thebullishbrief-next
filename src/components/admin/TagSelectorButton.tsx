@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tag, ChevronDown, X } from 'lucide-react';
 import { useAllTags } from '../../hooks/useDatabase';
 import { TagSelectorModal } from './TagSelectorModal';
+import { Tag as TagType } from '../../services/database';
 
 interface TagSelectorButtonProps {
   selectedTags: string[];
@@ -20,11 +21,36 @@ export const TagSelectorButton: React.FC<TagSelectorButtonProps> = ({
 }) => {
   const { tags: allTags } = useAllTags();
   const [showModal, setShowModal] = useState(false);
+  const [locallyCreatedTags, setLocallyCreatedTags] = useState<TagType[]>([]);
 
-  // Get selected tag names for display
-  const selectedTagNames = selectedTags
-    .map(tagId => allTags.find(tag => tag.id === tagId)?.name)
-    .filter(Boolean);
+  // Get selected tag objects for display, including fallback for missing tags
+  const selectedTagsWithNames = selectedTags.map(tagId => {
+    // First check in allTags, then in locallyCreatedTags
+    const tag = allTags.find(tag => tag.id === tagId) || 
+                locallyCreatedTags.find(tag => tag.id === tagId);
+    return {
+      id: tagId,
+      name: tag?.name || 'Loading...' // Fallback for newly created tags
+    };
+  });
+
+  // Handler for when a new tag is created in the modal
+  const handleTagCreated = (newTag: TagType) => {
+    setLocallyCreatedTags(prev => {
+      // Avoid duplicates
+      if (prev.find(tag => tag.id === newTag.id)) {
+        return prev;
+      }
+      return [...prev, newTag];
+    });
+  };
+
+  // Clean up locally created tags that are now in allTags
+  useEffect(() => {
+    setLocallyCreatedTags(prev => 
+      prev.filter(localTag => !allTags.find(tag => tag.id === localTag.id))
+    );
+  }, [allTags]);
 
   const handleRemoveTag = (tagId: string) => {
     onTagsChange(selectedTags.filter(id => id !== tagId));
@@ -43,7 +69,7 @@ export const TagSelectorButton: React.FC<TagSelectorButtonProps> = ({
       }}
       onClick={() => setShowModal(true)}
       >
-        {selectedTagNames.length === 0 ? (
+        {selectedTagsWithNames.length === 0 ? (
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -67,36 +93,54 @@ export const TagSelectorButton: React.FC<TagSelectorButtonProps> = ({
               flexWrap: 'wrap',
               gap: 'var(--space-2)'
             }}>
-              {selectedTagNames.map((tagName, index) => {
-                const tagId = selectedTags[index];
+              {selectedTagsWithNames.map((tagWithName) => {
                 return (
-                  <div
-                    key={tagId}
+                  <button
+                    key={tagWithName.id}
+                    type="button"
                     style={{
+                      fontSize: 'var(--text-sm)',
+                      borderRadius: 'var(--radius-full)',
+                      padding: 'var(--space-2) var(--space-4)',
+                      height: 'auto',
+                      minHeight: '32px',
+                      whiteSpace: 'nowrap',
+                      background: 'var(--color-bg-tertiary)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      color: 'var(--color-text-primary)',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-base)',
+                      fontWeight: 'var(--font-medium)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 'var(--space-1)',
-                      padding: 'var(--space-1) var(--space-2)',
-                      background: 'var(--color-primary)',
-                      color: 'var(--color-text-inverse)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 'var(--font-medium)'
+                      gap: 'var(--space-1)'
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleRemoveTag(tagId);
+                      handleRemoveTag(tagWithName.id);
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.9';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
-                    <Tag style={{ width: '12px', height: '12px' }} />
-                    <span>{tagName}</span>
-                    <X style={{ 
-                      width: '12px', 
-                      height: '12px',
-                      cursor: 'pointer',
-                      opacity: 0.7
+                    <Tag style={{ 
+                      width: '14px', 
+                      height: '14px',
+                      color: 'var(--color-text-tertiary)'
                     }} />
-                  </div>
+                    <span>{tagWithName.name}</span>
+                    <X style={{ 
+                      width: '14px', 
+                      height: '14px',
+                      opacity: 0.8,
+                      color: 'var(--color-text-tertiary)'
+                    }} />
+                  </button>
                 );
               })}
             </div>
@@ -111,7 +155,7 @@ export const TagSelectorButton: React.FC<TagSelectorButtonProps> = ({
               fontSize: 'var(--text-sm)'
             }}>
               <span>
-                {selectedTagNames.length} of {maxTags} tags selected
+                {selectedTagsWithNames.length} of {maxTags} tags selected
               </span>
               <ChevronDown style={{ width: '16px', height: '16px' }} />
             </div>
@@ -125,6 +169,7 @@ export const TagSelectorButton: React.FC<TagSelectorButtonProps> = ({
         onClose={() => setShowModal(false)}
         selectedTags={selectedTags}
         onTagsChange={onTagsChange}
+        onTagCreated={handleTagCreated}
         placeholder={placeholder}
         maxTags={maxTags}
       />

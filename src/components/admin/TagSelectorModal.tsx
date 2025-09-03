@@ -12,6 +12,7 @@ interface TagSelectorModalProps {
   onClose: () => void;
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
+  onTagCreated?: (tag: TagType) => void;
   placeholder?: string;
   maxTags?: number;
 }
@@ -21,6 +22,7 @@ export const TagSelectorModal: React.FC<TagSelectorModalProps> = ({
   onClose,
   selectedTags,
   onTagsChange,
+  onTagCreated,
   placeholder = "Select tags...",
   maxTags = 5
 }) => {
@@ -28,25 +30,35 @@ export const TagSelectorModal: React.FC<TagSelectorModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [tempSelectedTags, setTempSelectedTags] = useState<string[]>([]);
+  const [newlyCreatedTags, setNewlyCreatedTags] = useState<TagType[]>([]);
 
   // Initialize temp selected tags when modal opens
   useEffect(() => {
     if (isOpen) {
       setTempSelectedTags([...selectedTags]);
       setSearchQuery('');
+      setNewlyCreatedTags([]); // Reset newly created tags when modal opens
     }
   }, [isOpen, selectedTags]);
 
 
 
-  // Filter tags based on search
+  // Filter tags based on search and include selected tags that might not be in allTags yet
   const filteredTags = useMemo(() => {
-    if (!searchQuery.trim()) return allTags;
-    return allTags.filter(tag =>
+    let baseTagsList = [...allTags, ...newlyCreatedTags];
+    
+    // Remove duplicates (in case a newly created tag is now in allTags)
+    baseTagsList = baseTagsList.filter((tag, index, self) => 
+      self.findIndex(t => t.id === tag.id) === index
+    );
+    
+    if (!searchQuery.trim()) return baseTagsList;
+    
+    return baseTagsList.filter(tag =>
       tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tag.slug.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [allTags, searchQuery]);
+  }, [allTags, newlyCreatedTags, searchQuery]);
 
   const handleTagToggle = (tagId: string) => {
     setTempSelectedTags(prev => {
@@ -75,9 +87,17 @@ export const TagSelectorModal: React.FC<TagSelectorModalProps> = ({
       const newTag = await createTag(tagData);
       setShowCreateModal(false);
       
-      // Immediately add the new tag to selection if we have space
-      if (newTag && tempSelectedTags.length < maxTags && !tempSelectedTags.includes(newTag.id)) {
-        setTempSelectedTags(prev => [...prev, newTag.id]);
+      if (newTag) {
+        // Add to local cache of newly created tags
+        setNewlyCreatedTags(prev => [...prev, newTag]);
+        
+        // Notify parent component about the new tag
+        onTagCreated?.(newTag);
+        
+        // Immediately add the new tag to selection if we have space
+        if (tempSelectedTags.length < maxTags && !tempSelectedTags.includes(newTag.id)) {
+          setTempSelectedTags(prev => [...prev, newTag.id]);
+        }
       }
     } catch (error) {
       console.error('Error creating tag:', error);
@@ -264,7 +284,8 @@ export const TagSelectorModal: React.FC<TagSelectorModalProps> = ({
                 </div>
               ) : (
                 <div style={{
-                  display: 'grid',
+                  display: 'flex',
+                  flexWrap: 'wrap',
                   gap: 'var(--space-2)'
                 }}>
                   {filteredTags.map((tag) => {
@@ -282,49 +303,49 @@ export const TagSelectorModal: React.FC<TagSelectorModalProps> = ({
                         }}
                         disabled={isDisabled}
                         style={{
-                          width: '100%',
-                          padding: 'var(--space-3) var(--space-4)',
-                          background: isSelected ? 'var(--color-primary)' : 'var(--color-bg-tertiary)',
-                          border: '0.5px solid var(--color-border-primary)',
+                          fontSize: 'var(--text-sm)',
                           borderRadius: 'var(--radius-full)',
-                          color: 'var(--color-text-primary)',
-                          fontSize: 'var(--text-base)',
-                          fontWeight: 'var(--font-medium)',
+                          padding: 'var(--space-2) var(--space-4)',
+                          height: 'auto',
+                          minHeight: '32px',
+                          whiteSpace: 'nowrap',
+                          background: isSelected ? 'var(--color-bg-tertiary)' : 'var(--color-bg-card)',
+                          border: '0.5px solid var(--color-border-primary)',
+                          color: isSelected ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           transition: 'all var(--transition-base)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          opacity: isDisabled ? 0.5 : 1
+                          opacity: isDisabled ? 0.5 : 1,
+                          position: 'relative',
+                          fontWeight: 'var(--font-medium)'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isDisabled) {
+                            if (!isSelected) {
+                              e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                              e.currentTarget.style.color = 'var(--color-text-primary)';
+                              e.currentTarget.style.transform = 'translateY(-1px)';
+                            }
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isDisabled) {
+                            if (!isSelected) {
+                              e.currentTarget.style.background = 'var(--color-bg-card)';
+                              e.currentTarget.style.color = 'var(--color-text-secondary)';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                            }
+                          }
                         }}
                       >
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 'var(--space-3)'
-                        }}>
-                          <div style={{
-                            width: '16px',
-                            height: '16px',
-                            border: '2px solid',
-                            borderColor: isSelected ? 'var(--color-text-inverse)' : 'var(--color-border-primary)',
-                            borderRadius: 'var(--radius-sm)',
-                            color: isSelected ? 'var(--color-bg-primary)' : 'var(--color-text-primary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: isSelected ? 'var(--color-text-inverse)' : 'transparent'
-                          }}>
-                            {isSelected && (
-                              <Check style={{
-                                width: '12px',
-                                height: '12px',
-                                color: 'var(--color-primary)'
-                              }} />
-                            )}
-                          </div>
-                          <span>{tag.name}</span>
-                        </div>
+                        {isSelected && (
+                          <Check style={{
+                            width: '14px',
+                            height: '14px',
+                            marginRight: 'var(--space-1)',
+                            color: 'var(--color-primary)'
+                          }} />
+                        )}
+                        <span>{tag.name}</span>
                       </button>
                     );
                   })}

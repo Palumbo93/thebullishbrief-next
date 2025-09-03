@@ -53,11 +53,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     return article?.content ? calculateReadingTime(article.content) : 5;
   }, [article?.content]);
 
-  // Theme-aware gradient overlay
+  // Theme-aware gradient overlay using CSS variables
   const getGradientOverlay = React.useMemo(() => {
-    const baseColor = theme === 'light' ? '255, 255, 255' : '0, 0, 0';
-    return `linear-gradient(to bottom, rgba(${baseColor}, 0.3) 0%, rgba(${baseColor}, 0.6) 40%, rgba(${baseColor}, 0.85) 70%, rgba(${baseColor}, 0.95) 85%, rgba(${baseColor}, 1) 100%)`;
-  }, [theme]);
+    // Use CSS custom properties with color-mix for transparency
+    return `linear-gradient(to bottom, 
+      color-mix(in srgb, var(--color-bg-primary) 30%, transparent) 0%, 
+      color-mix(in srgb, var(--color-bg-primary) 60%, transparent) 40%, 
+      color-mix(in srgb, var(--color-bg-primary) 85%, transparent) 70%, 
+      color-mix(in srgb, var(--color-bg-primary) 95%, transparent) 85%, 
+      var(--color-bg-primary) 100%)`;
+  }, []);
 
   // Handle scroll for header background
   React.useEffect(() => {

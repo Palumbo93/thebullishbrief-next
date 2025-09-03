@@ -225,6 +225,27 @@ export const removeWidgetMarkers = (content: string): string => {
 };
 
 /**
+ * Converts plain text with newlines to JSX elements with <br /> tags
+ * 
+ * @param text - The text content with newline characters
+ * @returns JSX elements with proper line breaks
+ */
+export const convertNewlinesToJSX = (text: string): React.ReactElement => {
+  const lines = text.split('\n');
+  
+  return (
+    <>
+      {lines.map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          {index < lines.length - 1 && <br />}
+        </React.Fragment>
+      ))}
+    </>
+  );
+};
+
+/**
  * Component that renders processed content with injected widgets
  */
 interface ProcessedContentProps {

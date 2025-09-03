@@ -13,6 +13,7 @@ import { AuthorNewsletterSignup } from '../components/AuthorNewsletterSignup';
 import { LegalFooter } from '../components/LegalFooter';
 import { ShareSheet } from '../components/ShareSheet';
 import { DesktopBanner } from '../components/DesktopBanner';
+import { convertNewlinesToJSX } from '../utils/contentProcessor';
 
 interface AuthorPageProps {
   authorSlug: string;
@@ -351,7 +352,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
               
               
                 {author.bio && (
-                  <p style={{
+                  <div style={{
                     color: 'var(--color-text-secondary)',
                     fontSize: 'var(--text-lg)',
                     lineHeight: 'var(--leading-relaxed)',
@@ -359,8 +360,8 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
                     textAlign: 'center',
                     fontWeight: 'var(--font-regular)'
                   }}>
-                    {author.bio}
-                  </p>
+                    {convertNewlinesToJSX(author.bio)}
+                  </div>
                 )}
                 
                 {/* Enhanced Social Links */}

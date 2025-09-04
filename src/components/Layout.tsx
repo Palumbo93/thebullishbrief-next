@@ -190,12 +190,19 @@ export const Layout: React.FC<LayoutProps> = ({
 
   // Generate navigation items for mobile sidebar (matches Sidebar.tsx exactly)
   const getMobileNavItems = () => {
-    return [
+    const items = [
       { id: 'home', label: 'Home', icon: HomeIcon, path: '/', active: actualCurrentLocation === 'home' },
-      { id: 'search', label: 'Search', icon: SearchIcon, path: '/search', active: false },
+      { id: 'search', label: 'Explore', icon: SearchIcon, path: '/explore', active: actualCurrentLocation === 'articles' },
       { id: 'bull-room', label: 'Bull Room', icon: MessageSquareMoreIcon, path: '/bull-room', active: actualCurrentLocation === 'bull-room' },
-      { id: 'aivault', label: 'AI Vault', icon: FoldersIcon, path: '/aivault', active: actualCurrentLocation === 'aivault' },
+      { id: 'aivault', label: 'AI Prompts', icon: FoldersIcon, path: '/aivault', active: actualCurrentLocation === 'aivault' },
     ];
+
+    // Add admin item if user is admin
+    if (user?.isAdmin) {
+      items.push({ id: 'admin', label: 'Admin', icon: ShieldCheckIcon, path: '/admin', active: actualCurrentLocation === 'admin' });
+    }
+
+    return items;
   };
 
   const mobileNavItems = getMobileNavItems();

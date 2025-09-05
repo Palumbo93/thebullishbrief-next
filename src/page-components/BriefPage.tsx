@@ -514,18 +514,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             {brief?.title}
           </h1>
 
-          {/* Disclaimer - Simple one-liner */}
-          {brief?.disclaimer && (
-            <p style={{
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)',
-              // fontStyle: 'italic',
-              fontWeight: 'var(--font-light)',
-              marginBottom: 'var(--space-4)'
-            }}>
-              {brief.disclaimer}
-            </p>
-          )}
 
           {/* Featured Media - Mobile Position (below headline, above info bar) */}
           {(brief as any)?.show_featured_media !== false && (
@@ -539,6 +527,20 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 onVideoClick={handleVideoClick}
               />
             </div>
+          )}
+
+
+          {/* Disclaimer - Simple one-liner */}
+          {brief?.disclaimer && (
+            <p style={{
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-muted)',
+              // fontStyle: 'italic',
+              fontWeight: 'var(--font-light)',
+              marginBottom: 'var(--space-4)'
+            }}>
+              {brief.disclaimer}
+            </p>
           )}
 
         </div>

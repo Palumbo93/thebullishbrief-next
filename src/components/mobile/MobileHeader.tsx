@@ -31,6 +31,10 @@ interface MobileHeaderConfig {
       fallback?: string;
       onClick?: () => void;
     };
+    typeLogo?: {
+      size?: 'sm' | 'md' | 'lg';
+      onClick?: () => void;
+    };
   };
   rightSection: {
     actions: MobileHeaderAction[];

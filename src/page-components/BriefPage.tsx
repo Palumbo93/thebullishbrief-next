@@ -384,7 +384,100 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
       {/* Brief Content */}
       {!isLoading && (
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '100vh', position: 'relative' }}>
+        {/* Enhanced Gradient Background Overlay - When featured_color is set */}
+        {(brief as any)?.featured_color && (() => {
+          // Theme-aware opacity values
+          const isDark = theme === 'dark';
+          const mainOpacities = isDark 
+            ? ['40', '30', '22', '16', '12', '08', '05', '03'] // Dark mode - stronger
+            : ['20', '15', '12', '08', '05', '03', '02', '01']; // Light mode - subtle
+          const ambientOpacities = isDark
+            ? { left: ['18', '12', '06'], right: ['15', '08', '04'] } // Dark mode
+            : { left: ['08', '04', '02'], right: ['06', '03', '01'] }; // Light mode
+          const textureOpacities = isDark
+            ? ['10', '06', '03'] // Dark mode
+            : ['05', '03', '01']; // Light mode
+          const textureBaseOpacity = isDark ? 0.8 : 0.4;
+
+          return (
+            <>
+              {/* Main gradient overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '100vh',
+                background: `
+                  radial-gradient(ellipse 200% 120% at 50% -20%, 
+                    ${(brief as any).featured_color}${mainOpacities[0]} 0%, 
+                    ${(brief as any).featured_color}${mainOpacities[1]} 10%, 
+                    ${(brief as any).featured_color}${mainOpacities[2]} 20%, 
+                    ${(brief as any).featured_color}${mainOpacities[3]} 30%, 
+                    ${(brief as any).featured_color}${mainOpacities[4]} 40%, 
+                    ${(brief as any).featured_color}${mainOpacities[5]} 50%, 
+                    ${(brief as any).featured_color}${mainOpacities[6]} 60%, 
+                    ${(brief as any).featured_color}${mainOpacities[7]} 70%, 
+                    transparent 85%
+                  )
+                `,
+                pointerEvents: 'none',
+                zIndex: 1
+              }} />
+              
+              {/* Secondary ambient glow */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '60vh',
+                background: `
+                  radial-gradient(ellipse 120% 80% at 30% 0%, 
+                    ${(brief as any).featured_color}${ambientOpacities.left[0]} 0%, 
+                    ${(brief as any).featured_color}${ambientOpacities.left[1]} 25%, 
+                    ${(brief as any).featured_color}${ambientOpacities.left[2]} 50%, 
+                    transparent 75%
+                  ),
+                  radial-gradient(ellipse 120% 80% at 70% 0%, 
+                    ${(brief as any).featured_color}${ambientOpacities.right[0]} 0%, 
+                    ${(brief as any).featured_color}${ambientOpacities.right[1]} 30%, 
+                    ${(brief as any).featured_color}${ambientOpacities.right[2]} 60%, 
+                    transparent 80%
+                  )
+                `,
+                pointerEvents: 'none',
+                zIndex: 2
+              }} />
+              
+              {/* Enhanced noisy texture overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '100vh',
+                background: `
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E") repeat,
+                  linear-gradient(180deg, 
+                    ${(brief as any).featured_color}${textureOpacities[0]} 0%, 
+                    ${(brief as any).featured_color}${textureOpacities[1]} 20%, 
+                    ${(brief as any).featured_color}${textureOpacities[2]} 40%, 
+                    transparent 70%
+                  )
+                `,
+                backgroundSize: isDark ? '400px 400px, 100% 100%' : '280px 280px, 100% 100%',
+                backgroundRepeat: 'repeat, no-repeat',
+                pointerEvents: 'none',
+                zIndex: 4,
+                opacity: isDark ? 0.18 : 0.18,
+                mixBlendMode: 'soft-light'
+              }} />
+            </>
+          );
+        })()}
+        
         {/* Desktop Banner - Hidden on mobile */}
         <BriefDesktopBanner
           companyName={brief?.company_name || undefined}
@@ -494,10 +587,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           {/* Subtitle - Clean callout style */}
           {brief?.subtitle && (
             <div style={{
-              background: 'var(--color-bg-secondary)',
-              border: '0.5px solid var(--color-border-primary)',
-              borderRadius: 'var(--radius-lg)',
-              padding: 'var(--space-6) var(--space-8)',
+              padding: 'var(--space-2) var(--space-6)',
               marginBottom: 'var(--space-4)',
               position: 'relative',
               overflow: 'hidden'
@@ -507,10 +597,10 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 position: 'absolute',
                 top: 0,
                 left: 0,
-                width: '4px',
+                width: '3px',
                 height: '100%',
-                background: 'var(--color-success)',
-                opacity: 0.6
+                background: (brief as any)?.featured_color || 'var(--color-success)',
+                opacity: 1
               }} />
               
               <div style={{

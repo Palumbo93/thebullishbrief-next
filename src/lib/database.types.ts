@@ -547,6 +547,7 @@ export type Database = {
           disclaimer: string | null
           feature_featured_video: boolean
           featured: boolean | null
+          featured_color: string | null
           featured_image_alt: string | null
           featured_image_url: string | null
           featured_video_thumbnail: string | null
@@ -557,6 +558,7 @@ export type Database = {
           published_at: string | null
           reading_time_minutes: number | null
           show_cta: boolean | null
+          show_featured_media: boolean
           slug: string
           sponsored: boolean | null
           status: string | null
@@ -577,6 +579,7 @@ export type Database = {
           disclaimer?: string | null
           feature_featured_video?: boolean
           featured?: boolean | null
+          featured_color?: string | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           featured_video_thumbnail?: string | null
@@ -587,6 +590,7 @@ export type Database = {
           published_at?: string | null
           reading_time_minutes?: number | null
           show_cta?: boolean | null
+          show_featured_media?: boolean
           slug: string
           sponsored?: boolean | null
           status?: string | null
@@ -607,6 +611,7 @@ export type Database = {
           disclaimer?: string | null
           feature_featured_video?: boolean
           featured?: boolean | null
+          featured_color?: string | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           featured_video_thumbnail?: string | null
@@ -617,6 +622,7 @@ export type Database = {
           published_at?: string | null
           reading_time_minutes?: number | null
           show_cta?: boolean | null
+          show_featured_media?: boolean
           slug?: string
           sponsored?: boolean | null
           status?: string | null

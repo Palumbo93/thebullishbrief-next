@@ -45,7 +45,7 @@ export const BriefDesktopBanner: React.FC<BriefDesktopBannerProps> = ({
       margin: '0 0 0 0',
       top: 0,
       zIndex: 20,
-      backdropFilter: 'blur(10px)',
+      backdropFilter: isScrolled ? 'blur(10px)' : 'none',
       transition: 'background var(--transition-base)',
     };
   };

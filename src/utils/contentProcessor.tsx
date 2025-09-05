@@ -20,7 +20,7 @@ interface ContentProcessorOptions {
  * 
  * Currently supports:
  * - {INLINE_CTA} - Injects BriefLeadGenWidget (mobile-only)
- * - {BROKERAGE_LINKS} - Injects BrokerageWidget (mobile-only)
+ * - {BROKERAGE_LINKS} - Injects BrokerageWidget (desktop and mobile)
  * - {FEATURED_VIDEO} - Injects FeaturedVideoWidget (mobile-only)
  * - {TRADING_VIEW} - Injects TradingViewWidget (mobile-only)
  * 
@@ -93,7 +93,6 @@ export const processContentWithWidgets = (
           widgetComponent = (
             <div 
               key={`brokerage-widget-${widgetIndex}`}
-              className="mobile-only"
               style={{
                 margin: 'var(--space-8) 0',
                 padding: '0'

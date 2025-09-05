@@ -225,22 +225,6 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
       )}
 
 
-
-      {/* Brokerage Widget */}
-      {brief?.brokerage_links && (
-        <div className="briefs-brokerage-section">
-        <BrokerageWidget 
-          brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
-          briefId={brief?.slug}
-          briefTitle={brief?.title}
-          location="action_panel"
-          country={country}
-          countryLoading={countryLoading}
-          geolocationError={geolocationError}
-        />
-        </div>
-      )}
-
         {/* Table of Contents */}
       {sections.length > 0 && (
         <div className="briefs-toc-section">
@@ -272,6 +256,21 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         </div>
       )}
 
+
+      {/* Brokerage Widget */}
+      {brief?.brokerage_links && (
+        <div className="briefs-brokerage-section">
+        <BrokerageWidget 
+          brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
+          briefId={brief?.slug}
+          briefTitle={brief?.title}
+          location="action_panel"
+          country={country}
+          countryLoading={countryLoading}
+          geolocationError={geolocationError}
+        />
+        </div>
+      )}
 
 
       {/* Company Tickers */}

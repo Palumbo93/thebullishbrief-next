@@ -31,8 +31,6 @@ interface MobileHeaderConfig {
       fallback?: string;
       onClick?: () => void;
     };
-  };
-  centerSection?: {
     typeLogo?: {
       size?: 'sm' | 'md' | 'lg';
       onClick?: () => void;
@@ -52,7 +50,6 @@ interface MobileHeaderConfig {
  */
 export const MobileHeader: React.FC<MobileHeaderConfig> = ({
   leftSection,
-  centerSection,
   rightSection,
   onMenuClick
 }) => {
@@ -74,7 +71,7 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
   const getContainerStyles = () => {
     return {
       display: 'grid',
-      gridTemplateColumns: '1fr 2fr 1fr', // Equal width left/right columns, larger center
+      gridTemplateColumns: 'auto 1fr auto',
       alignItems: 'center',
       height: '100%',
       padding: '0 var(--content-padding)',
@@ -164,24 +161,18 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
                 onClick={leftSection.branding.onClick}
               />
             )}
-          </MobileHeaderSection>
 
-          {/* Center Section */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            flex: 1,
-            height: '100%'
-          }}>
             {/* Type Logo */}
-            {centerSection?.typeLogo && (
+            {leftSection.typeLogo && (
               <MobileHeaderTypeLogo
-                size={centerSection.typeLogo.size}
-                onClick={centerSection.typeLogo.onClick}
+                size={leftSection.typeLogo.size}
+                onClick={leftSection.typeLogo.onClick}
               />
             )}
-          </div>
+          </MobileHeaderSection>
+
+          {/* Center Section (Spacer) */}
+          <MobileHeaderSection flex><span style={{ display: 'none' }}>Spacer</span></MobileHeaderSection>
 
           {/* Right Section */}
           <MobileHeaderSection align="right" gap="sm">

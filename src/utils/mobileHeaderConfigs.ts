@@ -24,8 +24,6 @@ export interface MobileHeaderConfig {
       tickers?: string[];
       onClick?: () => void;
     };
-  };
-  centerSection?: {
     typeLogo?: {
       size?: 'sm' | 'md' | 'lg';
       onClick?: () => void;
@@ -65,12 +63,10 @@ export interface MobileHeaderFactoryProps {
  * Factory functions for creating mobile header configurations for different page types
  */
 export const createMobileHeaderConfig = {
-  // Home Page: Menu | Type Logo | Search Icon
+  // Home Page: (Menu, Type Logo) | Spacer | Search Icon
   home: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -85,12 +81,10 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Search Page: Menu | Type Logo | (no search icon)
+  // Search Page: (Menu, Type Logo) | Spacer | Search Icon (disabled since we're on search)
   search: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -102,12 +96,10 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Article Page: Menu | Type Logo | Comment, Bookmark, Share
+  // Article Page: (Menu, Type Logo) | Spacer | Comment Button, Bookmark Button, Share Button
   article: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -135,12 +127,10 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Brief Page: Menu | Type Logo | More, Share
+  // Brief Page: (Menu, Type Logo) | Spacer | More Button, Share Button
   brief: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -162,12 +152,10 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Author Page: Menu | Type Logo | Share
+  // Author Page: (Menu, Type Logo) | Spacer | Share Button
   author: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -182,12 +170,10 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Bookmarks Page: Menu | Type Logo | Search
+  // Bookmarks Page: (Menu, Type Logo) | Spacer | Search Icon
   bookmarks: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -202,12 +188,10 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Account Settings: Menu | Type Logo | (no actions)
+  // Account Settings: (Menu, Type Logo) | Spacer | (no actions)
   accountSettings: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick
@@ -222,9 +206,7 @@ export const createMobileHeaderConfig = {
   // Default fallback configuration
   default: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
-      showMenu: true
-    },
-    centerSection: {
+      showMenu: true,
       typeLogo: {
         size: 'md',
         onClick: props.onLogoClick

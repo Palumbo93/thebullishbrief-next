@@ -1,5 +1,6 @@
 import React from 'react';
 import { getTickers } from '../../utils/tickerUtils';
+import { BullLogoImg } from '../ui/BullLogo';
 
 interface MobileHeaderBrandingProps {
   companyName?: string;
@@ -26,6 +27,17 @@ export const MobileHeaderBranding: React.FC<MobileHeaderBrandingProps> = ({
       cursor: onClick ? 'pointer' : 'default',
       transition: 'opacity var(--transition-base)',
       maxWidth: '200px', // Prevent overflow on small screens
+    };
+  };
+
+  const getCompanyNameStyles = () => {
+    return {
+      fontSize: 'var(--text-sm)',
+      fontWeight: 'var(--font-medium)',
+      color: 'var(--color-text-primary)',
+      whiteSpace: 'nowrap' as const,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
     };
   };
 
@@ -81,6 +93,9 @@ export const MobileHeaderBranding: React.FC<MobileHeaderBrandingProps> = ({
     return tickerData ? tickerData.slice(0, 2) : [];
   }, [tickers]);
 
+  // Special handling for "The Bullish Brief" - show logo + text
+  const isMainBranding = companyName === 'The Bullish Brief';
+  
   return (
     <div
       style={getContainerStyles()}
@@ -91,19 +106,43 @@ export const MobileHeaderBranding: React.FC<MobileHeaderBrandingProps> = ({
       tabIndex={onClick ? 0 : undefined}
       aria-label={companyName ? `${companyName} company info` : 'Company info'}
     >
-
-      {/* Tickers Only - No Company Name */}
-      {parsedTickers.length > 0 && (
-        <div style={getTickersContainerStyles()}>
-          {parsedTickers.map((ticker, index) => (
-            <span
-              key={`${ticker?.exchange}-${ticker?.symbol}-${index}`}
-              style={getTickerBadgeStyles()}
-            >
-              {ticker?.exchange}:{ticker?.symbol}
+      {isMainBranding ? (
+        // Show logo + "The Bullish Brief" text
+        <>
+          <BullLogoImg
+            height={24}
+            width={120}
+            alt="The Bullish Brief Logo"
+            className="mobile-header-logo"
+          />
+          <span style={getCompanyNameStyles()}>
+            {companyName}
+          </span>
+        </>
+      ) : (
+        // Original behavior: Show tickers for company briefs
+        <>
+          {/* Company Name (if provided and not main branding) */}
+          {companyName && (
+            <span style={getCompanyNameStyles()}>
+              {companyName}
             </span>
-          ))}
-        </div>
+          )}
+
+          {/* Tickers */}
+          {parsedTickers.length > 0 && (
+            <div style={getTickersContainerStyles()}>
+              {parsedTickers.map((ticker, index) => (
+                <span
+                  key={`${ticker?.exchange}-${ticker?.symbol}-${index}`}
+                  style={getTickerBadgeStyles()}
+                >
+                  {ticker?.exchange}:{ticker?.symbol}
+                </span>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

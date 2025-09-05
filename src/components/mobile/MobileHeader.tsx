@@ -4,6 +4,7 @@ import { MobileHeaderSection } from './MobileHeaderSection';
 import { MobileHeaderButton } from './MobileHeaderButton';
 import { MobileHeaderLogo } from './MobileHeaderLogo';
 import { MobileHeaderBranding } from './MobileHeaderBranding';
+import { MobileHeaderTypeLogo } from './MobileHeaderTypeLogo';
 
 interface MobileHeaderAction {
   type: 'search' | 'bookmark' | 'share' | 'comment' | 'more';
@@ -154,6 +155,14 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
                 companyName={leftSection.branding.companyName}
                 tickers={leftSection.branding.tickers}
                 onClick={leftSection.branding.onClick}
+              />
+            )}
+
+            {/* Type Logo */}
+            {leftSection.typeLogo && (
+              <MobileHeaderTypeLogo
+                size={leftSection.typeLogo.size}
+                onClick={leftSection.typeLogo.onClick}
               />
             )}
           </MobileHeaderSection>

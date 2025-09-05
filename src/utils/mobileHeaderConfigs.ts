@@ -24,6 +24,10 @@ export interface MobileHeaderConfig {
       tickers?: string[];
       onClick?: () => void;
     };
+    typeLogo?: {
+      size?: 'sm' | 'md' | 'lg';
+      onClick?: () => void;
+    };
   };
   rightSection: {
     actions: MobileHeaderAction[];
@@ -59,14 +63,12 @@ export interface MobileHeaderFactoryProps {
  * Factory functions for creating mobile header configurations for different page types
  */
 export const createMobileHeaderConfig = {
-  // Home Page: (Menu, Main Logo) | Spacer | Search Icon
+  // Home Page: (Menu, Type Logo) | Spacer | Search Icon
   home: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -79,14 +81,12 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Search Page: (Menu, Main Logo) | Spacer | Search Icon (disabled since we're on search)
+  // Search Page: (Menu, Type Logo) | Spacer | Search Icon (disabled since we're on search)
   search: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -96,14 +96,12 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Article Page: (Menu, Main Logo) | Spacer | Comment Button, Bookmark Button, Share Button
+  // Article Page: (Menu, Type Logo) | Spacer | Comment Button, Bookmark Button, Share Button
   article: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -129,13 +127,12 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Brief Page: (Menu, Company Logo/Ticker) | Spacer | More Button, Share Button
+  // Brief Page: (Menu, Type Logo) | Spacer | More Button, Share Button
   brief: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      branding: {
-        companyName: props.companyName,
-        tickers: props.tickers,
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -155,14 +152,12 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Author Page: (Menu, Main Logo) | Spacer | Share Button
+  // Author Page: (Menu, Type Logo) | Spacer | Share Button
   author: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -175,14 +170,12 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Bookmarks Page: (Menu, Main Logo) | Spacer | Search Icon
+  // Bookmarks Page: (Menu, Type Logo) | Spacer | Search Icon
   bookmarks: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -195,14 +188,12 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Account Settings: (Menu, Main Logo) | Spacer | (no actions)
+  // Account Settings: (Menu, Type Logo) | Spacer | (no actions)
   accountSettings: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },
@@ -216,10 +207,8 @@ export const createMobileHeaderConfig = {
   default: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
-      logo: {
-        type: 'main',
-        alt: 'The Bullish Brief Logo',
-        fallback: 'TB',
+      typeLogo: {
+        size: 'md',
         onClick: props.onLogoClick
       }
     },

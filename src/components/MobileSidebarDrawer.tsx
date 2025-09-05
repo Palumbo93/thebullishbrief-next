@@ -342,9 +342,6 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({
         <div className="mobile-sidebar-header">
           <div className="mobile-sidebar-logo">
             <BullLogoImg width={32} height={32} alt="Logo" />
-            <div className="mobile-sidebar-logo-text">
-              The Bullish Brief
-            </div>
           </div>
           <button
             className="mobile-sidebar-close"

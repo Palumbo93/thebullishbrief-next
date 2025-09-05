@@ -537,7 +537,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               color: 'var(--color-text-muted)',
               // fontStyle: 'italic',
               fontWeight: 'var(--font-light)',
-              marginBottom: 'var(--space-4)'
+              marginTop: 'var(--space-4)'
             }}>
               {brief.disclaimer}
             </p>

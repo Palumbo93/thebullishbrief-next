@@ -31,6 +31,7 @@ export interface Article {
   slug?: string;
   bookmark_count?: number;
   comment_count?: number;
+  featured_color?: string;
 }
 
 /**
@@ -59,7 +60,8 @@ const convertSupabaseArticle = (article: ArticleWithRelations): Article => {
     premium: article.premium,
     slug: article.slug,
     bookmark_count: article.bookmark_count || 0,
-    comment_count: article.comment_count || 0
+    comment_count: article.comment_count || 0,
+    featured_color: article.featured_color
   };
 };
 

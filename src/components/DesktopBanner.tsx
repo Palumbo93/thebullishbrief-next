@@ -34,21 +34,17 @@ export const DesktopBanner: React.FC<DesktopBannerProps> = ({
   const { theme } = useTheme();
 
   const getBannerStyles = () => {
-    // Theme-aware background when scrolled
-    const scrolledBackground = theme === 'light' 
-      ? 'rgba(255, 255, 255, 0.8)' 
-      : 'rgba(0, 0, 0, 0.8)';
+
 
     return {
       display: 'flex',
       alignItems: 'center',
-      background: isScrolled ? scrolledBackground : 'transparent',
+      background: isScrolled ? 'var(--color-bg-primary)' : 'transparent',
       height: '56px',
       position: 'sticky' as const,
       margin: '0 0 0 0',
       top: 0,
       zIndex: 20,
-      backdropFilter: 'blur(10px)',
       transition: 'background var(--transition-base)',
     };
   };

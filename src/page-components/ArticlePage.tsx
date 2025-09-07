@@ -53,17 +53,6 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     return article?.content ? calculateReadingTime(article.content) : 5;
   }, [article?.content]);
 
-  // Theme-aware gradient overlay using CSS variables
-  const getGradientOverlay = React.useMemo(() => {
-    // Use CSS custom properties with color-mix for transparency
-    return `linear-gradient(to bottom, 
-      color-mix(in srgb, var(--color-bg-primary) 30%, transparent) 0%, 
-      color-mix(in srgb, var(--color-bg-primary) 60%, transparent) 40%, 
-      color-mix(in srgb, var(--color-bg-primary) 85%, transparent) 70%, 
-      color-mix(in srgb, var(--color-bg-primary) 95%, transparent) 85%, 
-      var(--color-bg-primary) 100%)`;
-  }, []);
-
   // Handle scroll for header background
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -273,12 +262,99 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
   return (
     <div>
-      
+      <div style={{ minHeight: '100vh', position: 'relative' }}>
+        {/* Enhanced Gradient Background Overlay - When featured_color is set */}
+        {article?.featured_color && (() => {
+          // Theme-aware opacity values
+          const isDark = theme === 'dark';
+          const mainOpacities = isDark 
+            ? ['40', '30', '22', '16', '12', '08', '05', '03'] // Dark mode - stronger
+            : ['20', '15', '12', '08', '05', '03', '02', '01']; // Light mode - subtle
+          const ambientOpacities = isDark
+            ? { left: ['18', '12', '06'], right: ['15', '08', '04'] } // Dark mode
+            : { left: ['08', '04', '02'], right: ['06', '03', '01'] }; // Light mode
+          const textureOpacities = isDark
+            ? ['10', '06', '03'] // Dark mode
+            : ['05', '03', '01']; // Light mode
 
-
-
-      
-      <div style={{ minHeight: '100vh' }}>
+          return (
+            <>
+              {/* Main gradient overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '100vh',
+                background: `
+                  radial-gradient(ellipse 200% 120% at 50% -20%, 
+                    ${article.featured_color}${mainOpacities[0]} 0%, 
+                    ${article.featured_color}${mainOpacities[1]} 10%, 
+                    ${article.featured_color}${mainOpacities[2]} 20%, 
+                    ${article.featured_color}${mainOpacities[3]} 30%, 
+                    ${article.featured_color}${mainOpacities[4]} 40%, 
+                    ${article.featured_color}${mainOpacities[5]} 50%, 
+                    ${article.featured_color}${mainOpacities[6]} 60%, 
+                    ${article.featured_color}${mainOpacities[7]} 70%, 
+                    transparent 85%
+                  )
+                `,
+                pointerEvents: 'none',
+                zIndex: 1
+              }} />
+              
+              {/* Secondary ambient glow */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '60vh',
+                background: `
+                  radial-gradient(ellipse 120% 80% at 30% 0%, 
+                    ${article.featured_color}${ambientOpacities.left[0]} 0%, 
+                    ${article.featured_color}${ambientOpacities.left[1]} 25%, 
+                    ${article.featured_color}${ambientOpacities.left[2]} 50%, 
+                    transparent 75%
+                  ),
+                  radial-gradient(ellipse 120% 80% at 70% 0%, 
+                    ${article.featured_color}${ambientOpacities.right[0]} 0%, 
+                    ${article.featured_color}${ambientOpacities.right[1]} 30%, 
+                    ${article.featured_color}${ambientOpacities.right[2]} 60%, 
+                    transparent 80%
+                  )
+                `,
+                pointerEvents: 'none',
+                zIndex: 2
+              }} />
+              
+              {/* Enhanced noisy texture overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '100vh',
+                background: `
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E") repeat,
+                  linear-gradient(180deg, 
+                    ${article.featured_color}${textureOpacities[0]} 0%, 
+                    ${article.featured_color}${textureOpacities[1]} 20%, 
+                    ${article.featured_color}${textureOpacities[2]} 40%, 
+                    transparent 70%
+                  )
+                `,
+                backgroundSize: isDark ? '400px 400px, 100% 100%' : '280px 280px, 100% 100%',
+                backgroundRepeat: 'repeat, no-repeat',
+                pointerEvents: 'none',
+                zIndex: 4,
+                opacity: isDark ? 0.18 : 0.18,
+                mixBlendMode: 'soft-light'
+              }} />
+            </>
+          );
+        })()}
+        
         {/* Desktop Banner - Hidden on mobile */}
         <DesktopBanner
           title="Article"
@@ -313,228 +389,100 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           ]}
         />
 
-              {/* Article Header with Background Image */}
+        {/* Article Header - Clean text-only header */}
         <div style={{
-        position: 'relative',
-        overflow: 'hidden',
-        marginBottom: 'var(--space-4)',
-        minHeight: '300px',
-        display: 'flex',
-        alignItems: 'flex-end',
-        backgroundColor: 'var(--color-bg-secondary)', // Skeleton background
-      }}>
-        {/* Optimized Featured Image */}
-        {article.image && (
-          <Image
-            src={article.image}
-            alt={article.title || 'Article featured image'}
-            fill
-            priority={true}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
-            style={{
-              objectFit: 'cover',
-              objectPosition: 'center',
-              zIndex: 0
-            }}
-          />
-        )}
-        
-        {/* Gradient Overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: getGradientOverlay,
-          zIndex: 1
-        }} />
-        
-        {/* Grain Texture Overlay */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: theme === 'light' ? `
-            radial-gradient(circle at 25% 25%, rgba(0,0,0,0.02) 1px, transparent 1px),
-            radial-gradient(circle at 75% 75%, rgba(0,0,0,0.02) 1px, transparent 1px)
-          ` : `
-            radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px),
-            radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px)
-          `,
-          backgroundSize: '8px 8px, 8px 8px',
-          backgroundPosition: '0 0, 4px 4px',
-          opacity: 0.5,
-          pointerEvents: 'none',
-          zIndex: 2
-        }} />
-        
-        {/* Content */}
-        <div style={{
-          position: 'relative',
-          zIndex: 3,
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          padding: 'var(--space-16) var(--content-padding) 0 var(--content-padding)',
+          padding: 'var(--space-10) var(--content-padding) var(--space-4) var(--content-padding)',
           maxWidth: maxWidth,
           margin: '0 auto',
+          position: 'relative',
+          zIndex: 5
         }}>
-
-
-        {/* Title */}
-        <h1 style={{
-          fontSize: 'var(--headline-size-desktop)',
+          {/* Title */}
+          <h1 style={{
+            fontSize: 'var(--headline-size-desktop)',
             fontFamily: 'var(--font-editorial)',
             fontWeight: 'var(--font-normal)',
-          lineHeight: 'var(--leading-tight)',
-          color: 'var(--color-text-primary)',
-          marginBottom: 'var(--space-4)',
-          letterSpacing: '-0.01em'
-        }}>
-          {article.title}
-        </h1>
+            lineHeight: 'var(--leading-tight)',
+            color: 'var(--color-text-primary)',
+            marginBottom: 'var(--space-4)',
+            letterSpacing: '-0.01em'
+          }}>
+            {article.title}
+          </h1>
 
-        {/* Subtitle */}
-        {/* <p style={{
-            fontSize: 'var(--text-lg)',
-            fontFamily: 'var(--font-primary)',
-            color: 'var(--color-text-secondary)',
-          lineHeight: 'var(--leading-relaxed)',
-            marginBottom: 'var(--space-2)',
-            fontWeight: '400',
-            maxWidth: '600px'
-        }}>
-          {article.subtitle}
-        </p> */}
-
+          {/* Featured Image - Mobile Position (below headline, above info bar) */}
+          {article.image && (
+            <div className="mobile-only" style={{ marginBottom: 'var(--space-4)' }}>
+              <Image
+                src={article.image}
+                alt={article.title || 'Article featured image'}
+                width={800}
+                height={400}
+                priority={true}
+                sizes="(max-width: 768px) 100vw, 800px"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: 'var(--radius-lg)',
+                  objectFit: 'cover'
+                }}
+              />
+            </div>
+          )}
 
         </div>
-      </div>
 
-      {/* Article Content */}
-      <article
-        style={{
+        {/* Main Content */}
+        <main style={{
+          padding: '0px var(--content-padding) 0px var(--content-padding)',
           maxWidth: maxWidth,
-          padding: '0 var(--content-padding)',
           margin: '0 auto',
-        }}
-      >
-        {/* Author Info and Meta */}
-                 {isMobile ? (
-           // Mobile Layout - Author on one row, meta on another
-           <div style={{
-             paddingBottom: 'var(--space-2)',
-             marginBottom: 'var(--space-8)',
-             borderBottom: '0.5px solid var(--color-border-primary)'
-           }}>
-                          {/* Author Info - Mobile */}
-             <div style={{ 
-               display: 'flex', 
-               alignItems: 'center', 
-               flexWrap: 'wrap',
-               gap: 'var(--space-1)',
-               marginBottom: 'var(--space-4)',
-               fontSize: 'var(--text-sm)',
-               color: 'var(--color-text-muted)',
-               lineHeight: '1.4'
-             }}>
-               <span style={{ marginRight: 'var(--space-1)' }}>By</span>
-               <button
-                 onClick={() => {
-                   if (article.authorSlug) {
-                     router.push(`/${article.authorSlug}`);
-                   }
-                 }}
-                 style={{
-                   background: 'none',
-                   border: 'none',
-                   cursor: 'pointer',
-                   display: 'flex',
-                   alignItems: 'center',
-                   gap: 'var(--space-2)',
-                   transition: 'opacity var(--transition-base)',
-                   padding: '0'
-                 }}
-                 onMouseEnter={(e) => {
-                   e.currentTarget.style.opacity = '0.8';
-                 }}
-                 onMouseLeave={(e) => {
-                   e.currentTarget.style.opacity = '1';
-                 }}
-               >
-                 <AuthorAvatar author={article.author} image={article.authorAvatar} size="xs" />
-                 <span style={{
-                   fontSize: 'var(--text-sm)',
-                   fontWeight: 'var(--font-medium)',
-                   color: 'var(--color-text-primary)'
-                 }}>
-                   {article.author}
-                 </span>
-               </button>
-               <span>in</span>
-               <button
-                 onClick={() => {
-                   const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
-                   router.push(`/${categoryParam}`);
-                 }}
-                 style={{
-                   fontSize: 'var(--text-sm)',
-                   color: 'var(--color-text-primary)',
-                   fontWeight: 'var(--font-medium)',
-                   background: 'none',
-                   border: 'none',
-                   cursor: 'pointer',
-                   transition: 'opacity var(--transition-base)',
-                   padding: '0'
-                 }}
-                 onMouseEnter={(e) => {
-                   e.currentTarget.style.opacity = '0.7';
-                 }}
-                 onMouseLeave={(e) => {
-                   e.currentTarget.style.opacity = '1';
-                 }}
-               >
-                 {article.category}
-               </button>
-             </div>
-             
-                   {/* Meta Info - Mobile */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'var(--space-3)',
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--color-text-muted)',
-                  marginBottom: 'var(--space-4)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                    <Calendar style={{ width: '14px', height: '14px' }} />
-                    <span>{article.date}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                    <Clock style={{ width: '14px', height: '14px' }} />
-                    <span>{formatReadingTime(readingTime)}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                    <Eye style={{ width: '14px', height: '14px' }} />
-                    <span>{viewCount?.toLocaleString() || article.views}</span>
-                  </div>
-                </div>
-           </div>
-        ) : (
-          // Desktop Layout - Original design
+          position: 'relative',
+          zIndex: 5
+        }}>
+
+        
+          {/* Featured Image - Desktop Position (after title, before meta info) */}
+          {article.image && (
+            <div style={{ display: 'none', marginBottom: 'var(--space-4)' }} className="desktop-only">
+              <Image
+                src={article.image}
+                alt={article.title || 'Article featured image'}
+                width={800}
+                height={400}
+                priority={true}
+                sizes="(max-width: 1200px) 800px, 800px"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: 'var(--radius-lg)',
+                  objectFit: 'cover'
+                }}
+              />
+            </div>
+          )}
+
+          {/* Article Meta Info - Combined author and metadata section */}
           <div style={{
             display: 'flex',
-            alignItems: 'flex-end',
+            alignItems: 'center',
             justifyContent: 'space-between',
-            paddingBottom: 'var(--space-6)',
+            flexWrap: 'wrap',
+            gap: 'var(--space-4)',
+            padding: 'var(--space-4) 0px',
             marginBottom: 'var(--space-8)',
-            borderBottom: '0.5px solid var(--color-border-primary)'
+            borderTop: '0.5px solid var(--color-border-primary)',
+            borderBottom: '0.5px solid var(--color-border-primary)',
+            borderRadius: 'var(--radius-lg)',
           }}>
-            {/* Author Info */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
+            {/* Author and Category */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+              minWidth: '0',
+              flex: '1 1 auto'
+            }}>
               <button
                 onClick={() => {
                   if (article.authorSlug) {
@@ -547,8 +495,10 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 'var(--space-4)',
-                  transition: 'opacity var(--transition-base)'
+                  gap: 'var(--space-3)',
+                  transition: 'opacity var(--transition-base)',
+                  padding: '0',
+                  minWidth: '0'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = '0.8';
@@ -557,213 +507,223 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                   e.currentTarget.style.opacity = '1';
                 }}
               >
-                <AuthorAvatar author={article.author} image={article.authorAvatar} size="lg" />
-                <div style={{ textAlign: 'left' }}>
+                <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
+                <div style={{ textAlign: 'left', minWidth: '0' }}>
                   <div style={{
-                    fontSize: 'var(--text-base)',
+                    fontSize: 'var(--text-sm)',
                     fontWeight: 'var(--font-medium)',
                     color: 'var(--color-text-primary)',
                     marginBottom: 'var(--space-1)',
-                    textAlign: 'left'
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                   }}>
                     {article.author}
                   </div>
                   <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-3)',
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--color-text-muted)',
-                    flexWrap: 'wrap'
+                    fontSize: 'var(--text-xs)',
+                    color: 'var(--color-text-muted)'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                      <Calendar style={{ width: '14px', height: '14px' }} />
-                      <span>{article.date}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                      <Clock style={{ width: '14px', height: '14px' }} />
-                      <span>{formatReadingTime(readingTime)}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                      <Eye style={{ width: '14px', height: '14px' }} />
-                      <span>{viewCount?.toLocaleString() || article.views}</span>
-                    </div>
+                    in{' '}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
+                        router.push(`/articles${categoryParam}`);
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-text-primary)',
+                        fontWeight: 'var(--font-medium)',
+                        cursor: 'pointer',
+                        padding: '0',
+                        fontSize: 'inherit',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'transparent',
+                        transition: 'text-decoration-color var(--transition-base)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.textDecorationColor = 'var(--color-text-primary)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.textDecorationColor = 'transparent';
+                      }}
+                    >
+                      {article.category}
+                    </button>
                   </div>
                 </div>
               </button>
             </div>
-            
-            {/* Category Badge */}
-            <div>
-              <button
-                onClick={() => {
-                  const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
-                  router.push(`/${categoryParam}`);
-                }}
-                style={{
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--color-text-primary)',
-                  fontWeight: 'var(--font-semibold)',
-                  letterSpacing: '0.05em',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'opacity var(--transition-base)',
-                  padding: '0'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.7';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                }}
-              >
-                {article.category}
-              </button>
-            </div>
-          </div>
-        )}
 
-                <div>
-          {article.content ? (
-            <div 
-              className="html-content"
-              dangerouslySetInnerHTML={{ 
-                __html: processTextWithLinks(article.content) 
-              }}
-              ref={(el) => {
-                if (el) {
-                  // Optimize images in content for better performance
-                  optimizeContentImages(el);
-                }
-              }}
-            />
-          ) : (
-            <div className="text-center py-12 bg-tertiary rounded-xl mb-8">
-              <p className="text-lg text-secondary mb-6">
-                This article is available to premium subscribers only.
-              </p>
-              {!user && (
-                <button onClick={onCreateAccountClick} className="btn btn-primary">
-                  <User className="w-4 h-4" />
-                  <span>Subscribe to Read Full Article</span>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Tags */}
-        {article.tags && (
-          <div style={{
-            marginTop: 'var(--space-8)',
-            paddingTop: 'var(--space-6)',
-            borderTop: '0.5px solid var(--color-border-primary)'
-          }}>
+            {/* Meta Information */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 'var(--space-2)',
-              marginBottom: 'var(--space-3)'
+              gap: 'var(--space-3)',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-muted)',
+              flexWrap: 'wrap'
             }}>
-              <Tag style={{ width: '16px', height: '16px', color: 'var(--color-text-tertiary)' }} />
-              <span style={{
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)'
-              }}>
-                Tags
-              </span>
-            </div>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 'var(--space-2)'
-            }}>
-              {article.tags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => {
-                    // Navigate to search page with tag selected
-                    router.push(`/search?tags=${encodeURIComponent(tag)}`);
-                  }}
-                  style={{
-                    fontSize: 'var(--text-sm)',
-                    borderRadius: 'var(--radius-full)',
-                    padding: 'var(--space-2) var(--space-4)',
-                    height: 'auto',
-                    minHeight: '32px',
-                    whiteSpace: 'nowrap',
-                    background: 'var(--color-bg-card)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    color: 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                    e.currentTarget.style.color = 'var(--color-text-primary)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--color-bg-card)';
-                    e.currentTarget.style.color = 'var(--color-text-secondary)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                >
-                  {tag}
-                </button>
-              ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                <Calendar style={{ width: '14px', height: '14px' }} />
+                <span>{article.date}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                <Clock style={{ width: '14px', height: '14px' }} />
+                <span>{formatReadingTime(readingTime)}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                <Eye style={{ width: '14px', height: '14px' }} />
+                <span>{viewCount?.toLocaleString() || article.views}</span>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Related Articles */}
-        {relatedArticles && relatedArticles.length > 0 && (
-          <div style={{
-            marginTop: 'var(--space-16)',
-            paddingTop: 'var(--space-8)',
-            borderTop: '0.5px solid var(--color-border-primary)'
-          }}>
-            <h2 style={{
-              fontSize: 'var(--text-2xl)',
-              fontFamily: 'var(--font-editorial)',
-              fontWeight: 'var(--font-normal)',
-              marginBottom: 'var(--space-6)',
-              color: 'var(--color-text-primary)'
-            }}>Related Articles</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {relatedArticles.map((relatedArticle) => (
-                <ArticleCard
-                  key={relatedArticle.id}
-                  article={relatedArticle}
-                  onArticleClick={(articleId: number | string, articleTitle: string) => {
-                    // Navigate to the related article
-                    router.push(`/articles/${relatedArticle.slug || relatedArticle.id}`);
-                  }}
-                  hasHorizontalPadding={false}
-                />
-              ))}
-            </div>
+
+
+          {/* Content */}
+          <div>
+            {article.content ? (
+              <div 
+                className="html-content"
+                dangerouslySetInnerHTML={{ 
+                  __html: processTextWithLinks(article.content) 
+                }}
+                ref={(el) => {
+                  if (el) {
+                    // Optimize images in content for better performance
+                    optimizeContentImages(el);
+                  }
+                }}
+              />
+            ) : (
+              <div className="text-center py-12 bg-tertiary rounded-xl mb-8">
+                <p className="text-lg text-secondary mb-6">
+                  This article is available to premium subscribers only.
+                </p>
+                {!user && (
+                  <button onClick={onCreateAccountClick} className="btn btn-primary">
+                    <User className="w-4 h-4" />
+                    <span>Subscribe to Read Full Article</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
-        )}
-      </article>
+
+          {/* Tags */}
+          {article.tags && (
+            <div style={{
+              marginTop: 'var(--space-8)',
+              paddingTop: 'var(--space-6)',
+              borderTop: '0.5px solid var(--color-border-primary)'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                marginBottom: 'var(--space-3)'
+              }}>
+                <Tag style={{ width: '16px', height: '16px', color: 'var(--color-text-tertiary)' }} />
+                <span style={{
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)'
+                }}>
+                  Tags
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--space-2)'
+              }}>
+                {article.tags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => {
+                      // Navigate to search page with tag selected
+                      router.push(`/search?tags=${encodeURIComponent(tag)}`);
+                    }}
+                    style={{
+                      fontSize: 'var(--text-sm)',
+                      borderRadius: 'var(--radius-full)',
+                      padding: 'var(--space-2) var(--space-4)',
+                      height: 'auto',
+                      minHeight: '32px',
+                      whiteSpace: 'nowrap',
+                      background: 'var(--color-bg-card)',
+                      border: '0.5px solid var(--color-border-primary)',
+                      color: 'var(--color-text-secondary)',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-base)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                      e.currentTarget.style.color = 'var(--color-text-primary)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'var(--color-bg-card)';
+                      e.currentTarget.style.color = 'var(--color-text-secondary)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Related Articles */}
+          {relatedArticles && relatedArticles.length > 0 && (
+            <div style={{
+              marginTop: 'var(--space-16)',
+              paddingTop: 'var(--space-8)',
+              borderTop: '0.5px solid var(--color-border-primary)'
+            }}>
+              <h2 style={{
+                fontSize: 'var(--text-2xl)',
+                fontFamily: 'var(--font-editorial)',
+                fontWeight: 'var(--font-normal)',
+                marginBottom: 'var(--space-6)',
+                color: 'var(--color-text-primary)'
+              }}>Related Articles</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {relatedArticles.map((relatedArticle) => (
+                  <ArticleCard
+                    key={relatedArticle.id}
+                    article={relatedArticle}
+                    onArticleClick={(articleId: number | string, articleTitle: string) => {
+                      // Navigate to the related article
+                      router.push(`/articles/${relatedArticle.slug || relatedArticle.id}`);
+                    }}
+                    hasHorizontalPadding={false}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
       </div>
       
       <LegalFooter />
       
       {/* Share Sheet */}
       {article && (
-              <ShareSheet
-        isOpen={isShareSheetOpen}
-        onClose={() => setIsShareSheetOpen(false)}
-        url={typeof window !== 'undefined' ? window.location.href : ''}
-        onShare={(platform) => {
-          if (article?.title) {
-            trackAnalyticsShare(String(article.id), article.title, platform);
-          }
-        }}
-      />
+        <ShareSheet
+          isOpen={isShareSheetOpen}
+          onClose={() => setIsShareSheetOpen(false)}
+          url={typeof window !== 'undefined' ? window.location.href : ''}
+          onShare={(platform) => {
+            if (article?.title) {
+              trackAnalyticsShare(String(article.id), article.title, platform);
+            }
+          }}
+        />
       )}
     </div>
   );

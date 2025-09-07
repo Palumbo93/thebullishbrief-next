@@ -131,6 +131,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     slug: string;
     featured_image_url?: string;
     featured_image_alt?: string;
+    featured_color?: string;
     tempPath?: string;
     tags?: string[];
     reading_time_minutes?: number;
@@ -154,6 +155,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     slug: article.slug || '',
     featured_image_url: article.featured_image_url,
     featured_image_alt: article.featured_image_alt,
+    featured_color: article.featured_color,
     reading_time_minutes: article.reading_time_minutes,
     featured: article.featured || false,
     premium: article.premium || false
@@ -171,6 +173,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     slug: modalArticle.slug || generateSlug(modalArticle.title || ''),
     featured_image_url: modalArticle.featured_image_url,
     featured_image_alt: modalArticle.featured_image_alt,
+    featured_color: modalArticle.featured_color,
     reading_time_minutes: modalArticle.reading_time_minutes
   });
 
@@ -254,6 +257,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
         status: 'draft',
         featured: false,
         premium: false,
+        featured_color: article.featured_color,
         reading_time_minutes: readingTimeMinutes
       });
       setShowEditModal(false);

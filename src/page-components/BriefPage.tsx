@@ -607,7 +607,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               
               <div style={{
                 fontSize: 'var(--text-lg)',
-                fontWeight: 'var(--font-light)',
+                fontWeight: 'var(--font-medium)',
                 lineHeight: 'var(--leading-tight)',
                 color: 'var(--color-text-primary)',
                 letterSpacing: '-0.01em',

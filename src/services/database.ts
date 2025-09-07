@@ -55,6 +55,7 @@ export interface Article {
   status?: string;
   featured_image_url?: string;
   featured_image_alt?: string;
+  featured_color?: string;
   reading_time_minutes?: number;
   view_count?: number;
   bookmark_count?: number;

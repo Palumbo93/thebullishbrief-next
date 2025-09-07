@@ -312,6 +312,7 @@ export type Database = {
           content: string
           created_at: string | null
           featured: boolean | null
+          featured_color: string | null
           featured_image_alt: string | null
           featured_image_url: string | null
           id: string
@@ -333,6 +334,7 @@ export type Database = {
           content: string
           created_at?: string | null
           featured?: boolean | null
+          featured_color?: string | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
@@ -354,6 +356,7 @@ export type Database = {
           content?: string
           created_at?: string | null
           featured?: boolean | null
+          featured_color?: string | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string

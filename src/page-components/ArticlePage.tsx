@@ -472,9 +472,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             padding: 'var(--space-4) 0px',
             marginBottom: 'var(--space-8)',
             borderTop: '0.5px solid var(--color-border-primary)',
-            borderBottom: '0.5px solid var(--color-border-primary)',
-            borderRadius: 'var(--radius-lg)',
-          }}>
+            borderBottom: '0.5px solid var(--color-border-primary)'
+                        }}>
             {/* Author and Category */}
             <div style={{
               display: 'flex',

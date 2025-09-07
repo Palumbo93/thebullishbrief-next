@@ -335,8 +335,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                 left: 0,
                 right: 0,
                 height: '100vh',
-                background: `
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E") repeat,
+                backgroundImage: `
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E"),
                   linear-gradient(180deg, 
                     ${article.featured_color}${textureOpacities[0]} 0%, 
                     ${article.featured_color}${textureOpacities[1]} 20%, 
@@ -483,78 +483,73 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               minWidth: '0',
               flex: '1 1 auto'
             }}>
-              <button
-                onClick={() => {
-                  if (article.authorSlug) {
-                    router.push(`/${article.authorSlug}`);
-                  }
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'var(--space-3)',
-                  transition: 'opacity var(--transition-base)',
-                  padding: '0',
-                  minWidth: '0'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.8';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                }}
-              >
-                <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
-                <div style={{ textAlign: 'left', minWidth: '0' }}>
-                  <div style={{
+              <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
+              <div style={{ textAlign: 'left', minWidth: '0' }}>
+                <button
+                  onClick={() => {
+                    if (article.authorSlug) {
+                      router.push(`/${article.authorSlug}`);
+                    }
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '0',
                     fontSize: 'var(--text-sm)',
                     fontWeight: 'var(--font-medium)',
                     color: 'var(--color-text-primary)',
                     marginBottom: 'var(--space-1)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {article.author}
-                  </div>
-                  <div style={{
-                    fontSize: 'var(--text-xs)',
-                    color: 'var(--color-text-muted)'
-                  }}>
-                    in{' '}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
-                        router.push(`/articles${categoryParam}`);
-                      }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--color-text-primary)',
-                        fontWeight: 'var(--font-medium)',
-                        cursor: 'pointer',
-                        padding: '0',
-                        fontSize: 'inherit',
-                        textDecoration: 'underline',
-                        textDecorationColor: 'transparent',
-                        transition: 'text-decoration-color var(--transition-base)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.textDecorationColor = 'var(--color-text-primary)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.textDecorationColor = 'transparent';
-                      }}
-                    >
-                      {article.category}
-                    </button>
-                  </div>
+                    textOverflow: 'ellipsis',
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    transition: 'opacity var(--transition-base)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.8';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                >
+                  {article.author}
+                </button>
+                <div style={{
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-muted)'
+                }}>
+                  in{' '}
+                  <button
+                    onClick={() => {
+                      const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
+                      router.push(`/articles${categoryParam}`);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--color-text-primary)',
+                      fontWeight: 'var(--font-medium)',
+                      cursor: 'pointer',
+                      padding: '0',
+                      fontSize: 'inherit',
+                      textDecoration: 'underline',
+                      textDecorationColor: 'transparent',
+                      transition: 'text-decoration-color var(--transition-base)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.textDecorationColor = 'var(--color-text-primary)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.textDecorationColor = 'transparent';
+                    }}
+                  >
+                    {article.category}
+                  </button>
                 </div>
-              </button>
+              </div>
             </div>
 
             {/* Meta Information */}

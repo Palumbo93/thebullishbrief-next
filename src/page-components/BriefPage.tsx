@@ -458,8 +458,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 left: 0,
                 right: 0,
                 height: '100vh',
-                background: `
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E") repeat,
+                backgroundImage: `
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E"),
                   linear-gradient(180deg, 
                     ${(brief as any).featured_color}${textureOpacities[0]} 0%, 
                     ${(brief as any).featured_color}${textureOpacities[1]} 20%, 

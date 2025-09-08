@@ -1386,7 +1386,12 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                       const defaultBrokerageLinks = {
                         "questrade": "https://myportal.questrade.com/investing/summary/quote/TICKER",
                         "wealthsimple": "https://www.wealthsimple.com/en-ca/trade/stock/TICKER",
-                        "td": "https://webbroker.td.com/waw/brk/quote?symbol=TICKER"
+                        "td": "https://webbroker.td.com/waw/brk/quote?symbol=TICKER",
+                        "rbc": "https://www1.royalbank.com/cgi-bin/rbaccess/rbunxcgi?F6=1&F7=IB&F21=IB&F22=1&REQUEST=ClientApp&LANGUAGE=ENGLISH&TICKER=TICKER",
+                        "cibc": "https://www.investorsedge.cibc.com/ie/showPage.do?page=research&ticker=TICKER",
+                        "interactive": "https://www.interactivebrokers.com/en/index.php?f=stocks&p=north_america",
+                        "bmo": "https://www.bmoinvestorline.com/SelfDirected/",
+                        "scotiabank": "https://www.scotiaitrade.com/"
                       };
                       handleChange('brokerage_links', JSON.stringify(defaultBrokerageLinks, null, 2));
                     }}
@@ -1418,7 +1423,12 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   placeholder={`{
   "questrade": "https://myportal.questrade.com/investing/summary/quote/TICKER",
   "wealthsimple": "https://www.wealthsimple.com/en-ca/trade/stock/TICKER",
-  "td": "https://webbroker.td.com/waw/brk/quote?symbol=TICKER"
+  "td": "https://webbroker.td.com/waw/brk/quote?symbol=TICKER",
+  "rbc": "https://www1.royalbank.com/cgi-bin/rbaccess/rbunxcgi?F6=1&F7=IB&F21=IB&F22=1&REQUEST=ClientApp&LANGUAGE=ENGLISH&TICKER=TICKER",
+  "cibc": "https://www.investorsedge.cibc.com/ie/showPage.do?page=research&ticker=TICKER",
+  "interactive": "https://www.interactivebrokers.com/en/index.php?f=stocks&p=north_america",
+  "bmo": "https://www.bmoinvestorline.com/SelfDirected/",
+  "scotiabank": "https://www.scotiaitrade.com/"
 }`}
                   style={{
                     width: '100%',

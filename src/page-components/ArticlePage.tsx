@@ -398,8 +398,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           zIndex: 5
         }}>
           {/* Title */}
-          <h1 style={{
-            fontSize: 'var(--headline-size-desktop)',
+          <h1 className="headline" style={{
             fontFamily: 'var(--font-editorial)',
             fontWeight: 'var(--font-normal)',
             lineHeight: 'var(--leading-tight)',
@@ -463,7 +462,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           )}
 
           {/* Article Meta Info - Combined author and metadata section */}
-          <div style={{
+          <div className="mobile-flex-col" style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',

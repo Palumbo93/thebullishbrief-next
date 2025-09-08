@@ -1008,6 +1008,12 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     padding-top: var(--space-4);
   }
   .text-responsive-3xl { font-size: var(--text-3xl); }
+  
+  /* Mobile responsive flex utilities */
+  .mobile-flex-col {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
 }
 
 /* Share Sheet Responsive Classes */

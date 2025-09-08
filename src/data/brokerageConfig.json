@@ -36,6 +36,18 @@
         "name": "Interactive Brokers",
         "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactive.png",
         "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/interactiveDark.png"
+      },
+      {
+        "id": "bmo",
+        "name": "BMO InvestorLine",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/bmo.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/bmoDark.png"
+      },
+      {
+        "id": "scotiabank",
+        "name": "Scotia iTRADE",
+        "logoUrl": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/scotiabank.png",
+        "logoUrlDark": "https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/landingpageassets/brokerage_links/scotiabankDark.png"
       }
     ],
     "US": [

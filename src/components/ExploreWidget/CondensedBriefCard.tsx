@@ -66,7 +66,8 @@ export const CondensedBriefCard: React.FC<CondensedBriefCardProps> = ({
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        marginBottom: 'var(--space-2)'
+        marginBottom: 'var(--space-2)',
+        gap: 'var(--space-2)'
       }}>
         {brief.company_logo_url ? (
           <CompanyLogoImage

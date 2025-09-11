@@ -14,6 +14,7 @@ import { PromptManager } from '../components/admin/PromptManager';
 import { PromptCategoryManager } from '../components/admin/PromptCategoryManager';
 import { BullRoomManager } from '../components/admin/BullRoomManager';
 import { BuildTrigger } from '../components/admin/BuildTrigger';
+import { AnalyticsManager } from '../components/admin/AnalyticsManager';
 import { AdminTabs, AdminTab } from '../components/admin/AdminTabs';
 
 interface AdminPageClientProps {
@@ -31,7 +32,7 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
   // Handle URL-based routing - simplified to avoid page reloads
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'emails', 'prompts', 'prompt-categories', 'bull-rooms', 'build'].includes(hash)) {
+    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'emails', 'prompts', 'prompt-categories', 'bull-rooms', 'build', 'analytics'].includes(hash)) {
       setActiveTab(hash as AdminTab);
     } else {
       // Set default tab if no valid hash
@@ -65,6 +66,8 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
         return <PromptCategoryManager />;
       case 'bull-rooms':
         return <BullRoomManager />;
+      case 'analytics':
+        return <AnalyticsManager />;
       case 'build':
         return <BuildTrigger />;
       default:
@@ -72,35 +75,7 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
     }
   };
 
-  const getTabDescription = () => {
-    switch (activeTab) {
-      case 'articles':
-        return 'Manage articles, create new posts, edit existing content, and control publication status.';
-      case 'categories':
-        return 'Organize content by managing article categories and their hierarchical structure.';
-      case 'authors':
-        return 'Manage author profiles, biographical information, and content attribution.';
-      case 'tags':
-        return 'Create and manage tags for better content organization and discoverability.';
-      case 'briefs':
-        return 'Manage brief content, daily market updates, and featured financial insights.';
-      case 'users':
-        return 'Monitor user activity, manage accounts, and oversee community engagement.';
-      case 'emails':
-        return 'View and analyze collected email addresses organized by brief for lead generation tracking.';
-      case 'prompts':
-        return 'Curate AI prompts for the vault, organize by categories, and manage accessibility.';
-      case 'prompt-categories':
-        return 'Organize AI prompts into logical categories for better user navigation.';
-      case 'bull-rooms':
-        return 'Manage chat rooms, moderate conversations, and oversee community guidelines.';
-      case 'build':
-        return 'Trigger site rebuilds and cache invalidation for content updates.';
-      default:
-        return 'Administrative tools for managing your publication.';
-    }
-  };
-
+ 
   // If user is not loaded yet, show loading state
   if (!user) {
     return (

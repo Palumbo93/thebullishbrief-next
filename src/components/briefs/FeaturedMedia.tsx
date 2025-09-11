@@ -91,10 +91,12 @@ export const FeaturedMedia: React.FC<FeaturedMediaProps> = ({
         }}
         onClick={onVideoClick}
       >
-        {/* Video Thumbnail */}
+        {/* Video Thumbnail - Optimized loading */}
         <img
           src={videoThumbnail || featuredImageUrl || ''}
           alt={`${title} - Video thumbnail`}
+          loading="eager"
+          decoding="async"
           style={{
             position: 'absolute',
             top: 0,
@@ -157,6 +159,7 @@ export const FeaturedMedia: React.FC<FeaturedMediaProps> = ({
           width={800}
           height={400}
           priority={true}
+          quality={85}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
           style={{
             width: '100%',

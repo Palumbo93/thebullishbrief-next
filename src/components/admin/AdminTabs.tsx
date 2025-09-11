@@ -1,7 +1,7 @@
 import React from 'react';
-import { FileText, Folder, Users, Tag, Settings, Brain, MessageSquare, Briefcase, RefreshCw, Mail } from 'lucide-react';
+import { FileText, Folder, Users, Tag, Settings, Brain, MessageSquare, Briefcase, RefreshCw, Mail, BarChart3 } from 'lucide-react';
 
-export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'emails' | 'prompts' | 'prompt-categories' | 'briefs' | 'bull-rooms' | 'build';
+export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'emails' | 'prompts' | 'prompt-categories' | 'briefs' | 'bull-rooms' | 'build' | 'analytics';
 
 interface AdminTabsProps {
   activeTab: AdminTab;
@@ -76,6 +76,12 @@ const tabConfigs: TabConfig[] = [
     label: 'Users',
     icon: <Settings style={{ width: '16px', height: '16px' }} />,
     description: 'Manage user accounts'
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: <BarChart3 style={{ width: '16px', height: '16px' }} />,
+    description: 'View traffic and engagement analytics'
   },
   {
     id: 'build',

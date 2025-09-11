@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Archivo } from 'next/font/google'
 import './globals.css'
 import '../styles/design-system.css'
@@ -53,8 +53,6 @@ export const metadata: Metadata = {
       { url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
   },
-  themeColor: '#000000',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -69,6 +67,13 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-status-bar-style': 'default',
     'apple-mobile-web-app-title': 'The Bullish Brief',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#000000',
 }
 
 export default function RootLayout({

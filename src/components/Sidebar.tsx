@@ -148,7 +148,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          // margin-bottom: var(--space-8);
+          /* margin-bottom: var(--space-8); */
           width: 100%;
         }
 
@@ -405,26 +405,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           flex-shrink: 0;
         }
 
-
-        }
-          content: attr(data-label);
-          position: absolute;
-          left: 100%;
-          top: 50%;
-          transform: translateY(-50%);
-          margin-left: var(--space-3);
-          color: var(--color-text-primary);
-          padding: var(--space-2) var(--space-3);
-          border-radius: var(--radius-lg);
-          font-size: var(--text-sm);
-          font-weight: var(--font-medium);
-          white-space: nowrap;
-          z-index: 10001;
-          border: 0.5px solid var(--color-border-primary);
-          box-shadow: var(--shadow-lg);
-          background: var(--color-bg-card);
-          opacity: 0;
-          animation: fadeIn 0.2s ease forwards;
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
         }
 
         /* Tablet Layout */
@@ -506,9 +490,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 
 
-
-
-
+        }
 
         /* Mobile Layout - Hide legal links on mobile */
         @media (max-width: 768px) {
@@ -516,7 +498,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             display: none;
           }
         }
-      }
     `}</style>
 
       <aside className="nav-left">

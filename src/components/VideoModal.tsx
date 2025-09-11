@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
 interface VideoModalProps {
@@ -18,6 +18,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -31,6 +32,11 @@ export const VideoModal: React.FC<VideoModalProps> = ({
       document.addEventListener('keydown', handleEscape);
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
+      // Only start loading video when modal is actually opened
+      setShouldLoadVideo(true);
+    } else {
+      // Reset video loading state when modal closes
+      setShouldLoadVideo(false);
     }
 
     return () => {
@@ -39,17 +45,19 @@ export const VideoModal: React.FC<VideoModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Auto-play video when modal opens and pause when it closes
+  // Auto-play video when modal opens and video is loaded
   useEffect(() => {
-    if (videoRef.current) {
-      if (isOpen) {
-        videoRef.current.play().catch(console.error);
-      } else {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0; // Reset to beginning
-      }
+    if (videoRef.current && shouldLoadVideo && isOpen) {
+      // Small delay to ensure video element is ready
+      const timer = setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().catch(console.error);
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, shouldLoadVideo]);
 
   // Handle click outside modal to close
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -143,24 +151,42 @@ export const VideoModal: React.FC<VideoModalProps> = ({
           </div>
         )}
 
-        {/* Video */}
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          controls
-          style={{
-            width: '100%',
-            height: 'auto',
-            minHeight: '80vh',
-            maxHeight: '80vh',
-            display: 'block',
-            backgroundColor: 'var(--color-bg-secondary)'
-          }}
-          onEnded={() => {
-            // Optionally close modal when video ends
-            // onClose();
-          }}
-        />
+        {/* Video - Only load when modal is actually opened */}
+        {shouldLoadVideo ? (
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            controls
+            preload="none"
+            style={{
+              width: '100%',
+              height: 'auto',
+              minHeight: '80vh',
+              maxHeight: '80vh',
+              display: 'block',
+              backgroundColor: 'var(--color-bg-secondary)'
+            }}
+            onEnded={() => {
+              // Optionally close modal when video ends
+              // onClose();
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              minHeight: '80vh',
+              maxHeight: '80vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'var(--color-bg-secondary)',
+              color: 'var(--color-text-secondary)'
+            }}
+          >
+            Loading video...
+          </div>
+        )}
       </div>
     </div>
   );

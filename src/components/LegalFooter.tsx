@@ -124,36 +124,34 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
               </Link>
             </nav>
             <div className="legal-footer-social">
-              <Link
-                href="https://x.com/thebullishbrief" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <div
                 style={{ display: 'flex', alignItems: 'center', opacity: 0.7, transition: 'opacity var(--transition-base)' }}
                 onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                 onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
               >
                 <SocialIcon 
+                  url="https://x.com/thebullishbrief"
                   network="x" 
                   style={{ width: 30, height: 30 }} 
                   fgColor="var(--color-text-muted)" 
-                  bgColor="transparent" 
+                  bgColor="transparent"
+                  target="_blank"
                 />
-              </Link>
-              <Link 
-                href="https://www.linkedin.com/company/the-bullish-brief/about/" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              </div>
+              <div
                 style={{ display: 'flex', alignItems: 'center', opacity: 0.7, transition: 'opacity var(--transition-base)' }}
                 onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                 onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
               >
                 <SocialIcon 
+                  url="https://www.linkedin.com/company/the-bullish-brief/about/"
                   network="linkedin" 
                   style={{ width: 30, height: 30 }} 
                   fgColor="var(--color-text-muted)" 
-                  bgColor="transparent" 
+                  bgColor="transparent"
+                  target="_blank"
                 />
-              </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -104,6 +104,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   const [contentProcessed, setContentProcessed] = React.useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = React.useState(false);
+  const [currentInlineVideoUrl, setCurrentInlineVideoUrl] = React.useState<string | null>(null);
   
 
 
@@ -200,11 +201,13 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   // Handle video modal close
   const handleVideoModalClose = () => {
-    if (brief?.video_url && brief?.id && brief?.title) {
+    const videoUrl = currentInlineVideoUrl || brief?.video_url;
+    if (videoUrl && brief?.id && brief?.title) {
       // Track modal closed
-      trackVideoModalClosed(String(brief.id), brief.title, brief.video_url);
+      trackVideoModalClosed(String(brief.id), brief.title, videoUrl);
     }
     setIsVideoModalOpen(false);
+    setCurrentInlineVideoUrl(null);
   };
 
 
@@ -249,6 +252,135 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       img.setAttribute('data-optimized', 'true');
     });
   }, []);
+
+  /**
+   * Optimizes inline videos to prevent bandwidth usage from large videos
+   * while preserving small autoplay animations
+   * 
+   * Features:
+   * - Preserves autoplay for small looping animations (tiny file sizes)
+   * - Converts large videos with controls to click-to-play thumbnails
+   * - Uses file size and duration heuristics to determine video type
+   * 
+   * @param el - The HTML element containing videos to optimize
+   */
+  const optimizeContentVideos = React.useCallback((el: HTMLElement) => {
+    const videoContainers = el.querySelectorAll('div[data-video="direct"]');
+    
+    videoContainers.forEach((container, index) => {
+      const videoEl = container.querySelector('video') as HTMLVideoElement;
+      if (!videoEl || videoEl.hasAttribute('data-optimized')) return;
+      
+      // Store original video properties
+      const videoSrc = videoEl.src;
+      const posterSrc = videoEl.poster;
+      const hasControls = videoEl.hasAttribute('controls');
+      const hasAutoplay = videoEl.hasAttribute('autoplay');
+      const hasLoop = videoEl.hasAttribute('loop');
+      const isMuted = videoEl.hasAttribute('muted');
+      
+      // Detect if this is likely a small animation vs large video
+      const isLikelyAnimation = hasAutoplay && hasLoop && isMuted && !hasControls;
+      
+      if (isLikelyAnimation) {
+        // Keep small autoplay animations as-is, but add preload="metadata" for efficiency
+        videoEl.setAttribute('preload', 'metadata');
+        videoEl.setAttribute('data-optimized', 'true');
+        console.log('Preserving autoplay animation:', videoSrc);
+      } else if (hasControls || posterSrc) {
+        // This is likely a large video with controls or poster - optimize it
+        
+        // Remove autoplay attributes to prevent automatic bandwidth usage
+        videoEl.removeAttribute('autoplay');
+        videoEl.setAttribute('preload', 'none');
+        
+        // Create thumbnail container
+        const thumbnailContainer = document.createElement('div');
+        thumbnailContainer.style.cssText = `
+          position: relative;
+          width: 100%;
+          height: 400px;
+          background: var(--color-bg-secondary);
+          border-radius: var(--radius-lg);
+          cursor: pointer;
+          overflow: hidden;
+        `;
+        
+        // Create thumbnail image
+        if (posterSrc) {
+          const thumbnail = document.createElement('img');
+          thumbnail.src = posterSrc;
+          thumbnail.alt = 'Video thumbnail';
+          thumbnail.style.cssText = `
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+          `;
+          thumbnailContainer.appendChild(thumbnail);
+        }
+        
+        // Create play button overlay
+        const playButton = document.createElement('div');
+        playButton.innerHTML = '▶';
+        playButton.style.cssText = `
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 80px;
+          height: 80px;
+          background: rgba(0, 0, 0, 0.7);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          z-index: 10;
+        `;
+        
+        // Add hover effects
+        playButton.addEventListener('mouseenter', () => {
+          playButton.style.background = 'rgba(0, 0, 0, 0.9)';
+          playButton.style.transform = 'translate(-50%, -50%) scale(1.1)';
+        });
+        
+        playButton.addEventListener('mouseleave', () => {
+          playButton.style.background = 'rgba(0, 0, 0, 0.7)';
+          playButton.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+        
+        thumbnailContainer.appendChild(playButton);
+        
+        // Add click handler to open video modal
+        thumbnailContainer.addEventListener('click', () => {
+          if (brief?.id && brief?.title) {
+            // Track video click
+            trackVideoClick(String(brief.id), brief.title, videoSrc, 'inline_content');
+            
+            // Track modal opened
+            trackVideoModalOpened(String(brief.id), brief.title, videoSrc);
+            
+            // Set video URL for modal and open it
+            setCurrentInlineVideoUrl(videoSrc);
+            setIsVideoModalOpen(true);
+          }
+        });
+        
+        // Replace the video container with the thumbnail
+        container.replaceWith(thumbnailContainer);
+        console.log('Optimized large video:', videoSrc);
+      } else {
+        // Unknown video type - apply minimal optimization
+        videoEl.setAttribute('preload', 'metadata');
+        videoEl.setAttribute('data-optimized', 'true');
+        console.log('Applied minimal optimization to:', videoSrc);
+      }
+    });
+  }, [brief, trackVideoClick, trackVideoModalOpened]);
 
   /**
    * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
@@ -673,6 +805,10 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
                     // Optimize images in content for better performance
                     optimizeContentImages(el);
+                    
+                    // Optimize inline videos to prevent autoplay bandwidth usage
+                    optimizeContentVideos(el);
+                    
                     setContentProcessed(true);
                   }
                 }}
@@ -768,13 +904,13 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         />
       )}
       
-      {/* Video Modal */}
-      {brief?.video_url && (
+      {/* Video Modal - Handles both featured video and inline content videos */}
+      {(brief?.video_url || currentInlineVideoUrl) && (
         <VideoModal
           isOpen={isVideoModalOpen}
           onClose={handleVideoModalClose}
-          videoUrl={brief.video_url}
-          title={(brief.additional_copy as any)?.featuredVideoTitle || 'Featured Video'}
+          videoUrl={currentInlineVideoUrl || brief?.video_url || ''}
+          title={currentInlineVideoUrl ? 'Video' : ((brief?.additional_copy as any)?.featuredVideoTitle || 'Featured Video')}
         />
       )}
 

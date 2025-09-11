@@ -115,13 +115,37 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   }, [sections]);
 
   const handleSectionClick = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+    const scrollToElement = () => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        // Add a small offset to account for any fixed headers
+        const offset = 80; // Adjust this value based on your header height
+        const elementTop = element.getBoundingClientRect().top + window.pageYOffset - offset;
+        
+        window.scrollTo({
+          top: elementTop,
+          behavior: 'smooth'
+        });
+        return true;
+      }
+      return false;
+    };
+
+    // Try to scroll immediately, with retry if element not found
+    if (!scrollToElement()) {
+      // If element not found, wait a bit and try again (content might still be processing)
+      setTimeout(() => {
+        scrollToElement();
+      }, 100);
     }
+    
+    // Close mobile panel after clicking TOC item (with slight delay to allow scroll to start)
+    if (isMobileOverlay && onClose) {
+      setTimeout(() => {
+        onClose();
+      }, 300); // Small delay to let the scroll animation start
+    }
+    
     onSectionClick?.(sectionId);
   };
 

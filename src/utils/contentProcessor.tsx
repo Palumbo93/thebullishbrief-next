@@ -299,9 +299,14 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
   // Call onContentReady when content is mounted (for existing optimizations)
   React.useEffect(() => {
     if (contentRef.current && onContentReady) {
-      onContentReady(contentRef.current);
+      // Use requestAnimationFrame to ensure DOM is fully rendered
+      requestAnimationFrame(() => {
+        if (contentRef.current) {
+          onContentReady(contentRef.current);
+        }
+      });
     }
-  }, [onContentReady, content]);
+  }, [onContentReady, content, processedSegments]);
   
   // Always render processed segments (this ensures markers are always removed)
   return (

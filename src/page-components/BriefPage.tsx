@@ -153,6 +153,97 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     setContentProcessed(false);
   }, [brief?.content]);
 
+  // Post-render H2 ID assignment - runs after all React rendering is complete
+  React.useEffect(() => {
+    if (!brief?.content || !contentProcessed) return;
+
+    const assignH2IdsPostRender = () => {
+      const contentContainer = document.querySelector('.brief-content-container');
+      if (!contentContainer) {
+        return;
+      }
+
+      const h2Elements = contentContainer.querySelectorAll('h2');
+      if (h2Elements.length === 0) return;
+
+      const usedIds = new Set<string>();
+      const assignedIds: Array<{ text: string; id: string }> = [];
+
+      h2Elements.forEach((h2, index) => {
+        const text = h2.textContent?.trim() || '';
+        
+        if (!h2.id && text) {
+          // Generate base ID using same logic as parseTOCFromContent
+          const baseId = text
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim()
+            .replace(/^-+|-+$/g, '');
+          
+          if (baseId) {
+            // Ensure unique ID by adding counter if needed
+            let uniqueId = baseId;
+            let counter = 1;
+            while (usedIds.has(uniqueId)) {
+              uniqueId = `${baseId}-${counter}`;
+              counter++;
+            }
+            
+            usedIds.add(uniqueId);
+            h2.id = uniqueId;
+            assignedIds.push({ text, id: uniqueId });
+          }
+        }
+      });
+      
+      // Set up MutationObserver to watch for ID removal
+      if (assignedIds.length > 0) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'id') {
+              // Track H2 ID modifications if needed for debugging
+            }
+            if (mutation.type === 'childList') {
+              mutation.removedNodes.forEach((node) => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                  const element = node as Element;
+                  // Track H2 element removal if needed for debugging
+                }
+              });
+            }
+          });
+        });
+
+        observer.observe(contentContainer, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeOldValue: true,
+          attributeFilter: ['id']
+        });
+
+        // Clean up observer after 10 seconds
+        setTimeout(() => observer.disconnect(), 10000);
+      }
+      
+      // Final verification that IDs are properly set
+      setTimeout(() => {
+        // Verification complete
+      }, 50);
+    };
+
+    // Use multiple strategies to ensure IDs stick
+    requestAnimationFrame(() => {
+      assignH2IdsPostRender();
+      
+      // Also try after a small delay to catch any late re-renders
+      setTimeout(assignH2IdsPostRender, 100);
+    });
+
+  }, [brief?.content, contentProcessed]);
+
   // Prevent scrolling during loading state
   React.useEffect(() => {
     // Always start at top when component mounts
@@ -446,6 +537,55 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   // Only prepare data if brief exists (not loading)
   const tocSections = brief ? parseTOCFromContent(brief.content) : [];
+  
+  // Pre-process content to add IDs to H2 elements before React renders them
+  const processedContent = React.useMemo(() => {
+    if (!brief?.content) return '';
+    
+    
+    // Create a temporary div to parse and modify the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = brief.content;
+    
+    // Find all H2 elements and add IDs using the same logic as parseTOCFromContent
+    const h2Elements = tempDiv.querySelectorAll('h2');
+    const usedIds = new Set<string>();
+    const addedIds: Array<{ text: string; id: string }> = [];
+    
+    h2Elements.forEach((h2, index) => {
+      if (!h2.id) {
+        const text = h2.textContent?.trim() || '';
+        
+        if (text) {
+          // Generate base ID using same logic as parseTOCFromContent
+          const baseId = text
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim()
+            .replace(/^-+|-+$/g, '');
+          
+          if (baseId) {
+            // Ensure unique ID by adding counter if needed
+            let uniqueId = baseId;
+            let counter = 1;
+            while (usedIds.has(uniqueId)) {
+              uniqueId = `${baseId}-${counter}`;
+              counter++;
+            }
+            
+            usedIds.add(uniqueId);
+            h2.id = uniqueId;
+            addedIds.push({ text, id: uniqueId });
+          }
+        }
+      }
+    });
+    
+    return tempDiv.innerHTML;
+  }, [brief?.content]);
+  
   
   // Generate ticker widget - TradingView first, then custom widget if available
   // Use country-appropriate ticker selection when country is available
@@ -769,7 +909,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           <div className="prose prose-invert prose-lg max-w-none brief-content-container">
             {brief?.content ? (
               <ProcessedContent
-                content={brief.content}
+                content={processedContent}
                 brief={brief}
                 onEmailSubmitted={(email, isAuthenticated) => {
                   // Track widget lead generation signup for analytics
@@ -781,25 +921,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 onVideoClick={handleVideoClick}
                 onContentReady={(el) => {
                   if (el && !contentProcessed) {
-                    // Add IDs to H2 headings for TOC functionality
-                    const h2Elements = el.querySelectorAll('h2');
-                    h2Elements.forEach((h2, index) => {
-                      if (!h2.id) {
-                        const text = h2.textContent?.trim() || '';
-                        const id = text
-                          .toLowerCase()
-                          .replace(/[^a-z0-9\s-]/g, '')
-                          .replace(/\s+/g, '-')
-                          .replace(/-+/g, '-')
-                          .trim()
-                          .replace(/^-+|-+$/g, '');
-                        
-                        if (id) {
-                          h2.id = id;
-                        }
-                      }
-                    });
-
                     // Optimize images in content for better performance
                     optimizeContentImages(el);
                     

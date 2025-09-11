@@ -278,11 +278,10 @@ export class ConsentService {
   }
 }
 
-// Global type augmentation for GTM and Clarity
+// Global type augmentation for GTM
 declare global {
   interface Window {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
-    clarity: (...args: any[]) => void;
   }
 }

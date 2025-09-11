@@ -496,52 +496,12 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     return withTickers;
   };
 
-
-
-  if (!isLoading && (error || !brief)) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        textAlign: 'center'
-      }}>
-        <div>
-          <h1 style={{
-            fontSize: 'var(--text-2xl)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--color-text-primary)',
-            marginBottom: 'var(--space-4)'
-          }}>
-            Brief Not Found
-          </h1>
-          <p style={{
-            color: 'var(--color-text-tertiary)',
-            marginBottom: 'var(--space-6)'
-          }}>
-            The brief you're looking for doesn't exist or has been removed.
-          </p>
-          <button
-            onClick={handleBack}
-            className="btn btn-primary"
-            style={{ fontSize: 'var(--text-sm)' }}
-          >
-            <ArrowLeft style={{ width: '16px', height: '16px' }} />
-            <span>Go Back</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Only prepare data if brief exists (not loading)
+  // Only prepare data if brief exists (not loading) - moved before early return to fix hook rules
   const tocSections = brief ? parseTOCFromContent(brief.content) : [];
   
-  // Pre-process content to add IDs to H2 elements before React renders them
+  // Pre-process content to add IDs to H2 elements before React renders them - moved before early return
   const processedContent = React.useMemo(() => {
     if (!brief?.content) return '';
-    
     
     // Create a temporary div to parse and modify the HTML
     const tempDiv = document.createElement('div');
@@ -585,8 +545,44 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     
     return tempDiv.innerHTML;
   }, [brief?.content]);
-  
-  
+
+  if (!isLoading && (error || !brief)) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        textAlign: 'center'
+      }}>
+        <div>
+          <h1 style={{
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 'var(--font-semibold)',
+            color: 'var(--color-text-primary)',
+            marginBottom: 'var(--space-4)'
+          }}>
+            Brief Not Found
+          </h1>
+          <p style={{
+            color: 'var(--color-text-tertiary)',
+            marginBottom: 'var(--space-6)'
+          }}>
+            The brief you're looking for doesn't exist or has been removed.
+          </p>
+          <button
+            onClick={handleBack}
+            className="btn btn-primary"
+            style={{ fontSize: 'var(--text-sm)' }}
+          >
+            <ArrowLeft style={{ width: '16px', height: '16px' }} />
+            <span>Go Back</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Generate ticker widget - TradingView first, then custom widget if available
   // Use country-appropriate ticker selection when country is available
   const firstTickerSymbol = brief ? 

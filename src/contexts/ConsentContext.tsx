@@ -49,8 +49,8 @@ export const ConsentProvider: React.FC<ConsentProviderProps> = ({ children }) =>
       // Initialize GTM with default consent state (denied)
       if (typeof window !== 'undefined') {
         window.dataLayer = window.dataLayer || [];
-        window.gtag = window.gtag || function() {
-          window.dataLayer.push(arguments);
+        window.gtag = window.gtag || function(...args) {
+          window.dataLayer.push(args);
         };
 
         // Set default consent state (denied for privacy)
@@ -82,7 +82,7 @@ export const ConsentProvider: React.FC<ConsentProviderProps> = ({ children }) =>
 
     // Small delay to ensure GTM script is loaded
     setTimeout(initializeConsent, 100);
-  }, []);
+  }, [consentService]);
 
   const updateConsent = useCallback((category: ConsentCategory, granted: boolean) => {
     if (category === 'essential') {

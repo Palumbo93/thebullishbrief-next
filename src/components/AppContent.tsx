@@ -65,8 +65,8 @@ export const AppContent: React.FC<AppContentProps> = ({ children }) => {
       <ConfirmModal />
       
       {/* Cookie Consent UI */}
-      <ConsentBanner />
-      <ConsentModal />
+      {/* <ConsentBanner /> */}
+      {/* <ConsentModal /> */}
     </>
   );
 };

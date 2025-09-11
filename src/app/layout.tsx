@@ -89,11 +89,25 @@ export default function RootLayout({
         <link rel="preconnect" href="https://s3.tradingview.com" />
         <link rel="preconnect" href="https://www.tradingview-widget.com" />
         <link rel="preconnect" href="https://s3-symbol-logo.tradingview.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        {/* <link rel="preconnect" href="https://www.googletagmanager.com" /> */}
         <link rel="preconnect" href="https://www.clarity.ms" />
         
-        {/* Google Tag Manager */}
+        {/* Microsoft Clarity */}
         <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "t0h9wf1q4x");
+            `
+          }}
+        />
+
+        {/* Google Tag Manager */}
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -103,18 +117,18 @@ export default function RootLayout({
               })(window,document,'script','dataLayer','GTM-TJWNG6WZ');
             `
           }}
-        />
+        /> */}
       </head>
       <body className={`${archivo.variable}`}>
         {/* Google Tag Manager (noscript) */}
-        <noscript>
+        {/* <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-TJWNG6WZ"
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
           />
-        </noscript>
+        </noscript> */}
         
         <ClientProviders>
           <AppContent>

@@ -48,21 +48,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { startDate, endDate, limit = 100 } = body;
+    const { numOfDays = 3, page } = body;
 
-    if (!startDate || !endDate) {
+    // Validate numOfDays
+    if (![1, 2, 3].includes(numOfDays)) {
       return NextResponse.json(
-        { success: false, error: 'startDate and endDate are required' },
+        { success: false, error: 'numOfDays must be 1, 2, or 3' },
         { status: 400 }
       );
     }
 
-    const data = await clarityService.getTrafficSourceData(startDate, endDate, limit);
+    const data = await clarityService.getTrafficSourceData(numOfDays as 1 | 2 | 3, page);
     
     return NextResponse.json({ 
       success: true, 
       data,
-      dateRange: { startDate, endDate }
+      numOfDays
     });
 
   } catch (error) {

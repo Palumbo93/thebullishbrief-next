@@ -89,29 +89,33 @@ export default function RootLayout({
         <link rel="preconnect" href="https://s3.tradingview.com" />
         <link rel="preconnect" href="https://www.tradingview-widget.com" />
         <link rel="preconnect" href="https://s3-symbol-logo.tradingview.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.clarity.ms" />
         
-        {/* Microsoft Clarity - Analytics & Heatmaps (Cookie-Free) - Block on bull-room pages */}
-        <script type="text/javascript"
+        {/* Google Tag Manager */}
+        <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Only load if NOT on bull-room pages
-              if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/bull-room')) {
-                (function(c,l,a,r,i,t,y){
-                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                  
-                  // Configure for analytics + heatmaps while maintaining privacy
-                  c[a]('set', 'cookies', false);
-                  // Enable Smart Events and custom event tracking (removed track: false)
-                })(window, document, "clarity", "script", "t0h9wf1q4x");
-              }
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-TJWNG6WZ');
             `
           }}
         />
       </head>
       <body className={`${archivo.variable}`}>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TJWNG6WZ"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        
         <ClientProviders>
           <AppContent>
             {children}

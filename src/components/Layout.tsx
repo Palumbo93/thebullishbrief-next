@@ -177,6 +177,8 @@ export const Layout: React.FC<LayoutProps> = ({
         return 'articles';
       case '/privacy':
         return 'articles';
+      case '/cookies':
+        return 'articles';
       case '/terms':
         return 'articles';
       case '/disclaimer':
@@ -616,7 +618,7 @@ export const Layout: React.FC<LayoutProps> = ({
           (actualCurrentLocation === 'article' && shouldShowSpace) || 
           showActionPanel || 
           actualCurrentLocation === 'home' || 
-          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
+          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || 
           actualCurrentLocation === 'authors' || 
           pathname?.startsWith('/search') || 
           pathname?.startsWith('/explore')
@@ -642,7 +644,7 @@ export const Layout: React.FC<LayoutProps> = ({
           (actualCurrentLocation === 'article' && shouldShowSpace) || 
           showActionPanel || 
           actualCurrentLocation === 'home' || 
-          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/disclaimer')) || 
+          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || 
           actualCurrentLocation === 'authors' || 
           pathname?.startsWith('/search') || 
           pathname?.startsWith('/explore')

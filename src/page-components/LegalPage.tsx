@@ -26,6 +26,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ doc }) => {
     { slug: 'about', label: 'About', to: '/about' },
     { slug: 'terms', label: 'Terms & Conditions', to: '/terms' },
     { slug: 'privacy', label: 'Privacy Policy', to: '/privacy' },
+    { slug: 'cookies', label: 'Cookie Policy', to: '/cookies' },
     { slug: 'disclaimer', label: 'Disclaimer', to: '/disclaimer' },
   ];
 

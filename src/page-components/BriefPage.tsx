@@ -286,7 +286,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         // Keep small autoplay animations as-is, but add preload="metadata" for efficiency
         videoEl.setAttribute('preload', 'metadata');
         videoEl.setAttribute('data-optimized', 'true');
-        console.log('Preserving autoplay animation:', videoSrc);
       } else if (hasControls || posterSrc) {
         // This is likely a large video with controls or poster - optimize it
         
@@ -372,12 +371,10 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         
         // Replace the video container with the thumbnail
         container.replaceWith(thumbnailContainer);
-        console.log('Optimized large video:', videoSrc);
       } else {
         // Unknown video type - apply minimal optimization
         videoEl.setAttribute('preload', 'metadata');
         videoEl.setAttribute('data-optimized', 'true');
-        console.log('Applied minimal optimization to:', videoSrc);
       }
     });
   }, [brief, trackVideoClick, trackVideoModalOpened]);

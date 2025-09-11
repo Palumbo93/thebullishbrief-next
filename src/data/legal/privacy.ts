@@ -3,7 +3,7 @@ import { LegalDocument } from './types';
 export const privacyDocument: LegalDocument = {
   slug: 'privacy',
   title: 'Privacy Policy',
-  effectiveDate: '2024-12-31',
+  effectiveDate: '2025-09-11',
   sections: [
     {
       id: 'introduction',
@@ -48,7 +48,12 @@ export const privacyDocument: LegalDocument = {
     {
       id: 'cookies-tracking',
       title: 'Cookies & Tracking',
-      body: 'We do not use traditional tracking cookies. Analytics are collected via Microsoft Clarity, configured to be privacy-friendly and cookie-free. Clarity captures user interactions, heatmaps, and session recordings to help us improve user experience and understand how visitors use our site.'
+      body: 'We use cookies and similar technologies to enhance your experience and understand how you use our site. You have control over these preferences through our cookie consent system.\n\nWe use three types of cookies:\n\n• Essential Cookies: Always active and necessary for basic website functionality, security, and user authentication\n• Analytics Cookies: Help us understand site usage through Microsoft Clarity to improve user experience. Clarity is configured to be privacy-friendly and GDPR-compliant\n• Marketing Cookies: Enable personalized content recommendations and relevant advertising based on your interests and browsing behavior\n\nYou can manage your cookie preferences at any time through our cookie settings, accessible via the privacy preferences banner or footer links. Your consent choices are stored locally and expire after 13 months, at which point you will be asked to renew your preferences.'
+    },
+    {
+      id: 'cookie-preferences',
+      title: 'Managing Cookie Preferences',
+      body: 'We respect your right to control how cookies are used on our site. When you first visit The Bullish Brief from certain regions (EEA, UK, Switzerland, or Canada), you\'ll see a cookie consent banner allowing you to:\n\n• Accept All – Consent to all cookie categories for the full site experience\n• Decline – Reject optional cookies (essential cookies remain active)\n• Customize – Choose specific cookie categories through our detailed preferences modal\n\nYou can change your cookie preferences at any time by:\n• Clearing your browser\'s stored consent data and refreshing the page\n• Contacting us at info@bullishbrief.com to reset your preferences\n• Using browser settings to delete cookies (note: this may affect site functionality)\n\nWithdrawing consent will not affect the lawfulness of processing based on consent before withdrawal.'
     },
     {
       id: 'children-privacy',

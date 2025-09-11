@@ -10,6 +10,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 import { AuthModalProvider } from '../contexts/AuthModalContext';
 import { AdminProvider } from '../contexts/AdminContext';
 import { ClarityProvider } from '../contexts/ClarityContext';
+import { ConsentProvider } from '../contexts/ConsentContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { ConfirmProvider } from '../contexts/ConfirmContext';
 import { MobileHeaderProvider } from '../contexts/MobileHeaderContext';
@@ -31,21 +32,23 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) =>
     <HydrationProvider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <AuthModalProvider>
-              <AdminProvider>
-                <ClarityProvider>
-                  <ToastProvider>
-                    <ConfirmProvider>
-                      <MobileHeaderProvider>
-                        {children}
-                      </MobileHeaderProvider>
-                    </ConfirmProvider>
-                  </ToastProvider>
-                </ClarityProvider>
-              </AdminProvider>
-            </AuthModalProvider>
-          </AuthProvider>
+          <ConsentProvider>
+            <AuthProvider>
+              <AuthModalProvider>
+                <AdminProvider>
+                  <ClarityProvider>
+                    <ToastProvider>
+                      <ConfirmProvider>
+                        <MobileHeaderProvider>
+                          {children}
+                        </MobileHeaderProvider>
+                      </ConfirmProvider>
+                    </ToastProvider>
+                  </ClarityProvider>
+                </AdminProvider>
+              </AuthModalProvider>
+            </AuthProvider>
+          </ConsentProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </HydrationProvider>

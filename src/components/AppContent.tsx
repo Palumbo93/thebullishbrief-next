@@ -9,6 +9,8 @@ import { OnboardingModal } from './OnboardingModal';
 import { ToastContainer } from './ToastContainer';
 import { ConfirmModal } from './ConfirmModal';
 import { LoadingScreen } from './LoadingScreen';
+import { ConsentBanner } from './consent/ConsentBanner';
+import { ConsentModal } from './consent/ConsentModal';
 
 interface AppContentProps {
   children: React.ReactNode;
@@ -61,6 +63,10 @@ export const AppContent: React.FC<AppContentProps> = ({ children }) => {
       {/* Global UI Components */}
       <ToastContainer />
       <ConfirmModal />
+      
+      {/* Cookie Consent UI */}
+      <ConsentBanner />
+      <ConsentModal />
     </>
   );
 };

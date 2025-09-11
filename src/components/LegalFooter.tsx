@@ -119,6 +119,9 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
               <Link href="/privacy" className="legal-footer-link">
                 Privacy
               </Link>
+              <Link href="/cookies" className="legal-footer-link">
+                Cookies
+              </Link>
               <Link href="/disclaimer" className="legal-footer-link">
                 Disclaimer
               </Link>

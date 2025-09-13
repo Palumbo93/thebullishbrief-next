@@ -34,6 +34,7 @@ export const UrlInputModal: React.FC<UrlInputModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!url.trim()) {
       setError('URL is required');
@@ -45,8 +46,13 @@ export const UrlInputModal: React.FC<UrlInputModalProps> = ({
       return;
     }
 
-    onSubmit(url.trim(), displayText.trim() || url.trim());
-    onClose();
+    try {
+      onSubmit(url.trim(), displayText.trim() || url.trim());
+      onClose();
+    } catch (error) {
+      console.error('Error submitting URL:', error);
+      setError('Failed to insert link');
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -58,6 +64,7 @@ export const UrlInputModal: React.FC<UrlInputModalProps> = ({
   const handleModalClick = (e: React.MouseEvent) => {
     // Prevent clicks on the modal backdrop from bubbling up to parent forms
     e.stopPropagation();
+    e.preventDefault();
   };
 
   if (!isOpen) return null;
@@ -290,6 +297,10 @@ export const UrlInputModal: React.FC<UrlInputModalProps> = ({
             </button>
             <button
               type="submit"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               style={{
                 padding: 'var(--space-2) var(--space-4)',
                 background: 'var(--color-primary)',

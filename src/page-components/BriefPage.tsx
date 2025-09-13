@@ -305,6 +305,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
 
 
+
   // Mobile navigation items
 
 
@@ -341,6 +342,70 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       
       // Mark as optimized to prevent re-processing
       img.setAttribute('data-optimized', 'true');
+    });
+  }, []);
+
+  /**
+   * Processes embed content to execute scripts properly
+   * 
+   * Features:
+   * - Executes scripts in embed containers
+   * - Handles TradingView widgets and other script-based embeds
+   * 
+   * @param el - The HTML element containing embeds to process
+   */
+  const processEmbedContent = React.useCallback((el: HTMLElement) => {
+    const embedContainers = el.querySelectorAll('[data-embed]');
+    embedContainers.forEach((container) => {
+      const content = container.getAttribute('data-embed-content');
+      
+      if (content && !container.querySelector('.embed-processed-content')) {
+        // Apply width and height from data attributes to the container
+        const width = container.getAttribute('data-embed-width') || '100%';
+        const height = container.getAttribute('data-embed-height') || 'auto';
+        
+        const containerElement = container as HTMLElement;
+        containerElement.style.width = width;
+        containerElement.style.height = height;
+        containerElement.style.maxWidth = '100%';
+        
+        // Create a wrapper div for the processed content
+        const processedDiv = document.createElement('div');
+        processedDiv.className = 'embed-processed-content';
+        processedDiv.style.cssText = 'width: 100%; height: 100%;';
+        
+        // Decode HTML entities and set the content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        processedDiv.innerHTML = tempDiv.innerHTML;
+        
+        // Add the processed content to the container
+        container.appendChild(processedDiv);
+        
+        // Execute any scripts in the content
+        const scripts = processedDiv.querySelectorAll('script');
+        scripts.forEach((script) => {
+          // Only process scripts that haven't been executed yet
+          if (!script.hasAttribute('data-executed')) {
+            const newScript = document.createElement('script');
+            
+            // Copy all attributes
+            Array.from(script.attributes).forEach((attr) => {
+              if (attr.name !== 'data-executed') {
+                newScript.setAttribute(attr.name, attr.value);
+              }
+            });
+            
+            // Copy script content
+            newScript.textContent = script.textContent;
+            
+            // Mark as executed and replace the old script
+            newScript.setAttribute('data-executed', 'true');
+            script.setAttribute('data-executed', 'true');
+            script.parentNode?.replaceChild(newScript, script);
+          }
+        });
+      }
     });
   }, []);
 
@@ -922,6 +987,9 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                     
                     // Optimize inline videos to prevent autoplay bandwidth usage
                     optimizeContentVideos(el);
+                    
+                    // Process embed content to execute scripts
+                    processEmbedContent(el);
                     
                     setContentProcessed(true);
                   }

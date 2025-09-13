@@ -192,6 +192,29 @@ export const TrafficSourceAnalytics: React.FC<TrafficSourceAnalyticsProps> = () 
     URL.revokeObjectURL(url);
   };
 
+  const exportJsonData = () => {
+    const exportData = {
+      metadata: {
+        exportedAt: new Date().toISOString(),
+        page: selectedPage,
+        numOfDays,
+        totalSources: filteredData.length,
+        isRateLimited: isRateLimit
+      },
+      data: filteredData
+    };
+
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const pageSlug = selectedPage === 'all' ? 'all-pages' : selectedPage.replace('/', '').replace(/\//g, '-') || 'homepage';
+    a.download = `traffic-sources-${pageSlug}-last-${numOfDays}-days.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <div style={{
@@ -550,10 +573,17 @@ export const TrafficSourceAnalytics: React.FC<TrafficSourceAnalyticsProps> = () 
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <button
             onClick={exportData}
-            className="btn btn-primary"
+            className="btn btn-secondary"
           >
             <Download style={{ width: '16px', height: '16px' }} />
             Export CSV
+          </button>
+          <button
+            onClick={exportJsonData}
+            className="btn btn-primary"
+          >
+            <Download style={{ width: '16px', height: '16px' }} />
+            Download JSON
           </button>
         </div>
       </div>

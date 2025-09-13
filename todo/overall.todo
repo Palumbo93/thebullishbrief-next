@@ -159,3 +159,9 @@ Bullroom Improvements:
 
 Misc:
     [] Brief View Tracking Broken
+
+
+
+    Ok I want to uodate the @RichTextEditor.tsx 
+
+    1. When you I paste in images, I want it to download them from whatever source theyre coming from and insert them in our storage bucket for that article

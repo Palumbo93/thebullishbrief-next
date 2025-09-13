@@ -1,4 +1,6 @@
 import { Node, mergeAttributes } from '@tiptap/core';
+import { ReactNodeViewRenderer } from '@tiptap/react';
+import { VideoPreview } from '../../components/videos/VideoPreview';
 
 export interface VideoOptions {
   HTMLAttributes: Record<string, any>;
@@ -10,7 +12,11 @@ declare module '@tiptap/core' {
       /**
        * Add a video
        */
-      setVideo: (options: { src: string; title?: string; width?: string; height?: string; controls?: boolean; autoplay?: boolean; muted?: boolean; loop?: boolean }) => ReturnType;
+      setVideo: (options: { src: string; title?: string; width?: string; height?: string; controls?: boolean; autoplay?: boolean; muted?: boolean; loop?: boolean; poster?: string; figcaption?: string }) => ReturnType;
+      /**
+       * Update an existing video
+       */
+      updateVideo: (options: { src?: string; title?: string; width?: string; height?: string; controls?: boolean; autoplay?: boolean; muted?: boolean; loop?: boolean; poster?: string; figcaption?: string }) => ReturnType;
     };
   }
 }
@@ -27,6 +33,10 @@ export const Video = Node.create<VideoOptions>({
   group: 'block',
 
   atom: true,
+
+  addNodeView() {
+    return ReactNodeViewRenderer(VideoPreview);
+  },
 
   addAttributes() {
     return {
@@ -57,11 +67,71 @@ export const Video = Node.create<VideoOptions>({
       poster: {
         default: null,
       },
+      figcaption: {
+        default: null,
+      },
     };
   },
 
   parseHTML() {
     return [
+      {
+        tag: 'figure',
+        getAttrs: (node) => {
+          if (typeof node === 'string') return false;
+          const figure = node as HTMLElement;
+          const videoDiv = figure.querySelector('div[data-video]');
+          const figcaption = figure.querySelector('figcaption');
+          
+          if (videoDiv) {
+            const video = videoDiv.querySelector('video');
+            const iframe = videoDiv.querySelector('iframe');
+            
+            if (video) {
+              return {
+                src: video.getAttribute('src'),
+                title: videoDiv.getAttribute('data-video-title') || '',
+                controls: video.hasAttribute('controls'),
+                autoplay: video.hasAttribute('autoplay'),
+                muted: video.hasAttribute('muted'),
+                loop: video.hasAttribute('loop'),
+                poster: video.getAttribute('poster'),
+                figcaption: figcaption?.textContent || null,
+                width: videoDiv.style.width || '100%',
+                height: videoDiv.style.height || 'auto',
+              };
+            }
+            
+            if (iframe) {
+              const src = iframe.getAttribute('src');
+              if (src?.includes('youtube.com/embed/')) {
+                const videoId = src.match(/embed\/([^?]+)/)?.[1];
+                return {
+                  src: `https://www.youtube.com/watch?v=${videoId}`,
+                  title: videoDiv.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
+                  poster: videoDiv.getAttribute('data-video-poster') || '',
+                  figcaption: figcaption?.textContent || null,
+                  width: videoDiv.style.width || '100%',
+                  height: videoDiv.style.height || '400px',
+                };
+              }
+              if (src?.includes('vimeo.com/video/')) {
+                const videoId = src.match(/video\/(\d+)/)?.[1];
+                return {
+                  src: `https://vimeo.com/${videoId}`,
+                  title: videoDiv.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
+                  poster: videoDiv.getAttribute('data-video-poster') || '',
+                  figcaption: figcaption?.textContent || null,
+                  width: videoDiv.style.width || '100%',
+                  height: videoDiv.style.height || '400px',
+                };
+              }
+            }
+          }
+          
+          return false;
+        },
+      },
       {
         tag: 'video',
         getAttrs: (node) => {
@@ -69,10 +139,13 @@ export const Video = Node.create<VideoOptions>({
           const video = node as HTMLElement;
           return {
             src: video.getAttribute('src'),
+            title: video.getAttribute('title') || '',
             controls: video.hasAttribute('controls'),
             autoplay: video.hasAttribute('autoplay'),
             muted: video.hasAttribute('muted'),
             loop: video.hasAttribute('loop'),
+            poster: video.getAttribute('poster'),
+            figcaption: null, // Direct video tags don't have figcaption
             width: video.style.width || '100%',
             height: video.style.height || 'auto',
           };
@@ -89,11 +162,13 @@ export const Video = Node.create<VideoOptions>({
           if (video) {
             return {
               src: video.getAttribute('src'),
+              title: div.getAttribute('data-video-title') || '',
               controls: video.hasAttribute('controls'),
               autoplay: video.hasAttribute('autoplay'),
               muted: video.hasAttribute('muted'),
               loop: video.hasAttribute('loop'),
               poster: video.getAttribute('poster'),
+              figcaption: div.getAttribute('data-video-figcaption') || null,
               width: div.style.width || '100%',
               height: div.style.height || 'auto',
             };
@@ -105,6 +180,9 @@ export const Video = Node.create<VideoOptions>({
               const videoId = src.match(/embed\/([^?]+)/)?.[1];
               return {
                 src: `https://www.youtube.com/watch?v=${videoId}`,
+                title: div.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
+                poster: div.getAttribute('data-video-poster') || '',
+                figcaption: div.getAttribute('data-video-figcaption') || null,
                 width: div.style.width || '100%',
                 height: div.style.height || '400px',
               };
@@ -113,6 +191,9 @@ export const Video = Node.create<VideoOptions>({
               const videoId = src.match(/video\/(\d+)/)?.[1];
               return {
                 src: `https://vimeo.com/${videoId}`,
+                title: div.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
+                poster: div.getAttribute('data-video-poster') || '',
+                figcaption: div.getAttribute('data-video-figcaption') || null,
                 width: div.style.width || '100%',
                 height: div.style.height || '400px',
               };
@@ -126,7 +207,7 @@ export const Video = Node.create<VideoOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
-    const { src, title, width, height, controls, autoplay, muted, loop, poster } = HTMLAttributes;
+    const { src, title, width, height, controls, autoplay, muted, loop, poster, figcaption } = HTMLAttributes;
     
     // Check if it's a YouTube URL
     const youtubeMatch = src?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
@@ -134,10 +215,13 @@ export const Video = Node.create<VideoOptions>({
       const videoId = youtubeMatch[1];
       const embedUrl = `https://www.youtube.com/embed/${videoId}`;
       
-      return [
+      const videoElement = [
         'div',
         mergeAttributes(this.options.HTMLAttributes, {
           'data-video': 'youtube',
+          'data-video-title': title || '',
+          'data-video-poster': poster || '',
+          'data-video-figcaption': figcaption || '',
           style: `width: ${width}; height: ${height}; max-width: 100%;`,
         }),
         [
@@ -154,6 +238,37 @@ export const Video = Node.create<VideoOptions>({
           },
         ],
       ];
+
+      // If there's a figcaption, wrap in a figure element
+      if (figcaption) {
+        return [
+          'figure',
+          mergeAttributes(this.options.HTMLAttributes, {
+            style: `
+              margin: var(--space-4) 0;
+              text-align: center;
+              max-width: 100%;
+            `,
+          }),
+          videoElement,
+          [
+            'figcaption',
+            {
+              style: `
+                font-size: var(--text-sm);
+                color: var(--color-text-secondary);
+                margin-top: var(--space-2);
+                font-style: italic;
+                text-align: center;
+                line-height: 1.4;
+              `,
+            },
+            figcaption,
+          ],
+        ];
+      }
+
+      return videoElement;
     }
     
     // Check if it's a Vimeo URL
@@ -162,10 +277,13 @@ export const Video = Node.create<VideoOptions>({
       const videoId = vimeoMatch[1];
       const embedUrl = `https://player.vimeo.com/video/${videoId}`;
       
-      return [
+      const videoElement = [
         'div',
         mergeAttributes(this.options.HTMLAttributes, {
           'data-video': 'vimeo',
+          'data-video-title': title || '',
+          'data-video-poster': poster || '',
+          'data-video-figcaption': figcaption || '',
           style: `width: ${width}; height: ${height}; max-width: 100%;`,
         }),
         [
@@ -182,6 +300,37 @@ export const Video = Node.create<VideoOptions>({
           },
         ],
       ];
+
+      // If there's a figcaption, wrap in a figure element
+      if (figcaption) {
+        return [
+          'figure',
+          mergeAttributes(this.options.HTMLAttributes, {
+            style: `
+              margin: var(--space-4) 0;
+              text-align: center;
+              max-width: 100%;
+            `,
+          }),
+          videoElement,
+          [
+            'figcaption',
+            {
+              style: `
+                font-size: var(--text-sm);
+                color: var(--color-text-secondary);
+                margin-top: var(--space-2);
+                font-style: italic;
+                text-align: center;
+                line-height: 1.4;
+              `,
+            },
+            figcaption,
+          ],
+        ];
+      }
+
+      return videoElement;
     }
     
     // Direct video file
@@ -210,10 +359,12 @@ export const Video = Node.create<VideoOptions>({
 
     // Add play button overlay if controls are enabled
     if (controls) {
-      return [
+      const directVideoElement = [
         'div',
         mergeAttributes(this.options.HTMLAttributes, {
           'data-video': 'direct',
+          'data-video-title': title || '',
+          'data-video-figcaption': figcaption || '',
           style: `width: ${width}; height: ${height}; max-width: 100%; position: relative;`,
         }),
         videoElement,
@@ -243,16 +394,80 @@ export const Video = Node.create<VideoOptions>({
           '▶',
         ],
       ];
+
+      // If there's a figcaption, wrap in a figure element
+      if (figcaption) {
+        return [
+          'figure',
+          mergeAttributes(this.options.HTMLAttributes, {
+            style: `
+              margin: var(--space-4) 0;
+              text-align: center;
+              max-width: 100%;
+            `,
+          }),
+          directVideoElement,
+          [
+            'figcaption',
+            {
+              style: `
+                font-size: var(--text-sm);
+                color: var(--color-text-secondary);
+                margin-top: var(--space-2);
+                font-style: italic;
+                text-align: center;
+                line-height: 1.4;
+              `,
+            },
+            figcaption,
+          ],
+        ];
+      }
+
+      return directVideoElement;
     }
 
-    return [
+    const directVideoElement = [
       'div',
       mergeAttributes(this.options.HTMLAttributes, {
         'data-video': 'direct',
+        'data-video-title': title || '',
+        'data-video-figcaption': figcaption || '',
         style: `width: ${width}; height: ${height}; max-width: 100%;`,
       }),
       videoElement,
     ];
+
+    // If there's a figcaption, wrap in a figure element
+    if (figcaption) {
+      return [
+        'figure',
+        mergeAttributes(this.options.HTMLAttributes, {
+          style: `
+            margin: var(--space-4) 0;
+            text-align: center;
+            max-width: 100%;
+          `,
+        }),
+        directVideoElement,
+        [
+          'figcaption',
+          {
+            style: `
+              font-size: var(--text-sm);
+              color: var(--color-text-secondary);
+              margin-top: var(--space-2);
+              font-style: italic;
+              text-align: center;
+              line-height: 1.4;
+            `,
+          },
+          figcaption,
+        ],
+      ];
+    }
+
+    return directVideoElement;
   },
 
   addCommands() {
@@ -264,6 +479,11 @@ export const Video = Node.create<VideoOptions>({
             type: this.name,
             attrs: options,
           });
+        },
+      updateVideo:
+        (options) =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, options);
         },
     };
   },

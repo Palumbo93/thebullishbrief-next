@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "exportedAt": "2024-01-15T10:30:00.000Z",
+    "page": "all",
+    "numOfDays": 3,
+    "totalSources": 5,
+    "isRateLimited": true
+  },
+  "data": [
+    {
+      "source": "Google",
+      "sessions": 1875,
+      "pageViews": 2835,
+      "engagementTime": 180,
+      "scrollDepth": 75,
+      "bounceRate": 45,
+      "brokerageClicks": 225,
+      "mediumIntentVisitors": 469,
+      "highIntentVisitors": 351,
+      "mediumIntentPercentage": 25.0,
+      "highIntentPercentage": 18.7
+    },
+    {
+      "source": "Direct",
+      "sessions": 1335,
+      "pageViews": 1680,
+      "engagementTime": 210,
+      "scrollDepth": 82,
+      "bounceRate": 38,
+      "brokerageClicks": 200,
+      "mediumIntentVisitors": 428,
+      "highIntentVisitors": 299,
+      "mediumIntentPercentage": 32.1,
+      "highIntentPercentage": 22.4
+    },
+    {
+      "source": "Facebook",
+      "sessions": 840,
+      "pageViews": 1008,
+      "engagementTime": 95,
+      "scrollDepth": 58,
+      "bounceRate": 62,
+      "brokerageClicks": 67,
+      "mediumIntentVisitors": 153,
+      "highIntentVisitors": 102,
+      "mediumIntentPercentage": 18.2,
+      "highIntentPercentage": 12.1
+    },
+    {
+      "source": "Twitter/X",
+      "sessions": 480,
+      "pageViews": 684,
+      "engagementTime": 120,
+      "scrollDepth": 68,
+      "bounceRate": 55,
+      "brokerageClicks": 48,
+      "mediumIntentVisitors": 104,
+      "highIntentVisitors": 69,
+      "mediumIntentPercentage": 21.7,
+      "highIntentPercentage": 14.3
+    },
+    {
+      "source": "LinkedIn",
+      "sessions": 270,
+      "pageViews": 351,
+      "engagementTime": 240,
+      "scrollDepth": 88,
+      "bounceRate": 35,
+      "brokerageClicks": 49,
+      "mediumIntentVisitors": 97,
+      "highIntentVisitors": 67,
+      "mediumIntentPercentage": 35.8,
+      "highIntentPercentage": 24.9
+    }
+  ]
+}

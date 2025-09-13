@@ -17,21 +17,64 @@ interface VideoModalProps {
     muted?: boolean;
     loop?: boolean;
     poster?: string;
+    figcaption?: string;
   }) => void;
   zIndex?: number;
+  initialSrc?: string;
+  initialTitle?: string;
+  initialWidth?: string;
+  initialHeight?: string;
+  initialControls?: boolean;
+  initialAutoplay?: boolean;
+  initialMuted?: boolean;
+  initialLoop?: boolean;
+  initialPoster?: string;
+  initialFigcaption?: string;
 }
 
-export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmit, zIndex }) => {
-  const [videoUrl, setVideoUrl] = useState('');
-  const [title, setTitle] = useState('');
-  const [width, setWidth] = useState('100%');
-  const [height, setHeight] = useState('auto');
-  const [controls, setControls] = useState(true);
-  const [autoplay, setAutoplay] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [loop, setLoop] = useState(false);
-  const [poster, setPoster] = useState('');
+export const VideoModal: React.FC<VideoModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  zIndex,
+  initialSrc = '',
+  initialTitle = '',
+  initialWidth = '100%',
+  initialHeight = 'auto',
+  initialControls = true,
+  initialAutoplay = false,
+  initialMuted = false,
+  initialLoop = false,
+  initialPoster = '',
+  initialFigcaption = ''
+}) => {
+  const [videoUrl, setVideoUrl] = useState(initialSrc);
+  const [title, setTitle] = useState(initialTitle);
+  const [width, setWidth] = useState(initialWidth);
+  const [height, setHeight] = useState(initialHeight);
+  const [controls, setControls] = useState(initialControls);
+  const [autoplay, setAutoplay] = useState(initialAutoplay);
+  const [muted, setMuted] = useState(initialMuted);
+  const [loop, setLoop] = useState(initialLoop);
+  const [poster, setPoster] = useState(initialPoster);
+  const [figcaption, setFigcaption] = useState(initialFigcaption);
   const [previewUrl, setPreviewUrl] = useState('');
+
+  // Reset form when modal opens with new initial values
+  useEffect(() => {
+    if (isOpen) {
+      setVideoUrl(initialSrc);
+      setTitle(initialTitle);
+      setWidth(initialWidth);
+      setHeight(initialHeight);
+      setControls(initialControls);
+      setAutoplay(initialAutoplay);
+      setMuted(initialMuted);
+      setLoop(initialLoop);
+      setPoster(initialPoster);
+      setFigcaption(initialFigcaption);
+    }
+  }, [isOpen, initialSrc, initialTitle, initialWidth, initialHeight, initialControls, initialAutoplay, initialMuted, initialLoop, initialPoster, initialFigcaption]);
 
   useEffect(() => {
     if (videoUrl) {
@@ -68,6 +111,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
       muted,
       loop,
       poster: poster.trim() || undefined,
+      figcaption: figcaption.trim() || undefined,
     });
 
     // Reset form
@@ -80,6 +124,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
     setMuted(false);
     setLoop(false);
     setPoster('');
+    setFigcaption('');
     onClose();
   };
 
@@ -279,6 +324,43 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, onSubmi
                 marginTop: 'var(--space-1)'
               }}>
                 URL to an image that will be shown before the video plays
+              </p>
+            </div>
+
+            {/* Caption */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-2)'
+              }}>
+                Caption (Optional)
+              </label>
+              <input
+                type="text"
+                value={figcaption}
+                onChange={(e) => setFigcaption(e.target.value)}
+                placeholder="Enter a caption for the video"
+                style={{
+                  width: '100%',
+                  height: 'var(--input-height)',
+                  padding: '0 var(--input-padding-x)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-base)',
+                  transition: 'all var(--transition-base)'
+                }}
+              />
+              <p style={{
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-tertiary)',
+                marginTop: 'var(--space-1)'
+              }}>
+                A caption will be displayed below the video
               </p>
             </div>
 

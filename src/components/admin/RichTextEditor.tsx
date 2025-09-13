@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import Image from '@tiptap/extension-image';
+import { Image } from '../../lib/tiptap/image-extension';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
@@ -18,12 +18,14 @@ import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { Video } from '../../lib/tiptap/video-extension';
+import { Embed } from '../../lib/tiptap/embed-extension';
 
 
 
 import { UrlInputModal } from './UrlInputModal';
 import { ImageUploadModal } from './ImageUploadModal';
 import { VideoModal } from './VideoModal';
+import { EmbedModal } from './EmbedModal';
 
 
 
@@ -53,7 +55,7 @@ import {
   Heading3,
   Minus,
   Play,
-
+  FileCode,
   Maximize,
   Minimize
 } from 'lucide-react';
@@ -70,52 +72,195 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
+  const [editingEmbed, setEditingEmbed] = useState<{
+    content: string;
+    title?: string;
+    width?: string;
+    height?: string;
+    type?: 'iframe' | 'script' | 'html';
+    updateAttributes?: (attrs: any) => void;
+  } | null>(null);
+  const [editingImage, setEditingImage] = useState<{
+    src: string;
+    alt?: string;
+    title?: string;
+    figcaption?: string;
+    width?: string;
+    height?: string;
+    updateAttributes?: (attrs: any) => void;
+  } | null>(null);
+  const [editingVideo, setEditingVideo] = useState<{
+    src: string;
+    title?: string;
+    width?: string;
+    height?: string;
+    controls?: boolean;
+    autoplay?: boolean;
+    muted?: boolean;
+    loop?: boolean;
+    poster?: string;
+    figcaption?: string;
+    updateAttributes?: (attrs: any) => void;
+  } | null>(null);
 
 
 
   const [currentLinkUrl, setCurrentLinkUrl] = useState('');
   const [currentLinkText, setCurrentLinkText] = useState('');
 
-  const setLink = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // Listen for embed edit events from the Node View
+  useEffect(() => {
+    const handleEditEmbed = (event: CustomEvent) => {
+      const { content, title, width, height, type, updateAttributes } = event.detail;
+      setEditingEmbed({
+        content,
+        title,
+        width,
+        height,
+        type,
+        updateAttributes
+      });
+      setIsEmbedModalOpen(true);
+    };
+
+    const handleEditImage = (event: CustomEvent) => {
+      const { src, alt, title, figcaption, width, height, updateAttributes } = event.detail;
+      setEditingImage({
+        src,
+        alt,
+        title,
+        figcaption,
+        width,
+        height,
+        updateAttributes
+      });
+      setIsImageModalOpen(true);
+    };
+
+    const handleEditVideo = (event: CustomEvent) => {
+      const { src, title, width, height, controls, autoplay, muted, loop, poster, figcaption, updateAttributes } = event.detail;
+      setEditingVideo({
+        src,
+        title,
+        width,
+        height,
+        controls,
+        autoplay,
+        muted,
+        loop,
+        poster,
+        figcaption,
+        updateAttributes
+      });
+      setIsVideoModalOpen(true);
+    };
+
+    window.addEventListener('editEmbed', handleEditEmbed as EventListener);
+    window.addEventListener('editImage', handleEditImage as EventListener);
+    window.addEventListener('editVideo', handleEditVideo as EventListener);
+    
+    return () => {
+      window.removeEventListener('editEmbed', handleEditEmbed as EventListener);
+      window.removeEventListener('editImage', handleEditImage as EventListener);
+      window.removeEventListener('editVideo', handleEditVideo as EventListener);
+    };
+  }, []);
+
+  const setLink = useCallback(() => {
+    if (!editor) return;
     
     const previousUrl = editor.getAttributes('link').href;
-    const previousText = editor.getText();
+    const { from, to } = editor.state.selection;
+    const selectedText = editor.state.doc.textBetween(from, to);
     
     setCurrentLinkUrl(previousUrl || '');
-    setCurrentLinkText(previousText || '');
+    setCurrentLinkText(selectedText || '');
     setIsUrlModalOpen(true);
   }, [editor]);
 
-  const handleUrlSubmit = useCallback((url: string, displayText: string) => {
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run();
-    } else {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-      if (displayText && displayText !== url) {
-        editor.chain().focus().insertContent(displayText).run();
-      }
-    }
+  const hasLink = useCallback(() => {
+    if (!editor) return false;
+    return !!editor.getAttributes('link').href;
   }, [editor]);
 
-  const addImage = useCallback((e: React.MouseEvent) => {
+  const handleUrlSubmit = useCallback((url: string, displayText: string) => {
+    console.log('🔗 handleUrlSubmit called:', { url, displayText });
+    
+    if (url === '') {
+      console.log('🔗 Removing link');
+      editor.chain().focus().unsetLink().run();
+      return;
+    }
+
+    const { from, to } = editor.state.selection;
+    console.log('🔗 Selection:', { from, to });
+    
+    if (from === to) {
+      // No text selected - insert new text with link
+      const textToInsert = displayText || url;
+      console.log('🔗 Inserting new text with link:', textToInsert);
+      editor.chain()
+        .focus()
+        .insertContent(textToInsert)
+        .setTextSelection(from, from + textToInsert.length)
+        .setLink({ href: url })
+        .run();
+    } else {
+      // Text is selected - apply link to selection
+      console.log('🔗 Applying link to selected text');
+      editor.chain()
+        .focus()
+        .setLink({ href: url })
+        .run();
+    }
+    
+    console.log('🔗 Link operation completed');
+  }, [editor]);
+
+  const addImage = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    e.nativeEvent.preventDefault();
+    e.nativeEvent.stopPropagation();
+    setEditingImage(null); // Clear any existing edit state
     setIsImageModalOpen(true);
   }, []);
 
-  const handleImageSubmit = useCallback((imageUrl: string, altText: string) => {
-    editor.chain().focus().setImage({ src: imageUrl, alt: altText }).run();
-  }, [editor]);
+  const handleImageSubmit = useCallback((imageUrl: string, altText: string, figcaption?: string, width?: string, height?: string) => {
+    if (editingImage?.updateAttributes) {
+      // Update existing image using the updateAttributes function from Node View
+      editingImage.updateAttributes({
+        src: imageUrl,
+        alt: altText,
+        figcaption: figcaption,
+        width: width,
+        height: height,
+      });
+    } else {
+      // Create new image
+      editor.chain().focus().setImage({ 
+        src: imageUrl, 
+        alt: altText,
+        figcaption: figcaption,
+        width: width,
+        height: height,
+      }).run();
+    }
+    setIsImageModalOpen(false);
+    setEditingImage(null);
+  }, [editor, editingImage]);
 
   const addTable = useCallback(() => {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
 
-  const addVideo = useCallback((e: React.MouseEvent) => {
+  const addVideo = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    e.nativeEvent.preventDefault();
+    e.nativeEvent.stopPropagation();
+    setEditingVideo(null); // Clear any existing edit state
     setIsVideoModalOpen(true);
   }, []);
 
@@ -129,9 +274,43 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
     muted?: boolean;
     loop?: boolean;
     poster?: string;
+    figcaption?: string;
   }) => {
-    editor.chain().focus().setVideo(videoData).run();
-  }, [editor]);
+    if (editingVideo?.updateAttributes) {
+      // Update existing video using the updateAttributes function from Node View
+      editingVideo.updateAttributes(videoData);
+    } else {
+      // Create new video
+      editor.chain().focus().setVideo(videoData).run();
+    }
+    setIsVideoModalOpen(false);
+    setEditingVideo(null);
+  }, [editor, editingVideo]);
+
+  const addEmbed = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingEmbed(null); // Clear any existing edit state
+    setIsEmbedModalOpen(true);
+  }, []);
+
+  const handleEmbedSubmit = useCallback((embedData: {
+    content: string;
+    title?: string;
+    width?: string;
+    height?: string;
+    type?: 'iframe' | 'script' | 'html';
+  }) => {
+    if (editingEmbed?.updateAttributes) {
+      // Update existing embed using the updateAttributes function from Node View
+      editingEmbed.updateAttributes(embedData);
+    } else {
+      // Create new embed
+      editor.chain().focus().setEmbed(embedData).run();
+    }
+    setIsEmbedModalOpen(false);
+    setEditingEmbed(null);
+  }, [editor, editingEmbed]);
 
 
 
@@ -494,7 +673,15 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
       <div style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center' }}>
         <button
           type="button"
-          onClick={setLink}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setLink();
+          }}
           className={editor.isActive('link') ? 'is-active' : ''}
           style={{
             padding: 'var(--space-2)',
@@ -509,6 +696,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
             fontSize: 'var(--text-sm)',
             transition: 'all var(--transition-base)'
           }}
+          title="Add Link"
         >
           <LinkIcon style={{ width: '16px', height: '16px' }} />
         </button>
@@ -516,23 +704,26 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
         <button
           type="button"
           onClick={() => editor.chain().focus().unsetLink().run()}
-          disabled={!editor.isActive('link')}
+          disabled={!hasLink()}
           style={{
             padding: 'var(--space-2)',
             borderRadius: 'var(--radius-sm)',
             border: 'none',
             background: 'transparent',
-            color: 'var(--color-text-tertiary)',
-            cursor: 'pointer',
+            color: hasLink() ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+            cursor: hasLink() ? 'pointer' : 'not-allowed',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 'var(--text-sm)',
-            transition: 'all var(--transition-base)'
+            transition: 'all var(--transition-base)',
+            opacity: hasLink() ? 1 : 0.5
           }}
+          title="Remove Link"
         >
           <Unlink style={{ width: '16px', height: '16px' }} />
         </button>
+
 
         <button
           type="button"
@@ -603,6 +794,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
         </button>
 
         <button
+          type="button"
           onClick={addTable}
           style={{
             padding: 'var(--space-2)',
@@ -619,6 +811,27 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
           }}
         >
           <TableIcon style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <button
+          type="button"
+          onClick={addEmbed}
+          style={{
+            padding: 'var(--space-2)',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-text-primary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 'var(--text-sm)',
+            transition: 'all var(--transition-base)'
+          }}
+          title="Add Embed"
+        >
+          <FileCode style={{ width: '16px', height: '16px' }} />
         </button>
       </div>
 
@@ -718,10 +931,18 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
       {isImageModalOpen && createPortal(
         <ImageUploadModal
           isOpen={isImageModalOpen}
-          onClose={() => setIsImageModalOpen(false)}
+          onClose={() => {
+            setIsImageModalOpen(false);
+            setEditingImage(null);
+          }}
           onSubmit={handleImageSubmit}
           articleId={articleId}
           zIndex={isFullscreen ? 10000 : undefined}
+          initialImageUrl={editingImage?.src}
+          initialAltText={editingImage?.alt}
+          initialFigcaption={editingImage?.figcaption}
+          initialWidth={editingImage?.width}
+          initialHeight={editingImage?.height}
         />,
         document.body
       )}
@@ -729,9 +950,40 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
       {isVideoModalOpen && createPortal(
         <VideoModal
           isOpen={isVideoModalOpen}
-          onClose={() => setIsVideoModalOpen(false)}
+          onClose={() => {
+            setIsVideoModalOpen(false);
+            setEditingVideo(null);
+          }}
           onSubmit={handleVideoSubmit}
           zIndex={isFullscreen ? 10000 : undefined}
+          initialSrc={editingVideo?.src}
+          initialTitle={editingVideo?.title}
+          initialWidth={editingVideo?.width}
+          initialHeight={editingVideo?.height}
+          initialControls={editingVideo?.controls}
+          initialAutoplay={editingVideo?.autoplay}
+          initialMuted={editingVideo?.muted}
+          initialLoop={editingVideo?.loop}
+          initialPoster={editingVideo?.poster}
+          initialFigcaption={editingVideo?.figcaption}
+        />,
+        document.body
+      )}
+
+      {isEmbedModalOpen && createPortal(
+        <EmbedModal
+          isOpen={isEmbedModalOpen}
+          onClose={() => {
+            setIsEmbedModalOpen(false);
+            setEditingEmbed(null);
+          }}
+          onSubmit={handleEmbedSubmit}
+          zIndex={isFullscreen ? 10000 : undefined}
+          initialContent={editingEmbed?.content}
+          initialTitle={editingEmbed?.title}
+          initialWidth={editingEmbed?.width}
+          initialHeight={editingEmbed?.height}
+          initialType={editingEmbed?.type}
         />,
         document.body
       )}
@@ -802,6 +1054,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       TableHeader,
       TableCell,
       Video,
+      Embed,
     ],
     content,
     onUpdate: ({ editor }) => {
@@ -817,6 +1070,20 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         // Create a temporary div to parse the HTML
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
+        
+        // Convert H1 tags to H2 tags
+        const h1Elements = tempDiv.querySelectorAll('h1');
+        h1Elements.forEach(h1 => {
+          const h2 = document.createElement('h2');
+          // Copy all attributes from h1 to h2
+          Array.from(h1.attributes).forEach(attr => {
+            h2.setAttribute(attr.name, attr.value);
+          });
+          // Copy the content
+          h2.innerHTML = h1.innerHTML;
+          // Replace h1 with h2
+          h1.parentNode?.replaceChild(h2, h1);
+        });
         
         // Remove only color-related attributes and styles, preserving other formatting
         const elements = tempDiv.querySelectorAll('*');
@@ -870,6 +1137,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [editor, content]);
 
+
   // Process Twitter widgets when editor updates
   useEffect(() => {
     if (editor && typeof window !== 'undefined' && (window as any).twttr) {
@@ -885,6 +1153,22 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       };
     }
   }, [editor]);
+
+  // Force Node View re-render when entering/exiting fullscreen
+  useEffect(() => {
+    if (editor) {
+      // Small delay to let the DOM settle after fullscreen toggle
+      const timer = setTimeout(() => {
+        // Force all Node Views to re-render
+        editor.view.updateState(editor.view.state);
+        
+        // Also trigger a manual dispatch to ensure everything is updated
+        editor.view.dispatch(editor.view.state.tr);
+      }, 150);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isFullscreen, editor]);
 
   const editorComponent = (
     <div className={className} style={{
@@ -939,10 +1223,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     </div>
   );
 
-  // If fullscreen, render in a portal
-  if (isFullscreen) {
-    return createPortal(editorComponent, document.body);
-  }
-
+  // Don't use portal for fullscreen to avoid Node View issues
+  // Instead, use CSS positioning
   return editorComponent;
 }; 

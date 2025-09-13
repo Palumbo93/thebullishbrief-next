@@ -8,9 +8,13 @@ import { useUploadSession } from '../../hooks/useUploadSession';
 interface ImageUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (imageUrl: string, altText: string) => void;
-  initialUrl?: string;
+  onSubmit: (imageUrl: string, altText: string, figcaption?: string, width?: string, height?: string) => void;
+  initialImageUrl?: string;
+  initialUrl?: string; // Keep for backwards compatibility
   initialAltText?: string;
+  initialFigcaption?: string;
+  initialWidth?: string;
+  initialHeight?: string;
   articleId?: string;
   zIndex?: number;
 }
@@ -19,26 +23,38 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  initialImageUrl,
   initialUrl = '',
   initialAltText = '',
+  initialFigcaption = '',
+  initialWidth = '',
+  initialHeight = '',
   articleId,
   zIndex
 }) => {
   const [altText, setAltText] = useState(initialAltText);
+  const [figcaption, setFigcaption] = useState(initialFigcaption);
+  const [width, setWidth] = useState(initialWidth);
+  const [height, setHeight] = useState(initialHeight);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [existingImageUrl, setExistingImageUrl] = useState(initialImageUrl || initialUrl);
   const { sessionId, trackUpload } = useUploadSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setAltText(initialAltText);
+      setFigcaption(initialFigcaption);
+      setWidth(initialWidth);
+      setHeight(initialHeight);
+      setExistingImageUrl(initialImageUrl || initialUrl);
       setError('');
       setUploadedFile(null);
     }
-  }, [isOpen, initialAltText]);
+  }, [isOpen, initialAltText, initialFigcaption, initialWidth, initialHeight, initialImageUrl, initialUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,12 +72,16 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         }
         
         setIsLoading(false);
-        onSubmit(result.url, altText.trim() || 'Image');
+        onSubmit(result.url, altText.trim() || 'Image', figcaption.trim() || undefined, width.trim() || undefined, height.trim() || undefined);
         onClose();
       } catch (error) {
         setIsLoading(false);
         setError(error instanceof Error ? error.message : 'Failed to upload image');
       }
+    } else if (existingImageUrl) {
+      // Use existing image URL (for editing)
+      onSubmit(existingImageUrl, altText.trim() || 'Image', figcaption.trim() || undefined, width.trim() || undefined, height.trim() || undefined);
+      onClose();
     } else {
       setError('Please upload an image file');
     }
@@ -389,6 +409,46 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                 marginTop: 'var(--space-1)'
               }}>
                 Important for accessibility and SEO
+              </div>
+            </div>
+
+            {/* Figcaption Input */}
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-2)'
+              }}>
+                Caption (Optional)
+              </label>
+              <textarea
+                value={figcaption}
+                onChange={(e) => setFigcaption(e.target.value)}
+                placeholder="Add a caption that will appear below the image"
+                rows={3}
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-3)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--text-base)',
+                  transition: 'all var(--transition-base)',
+                  resize: 'vertical',
+                  minHeight: '80px',
+                  fontFamily: 'inherit'
+                }}
+                onKeyDown={handleKeyDown}
+              />
+              <div style={{
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-tertiary)',
+                marginTop: 'var(--space-1)'
+              }}>
+                This text will appear as a caption below the image
               </div>
             </div>
 

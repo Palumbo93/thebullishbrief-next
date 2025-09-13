@@ -14,6 +14,7 @@ import { ArticleCard } from '../components/articles/ArticleCard';
 import { AuthorAvatar } from '../components/articles/AuthorAvatar';
 import { LegalFooter } from '../components/LegalFooter';
 import { ShareSheet } from '../components/ShareSheet';
+import { ImageZoomModal } from '../components/ui/ImageZoomModal';
 
 import { DesktopBanner } from '../components/DesktopBanner';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
@@ -45,6 +46,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isImageZoomOpen, setIsImageZoomOpen] = React.useState(false);
+  const [zoomedImageUrl, setZoomedImageUrl] = React.useState<string>('');
+  const [zoomedImageAlt, setZoomedImageAlt] = React.useState<string>('');
 
   const maxWidth = '800px';
   
@@ -139,16 +143,27 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     };
   }, [article?.id, article?.title, isBookmarked, user, toggleBookmark.isPending]);
 
+  /**
+   * Handle image click to open zoom modal
+   */
+  const handleImageClick = (imageUrl: string, imageAlt: string = 'Image') => {
+    setZoomedImageUrl(imageUrl);
+    setZoomedImageAlt(imageAlt);
+    setIsImageZoomOpen(true);
+  };
+
+
 
 
   /**
-   * Optimizes images within HTML content for better performance
+   * Optimizes images within HTML content for better performance and adds zoom functionality
    * 
    * Features:
    * - First image loads eagerly for better LCP
    * - Subsequent images load lazily for performance
    * - Adds proper decoding attributes
    * - Adds responsive sizes
+   * - Adds click-to-zoom functionality with cursor pointer
    * 
    * @param el - The HTML element containing images to optimize
    */
@@ -172,8 +187,91 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         img.alt = img.title;
       }
       
+      // Add zoom functionality
+      img.style.cursor = 'zoom-in';
+      img.style.transition = 'transform var(--transition-base)';
+      
+      // Add hover effects
+      img.addEventListener('mouseenter', () => {
+        img.style.transform = 'scale(1.02)';
+      });
+      
+      img.addEventListener('mouseleave', () => {
+        img.style.transform = 'scale(1)';
+      });
+      
+      // Add click handler for zoom
+      img.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleImageClick(img.src, img.alt || 'Content image');
+      });
+      
       // Mark as optimized to prevent re-processing
       img.setAttribute('data-optimized', 'true');
+    });
+  };
+
+  /**
+   * Processes embed content to execute scripts properly
+   * 
+   * Features:
+   * - Executes scripts in embed containers
+   * - Handles TradingView widgets and other script-based embeds
+   * 
+   * @param el - The HTML element containing embeds to process
+   */
+  const processEmbedContent = (el: HTMLElement) => {
+    const embedContainers = el.querySelectorAll('[data-embed]');
+    embedContainers.forEach((container) => {
+      const content = container.getAttribute('data-embed-content');
+      
+      if (content && !container.querySelector('.embed-processed-content')) {
+        // Apply width and height from data attributes to the container
+        const width = container.getAttribute('data-embed-width') || '100%';
+        const height = container.getAttribute('data-embed-height') || 'auto';
+        
+        const containerElement = container as HTMLElement;
+        containerElement.style.width = width;
+        containerElement.style.height = height;
+        containerElement.style.maxWidth = '100%';
+        
+        // Create a wrapper div for the processed content
+        const processedDiv = document.createElement('div');
+        processedDiv.className = 'embed-processed-content';
+        processedDiv.style.cssText = 'width: 100%; height: 100%;';
+        
+        // Decode HTML entities and set the content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        processedDiv.innerHTML = tempDiv.innerHTML;
+        
+        // Add the processed content to the container
+        container.appendChild(processedDiv);
+        
+        // Execute any scripts in the content
+        const scripts = processedDiv.querySelectorAll('script');
+        scripts.forEach((script) => {
+          // Only process scripts that haven't been executed yet
+          if (!script.hasAttribute('data-executed')) {
+            const newScript = document.createElement('script');
+            
+            // Copy all attributes
+            Array.from(script.attributes).forEach((attr) => {
+              if (attr.name !== 'data-executed') {
+                newScript.setAttribute(attr.name, attr.value);
+              }
+            });
+            
+            // Copy script content
+            newScript.textContent = script.textContent;
+            
+            // Mark as executed and replace the old script
+            newScript.setAttribute('data-executed', 'true');
+            script.setAttribute('data-executed', 'true');
+            script.parentNode?.replaceChild(newScript, script);
+          }
+        });
+      }
     });
   };
 
@@ -588,6 +686,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                   if (el) {
                     // Optimize images in content for better performance
                     optimizeContentImages(el);
+                    
+                    // Process embed content to execute scripts
+                    processEmbedContent(el);
                   }
                 }}
               />
@@ -718,6 +819,15 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           }}
         />
       )}
+      
+      {/* Image Zoom Modal */}
+      <ImageZoomModal
+        isOpen={isImageZoomOpen}
+        onClose={() => setIsImageZoomOpen(false)}
+        imageUrl={zoomedImageUrl}
+        imageAlt={zoomedImageAlt}
+        imageName={zoomedImageAlt}
+      />
     </div>
   );
 };

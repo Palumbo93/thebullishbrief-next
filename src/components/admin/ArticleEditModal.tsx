@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Image as ImageIcon, Trash2, Copy, Clock } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Trash2, Copy, Clock, ExternalLink } from 'lucide-react';
 import { useCategories, useAuthors, useArticleTags, useAllTags } from '../../hooks/useDatabase';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
@@ -321,12 +321,51 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
                 }}>
                   Edit Article
                 </h1>
-                <p style={{
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--color-text-tertiary)'
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-3)',
+                  flexWrap: 'wrap'
                 }}>
-                  ID: {article.id} • Last updated: {new Date(article.updated_at).toLocaleDateString()}
-                </p>
+                  <p style={{
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-text-tertiary)',
+                    margin: 0
+                  }}>
+                    ID: {article.id} • Last updated: {new Date(article.updated_at).toLocaleDateString()}
+                  </p>
+                  {article.slug && (
+                    <a
+                      href={`/articles/${article.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-1)',
+                        fontSize: 'var(--text-sm)',
+                        color: 'var(--color-primary)',
+                        textDecoration: 'none',
+                        padding: 'var(--space-1) var(--space-2)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--color-border-primary)',
+                        transition: 'all var(--transition-base)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-bg-tertiary)';
+                        e.currentTarget.style.borderColor = 'var(--color-primary)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                      }}
+                      title={article.status === 'published' ? 'View published article' : 'Preview draft (admin only)'}
+                    >
+                      <ExternalLink style={{ width: '14px', height: '14px' }} />
+                      <span>{article.status === 'published' ? 'View Live' : 'Preview'}</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
             

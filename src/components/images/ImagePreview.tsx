@@ -3,6 +3,7 @@
 import React from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
 import { Edit3 } from 'lucide-react';
+import Image from 'next/image';
 
 interface ImagePreviewProps {
   node: {
@@ -129,12 +130,12 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               maxWidth: '100%',
             }}
           >
-            <img
+            <Image
               src={src}
               alt={alt || ''}
               title={title || ''}
-              width={width || undefined}
-              height={height || undefined}
+              width={width ? parseInt(width.toString()) : 400}
+              height={height ? parseInt(height.toString()) : 300}
               style={{
                 maxWidth: '100%',
                 height: 'auto',
@@ -144,7 +145,6 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
                 boxShadow: selected ? '0 0 0 2px var(--color-primary)' : 'none',
                 transition: 'box-shadow var(--transition-base)',
               }}
-              loading="lazy"
             />
             <figcaption
               style={{
@@ -160,12 +160,12 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
             </figcaption>
           </figure>
         ) : (
-          <img
+          <Image
             src={src}
             alt={alt || ''}
             title={title || ''}
-            width={width || undefined}
-            height={height || undefined}
+            width={width ? parseInt(width.toString()) : 400}
+            height={height ? parseInt(height.toString()) : 300}
             style={{
               maxWidth: '100%',
               height: 'auto',

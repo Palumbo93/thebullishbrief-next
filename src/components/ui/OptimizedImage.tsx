@@ -45,16 +45,16 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // For now, we'll use a regular img tag for external URLs
   if (isExternalUrl) {
     return (
-      <img
+      <Image
         src={src}
         alt={alt}
-        width={width}
-        height={height}
+        width={width || 400}
+        height={height || 300}
         className={className}
         style={style}
         onError={onError}
         onLoad={onLoad}
-        loading={priority ? 'eager' : 'lazy'}
+        priority={priority}
       />
     );
   }

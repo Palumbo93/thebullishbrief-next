@@ -99,7 +99,7 @@ export const BullLogoImg: React.FC<BullLogoProps> = ({
   const logoSrc = getLogoSrc();
 
   return (
-    <img
+    <Image
       src={logoSrc}
       alt={alt}
       width={width}

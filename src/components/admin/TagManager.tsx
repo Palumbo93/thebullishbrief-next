@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, Tag, Search, X, Copy } from 'lucide-react';
+import { Plus, Tag } from 'lucide-react';
 import { useTags } from '../../hooks/useDatabase';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, Eye, FileText, Calendar, User, Search, Filter, X, ChevronDown, Copy } from 'lucide-react';
+import { Plus, FileText, Search, Filter, X, ChevronDown } from 'lucide-react';
 import { useArticles, useCategories, useAuthors } from '../../hooks/useDatabase';
 import { moveFeaturedImageToArticle } from '../../lib/storage';
 import { articleTagService } from '../../services/database';
@@ -9,7 +9,6 @@ import { ArticleCreateModal } from './ArticleCreateModal';
 import { ArticleEditModal } from './ArticleEditModal';
 import { ArticleDeleteModal } from './ArticleDeleteModal';
 import { ManagerHeader } from './ManagerHeader';
-import { SearchBar } from './SearchBar';
 import { Article } from '../../services/database';
 
 interface ArticleManagerProps {}

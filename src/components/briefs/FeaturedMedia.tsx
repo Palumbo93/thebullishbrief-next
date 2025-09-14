@@ -92,17 +92,12 @@ export const FeaturedMedia: React.FC<FeaturedMediaProps> = ({
         onClick={onVideoClick}
       >
         {/* Video Thumbnail - Optimized loading */}
-        <img
+        <Image
           src={videoThumbnail || featuredImageUrl || ''}
           alt={`${title} - Video thumbnail`}
-          loading="eager"
-          decoding="async"
+          fill
+          priority
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
             objectFit: 'cover',
             objectPosition: 'center',
             zIndex: 0,

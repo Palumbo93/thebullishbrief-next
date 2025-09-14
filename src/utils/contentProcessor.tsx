@@ -50,7 +50,7 @@ export const processContentWithWidgets = (
   const result: Array<{ type: 'html' | 'component'; content: string | React.ReactElement; key: string }> = [];
   
   let htmlSegmentCount = 0;
-  let widgetCounts = {
+  const widgetCounts = {
     INLINE_CTA: 0,
     BROKERAGE_LINKS: 0,
     FEATURED_VIDEO: 0,

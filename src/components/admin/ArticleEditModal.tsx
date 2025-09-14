@@ -47,11 +47,11 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
-  const { revalidateArticle, isRevalidating } = useOnDemandRevalidation();
+  const { revalidateArticle } = useOnDemandRevalidation();
   
   // Fetch article tags and all available tags
   const { tags: articleTags, loading: tagsLoading } = useArticleTags(article.id);
-  const { tags: allTags } = useAllTags();
+  useAllTags();
   
   const [formData, setFormData] = useState({
     title: '',

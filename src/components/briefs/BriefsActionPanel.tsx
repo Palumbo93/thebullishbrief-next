@@ -1,11 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getTickers } from '../../utils/tickerUtils';
-import { ExternalLink, User, X } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { BRAND_COPY } from '../../data/copy';
+import { X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import SidebarJoinCTA from '../SidebarJoinCTA';
-import JoinButton from '../JoinButton';
 import BriefLeadGenWidget from '../BriefLeadGenWidget';
 import BrokerageWidget from '../BrokerageWidget';
 import { FeaturedVideoWidget } from '../FeaturedVideoWidget';

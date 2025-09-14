@@ -9,13 +9,7 @@ import {
   promptService,
   promptCategoryService,
   promptFieldService,
-  Category,
-  Author,
   Tag,
-  Article,
-  User,
-  Prompt,
-  PromptCategory,
   PromptField
 } from '../services/database';
 

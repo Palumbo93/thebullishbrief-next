@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { X, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 import { useAdminImageUpload } from '../../hooks/useAdminImageUpload';
 import { IMAGE_TYPES } from '../../lib/storage';
 
@@ -163,9 +164,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {previewUrl ? (
           <div style={{ position: 'relative' }}>
-            <img
+            <Image
               src={previewUrl}
               alt="Preview"
+              width={400}
+              height={200}
               style={{
                 maxWidth: '100%',
                 maxHeight: '200px',

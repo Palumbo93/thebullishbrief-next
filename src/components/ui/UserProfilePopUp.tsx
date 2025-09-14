@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Twitter, Calendar, User } from 'lucide-react';
+import { X, Twitter, Calendar } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import { supabase } from '../../lib/supabase';
 

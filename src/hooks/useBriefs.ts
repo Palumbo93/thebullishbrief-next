@@ -1,6 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase, hasSupabaseCredentials } from '../lib/supabase';
-import { Tables } from '../lib/database.types';
 import { Brief } from '../lib/database.aliases';
 import { queryKeys } from '../lib/queryClient';
 import { CACHE_TTL } from '../lib/cacheStorage';

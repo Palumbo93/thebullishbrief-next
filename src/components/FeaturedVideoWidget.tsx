@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 
 interface FeaturedVideoWidgetProps {
   videoUrl: string;
@@ -37,12 +38,11 @@ export const FeaturedVideoWidget: React.FC<FeaturedVideoWidgetProps> = ({
         }}
       >
         {/* Video Thumbnail */}
-        <img
+        <Image
           src={videoThumbnail}
           alt={videoTitle || 'Video thumbnail'}
+          fill
           style={{
-            width: '100%',
-            height: '100%',
             objectFit: 'cover',
             objectPosition: 'center',
             borderRadius: 'var(--radius-md)'

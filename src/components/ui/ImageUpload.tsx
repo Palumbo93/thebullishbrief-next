@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { X, Image as ImageIcon } from 'lucide-react';
+import NextImage from 'next/image';
 
 interface ImageUploadProps {
   currentImageUrl?: string | null;
@@ -218,9 +219,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           onMouseEnter={() => setShowRemoveButton(true)}
           onMouseLeave={() => setShowRemoveButton(false)}
         >
-          <img
+          <NextImage
             src={previewUrl}
             alt="Profile preview"
+            width={dimensions.width}
+            height={dimensions.height}
             style={{
               width: `${dimensions.width}px`,
               height: `${dimensions.height}px`,

@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react';
 import { AuthCredentials, UseAuthSubmitReturn, OTPVerificationData } from '../types/auth.types';
 import { useAuth } from '../../../contexts/AuthContext';
 import { hasSupabaseCredentials } from '../../../lib/supabase';
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../utils/constants';
-import { mapContextualAuthError, isRecoverableError } from '../utils/errorMapping';
+import { ERROR_MESSAGES } from '../utils/constants';
+import { mapContextualAuthError } from '../utils/errorMapping';
 import { useToast } from '../../../hooks/useToast';
 
 export const useAuthSubmit = (): UseAuthSubmitReturn => {

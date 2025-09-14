@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, User, Search, X, Copy } from 'lucide-react';
+import { Plus, User } from 'lucide-react';
 import { useAuthors } from '../../hooks/useDatabase';
 import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { ManagerHeader } from './ManagerHeader';
@@ -10,7 +10,6 @@ import { DataTable, Column } from './DataTable';
 import { EditModal, FormField } from './EditModal';
 import { DeleteModal } from './DeleteModal';
 import { CreateModal } from './CreateModal';
-import { BuildStatusPopup } from './BuildStatusPopup';
 import { Author } from '../../services/database';
 import { STORAGE_BUCKETS } from '../../lib/storage';
 import { AuthorAvatarImage } from '../ui/OptimizedImage';
@@ -19,7 +18,7 @@ interface AuthorManagerProps {}
 
 export const AuthorManager: React.FC<AuthorManagerProps> = () => {
   const { data: authors, loading, create, update, delete: deleteAuthor } = useAuthors();
-  const { revalidateAuthor, isRevalidating } = useOnDemandRevalidation();
+  const { revalidateAuthor } = useOnDemandRevalidation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);

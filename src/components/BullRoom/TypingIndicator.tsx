@@ -1,5 +1,4 @@
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
 
 /**
  * TypingIndicator shows when users are typing in the chat

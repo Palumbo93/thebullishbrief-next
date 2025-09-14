@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 import { useAuthorBySlug } from '../hooks/useAuthorBySlug';
 import { useArticlesByAuthor } from '../hooks/useArticlesByAuthor';
 import { useMobileHeader } from '../contexts/MobileHeaderContext';
@@ -268,12 +269,11 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
               background: 'linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%)',
         
             }}>
-              <img
+              <Image
                 src={author.banner_url}
                 alt={`${author.name} banner`}
+                fill
                 style={{
-                  width: '100%',
-                  height: '100%',
                   objectFit: 'cover',
                   objectPosition: 'center'
                 }}
@@ -494,7 +494,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
             <AuthorNewsletterSignup 
               author={author}
               onEmailSubmitted={(email, isAuthenticated) => {
-                console.log('Newsletter signup:', { email, isAuthenticated, author: author.name });
+                // Newsletter signup handled by AuthorNewsletterSignup component
               }}
             />
           </div>

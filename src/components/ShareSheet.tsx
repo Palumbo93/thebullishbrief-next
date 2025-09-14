@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X, MessageSquare, Share2, Copy, Check } from 'lucide-react';
+import { X, MessageSquare, Copy, Check } from 'lucide-react';
 import { SocialIcon } from 'react-social-icons';
 import { useTheme } from '../contexts/ThemeContext';
 

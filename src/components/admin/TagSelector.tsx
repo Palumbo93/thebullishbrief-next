@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { X, Plus, Search } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useAllTags } from '../../hooks/useDatabase';
-import { Tag } from '../../services/database';
 
 interface TagSelectorProps {
   selectedTags: string[];

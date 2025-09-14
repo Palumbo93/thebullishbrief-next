@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, Brain, Search, X, Copy, Eye } from 'lucide-react';
-import { usePrompts, usePromptActions, usePromptCategories } from '../../hooks/useDatabase';
+import { Brain } from 'lucide-react';
+import { usePrompts, usePromptCategories } from '../../hooks/useDatabase';
 import { promptFieldService } from '../../services/database';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';
@@ -10,7 +10,7 @@ import { DataTable, Column } from './DataTable';
 import { DeleteModal } from './DeleteModal';
 import { PromptCreateModal } from './PromptCreateModal';
 import { PromptEditModal } from './PromptEditModal';
-import type { Prompt, PromptCategory, PromptField } from '../../services/database';
+import type { Prompt, PromptField } from '../../services/database';
 
 interface PromptManagerProps {}
 

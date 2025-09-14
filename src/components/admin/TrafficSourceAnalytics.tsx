@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, Filter, Download, RefreshCw, ExternalLink, TrendingUp, Users, MousePointer, BarChart3, Activity } from 'lucide-react';
+import { Calendar, Filter, Download, RefreshCw, ExternalLink, TrendingUp, Users, BarChart3, Activity } from 'lucide-react';
 import { ClarityTrafficData } from '../../services/clarityApi';
 
 interface TrafficSourceAnalyticsProps {}

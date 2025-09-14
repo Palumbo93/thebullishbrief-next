@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Hash, Loader2, Settings } from 'lucide-react';
+import { Hash, Loader2, Settings } from 'lucide-react';
 import { BullRoom } from '../../lib/database.aliases';
 import { useUserPreferences } from '../../hooks/useUserPreferences';
 

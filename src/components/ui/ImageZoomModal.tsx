@@ -1,6 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Download, ExternalLink, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface ImageZoomModalProps {
   isOpen: boolean;
@@ -287,12 +288,11 @@ export const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
         justifyContent: 'center',
         cursor: 'default'
       }}>
-        <img
+        <Image
           src={imageUrl}
-          alt={imageAlt}
+          alt={imageAlt || ''}
+          fill
           style={{
-            maxWidth: '100%',
-            maxHeight: '100%',
             objectFit: 'contain',
             borderRadius: 'var(--radius-lg)',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',

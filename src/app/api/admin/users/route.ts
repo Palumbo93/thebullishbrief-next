@@ -13,7 +13,7 @@ import { AdminUserService } from '../../../../services/adminUserService';
  * GET /api/admin/users
  * Get all users with activity stats (admin only)
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Verify admin access
     await verifyAdminAccess();

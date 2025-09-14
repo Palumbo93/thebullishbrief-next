@@ -55,13 +55,10 @@ export class ClarityApiService {
       if (page && page !== 'all') {
         params.set('dimension2', 'Page');
         // In a real implementation, you might need to format the page parameter
-        console.log('Filtering by page:', page);
       }
 
       const url = `${this.baseUrl}?${params.toString()}`;
       
-      console.log('Fetching from URL:', url);
-      console.log('Using token:', this.apiToken ? 'Token provided' : 'No token');
 
       const response = await fetch(url, {
         method: 'GET',
@@ -71,17 +68,13 @@ export class ClarityApiService {
         },
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Response error text:', errorText);
         throw new Error(`Clarity API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('API Response:', data);
       
       return this.transformApiResponse(data);
     } catch (error) {
@@ -94,11 +87,9 @@ export class ClarityApiService {
    * Transform API response into our data structure
    */
   private transformApiResponse(response: any): ClarityTrafficData[] {
-    console.log('Transforming API response:', JSON.stringify(response, null, 2));
     
     // Handle different possible response structures
     if (!response) {
-      console.error('No response data received');
       return [];
     }
 
@@ -117,16 +108,12 @@ export class ClarityApiService {
       return this.transformDirectRowsResponse(response);
     }
 
-    console.error('Unexpected response structure:', response);
     return this.createMockData(); // Fallback to mock data for now
   }
 
   private transformStructuredResponse(response: ClarityApiResponse): ClarityTrafficData[] {
     const { dimensions, metrics, rows } = response.data;
     
-    console.log('Dimensions:', dimensions);
-    console.log('Metrics:', metrics);
-    console.log('Rows sample:', rows.slice(0, 3));
     
     // Find indices for our expected columns
     const sourceIndex = dimensions.indexOf('Source');
@@ -134,9 +121,6 @@ export class ClarityApiService {
     const engagementIndex = metrics.indexOf('EngagementTime');
     const scrollIndex = metrics.indexOf('ScrollDepth');
 
-    if (sourceIndex === -1) {
-      console.warn('Source dimension not found, available dimensions:', dimensions);
-    }
 
     return rows.map(row => {
       const source = row[sourceIndex] as string || 'Unknown';
@@ -156,7 +140,6 @@ export class ClarityApiService {
   }
 
   private transformArrayResponse(response: any[]): ClarityTrafficData[] {
-    console.log('Transforming array response:', response);
     return response.map((item, index) => ({
       source: item.source || item.dimension || `Source ${index + 1}`,
       sessions: Number(item.sessions || item.visits || item.count) || Math.floor(Math.random() * 1000) + 100,
@@ -168,7 +151,6 @@ export class ClarityApiService {
   }
 
   private transformDirectRowsResponse(response: any): ClarityTrafficData[] {
-    console.log('Transforming direct rows response:', response);
     return response.rows.map((row: any, index: number) => ({
       source: Array.isArray(row) ? row[0] : `Source ${index + 1}`,
       sessions: Array.isArray(row) ? Number(row[1]) || 100 : Math.floor(Math.random() * 1000) + 100,
@@ -180,7 +162,6 @@ export class ClarityApiService {
   }
 
   private createMockData(): ClarityTrafficData[] {
-    console.log('Creating mock data due to unexpected response structure');
     return [
       {
         source: 'Google',

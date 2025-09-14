@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BullLogoImg } from '../ui/BullLogo';
+import Image from 'next/image';
 
 interface MobileHeaderLogoProps {
   type: 'main' | 'company';
@@ -122,9 +123,11 @@ export const MobileHeaderLogo: React.FC<MobileHeaderLogoProps> = ({
           className="mobile-header-logo"
         />
       ) : shouldShowImage ? (
-        <img
-          src={src}
+        <Image
+          src={src || ''}
           alt={alt || `${type} logo`}
+          width={120}
+          height={40}
           style={getImageStyles()}
           onError={handleImageError}
         />

@@ -6,7 +6,6 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
 import { useConsent } from '../../contexts/ConsentContext';
 import { CONSENT_CATEGORIES } from '../../types/consent';
 import { Button } from '../ui/Button';

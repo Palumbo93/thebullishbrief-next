@@ -2,8 +2,7 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { useAuth } from '../contexts/AuthContext';
 import { BullRoomMessageService } from '../services/bullRoomMessages';
 import { BullRoomMessage } from '../types/bullRoom.types';
-import { useState, useCallback, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { useCallback, useMemo } from 'react';
 import { useToast } from './useToast';
 
 

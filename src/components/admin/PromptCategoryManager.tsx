@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, MessageSquare, Search, X, Copy } from 'lucide-react';
-import { usePromptCategories, usePromptCategoryActions } from '../../hooks/useDatabase';
+import { MessageSquare } from 'lucide-react';
+import { usePromptCategories } from '../../hooks/useDatabase';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';
 import { DataTable, Column } from './DataTable';
 import { EditModal, FormField } from './EditModal';
 import { DeleteModal } from './DeleteModal';
 import { CreateModal } from './CreateModal';
-import { DatabaseTest } from './DatabaseTest';
 import type { PromptCategory } from '../../services/database';
 
 interface PromptCategoryManagerProps {}

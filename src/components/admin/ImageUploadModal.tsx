@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Image as ImageIcon, Upload, ExternalLink } from 'lucide-react';
+import { X, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 import { EntityImageStorageService } from '../../lib/storage';
 
 interface ImageUploadModalProps {
@@ -265,9 +266,11 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   overflow: 'hidden',
                   background: 'var(--color-bg-secondary)'
                 }}>
-                  <img
+                  <Image
                     src={URL.createObjectURL(uploadedFile)}
                     alt="Preview"
+                    width={400}
+                    height={200}
                     style={{
                       width: '100%',
                       height: '200px',

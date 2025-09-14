@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    let revalidatedPaths: string[] = [];
+    const revalidatedPaths: string[] = [];
     let triggeredDeploy = false;
 
     // Revalidate based on type

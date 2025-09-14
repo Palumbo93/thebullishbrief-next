@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Eye, EyeOff, AlertCircle, MoreHorizontal } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { FormFieldProps } from './types/ui.types';
 
 export const FormField: React.FC<FormFieldProps> = ({

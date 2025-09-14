@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clock, Briefcase, Files, ExternalLink } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Trash2, Clock, Files, ExternalLink } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-import { ToggleSwitch } from './ToggleSwitch';
 // Removed BuildStatusPopup import - no longer needed with on-demand revalidation
 import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';

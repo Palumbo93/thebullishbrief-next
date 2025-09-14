@@ -1,6 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Download, ExternalLink, X } from 'lucide-react';
+import Image from 'next/image';
 import { ActionButton } from './ActionButton';
 
 interface ImagePreviewModalProps {
@@ -95,12 +96,11 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <img
+        <Image
           src={imageUrl}
           alt={imageName}
+          fill
           style={{
-            maxWidth: '100%',
-            maxHeight: '100%',
             objectFit: 'contain',
             borderRadius: 'var(--radius-lg)',
           }}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock, User } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { SignInModalProps } from '../types/auth.types';
 import { FormField } from '../../ui';
 import { AuthButton } from './AuthButton';
@@ -9,7 +9,6 @@ import { useAuthSubmit } from '../hooks/useAuthSubmit';
 import { FONT_URLS } from '../utils/constants';
 import { ModalCloseButton } from '../../ModalCloseButton';
 import { OTPVerificationModal } from './OTPVerificationModal';
-import { BRAND_COPY } from '../../../data/copy';
 import { useViewportHeightOnly } from '../../../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../../../utils/viewportUtils';
 

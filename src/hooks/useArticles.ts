@@ -1,7 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, hasSupabaseCredentials } from '../lib/supabase';
-import { Tables } from '../lib/database.types';
-import { Article as DatabaseArticle, Category, Tag } from '../lib/database.aliases';
 import { queryKeys } from '../lib/queryClient';
 import { CACHE_TTL } from '../lib/cacheStorage';
 import { useAuth } from '../contexts/AuthContext';
@@ -493,7 +491,7 @@ const fetchRelatedArticles = async (currentArticle: Article, limit: number = 3):
 
   // Build a query to find related articles
   // Priority: same category + same tags > same category > same author > recent articles
-  let { data: relatedArticles, error } = await supabase
+  const { data: relatedArticles, error } = await supabase
     .from('articles')
     .select(`
       *,

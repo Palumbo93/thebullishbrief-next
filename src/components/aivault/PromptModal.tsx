@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Copy, CheckCircle, Play, Download, AlertCircle, ArrowLeft } from 'lucide-react';
+import { X, Copy, Download, AlertCircle, ArrowLeft } from 'lucide-react';
 
 import { PromptField } from '../../services/database';
 import { useToast } from '../../hooks/useToast';

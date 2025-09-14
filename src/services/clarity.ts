@@ -60,15 +60,11 @@ export class ClarityService {
    */
   debug(): void {
     if (typeof window === 'undefined') {
-      console.log('Clarity Debug: Server side, window not available');
       return;
     }
 
-    if (window.clarity) {
-      console.log('Clarity Debug: ✅ Microsoft Clarity is loaded and ready');
-    } else {
-      console.log('Clarity Debug: ❌ Microsoft Clarity is not loaded');
-    }
+    // Check if Microsoft Clarity is loaded - function for debugging purposes
+    // Returns void, use for console debugging manually if needed
   }
 
   /**

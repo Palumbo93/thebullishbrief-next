@@ -1,5 +1,4 @@
 import { supabase } from '../lib/supabase';
-import { generateSlug, generateUniqueSlug } from '../lib/utils';
 
 // Types for database entities
 export interface Category {

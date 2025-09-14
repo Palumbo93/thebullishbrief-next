@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, Folder, Search, X, Copy } from 'lucide-react';
-import { useCategories, useCategoryActions } from '../../hooks/useDatabase';
+import { Plus, Folder } from 'lucide-react';
+import { useCategories } from '../../hooks/useDatabase';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';
 import { DataTable, Column } from './DataTable';

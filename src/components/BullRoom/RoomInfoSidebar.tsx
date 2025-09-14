@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Hash, Info, Users } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { BullRoom } from '../../lib/database.aliases';
 import { BullRoomMessage } from '../../types/bullRoom.types';
 import { UserRow } from '../ui/UserRow';

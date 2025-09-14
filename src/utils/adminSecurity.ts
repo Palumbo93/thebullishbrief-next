@@ -23,7 +23,7 @@ async function createAdminSupabaseClient() {
   // Try to find the Supabase session cookies
   // Supabase typically uses cookies like: sb-[project-ref]-auth-token
   let accessToken = null;
-  let refreshToken = null;
+  const refreshToken = null;
   
   for (const cookie of allCookies) {
     if (cookie.name.includes('auth-token') && !cookie.name.includes('refresh')) {

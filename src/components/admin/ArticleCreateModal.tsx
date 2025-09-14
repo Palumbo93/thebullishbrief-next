@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, FileText, ArrowLeft, Upload, Image as ImageIcon, Clock } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Clock } from 'lucide-react';
 import { useCategories } from '../../hooks/useDatabase';
 import { useAuthors } from '../../hooks/useDatabase';
 import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
@@ -13,21 +13,7 @@ import { StatusSelector } from './StatusSelector';
 import { useCreateUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 
-interface Article {
-  id: number;
-  title: string;
-  subtitle: string;
-  content: string;
-  author: string;
-  category: string;
-  status: 'draft' | 'published' | 'archived';
-  created_at: string;
-  updated_at: string;
-  view_count: number;
-  slug?: string;
-  featured_image_url?: string;
-  featured_image_alt?: string;
-}
+// Article interface moved to database types
 
 interface ModalArticle {
   id: string;
@@ -56,7 +42,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
-  const { revalidateArticle, isRevalidating } = useOnDemandRevalidation();
+  const { revalidateArticle } = useOnDemandRevalidation();
   
   const [formData, setFormData] = useState({
     title: '',

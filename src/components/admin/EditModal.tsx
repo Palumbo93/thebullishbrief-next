@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Copy, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Copy, Trash2, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 import { generateSlug } from '../../lib/utils';
 import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 
@@ -446,9 +447,11 @@ export function EditModal<T>({
                     overflow: 'hidden',
                     background: 'var(--color-bg-secondary)'
                   }}>
-                    <img
+                    <Image
                       src={uploadedImage.url}
                       alt={uploadedImage.alt}
+                      width={400}
+                      height={200}
                       style={{
                         width: '100%',
                         height: '200px',
@@ -591,9 +594,11 @@ export function EditModal<T>({
                     overflow: 'hidden',
                     background: 'var(--color-bg-secondary)'
                   }}>
-                    <img
+                    <Image
                       src={uploadedBanner.url}
                       alt={uploadedBanner.alt}
+                      width={400}
+                      height={150}
                       style={{
                         width: '100%',
                         height: '150px',

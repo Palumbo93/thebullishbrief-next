@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hash, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { BullRoom } from '../../lib/database.aliases';
 
 /**

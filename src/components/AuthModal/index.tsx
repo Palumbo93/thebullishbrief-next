@@ -3,8 +3,6 @@ import { AuthModalProps } from './types/auth.types';
 import { SignInModal } from './components/SignInModal';
 import { SignUpModal } from './components/SignUpModal';
 
-import { SUCCESS_MESSAGES } from './utils/constants';
-
 const AuthModalContent: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'signin' }) => {
   const [isSignUp, setIsSignUp] = useState(initialMode === 'signup');
   const [isReady, setIsReady] = useState(false);

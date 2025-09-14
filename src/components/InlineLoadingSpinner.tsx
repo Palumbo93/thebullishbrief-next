@@ -1,5 +1,4 @@
 import React from 'react';
-import { TrendingUp } from 'lucide-react';
 
 interface InlineLoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';

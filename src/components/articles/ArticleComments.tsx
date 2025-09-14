@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, MessageSquare, Reply, Edit, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, MessageSquare, Reply, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 import { useArticleComments, useCreateComment, useDeleteComment, useAddReaction, useRemoveReaction } from '../../hooks/useArticleComments';

@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Upload, Image as ImageIcon, Clock, Briefcase } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Clock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-import { ToggleSwitch } from './ToggleSwitch';
 import { useCreateUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 import { validateTickerInput } from '../../utils/tickerUtils';

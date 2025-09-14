@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ensureStorageBuckets, deleteImage, STORAGE_BUCKETS } from '../lib/storage';
+import { ensureStorageBuckets, deleteImage } from '../lib/storage';
 
 interface UploadSession {
   sessionId: string;

@@ -1,5 +1,3 @@
-import { Search, Bookmark, Share } from 'lucide-react';
-
 // Define the types for mobile header configuration
 export interface MobileHeaderAction {
   type: 'search' | 'bookmark' | 'share' | 'comment' | 'more';

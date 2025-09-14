@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { COMPONENT_SIZES, ANIMATIONS } from '../utils/constants';
+import { COMPONENT_SIZES } from '../utils/constants';
 
 // Modal container styles
 export const modalBackdrop: CSSProperties = {

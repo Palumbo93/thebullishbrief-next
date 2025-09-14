@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, MessageSquare, Search, Filter, X, ChevronDown } from 'lucide-react';
+import { Plus, MessageSquare, Search, Filter, X, ChevronDown } from 'lucide-react';
 import { useAdminBullRooms, useCreateBullRoom, useUpdateBullRoom, useDeleteBullRoom } from '../../hooks/useAdminBullRooms';
 import { BullRoomCreateModal } from './BullRoomCreateModal';
 import { BullRoomEditModal } from './BullRoomEditModal';

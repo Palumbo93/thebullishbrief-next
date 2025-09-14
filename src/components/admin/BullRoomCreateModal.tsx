@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, MessageSquare, Plus, Edit, Trash2 } from 'lucide-react';
+import { X, Save, Plus, Edit, Trash2 } from 'lucide-react';
 import { BullRoom } from '../../lib/database.aliases';
 
 interface BullRoomCreateModalProps {

@@ -15,7 +15,6 @@ import {
   DEFAULT_CONSENT 
 } from '../types/consent';
 import { ConsentService } from '../services/consent';
-import { initConsentDebug } from '../utils/consentDebug';
 
 const ConsentContext = createContext<ConsentContextType | undefined>(undefined);
 
@@ -77,8 +76,6 @@ export const ConsentProvider: React.FC<ConsentProviderProps> = ({ children }) =>
       setConsent(prev => ({ ...prev, initialized: true }));
     };
 
-    // Initialize debug tools in development
-    initConsentDebug();
 
     // Small delay to ensure GTM script is loaded
     setTimeout(initializeConsent, 100);

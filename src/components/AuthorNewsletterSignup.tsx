@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Check, Mail } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEmailSubmission } from '../hooks/useEmailSubmission';
 import { submitToMailchimp } from '../services/mailchimp';

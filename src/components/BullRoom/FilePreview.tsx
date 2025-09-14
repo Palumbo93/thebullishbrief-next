@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { File as FileIcon } from 'lucide-react';
+import Image from 'next/image';
 import { formatFileSize } from './utils/formatters';
 import { ImagePreviewModal } from './ImagePreviewModal';
 
@@ -30,9 +31,11 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
     return (
       <>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', alignItems: 'flex-start' }} className={className}>
-          <img 
+          <Image 
             src={fileData.url} 
             alt={content || fileData.name}
+            width={200}
+            height={200}
             style={{
               width: '200px',
               height: '200px',

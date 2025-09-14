@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Eye, Trash2, Star, StarOff, Search, Filter, X, ChevronDown, Briefcase } from 'lucide-react';
+import { Plus, Star, StarOff, Search, Filter, X, ChevronDown, Briefcase } from 'lucide-react';
 import { useAllBriefs } from '../../hooks/useBriefs';
 import { BriefCreateModal } from './BriefCreateModal';
 import { BriefEditModal } from './BriefEditModal';

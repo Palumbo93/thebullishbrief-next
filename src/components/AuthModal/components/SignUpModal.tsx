@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { SignUpModalProps } from '../types/auth.types';
 import { FormField } from '../../ui';
 import { AuthButton } from './AuthButton';

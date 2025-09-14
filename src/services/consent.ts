@@ -238,7 +238,6 @@ export class ConsentService {
     this.auditTrail.push(auditEvent);
     
     // In production, send to analytics or logging service
-    console.log('Consent audit:', auditEvent);
   }
 
   /**

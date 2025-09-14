@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useConsent } from '../../contexts/ConsentContext';
 import { Button } from '../ui/Button';
 
@@ -87,7 +88,7 @@ export const ConsentBanner: React.FC = () => {
         </p>
 
         {/* Learn More Link */}
-        <a
+        <Link
           href="/cookies"
           style={{
             fontSize: 'var(--text-xs)',
@@ -106,7 +107,7 @@ export const ConsentBanner: React.FC = () => {
           }}
         >
           Learn more about our cookie policy
-        </a>
+        </Link>
 
         {/* Actions */}
         <div style={{

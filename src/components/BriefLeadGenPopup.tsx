@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { X, Check } from 'lucide-react';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useAuth } from '../contexts/AuthContext';
@@ -298,14 +299,12 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
                   ? 'var(--radius-sm) var(--radius-sm) 0 0'
                   : 'var(--radius-sm) 0 0 var(--radius-sm)'
               }}>
-                <img
+                <Image
                   src={brief.popup_featured_image || brief.featured_image_url || ''}
                   alt={`${brief.company_name || 'Company'} featured image`}
-                  loading="eager"
-                  decoding="async"
+                  fill
+                  priority
                   style={{
-                    width: '100%',
-                    height: '100%',
                     objectFit: 'cover',
                     objectPosition: 'center'
                   }}
@@ -465,14 +464,12 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
                   ? 'var(--radius-sm) var(--radius-sm) 0 0'
                   : 'var(--radius-sm) 0 0 var(--radius-sm)'
               }}>
-                <img
+                <Image
                   src={brief.popup_featured_image || brief.featured_image_url || ''}
                   alt={`${brief.company_name || 'Company'} featured image`}
-                  loading="eager"
-                  decoding="async"
+                  fill
+                  priority
                   style={{
-                    width: '100%',
-                    height: '100%',
                     objectFit: 'cover',
                     objectPosition: 'center'
                   }}

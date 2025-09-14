@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import Image from 'next/image';
 import { X, Save, Image as ImageIcon, Trash2, Clock, Files, ExternalLink } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -9,7 +10,6 @@ import { queryKeys } from '../../lib/queryClient';
 import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-// Removed BuildStatusPopup import - no longer needed with on-demand revalidation
 import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 import { validateTickerInput } from '../../utils/tickerUtils';
@@ -984,9 +984,11 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                       overflow: 'hidden',
                       background: 'var(--color-bg-secondary)'
                     }}>
-                      <img
+                      <Image
                         src={featuredImage.url}
                         alt={featuredImage.alt}
+                        width={400}
+                        height={200}
                         style={{
                           width: '100%',
                           height: '200px',

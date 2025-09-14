@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import { useConsent } from '../../contexts/ConsentContext';
 import { CONSENT_CATEGORIES } from '../../types/consent';
 import { Button } from '../ui/Button';
@@ -153,7 +154,7 @@ export const ConsentModal: React.FC = () => {
               </p>
 
               {/* Cookie Policy Link */}
-              <a 
+              <Link 
                 href="/cookies" 
                 style={{
                   fontSize: 'var(--text-xs)',
@@ -170,7 +171,7 @@ export const ConsentModal: React.FC = () => {
                 }}
               >
                 Learn more about our cookie policy
-              </a>
+              </Link>
             </div>
 
             {/* Content */}

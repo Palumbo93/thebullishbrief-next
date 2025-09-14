@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import Image from 'next/image';
 import { X, Save, Image as ImageIcon, Trash2, Copy, Clock, ExternalLink } from 'lucide-react';
 import { useCategories, useAuthors, useArticleTags, useAllTags } from '../../hooks/useDatabase';
 import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-// Removed BuildStatusPopup import - no longer needed with ISR
 import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { ArticleDeleteModal } from './ArticleDeleteModal';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
@@ -714,9 +714,11 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
                       overflow: 'hidden',
                       background: 'var(--color-bg-secondary)'
                     }}>
-                      <img
+                      <Image
                         src={featuredImage.url}
                         alt={featuredImage.alt}
+                        width={400}
+                        height={200}
                         style={{
                           width: '100%',
                           height: '200px',

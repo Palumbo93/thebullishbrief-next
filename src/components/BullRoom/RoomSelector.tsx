@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Hash, Loader2, Settings } from 'lucide-react';
 import { BullRoom } from '../../lib/database.aliases';
 import { useUserPreferences } from '../../hooks/useUserPreferences';
@@ -263,7 +264,7 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
 
         }}>
           Edit your{' '}
-          <a
+          <Link
             href="/account-settings"
             style={{
               color: 'var(--color-brand-primary)',
@@ -279,7 +280,7 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
             }}
           >
             account settings
-          </a>
+          </Link>
           {' '}preferences to see rooms for you
         </p>
       </div>

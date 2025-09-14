@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
+import { ExternalLink } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTrackBriefEngagement } from '../hooks/useClarityAnalytics';
 import brokerageConfig from '../data/brokerageConfig.json';
@@ -106,12 +106,11 @@ const BrokerageWidget: React.FC<BrokerageWidgetProps> = ({
             }}
           >
             <div className="brokerage-logo-container">
-              <Image
+              <img
                 src={theme === 'dark' && config.logoUrlDark ? config.logoUrlDark : config.logoUrl}
                 alt={`${config.name} logo`}
-                width={120}
-                height={40}
                 className="brokerage-logo"
+                loading="lazy"
               />
             </div>
           </a>

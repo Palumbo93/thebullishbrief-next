@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import Image from 'next/image';
 import { X, Save, Image as ImageIcon, Clock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -788,9 +789,11 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                   overflow: 'hidden',
                   background: 'var(--color-bg-secondary)'
                 }}>
-                  <img
+                  <Image
                     src={featuredImage.url}
                     alt={featuredImage.alt}
+                    width={400}
+                    height={200}
                     style={{
                       width: '100%',
                       height: '200px',

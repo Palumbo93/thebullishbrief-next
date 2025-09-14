@@ -26,7 +26,8 @@ export async function generateStaticParams() {
 export const dynamicParams = true;
 
 // Enable static generation with revalidation
-export const revalidate = 3600; // Revalidate every hour
+// Shorter revalidation for ISR - allows new content to appear quickly
+export const revalidate = 60; // Revalidate every minute for new content
 
 // Generate metadata for each author at root level
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

@@ -118,8 +118,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-// Enable static generation with revalidation
-export const revalidate = 3600; // Revalidate every hour
+// Enable static generation with revalidation  
+// Shorter revalidation for ISR - allows new content to appear quickly
+export const revalidate = 60; // Revalidate every minute for new content
 
 interface Props {
   params: Promise<{ slug: string }>;

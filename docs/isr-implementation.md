@@ -129,12 +129,26 @@ If ISR causes issues, you can temporarily revert by:
 2. **Restore** original `generateStaticParams()` functions
 3. **Redeploy** to return to full static generation
 
+## ✅ Additional Cleanup Completed
+
+### Removed Automatic Build Triggers
+- **ArticleCreateModal**: Removed `triggerBuild()` call after article creation
+- **ArticleEditModal**: Removed `triggerBuild()` call after article updates  
+- **BriefCreateModal**: Removed `triggerBuild()` call after brief creation
+- **Cleaned up imports**: Removed unused `useBuildTrigger` and `BuildStatusPopup` imports
+
+### Why This Matters
+- **No redundancy**: ISR handles everything automatically
+- **Faster publishing**: Content appears in 2-3 seconds instead of 5-10 minutes
+- **No wasted resources**: No unnecessary rebuilds and deployments
+- **Cleaner code**: Removed unused build trigger logic
+
 ## Next Steps
 
 1. **Monitor performance** after deployment
 2. **Adjust revalidation times** if needed (currently 1 hour)
-3. **Consider implementing** on-demand revalidation webhooks from CMS
-4. **Remove** manual build triggers from admin interface
+3. **Consider implementing** on-demand revalidation webhooks from CMS for instant updates
+4. **Optional**: Remove manual build trigger UI from admin interface (keep for emergency use)
 
 ---
 

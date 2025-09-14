@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, Image as ImageIcon, Trash2, Copy, Clock, ExternalLink } from 'lucide-react';
 import { useCategories, useAuthors, useArticleTags, useAllTags } from '../../hooks/useDatabase';
-// Removed useBuildTrigger import - now using ISR for automatic content publishing
+import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
@@ -47,7 +47,7 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
-  // Note: Removed useBuildTrigger since we now use ISR for automatic content publishing
+  const { revalidateArticle, isRevalidating } = useOnDemandRevalidation();
   
   // Fetch article tags and all available tags
   const { tags: articleTags, loading: tagsLoading } = useArticleTags(article.id);
@@ -181,9 +181,15 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
       
       setHasUnsavedChanges(false);
       
-      console.log('✅ Article updated successfully:', formData.title, '- Changes will be visible via ISR within 1 hour or on next visit');
+      console.log('✅ Article updated successfully:', formData.title, '- Triggering on-demand revalidation...');
       
-      // Note: No build trigger needed with ISR - content automatically revalidates
+      // Trigger on-demand revalidation for instant updates
+      const revalidationResult = await revalidateArticle(formData.slug);
+      if (revalidationResult.success) {
+        console.log('🔄 Article page cache updated - changes visible immediately!');
+      } else {
+        console.warn('⚠️ Revalidation failed, but article was updated:', revalidationResult.error);
+      }
     } catch (error) {
       console.error('Error updating article:', error);
     } finally {

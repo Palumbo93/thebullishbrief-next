@@ -160,8 +160,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-// Enable static generation with revalidation
-export const revalidate = 3600; // Revalidate every hour
+// Enable static generation WITHOUT automatic revalidation
+// Articles don't change after publishing, so we only use on-demand revalidation
+// export const revalidate = false; // No automatic revalidation - only on-demand
 
 interface Props {
   params: Promise<{ slug: string }>;

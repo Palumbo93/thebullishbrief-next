@@ -6,11 +6,11 @@ import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clo
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
-import { useBuildTrigger } from '../../hooks/useBuildTrigger';
+import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
 import { ToggleSwitch } from './ToggleSwitch';
-import { BuildStatusPopup } from './BuildStatusPopup';
+// Removed BuildStatusPopup import - no longer needed with on-demand revalidation
 import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 import { validateTickerInput } from '../../utils/tickerUtils';
@@ -23,7 +23,7 @@ interface BriefEditModalProps {
 
 export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }) => {
   const queryClient = useQueryClient();
-  const { triggerBuild, buildStatus } = useBuildTrigger();
+  const { revalidateBrief, isRevalidating } = useOnDemandRevalidation();
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
@@ -335,11 +335,15 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         
         setHasUnsavedChanges(false);
         
-        // Trigger automatic build for updated brief
-        const buildReason = slugChanged 
-          ? `Brief updated with slug change: "${formData.title}" (${brief.slug || 'no-slug'} → ${formData.slug})`
-          : `Brief updated: "${formData.title}"`;
-        await triggerBuild(buildReason);
+        console.log('✅ Brief updated successfully:', formData.title, '- Triggering on-demand revalidation...');
+        
+        // Trigger on-demand revalidation for instant updates
+        const revalidationResult = await revalidateBrief(formData.slug);
+        if (revalidationResult.success) {
+          console.log('🔄 Brief page cache updated - changes visible immediately!');
+        } else {
+          console.warn('⚠️ Revalidation failed, but brief was updated:', revalidationResult.error);
+        }
         
         onClose(); // Files already in organized location
       }

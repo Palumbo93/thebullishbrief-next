@@ -6,7 +6,7 @@ import { X, Save, Upload, Image as ImageIcon, Clock, Briefcase } from 'lucide-re
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
-// Removed useBuildTrigger import - now using ISR for automatic content publishing
+import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
 import { ToggleSwitch } from './ToggleSwitch';
@@ -20,7 +20,7 @@ interface BriefCreateModalProps {
 
 export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) => {
   const queryClient = useQueryClient();
-  // Note: Removed useBuildTrigger since we now use ISR for automatic content publishing
+  const { revalidateBrief, isRevalidating } = useOnDemandRevalidation();
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
@@ -325,7 +325,15 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
         setHasUnsavedChanges(false);
         commitCreate(); // Commit the session - files are now permanent
         
-        console.log('✅ Brief created successfully:', formData.title, '- Will be available via ISR on first visit');
+        console.log('✅ Brief created successfully:', formData.title, '- Triggering on-demand revalidation...');
+        
+        // Trigger on-demand revalidation for instant availability
+        const revalidationResult = await revalidateBrief(formData.slug);
+        if (revalidationResult.success) {
+          console.log('🔄 Brief page cache updated - available immediately!');
+        } else {
+          console.warn('⚠️ Revalidation failed, but brief was created:', revalidationResult.error);
+        }
         
         onClose();
       }

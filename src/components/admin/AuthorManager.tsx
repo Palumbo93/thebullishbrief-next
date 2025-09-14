@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Edit, Trash2, User, Search, X, Copy } from 'lucide-react';
 import { useAuthors } from '../../hooks/useDatabase';
-import { useBuildTrigger } from '../../hooks/useBuildTrigger';
+import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';
 import { DataTable, Column } from './DataTable';
@@ -19,7 +19,7 @@ interface AuthorManagerProps {}
 
 export const AuthorManager: React.FC<AuthorManagerProps> = () => {
   const { data: authors, loading, create, update, delete: deleteAuthor } = useAuthors();
-  const { triggerBuild, buildStatus } = useBuildTrigger();
+  const { revalidateAuthor, isRevalidating } = useOnDemandRevalidation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -46,8 +46,15 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
       await create(authorData);
       setShowCreateModal(false);
       
-      // Trigger automatic build for new author
-      await triggerBuild(`New author created: "${authorData.name}"`);
+      console.log('✅ Author created successfully:', authorData.name, '- Triggering on-demand revalidation...');
+      
+      // Trigger on-demand revalidation for instant availability
+      const revalidationResult = await revalidateAuthor(authorData.slug);
+      if (revalidationResult.success) {
+        console.log('🔄 Author page cache updated - available immediately!');
+      } else {
+        console.warn('⚠️ Revalidation failed, but author was created:', revalidationResult.error);
+      }
     } catch (error) {
       console.error('Error creating author:', error);
     }
@@ -62,11 +69,15 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
       setShowEditModal(false);
       setSelectedAuthor(null);
       
-      // Trigger automatic build for updated author
-      const buildReason = slugChanged 
-        ? `Author updated with slug change: "${authorData.name}" (${selectedAuthor?.slug || 'no-slug'} → ${authorData.slug})`
-        : `Author updated: "${authorData.name}"`;
-      await triggerBuild(buildReason);
+      console.log('✅ Author updated successfully:', authorData.name, '- Triggering on-demand revalidation...');
+      
+      // Trigger on-demand revalidation for instant updates
+      const revalidationResult = await revalidateAuthor(authorData.slug || selectedAuthor?.slug || '');
+      if (revalidationResult.success) {
+        console.log('🔄 Author page cache updated - changes visible immediately!');
+      } else {
+        console.warn('⚠️ Revalidation failed, but author was updated:', revalidationResult.error);
+      }
     } catch (error) {
       console.error('Error updating author:', error);
     }

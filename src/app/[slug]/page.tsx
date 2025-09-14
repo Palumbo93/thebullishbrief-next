@@ -25,9 +25,9 @@ export async function generateStaticParams() {
 // Enable dynamic params for ISR - allows generating pages on-demand for unknown routes
 export const dynamicParams = true;
 
-// Enable static generation with revalidation
-// Shorter revalidation for ISR - allows new content to appear quickly
-export const revalidate = 60; // Revalidate every minute for new content
+// Enable static generation WITHOUT automatic revalidation
+// Author content doesn't change after publishing, so we only use on-demand revalidation
+// export const revalidate = false; // No automatic revalidation - only on-demand
 
 // Generate metadata for each author at root level
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

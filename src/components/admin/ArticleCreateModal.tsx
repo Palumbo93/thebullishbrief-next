@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, Save, FileText, ArrowLeft, Upload, Image as ImageIcon, Clock } from 'lucide-react';
 import { useCategories } from '../../hooks/useDatabase';
 import { useAuthors } from '../../hooks/useDatabase';
-// Removed useBuildTrigger import - now using ISR for automatic content publishing
+import { useOnDemandRevalidation } from '../../hooks/useOnDemandRevalidation';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
@@ -56,7 +56,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
-  // Note: Removed useBuildTrigger since we now use ISR for automatic content publishing
+  const { revalidateArticle, isRevalidating } = useOnDemandRevalidation();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -159,9 +159,17 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
       setHasUnsavedChanges(false);
       commitCreate(); // Mark session as committed - files are already in final location
       
-      console.log('✅ Article created successfully:', formData.title, '- Will be available via ISR on first visit');
+      console.log('✅ Article created successfully:', formData.title, '- Triggering on-demand revalidation...');
       
-      onClose(); // Close modal after successful creation
+      // Trigger on-demand revalidation for instant availability
+      const revalidationResult = await revalidateArticle(formData.slug);
+      if (revalidationResult.success) {
+        console.log('🔄 Article page cache updated - available immediately!');
+      } else {
+        console.warn('⚠️ Revalidation failed, but article was created:', revalidationResult.error);
+      }
+      
+      onClose(); // Close modal after successful creation and revalidation
     } catch (error) {
       console.error('❌ Error in article creation flow:', error);
     } finally {

@@ -49,11 +49,15 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
       console.log('✅ Author created successfully:', authorData.name, '- Triggering on-demand revalidation...');
       
       // Trigger on-demand revalidation for instant availability
-      const revalidationResult = await revalidateAuthor(authorData.slug);
-      if (revalidationResult.success) {
-        console.log('🔄 Author page cache updated - available immediately!');
+      if (authorData.slug) {
+        const revalidationResult = await revalidateAuthor(authorData.slug);
+        if (revalidationResult.success) {
+          console.log('🔄 Author page cache updated - available immediately!');
+        } else {
+          console.warn('⚠️ Revalidation failed, but author was created:', revalidationResult.error);
+        }
       } else {
-        console.warn('⚠️ Revalidation failed, but author was created:', revalidationResult.error);
+        console.warn('⚠️ Author created but no slug provided - skipping revalidation');
       }
     } catch (error) {
       console.error('Error creating author:', error);
@@ -72,11 +76,16 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
       console.log('✅ Author updated successfully:', authorData.name, '- Triggering on-demand revalidation...');
       
       // Trigger on-demand revalidation for instant updates
-      const revalidationResult = await revalidateAuthor(authorData.slug || selectedAuthor?.slug || '');
-      if (revalidationResult.success) {
-        console.log('🔄 Author page cache updated - changes visible immediately!');
+      const slugToRevalidate = authorData.slug || selectedAuthor?.slug;
+      if (slugToRevalidate) {
+        const revalidationResult = await revalidateAuthor(slugToRevalidate);
+        if (revalidationResult.success) {
+          console.log('🔄 Author page cache updated - changes visible immediately!');
+        } else {
+          console.warn('⚠️ Revalidation failed, but author was updated:', revalidationResult.error);
+        }
       } else {
-        console.warn('⚠️ Revalidation failed, but author was updated:', revalidationResult.error);
+        console.warn('⚠️ Author updated but no slug available - skipping revalidation');
       }
     } catch (error) {
       console.error('Error updating author:', error);

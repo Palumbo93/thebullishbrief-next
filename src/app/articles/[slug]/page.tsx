@@ -6,6 +6,57 @@ import { Layout } from '../../../components/Layout';
 import { ArticlePageClient } from '../../../page-components/ArticlePageClient';
 import { fetchArticleBySlug, fetchAllArticleSlugs, fetchArticleBySlugForMetadata } from '../../../hooks/useArticles';
 
+/**
+ * Extracts a clean meta description from HTML content
+ * @param htmlContent - The HTML content to extract text from
+ * @param maxLength - Maximum length of the description (default: 155)
+ * @returns Clean text suitable for meta description
+ */
+function extractMetaDescription(htmlContent: string, maxLength: number = 155): string {
+  if (!htmlContent) return '';
+  
+  // Remove HTML tags
+  const textContent = htmlContent
+    .replace(/<[^>]*>/g, ' ') // Remove all HTML tags
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .trim();
+  
+  // If content is short enough, return as is
+  if (textContent.length <= maxLength) {
+    return textContent;
+  }
+  
+  // Try to get as close to 155 characters as possible while ending at a complete word
+  const truncated = textContent.substring(0, maxLength);
+  const lastSpaceIndex = truncated.lastIndexOf(' ');
+  
+  // If we can find a word boundary reasonably close to the target length, use it
+  if (lastSpaceIndex > maxLength * 0.85) {
+    return textContent.substring(0, lastSpaceIndex).trim() + '...';
+  }
+  
+  // Otherwise, try to find a sentence ending within a reasonable range
+  const extendedTruncated = textContent.substring(0, maxLength + 30); // Look a bit further
+  const lastSentenceEnd = Math.max(
+    extendedTruncated.lastIndexOf('.'),
+    extendedTruncated.lastIndexOf('!'),
+    extendedTruncated.lastIndexOf('?')
+  );
+  
+  // If we found a sentence ending within reasonable range, use that
+  if (lastSentenceEnd >= maxLength * 0.7 && lastSentenceEnd <= maxLength + 25) {
+    return textContent.substring(0, lastSentenceEnd + 1).trim();
+  }
+  
+  // Fallback: use the word boundary or hard truncate with ellipsis
+  if (lastSpaceIndex > maxLength * 0.7) {
+    return textContent.substring(0, lastSpaceIndex).trim() + '...';
+  }
+  
+  // Final fallback: hard truncate with ellipsis
+  return truncated.trim() + '...';
+}
+
 // Generate static params for only the most recent/popular articles at build time
 // New articles will be generated on-demand via ISR
 export async function generateStaticParams() {
@@ -41,7 +92,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     const articleUrl = `https://bullishbrief.com/articles/${slug}`;
     const articleImage = article.featured_image_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png';
-    const description = article.subtitle || article.title;
+    const description = article.content ? extractMetaDescription(article.content) : article.subtitle || article.title;
     
     return {
       title: `${article.title} | The Bullish Brief`,
@@ -104,7 +155,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     console.error('Error generating metadata for article:', error);
     return {
       title: 'Article - The Bullish Brief',
-      description: 'Your daily dose of bullish market insights and financial analysis',
+      description: 'Independent market intelligence for investors. News, deep dives, and opinions on market trends and company developments.',
     };
   }
 }
@@ -135,11 +186,12 @@ export default async function ArticlePageWrapper({ params }: Props) {
   }
 
   // Generate enhanced JSON-LD schema for NewsArticle
+  const description = rawArticle.content ? extractMetaDescription(rawArticle.content) : rawArticle.subtitle || rawArticle.title;
   const newsArticleSchema = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: rawArticle.title,
-    description: rawArticle.subtitle || rawArticle.title,
+    description: description,
     image: {
       '@type': 'ImageObject',
       url: rawArticle.featured_image_url || 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
@@ -228,7 +280,7 @@ export default async function ArticlePageWrapper({ params }: Props) {
       'https://twitter.com/thebullishbrief',
       'https://linkedin.com/company/thebullishbrief'
     ],
-    description: 'Your daily dose of bullish market insights and financial analysis',
+    description: 'Independent market intelligence for investors. News, deep dives, and opinions on market trends, company developments, and economic shifts.',
     foundingDate: '2025',
     areaServed: 'Worldwide',
     knowsAbout: ['Finance', 'Markets', 'Investing', 'Trading', 'Cryptocurrency', 'Stocks'],

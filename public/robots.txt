@@ -13,6 +13,7 @@ Disallow: /api/
 Disallow: /private/
 Disallow: /.well-known/
 Disallow: /auth/
+Disallow: /bull-room/
 
 # Allow important pages
 Allow: /

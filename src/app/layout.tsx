@@ -14,12 +14,12 @@ const archivo = Archivo({
 })
 
 export const metadata: Metadata = {
-  title: 'The Bullish Brief',
-  description: 'Your daily dose of bullish market insights and financial analysis',
+  title: 'The Bullish Brief - Independent Market Intelligence for Investors',
+  description: 'News, deep dives, and opinions on market trends, company developments, and economic shifts, giving investors timely updates and clear context.',
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'The Bullish Brief',
-    description: 'Your daily dose of bullish market insights and financial analysis',
+    title: 'The Bullish Brief - Independent Market Intelligence for Investors',
+    description: 'News, deep dives, and opinions on market trends, company developments, and economic shifts, giving investors timely updates and clear context.',
     url: 'https://bullishbrief.com',
     siteName: 'The Bullish Brief',
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         url: 'https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png',
         width: 1200,
         height: 630,
-        alt: 'The Bullish Brief - Your daily dose of bullish market insights and financial analysis',
+        alt: 'The Bullish Brief - Independent Market Intelligence for Investors',
       },
     ],
     locale: 'en_US',
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'The Bullish Brief',
-    description: 'Your daily dose of bullish market insights and financial analysis',
+    title: 'The Bullish Brief - Independent Market Intelligence for Investors',
+    description: 'News, deep dives, and opinions on market trends, company developments, and economic shifts, giving investors timely updates and clear context.',
     images: ['https://potsdvyvpwuycgocpivf.supabase.co/storage/v1/object/public/websiteassets/websiteimages/BullishBrief.png'],
   },
   icons: {

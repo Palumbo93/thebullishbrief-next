@@ -40,10 +40,15 @@ We've successfully implemented **Incremental Static Regeneration (ISR)** for all
 5. **No build required!**
 
 ### For Existing Content
-1. **Existing pages** are automatically revalidated every hour
-2. **Stale content** is updated in the background
+1. **Existing pages** are automatically revalidated every minute
+2. **Stale content** is updated in the background  
 3. **Visitors always see** cached content (fast loading)
 4. **Fresh content** appears after revalidation
+
+### Production 404 Caching Fix
+1. **Shorter revalidation time** (60 seconds) prevents long-lived 404 caches
+2. **New content appears** within 1 minute even if initially 404'd
+3. **No more waiting** for manual builds or long cache periods
 
 ### Build Time Optimization
 - **Build time reduced** by 70-80% (only generates 10-25 pages instead of hundreds)

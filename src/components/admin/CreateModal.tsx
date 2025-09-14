@@ -4,15 +4,14 @@ import React, { useState, useRef } from 'react';
 import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { FormField } from './EditModal';
 import { generateSlug } from '../../lib/utils';
-import { useUploadSession } from '../../hooks/useUploadSession';
-import { uploadTemporaryFeaturedImage, STORAGE_BUCKETS } from '../../lib/storage';
+import { useCreateUploadSession } from '../../hooks/useEntityUploadSession';
 
 export interface CreateModalProps<T> {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   fields: FormField[];
-  onCreate: (data: Partial<T>) => Promise<void>;
+  onCreate: (data: Partial<T> & { id?: string }) => Promise<void>;
   imageUpload?: {
     fieldKey: string;
     bucket: string;
@@ -37,13 +36,28 @@ export function CreateModal<T>({
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isCreating, setIsCreating] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadedBanner, setUploadedBanner] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [uploadedBanner, setUploadedBanner] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingBanner, setUploadingBanner] = useState(false);
-  const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
+  const { 
+    entityId, 
+    initializeSession, 
+    uploadDirect, 
+    removeUpload, 
+    commitCreate 
+  } = useCreateUploadSession('author');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize upload session
+  const initializeRef = useRef(false);
+  React.useEffect(() => {
+    if (isOpen && !initializeRef.current) {
+      initializeRef.current = true;
+      initializeSession();
+    }
+  }, [isOpen]);
 
   // Initialize form data only once when modal first opens
   React.useEffect(() => {
@@ -93,25 +107,23 @@ export function CreateModal<T>({
 
   // Image upload functions
   const handleFileUpload = async (file: File) => {
-    if (!file || !sessionId || !imageUpload) return;
+    if (!file || !entityId || !imageUpload) return;
 
     setUploadingImage(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(imageUpload.bucket, result.path);
+      // Upload directly to organized final location (avatar/primary image)
+      const uploadedFile = await uploadDirect(file, 'primary');
       
       setUploadedImage({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
       
       // Update form data with the image URL
       setFormData(prev => ({
         ...prev,
-        [imageUpload.fieldKey]: result.url
+        [imageUpload.fieldKey]: uploadedFile.url
       }));
     } catch (error) {
       console.error('Failed to upload image:', error);
@@ -150,7 +162,15 @@ export function CreateModal<T>({
     }
   };
 
-  const removeUploadedImage = () => {
+  const removeUploadedImage = async () => {
+    if (uploadedImage?.url) {
+      try {
+        await removeUpload(uploadedImage.url);
+      } catch (error) {
+        console.error('Failed to remove uploaded image from storage:', error);
+      }
+    }
+    
     setUploadedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -166,25 +186,23 @@ export function CreateModal<T>({
 
   // Banner upload functions
   const handleBannerUpload = async (file: File) => {
-    if (!file || !sessionId || !bannerUpload) return;
+    if (!file || !entityId || !bannerUpload) return;
 
     setUploadingBanner(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(bannerUpload.bucket, result.path);
+      // Upload directly to organized final location (banner/secondary image)
+      const uploadedFile = await uploadDirect(file, 'secondary');
       
       setUploadedBanner({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
       
       // Update form data with the banner URL
       setFormData(prev => ({
         ...prev,
-        [bannerUpload.fieldKey]: result.url
+        [bannerUpload.fieldKey]: uploadedFile.url
       }));
     } catch (error) {
       console.error('Failed to upload banner:', error);
@@ -223,7 +241,15 @@ export function CreateModal<T>({
     }
   };
 
-  const removeUploadedBanner = () => {
+  const removeUploadedBanner = async () => {
+    if (uploadedBanner?.url) {
+      try {
+        await removeUpload(uploadedBanner.url);
+      } catch (error) {
+        console.error('Failed to remove uploaded banner from storage:', error);
+      }
+    }
+    
     setUploadedBanner(null);
     if (bannerInputRef.current) {
       bannerInputRef.current.value = '';
@@ -241,13 +267,19 @@ export function CreateModal<T>({
   const handleCreate = async () => {
     setIsCreating(true);
     try {
-      await onCreate(formData as Partial<T>);
+      // Create author with pre-generated UUID (files already in organized location)
+      const finalData = { 
+        ...formData,
+        ...(entityId && { id: entityId }) // Use pre-generated UUID if available
+      } as Partial<T> & { id?: string };
+      await onCreate(finalData);
+      
       // Clear form data after successful creation
       setFormData({});
       setHasInitialized(false);
       setUploadedImage(null);
       setUploadedBanner(null);
-      commitSession(); // Commit the session - files are now permanent
+      commitCreate(); // Commit the session - files are now permanent
       onClose();
     } catch (error) {
       console.error('Error creating item:', error);
@@ -256,16 +288,18 @@ export function CreateModal<T>({
     }
   };
 
+  const handleClose = () => {
+    // Enterprise-safe: no immediate cleanup for create modals
+    onClose();
+  };
+
   // Handle keyboard shortcuts
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
       
       if (e.key === 'Escape') {
-        // Clear form data when closing via Escape
-        setFormData({});
-        setHasInitialized(false);
-        onClose();
+        handleClose();
       } else if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
         handleCreate();
@@ -329,7 +363,7 @@ export function CreateModal<T>({
             </h3>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="btn btn-ghost"
             style={{
               padding: 'var(--space-2)',

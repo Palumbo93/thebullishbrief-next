@@ -5,11 +5,12 @@ import { createPortal } from 'react-dom';
 import { X, Save, FileText, ArrowLeft, Upload, Image as ImageIcon, Clock } from 'lucide-react';
 import { useCategories } from '../../hooks/useDatabase';
 import { useAuthors } from '../../hooks/useDatabase';
+import { useBuildTrigger } from '../../hooks/useBuildTrigger';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-import { useUploadSession } from '../../hooks/useUploadSession';
-import { uploadTemporaryFeaturedImage, moveFeaturedImageToArticle, STORAGE_BUCKETS } from '../../lib/storage';
+import { BuildStatusPopup } from './BuildStatusPopup';
+import { useCreateUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 
 interface Article {
@@ -55,6 +56,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
+  const { triggerBuild, buildStatus } = useBuildTrigger();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -72,10 +74,25 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
+  const { 
+    entityId, 
+    initializeSession, 
+    uploadDirect, 
+    removeUpload, 
+    commitCreate
+  } = useCreateUploadSession('article');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initializeRef = useRef(false);
+
+  // Initialize upload session when modal opens
+  useEffect(() => {
+    if (!entityId && !initializeRef.current) {
+      initializeRef.current = true;
+      initializeSession();
+    }
+  }, []); // Empty dependency array to run only once on mount
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -83,12 +100,10 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
       if (e.key === 'Escape') {
         if (hasUnsavedChanges) {
           if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-            cleanupSession(); // Clean up uploaded files
-            onClose();
+            onClose(); // Enterprise-safe: no immediate cleanup
           }
         } else {
-          cleanupSession(); // Clean up uploaded files
-          onClose();
+          onClose(); // Enterprise-safe: no immediate cleanup
         }
       } else if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
@@ -98,7 +113,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [hasUnsavedChanges, onClose, cleanupSession]);
+  }, [hasUnsavedChanges, onClose]);
 
   // Track unsaved changes
   useEffect(() => {
@@ -118,24 +133,40 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!entityId) {
+      console.error('No entity ID available for article creation');
+      return;
+    }
+    
     setLoading(true);
 
     try {
+      console.log('📝 Submitting article:', formData.title);
+      
       // Calculate reading time based on content
       const readingTimeMinutes = calculateReadingTime(formData.content);
       
       const articleData = {
+        id: entityId, // Use the pre-generated UUID
         ...formData,
         tags: selectedTags,
         featured_image_url: featuredImage?.url,
         featured_image_alt: featuredImage?.alt,
         reading_time_minutes: readingTimeMinutes
       };
+      
       await onCreate(articleData);
       setHasUnsavedChanges(false);
-      commitSession(); // Commit the session - files are now permanent
+      commitCreate(); // Mark session as committed - files are already in final location
+      
+      console.log('🔨 Triggering build for new article:', formData.title);
+      // Trigger automatic build for new article
+      const buildResult = await triggerBuild(`New article created: "${formData.title}"`);
+      console.log('🏗️ Build trigger result:', buildResult);
+      
+      onClose(); // Close modal after successful creation and build trigger
     } catch (error) {
-      console.error('Error creating article:', error);
+      console.error('❌ Error in article creation flow:', error);
     } finally {
       setLoading(false);
     }
@@ -169,19 +200,17 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!file || !sessionId) return;
+    if (!file || !entityId) return;
 
     setUploadingImage(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(STORAGE_BUCKETS.FEATURED_IMAGES, result.path);
+      // Upload directly to organized final location
+      const uploadedFile = await uploadDirect(file, 'primary');
       
       setFeaturedImage({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
     } catch (error) {
       console.error('Failed to upload featured image:', error);
@@ -220,10 +249,30 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
     }
   };
 
-  const removeFeaturedImage = () => {
+  const removeFeaturedImage = async () => {
+    if (featuredImage?.url) {
+      try {
+        // Remove the uploaded file from storage (this is safe - individual file removal)
+        await removeUpload(featuredImage.url);
+        console.log('Removed featured image from storage');
+      } catch (error) {
+        console.error('Failed to remove featured image from storage:', error);
+      }
+    }
+    
     setFeaturedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      if (confirm('You have unsaved changes. Are you sure you want to close?')) {
+        onClose(); // Enterprise-safe: no immediate cleanup, files remain organized
+      }
+    } else {
+      onClose(); // Enterprise-safe: no immediate cleanup, files remain organized  
     }
   };
 
@@ -268,9 +317,10 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
             </h1>
             <p style={{
               fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-tertiary)'
+              color: 'var(--color-text-tertiary)',
+              margin: 0
             }}>
-              Write and publish your next article
+              {entityId ? `ID: ${entityId}` : ''}
             </p>
           </div>
         </div>
@@ -291,7 +341,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
           )}
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="btn btn-ghost"
             style={{ fontSize: 'var(--text-sm)' }}
           >
@@ -969,7 +1019,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
                   content={formData.content}
                   onChange={(content) => handleChange('content', content)}
                   placeholder="Start writing your article content here..."
-                  articleId={undefined}
+                  articleId={entityId || undefined}
                 />
               </div>
             </div>

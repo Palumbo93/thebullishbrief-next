@@ -4,11 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, Image as ImageIcon, Trash2, Copy, Clock, ExternalLink } from 'lucide-react';
 import { useCategories, useAuthors, useArticleTags, useAllTags } from '../../hooks/useDatabase';
+import { useBuildTrigger } from '../../hooks/useBuildTrigger';
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-import { useUploadSession } from '../../hooks/useUploadSession';
-import { uploadTemporaryFeaturedImage, moveFeaturedImageToArticle, STORAGE_BUCKETS } from '../../lib/storage';
+import { BuildStatusPopup } from './BuildStatusPopup';
+import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { ArticleDeleteModal } from './ArticleDeleteModal';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 
@@ -46,6 +47,7 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
+  const { triggerBuild, buildStatus } = useBuildTrigger();
   
   // Fetch article tags and all available tags
   const { tags: articleTags, loading: tagsLoading } = useArticleTags(article.id);
@@ -67,10 +69,13 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
+  const { 
+    uploadDirect, 
+    removeUpload 
+  } = useEditUploadSession('article', article.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -112,12 +117,10 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
       if (e.key === 'Escape') {
         if (hasUnsavedChanges) {
           if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-            cleanupSession(); // Clean up uploaded files
-            onClose();
+            onClose(); // Enterprise-safe: no cleanup for edit modals
           }
         } else {
-          cleanupSession(); // Clean up uploaded files
-          onClose();
+          onClose(); // Enterprise-safe: no cleanup for edit modals
         }
       } else if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
@@ -127,7 +130,7 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [hasUnsavedChanges, onClose, cleanupSession]);
+  }, [hasUnsavedChanges, onClose]);
 
   // Track unsaved changes
   useEffect(() => {
@@ -164,29 +167,25 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
       // Calculate reading time based on content
       const readingTimeMinutes = calculateReadingTime(formData.content);
       
-      // Update article data
+      // Track if slug changed for build trigger message
+      const slugChanged = formData.slug !== (article.slug || '');
+      
+      // Update article data (files already in organized location)
       await onUpdate(article.id, { 
         ...formData, 
         tags: selectedTags,
-        reading_time_minutes: readingTimeMinutes
+        reading_time_minutes: readingTimeMinutes,
+        featured_image_url: featuredImage?.url || formData.featured_image_url,
+        featured_image_alt: featuredImage?.alt || formData.featured_image_alt
       });
       
-      // If there's a temporary featured image, move it to the permanent location
-      if (featuredImage?.tempPath) {
-        try {
-          await moveFeaturedImageToArticle(featuredImage.tempPath, article.id);
-          // Update the article with the new image URL
-          await onUpdate(article.id, {
-            featured_image_url: featuredImage.url,
-            featured_image_alt: featuredImage.alt
-          });
-        } catch (error) {
-          console.error('Failed to move featured image:', error);
-        }
-      }
-      
       setHasUnsavedChanges(false);
-      commitSession(); // Commit the session - files are now permanent
+      
+      // Trigger automatic build for updated article
+      const buildReason = slugChanged 
+        ? `Article updated with slug change: "${formData.title}" (${article.slug || 'no-slug'} → ${formData.slug})`
+        : `Article updated: "${formData.title}"`;
+      await triggerBuild(buildReason);
     } catch (error) {
       console.error('Error updating article:', error);
     } finally {
@@ -222,19 +221,17 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!file || !sessionId) return;
+    if (!file) return;
 
     setUploadingImage(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(STORAGE_BUCKETS.FEATURED_IMAGES, result.path);
+      // Upload directly to organized final location for existing article
+      const uploadedFile = await uploadDirect(file, 'primary');
       
       setFeaturedImage({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
     } catch (error) {
       console.error('Failed to upload featured image:', error);
@@ -274,9 +271,21 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   };
 
   const removeFeaturedImage = () => {
+    // For edit modals: only remove from UI state, NEVER delete files from storage
+    // Files belong to existing entity and should remain in storage
     setFeaturedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      if (confirm('You have unsaved changes. Are you sure you want to close?')) {
+        onClose(); // Enterprise-safe: no cleanup for edit modals
+      }
+    } else {
+      onClose(); // Enterprise-safe: no cleanup for edit modals  
     }
   };
 
@@ -408,7 +417,7 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
               </button>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="btn btn-ghost"
                 style={{ fontSize: 'var(--text-sm)' }}
               >

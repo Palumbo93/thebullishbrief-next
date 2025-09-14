@@ -1,68 +1,23 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '../ui/Button';
-import { supabase } from '@/lib/supabase';
+import { useBuildTrigger } from '../../hooks/useBuildTrigger';
 
 interface BuildTriggerProps {
   className?: string;
 }
 
-interface BuildResult {
-  type: string;
-  revalidatedPaths: string[];
-  triggeredDeploy: boolean;
-  timestamp: string;
-}
-
 export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastResult, setLastResult] = useState<BuildResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { triggerBuild, buildStatus } = useBuildTrigger();
 
-  const triggerBuild = async (type: 'all' | 'articles' | 'briefs' | 'authors') => {
-    setIsLoading(true);
-    setError(null);
-    
+  const handleBuildClick = async () => {
+    console.log('🖱️ Manual build button clicked');
     try {
-      // Get current session for authentication
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.access_token) {
-        throw new Error('No authentication token available');
-      }
-      
-      const response = await fetch('/api/trigger-build', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ type }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Build failed: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      setLastResult({
-        type,
-        revalidatedPaths: result.revalidatedPaths || [],
-        triggeredDeploy: result.triggeredDeploy || false,
-        timestamp: result.timestamp
-      });
-      
-      // Clear success message after 10 seconds
-      setTimeout(() => setLastResult(null), 10000);
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Build failed');
-      
-      // Clear error after 10 seconds
-      setTimeout(() => setError(null), 10000);
-    } finally {
-      setIsLoading(false);
+      const result = await triggerBuild('Manual build trigger from admin');
+      console.log('🏗️ Manual build result:', result);
+    } catch (error) {
+      console.error('❌ Manual build failed:', error);
     }
   };
 
@@ -77,110 +32,78 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
       </div>
 
       {/* Status Messages */}
-      {lastResult && (
+      {buildStatus.status === 'ready' && buildStatus.lastBuildTime && (
         <div className="bg-green-50 border border-green-200 rounded-md p-4">
           <p className="text-green-800 font-medium">
-            Build triggered successfully for {lastResult.type === 'all' ? 'all content' : lastResult.type}
+            Build completed successfully ✅
           </p>
           <div className="mt-2 text-sm text-green-700">
-            <p>• Revalidated {lastResult.revalidatedPaths.length} path{lastResult.revalidatedPaths.length !== 1 ? 's' : ''}</p>
-            {lastResult.triggeredDeploy && (
-              <p>• Full deployment triggered</p>
-            )}
+            <p>• Full deployment triggered</p>
             <p className="text-xs mt-1 text-green-600">
-              Completed at {new Date(lastResult.timestamp).toLocaleTimeString()}
+              Completed at {new Date(buildStatus.lastBuildTime).toLocaleTimeString()}
             </p>
+            {buildStatus.triggeredBy && (
+              <p className="text-xs text-green-600">Reason: {buildStatus.triggeredBy}</p>
+            )}
           </div>
         </div>
       )}
 
-      {error && (
+      {buildStatus.status === 'building' && (
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <p className="text-blue-800 font-medium">
+            Build in progress... 🔄
+          </p>
+          <div className="mt-2 text-sm text-blue-700">
+            <p>• Deployment triggered and building</p>
+            {buildStatus.deploymentId && (
+              <p className="text-xs text-blue-600">Deployment ID: {buildStatus.deploymentId}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {buildStatus.status === 'error' && buildStatus.error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-red-800 font-medium">Build failed</p>
-          <p className="text-red-700 text-sm mt-1">{error}</p>
+          <p className="text-red-800 font-medium">Build failed ❌</p>
+          <p className="text-red-700 text-sm mt-1">{buildStatus.error}</p>
         </div>
       )}
 
       {/* Build Options */}
       <div className="bg-white border border-gray-200 rounded-md p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Build Options</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Manual Build</h3>
         
         <div className="space-y-4">
           <div>
             <Button
-              onClick={() => triggerBuild('all')}
-              disabled={isLoading}
+              onClick={handleBuildClick}
+              disabled={buildStatus.isBuilding}
               className="w-full justify-center"
               variant="primary"
             >
-              {isLoading ? 'Building...' : 'Build All Content'}
+              {buildStatus.isBuilding ? 'Building...' : 'Build All Content'}
             </Button>
             <p className="text-sm text-gray-500 mt-1">
-              Rebuild all articles, briefs, and authors
+              Manually trigger a full site rebuild
             </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Button
-                onClick={() => triggerBuild('articles')}
-                disabled={isLoading}
-                className="w-full justify-center"
-                variant="secondary"
-              >
-                {isLoading ? 'Building...' : 'Build Articles'}
-              </Button>
-              <p className="text-sm text-gray-500 mt-1">
-                Rebuild article pages only
-              </p>
-            </div>
-
-            <div>
-              <Button
-                onClick={() => triggerBuild('briefs')}
-                disabled={isLoading}
-                className="w-full justify-center"
-                variant="secondary"
-              >
-                {isLoading ? 'Building...' : 'Build Briefs'}
-              </Button>
-              <p className="text-sm text-gray-500 mt-1">
-                Rebuild brief pages only
-              </p>
-            </div>
-
-            <div>
-              <Button
-                onClick={() => triggerBuild('authors')}
-                disabled={isLoading}
-                className="w-full justify-center"
-                variant="secondary"
-              >
-                {isLoading ? 'Building...' : 'Build Authors'}
-              </Button>
-              <p className="text-sm text-gray-500 mt-1">
-                Rebuild author pages only
-              </p>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Info Section */}
       <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
-        <h4 className="text-sm font-medium text-gray-900 mb-2">What happens during a build?</h4>
+        <h4 className="text-sm font-medium text-gray-900 mb-2">Automatic Build System</h4>
         <ul className="text-sm text-gray-600 space-y-1">
-          <li>• All existing pages are revalidated with latest content</li>
-          <li>• Individual article/brief/author pages are refreshed</li>
-          <li>• CDN cache is cleared for updated pages</li>
-          <li>• New content becomes immediately accessible</li>
-          <li>• "Build All" triggers a full deployment for new pages</li>
+          <li>• Builds are automatically triggered when you create or edit content</li>
+          <li>• All pages are revalidated and new pages are generated</li>
+          <li>• You'll see a notification popup when builds start and complete</li>
+          <li>• Manual builds are useful for debugging or force-refreshing</li>
           <li>• Process typically completes in 10-30 seconds</li>
         </ul>
         <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
           <p className="text-xs text-blue-800">
-            <strong>For new articles/authors:</strong> Use "Build All" to ensure new pages are generated and accessible.
-            Individual builds only refresh existing content.
+            <strong>Note:</strong> Content operations complete immediately. Builds happen in the background and you'll be notified when your changes go live.
           </p>
         </div>
       </div>

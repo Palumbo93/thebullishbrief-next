@@ -6,11 +6,11 @@ import { X, Save, Upload, Image as ImageIcon, Clock, Briefcase } from 'lucide-re
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
+import { useBuildTrigger } from '../../hooks/useBuildTrigger';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
 import { ToggleSwitch } from './ToggleSwitch';
-import { useUploadSession } from '../../hooks/useUploadSession';
-import { uploadTemporaryFeaturedImage, uploadTemporaryCompanyLogo, STORAGE_BUCKETS } from '../../lib/storage';
+import { useCreateUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 import { validateTickerInput } from '../../utils/tickerUtils';
 
@@ -20,13 +20,20 @@ interface BriefCreateModalProps {
 
 export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) => {
   const queryClient = useQueryClient();
+  const { triggerBuild, buildStatus } = useBuildTrigger();
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
-  const [companyLogo, setCompanyLogo] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
+  const [companyLogo, setCompanyLogo] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
-  const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
+  const { 
+    entityId, 
+    initializeSession, 
+    uploadDirect, 
+    removeUpload, 
+    commitCreate 
+  } = useCreateUploadSession('brief');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   
@@ -59,19 +66,20 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     additional_copy: JSON.stringify({ "featuredVideoTitle": "Featured Video" }, null, 2)
   });
 
+  // Initialize session on mount
+  const initializeRef = useRef(false);
+  useEffect(() => {
+    if (!initializeRef.current) {
+      initializeRef.current = true;
+      initializeSession();
+    }
+  }, []);
+
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (hasUnsavedChanges) {
-          if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-            cleanupSession(); // Clean up uploaded files
-            onClose();
-          }
-        } else {
-          cleanupSession(); // Clean up uploaded files
-          onClose();
-        }
+        handleClose();
       } else if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
         handleSubmit(e as any);
@@ -80,7 +88,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [hasUnsavedChanges, onClose, cleanupSession]);
+  }, []);
 
   // Track unsaved changes
   useEffect(() => {
@@ -121,19 +129,17 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!file || !sessionId) return;
+    if (!file || !entityId) return;
 
     setUploadingImage(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(STORAGE_BUCKETS.FEATURED_IMAGES, result.path);
+      // Upload directly to organized final location
+      const uploadedFile = await uploadDirect(file, 'primary');
       
       setFeaturedImage({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
     } catch (error) {
       console.error('Failed to upload featured image:', error);
@@ -172,7 +178,15 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     }
   };
 
-  const removeFeaturedImage = () => {
+  const removeFeaturedImage = async () => {
+    if (featuredImage?.url) {
+      try {
+        await removeUpload(featuredImage.url);
+      } catch (error) {
+        console.error('Failed to remove featured image from storage:', error);
+      }
+    }
+    
     setFeaturedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -180,19 +194,17 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
   };
 
   const handleLogoUpload = async (file: File) => {
-    if (!file || !sessionId) return;
+    if (!file || !entityId) return;
 
     setUploadingLogo(true);
     try {
-      const result = await uploadTemporaryCompanyLogo(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(STORAGE_BUCKETS.COMPANY_LOGOS, result.path);
+      // Company logos use tertiary file type for briefs (company-logos/briefs/{entityId}/)
+      const uploadedFile = await uploadDirect(file, 'tertiary');
       
       setCompanyLogo({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
     } catch (error) {
       console.error('Failed to upload company logo:', error);
@@ -208,10 +220,28 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
     }
   };
 
-  const removeCompanyLogo = () => {
+  const removeCompanyLogo = async () => {
+    if (companyLogo?.url) {
+      try {
+        await removeUpload(companyLogo.url);
+      } catch (error) {
+        console.error('Failed to remove company logo from storage:', error);
+      }
+    }
+    
     setCompanyLogo(null);
     if (logoFileInputRef.current) {
       logoFileInputRef.current.value = '';
+    }
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      if (confirm('You have unsaved changes. Are you sure you want to close?')) {
+        onClose(); // Enterprise-safe: no immediate cleanup
+      }
+    } else {
+      onClose(); // Enterprise-safe: no immediate cleanup
     }
   };
 
@@ -267,9 +297,11 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
         }
       }
 
+      // Create brief with pre-generated UUID (files already in organized location)
       const { error } = await supabase
         .from('briefs')
         .insert({
+                  id: entityId!, // Use pre-generated UUID (guaranteed to exist by this point)
           ...formData,
           tickers,
           popup_copy: popupCopy,
@@ -291,7 +323,11 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
         queryClient.invalidateQueries({ queryKey: queryKeys.briefs.featured() });
         
         setHasUnsavedChanges(false);
-        commitSession(); // Commit the session - files are now permanent
+        commitCreate(); // Commit the session - files are now permanent
+        
+        // Trigger automatic build for new brief
+        await triggerBuild(`New brief created: "${formData.title}"`);
+        
         onClose();
       }
     } catch (error) {
@@ -339,7 +375,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
               color: 'var(--color-text-primary)',
               marginBottom: 'var(--space-1)'
             }}>
-              Create New Brief
+              Create New Brief {entityId && <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'normal', color: 'var(--color-text-tertiary)' }}>ID: {entityId}</span>}
             </h1>
             <p style={{
               fontSize: 'var(--text-sm)',
@@ -366,7 +402,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
           )}
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="btn btn-ghost"
             style={{ fontSize: 'var(--text-sm)' }}
           >
@@ -1667,7 +1703,8 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
                 content={formData.content}
                 onChange={(content) => handleChange('content', content)}
                 placeholder="Start writing your brief content here..."
-                articleId={undefined}
+                articleId={entityId || undefined}
+                entityType="brief"
               />
                 </div>
               </div>

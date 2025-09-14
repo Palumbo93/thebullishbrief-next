@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Image as ImageIcon, Upload, ExternalLink } from 'lucide-react';
-import { uploadArticleImage, STORAGE_BUCKETS } from '../../lib/storage';
-import { useUploadSession } from '../../hooks/useUploadSession';
+import { EntityImageStorageService } from '../../lib/storage';
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -16,6 +15,7 @@ interface ImageUploadModalProps {
   initialWidth?: string;
   initialHeight?: string;
   articleId?: string;
+  entityType?: 'article' | 'brief'; // Add entity type to determine storage bucket
   zIndex?: number;
 }
 
@@ -30,6 +30,7 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   initialWidth = '',
   initialHeight = '',
   articleId,
+  entityType = 'article', // Default to article for backwards compatibility
   zIndex
 }) => {
   const [altText, setAltText] = useState(initialAltText);
@@ -41,7 +42,6 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [existingImageUrl, setExistingImageUrl] = useState(initialImageUrl || initialUrl);
-  const { sessionId, trackUpload } = useUploadSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -60,16 +60,20 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
     e.preventDefault();
     
     if (uploadedFile) {
-      // Upload file to Supabase storage
+      // Upload file to Supabase storage using organized system
       setIsLoading(true);
       try {
-        const uploadId = articleId || sessionId || '';
-        const result = await uploadArticleImage(uploadedFile, uploadId);
-        
-        // Track the upload for potential cleanup
-        if (sessionId) {
-          trackUpload(STORAGE_BUCKETS.ARTICLE_IMAGES, result.path);
+        if (!articleId) {
+          throw new Error('Entity ID is required for image upload');
         }
+        
+        // Use new organized upload system for content images
+        const result = await EntityImageStorageService.uploadDirectToEntity(
+          uploadedFile,
+          entityType, // Use the entityType passed from the parent modal
+          articleId, // Use the entityId passed from the parent modal
+          'secondary' // Content images are secondary (not featured)
+        );
         
         setIsLoading(false);
         onSubmit(result.url, altText.trim() || 'Image', figcaption.trim() || undefined, width.trim() || undefined, height.trim() || undefined);

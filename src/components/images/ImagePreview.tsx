@@ -7,7 +7,7 @@ import { Edit3 } from 'lucide-react';
 interface ImagePreviewProps {
   node: {
     attrs: {
-      src: string;
+      src?: string;
       alt?: string;
       title?: string;
       figcaption?: string;
@@ -30,7 +30,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     // Dispatch a custom event that the RichTextEditor can listen to
     const event = new CustomEvent('editImage', {
       detail: {
-        src,
+        src: src || '',
         alt: alt || '',
         title: title || '',
         figcaption: figcaption || '',
@@ -41,6 +41,34 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     });
     window.dispatchEvent(event);
   };
+
+  // If no src, show a placeholder
+  if (!src) {
+    return (
+      <NodeViewWrapper
+        className={`image-preview image-placeholder ${selected ? 'ProseMirror-selectednode' : ''}`}
+        style={{
+          position: 'relative',
+          display: 'block',
+          margin: 'var(--space-4) 0',
+          padding: 'var(--space-4)',
+          border: '2px dashed var(--color-border-primary)',
+          borderRadius: 'var(--radius-lg)',
+          textAlign: 'center',
+          backgroundColor: 'var(--color-bg-secondary)',
+          cursor: 'pointer',
+        }}
+        onClick={handleEdit}
+      >
+        <div style={{
+          color: 'var(--color-text-tertiary)',
+          fontSize: 'var(--text-sm)',
+        }}>
+          Click to add image
+        </div>
+      </NodeViewWrapper>
+    );
+  }
 
   return (
     <NodeViewWrapper

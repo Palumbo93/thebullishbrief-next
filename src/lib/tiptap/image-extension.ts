@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
-import { ReactNodeViewRenderer } from '@tiptap/react';
+import { ReactNodeViewRenderer, ReactNodeViewProps } from '@tiptap/react';
 import { ImagePreview } from '../../components/images/ImagePreview';
+import React from 'react';
 
 export interface ImageOptions {
   HTMLAttributes: Record<string, any>;
@@ -49,7 +50,16 @@ export const Image = Node.create<ImageOptions>({
   atom: true,
 
   addNodeView() {
-    return ReactNodeViewRenderer(ImagePreview);
+    // Create a wrapper component that bridges ReactNodeViewProps and ImagePreviewProps
+    const ImageWrapper: React.FC<ReactNodeViewProps> = (props) => {
+      return React.createElement(ImagePreview, {
+        node: props.node,
+        updateAttributes: props.updateAttributes,
+        selected: props.selected,
+      });
+    };
+    
+    return ReactNodeViewRenderer(ImageWrapper);
   },
 
   addAttributes() {

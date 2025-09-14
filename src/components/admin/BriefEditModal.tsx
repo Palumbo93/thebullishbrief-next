@@ -6,11 +6,12 @@ import { X, Save, Edit, ArrowLeft, Upload, Image as ImageIcon, Trash2, Copy, Clo
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
+import { useBuildTrigger } from '../../hooks/useBuildTrigger';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
 import { ToggleSwitch } from './ToggleSwitch';
-import { useUploadSession } from '../../hooks/useUploadSession';
-import { uploadTemporaryFeaturedImage, uploadTemporaryCompanyLogo, moveFeaturedImageToArticle, STORAGE_BUCKETS } from '../../lib/storage';
+import { BuildStatusPopup } from './BuildStatusPopup';
+import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 import { validateTickerInput } from '../../utils/tickerUtils';
 import { Brief } from '../../lib/database.aliases';
@@ -22,14 +23,18 @@ interface BriefEditModalProps {
 
 export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }) => {
   const queryClient = useQueryClient();
+  const { triggerBuild, buildStatus } = useBuildTrigger();
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
-  const [companyLogo, setCompanyLogo] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
+  const [companyLogo, setCompanyLogo] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
+  const { 
+    uploadDirect, 
+    removeUpload 
+  } = useEditUploadSession('brief', brief?.id || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   
@@ -114,12 +119,10 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
       if (e.key === 'Escape') {
         if (hasUnsavedChanges) {
           if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-            cleanupSession(); // Clean up uploaded files
-            onClose();
+            onClose(); // Enterprise-safe: no cleanup for edit modals
           }
         } else {
-          cleanupSession(); // Clean up uploaded files
-          onClose();
+          onClose(); // Enterprise-safe: no cleanup for edit modals
         }
       } else if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
@@ -129,7 +132,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [hasUnsavedChanges, onClose, cleanupSession]);
+  }, [hasUnsavedChanges, onClose]);
 
   // Track unsaved changes
   useEffect(() => {
@@ -190,19 +193,17 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!file || !sessionId) return;
+    if (!file) return;
 
     setUploadingImage(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(STORAGE_BUCKETS.FEATURED_IMAGES, result.path);
+      // Upload directly to organized final location for existing brief
+      const uploadedFile = await uploadDirect(file, 'primary');
       
       setFeaturedImage({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
     } catch (error) {
       console.error('Failed to upload featured image:', error);
@@ -242,6 +243,8 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
   };
 
   const removeFeaturedImage = () => {
+    // For edit modals: only remove from UI state, NEVER delete files from storage
+    // Files belong to existing entity and should remain in storage
     setFeaturedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -319,22 +322,11 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         console.error('Error updating brief:', error);
         alert('Error updating brief: ' + error.message);
       } else {
-        // If there's a temporary featured image, move it to the permanent location
-        if (featuredImage?.tempPath) {
-          try {
-            await moveFeaturedImageToArticle(featuredImage.tempPath, brief.id);
-            // Update the brief with the new image URL
-            await supabase
-              .from('briefs')
-              .update({
-                featured_image_url: featuredImage.url,
-                featured_image_alt: featuredImage.alt
-              })
-              .eq('id', brief.id);
-          } catch (error) {
-            console.error('Failed to move featured image:', error);
-          }
-        }
+        // Note: For edit modals using direct upload, no file moving is needed
+        // Files are already uploaded to their final organized locations
+        
+        // Track if slug changed for build trigger message
+        const slugChanged = formData.slug !== (brief.slug || '');
         
         // Invalidate and refetch briefs
         queryClient.invalidateQueries({ queryKey: queryKeys.briefs.all });
@@ -342,8 +334,14 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         queryClient.invalidateQueries({ queryKey: queryKeys.briefs.detail(brief.slug) });
         
         setHasUnsavedChanges(false);
-        commitSession(); // Commit the session - files are now permanent
-        onClose();
+        
+        // Trigger automatic build for updated brief
+        const buildReason = slugChanged 
+          ? `Brief updated with slug change: "${formData.title}" (${brief.slug || 'no-slug'} → ${formData.slug})`
+          : `Brief updated: "${formData.title}"`;
+        await triggerBuild(buildReason);
+        
+        onClose(); // Files already in organized location
       }
     } catch (error) {
       console.error('Error updating brief:', error);
@@ -1990,6 +1988,7 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                     onChange={(content) => handleChange('content', content)}
                     placeholder="Start writing your brief content here..."
                     articleId={brief.id}
+                    entityType="brief"
                   />
                 </div>
               </div>

@@ -7,7 +7,7 @@ import { Edit3 } from 'lucide-react';
 interface VideoPreviewProps {
   node: {
     attrs: {
-      src: string;
+      src?: string;
       title?: string;
       width?: string;
       height?: string;
@@ -34,7 +34,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
     // Dispatch a custom event that the RichTextEditor can listen to
     const event = new CustomEvent('editVideo', {
       detail: {
-        src,
+        src: src || '',
         title: title || '',
         width: width || '100%',
         height: height || 'auto',
@@ -49,6 +49,37 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
     });
     window.dispatchEvent(event);
   };
+
+  // If no src, show a placeholder
+  if (!src) {
+    return (
+      <NodeViewWrapper
+        className={`video-preview video-placeholder ${selected ? 'ProseMirror-selectednode' : ''}`}
+        style={{
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: 'var(--space-4) 0',
+          padding: 'var(--space-6)',
+          border: '2px dashed var(--color-border-primary)',
+          borderRadius: 'var(--radius-lg)',
+          textAlign: 'center',
+          backgroundColor: 'var(--color-bg-secondary)',
+          cursor: 'pointer',
+          minHeight: '200px',
+        }}
+        onClick={handleEdit}
+      >
+        <div style={{
+          color: 'var(--color-text-tertiary)',
+          fontSize: 'var(--text-sm)',
+        }}>
+          Click to add video
+        </div>
+      </NodeViewWrapper>
+    );
+  }
 
   const renderVideoContent = () => {
     // Check if it's a YouTube URL

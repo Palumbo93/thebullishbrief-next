@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Copy, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
 import { generateSlug } from '../../lib/utils';
-import { useUploadSession } from '../../hooks/useUploadSession';
-import { uploadTemporaryFeaturedImage, STORAGE_BUCKETS } from '../../lib/storage';
+import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 
 export interface FormField {
   key: string;
@@ -58,11 +57,14 @@ export function EditModal<T>({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadedBanner, setUploadedBanner] = useState<{ url: string; alt: string; tempPath?: string } | null>(null);
+  const [uploadedBanner, setUploadedBanner] = useState<{ url: string; alt: string; path?: string } | null>(null);
   const [uploadingBanner, setUploadingBanner] = useState(false);
-  const { sessionId, trackUpload, commitSession, cleanupSession } = useUploadSession();
+  const { 
+    uploadDirect, 
+    removeUpload 
+  } = useEditUploadSession('author', item ? getItemId(item) : '');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
@@ -156,25 +158,23 @@ export function EditModal<T>({
 
   // Image upload functions
   const handleFileUpload = async (file: File) => {
-    if (!file || !sessionId || !imageUpload) return;
+    if (!file || !imageUpload) return;
 
     setUploadingImage(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(imageUpload.bucket, result.path);
+      // Upload directly to organized final location for existing author (avatar/primary image)
+      const uploadedFile = await uploadDirect(file, 'primary');
       
       setUploadedImage({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
       
       // Update form data with the image URL
       setFormData(prev => ({
         ...prev,
-        [imageUpload.fieldKey]: result.url
+        [imageUpload.fieldKey]: uploadedFile.url
       }));
     } catch (error) {
       console.error('Failed to upload image:', error);
@@ -214,6 +214,8 @@ export function EditModal<T>({
   };
 
   const removeUploadedImage = () => {
+    // For edit modals: only remove from UI state, NEVER delete files from storage
+    // Files belong to existing entity and should remain in storage
     setUploadedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -229,25 +231,23 @@ export function EditModal<T>({
 
   // Banner upload functions
   const handleBannerUpload = async (file: File) => {
-    if (!file || !sessionId || !bannerUpload) return;
+    if (!file || !bannerUpload) return;
 
     setUploadingBanner(true);
     try {
-      const result = await uploadTemporaryFeaturedImage(file, sessionId);
-      
-      // Track the upload for cleanup
-      trackUpload(bannerUpload.bucket, result.path);
+      // Upload directly to organized final location for existing author (banner/secondary image)
+      const uploadedFile = await uploadDirect(file, 'secondary');
       
       setUploadedBanner({
-        url: result.url,
+        url: uploadedFile.url,
         alt: file.name,
-        tempPath: result.path
+        path: uploadedFile.finalPath
       });
       
       // Update form data with the banner URL
       setFormData(prev => ({
         ...prev,
-        [bannerUpload.fieldKey]: result.url
+        [bannerUpload.fieldKey]: uploadedFile.url
       }));
     } catch (error) {
       console.error('Failed to upload banner:', error);
@@ -287,6 +287,8 @@ export function EditModal<T>({
   };
 
   const removeUploadedBanner = () => {
+    // For edit modals: only remove from UI state, NEVER delete files from storage
+    // Files belong to existing entity and should remain in storage
     setUploadedBanner(null);
     if (bannerInputRef.current) {
       bannerInputRef.current.value = '';

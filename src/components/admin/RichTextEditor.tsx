@@ -65,10 +65,11 @@ interface RichTextEditorProps {
   onChange: (content: string) => void;
   placeholder?: string;
   className?: string;
-  articleId?: string; // For image uploads
+  articleId?: string; // Entity ID for image uploads
+  entityType?: 'article' | 'brief'; // Determines storage structure for content images
 }
 
-const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean; onToggleFullscreen: () => void }> = ({ editor, articleId, isFullscreen, onToggleFullscreen }) => {
+const MenuBar: React.FC<{ editor: any; articleId?: string; entityType?: 'article' | 'brief'; isFullscreen: boolean; onToggleFullscreen: () => void }> = ({ editor, articleId, entityType = 'article', isFullscreen, onToggleFullscreen }) => {
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -937,6 +938,7 @@ const MenuBar: React.FC<{ editor: any; articleId?: string; isFullscreen: boolean
           }}
           onSubmit={handleImageSubmit}
           articleId={articleId}
+          entityType={entityType}
           zIndex={isFullscreen ? 10000 : undefined}
           initialImageUrl={editingImage?.src}
           initialAltText={editingImage?.alt}
@@ -1002,7 +1004,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   onChange,
   placeholder = 'Start writing your article...',
   className = '',
-  articleId
+  articleId,
+  entityType = 'article' // Default to article for backwards compatibility
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -1194,6 +1197,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       <MenuBar 
         editor={editor} 
         articleId={articleId} 
+        entityType={entityType}
         isFullscreen={isFullscreen} 
         onToggleFullscreen={toggleFullscreen} 
       />

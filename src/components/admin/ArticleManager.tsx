@@ -179,6 +179,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
 
   const handleCreateArticle = async (modalArticleData: Partial<ModalArticle>) => {
     try {
+      console.log('🚀 Starting article creation...', modalArticleData.title);
       const serviceArticleData = convertToServiceArticle(modalArticleData);
       const createdArticle = await create(serviceArticleData);
       
@@ -205,9 +206,12 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
         }
       }
       
+      console.log('✅ Article created successfully:', createdArticle.id);
       setShowCreateModal(false);
     } catch (error) {
-      console.error('Error creating article:', error);
+      console.error('❌ Error creating article:', error);
+      // Re-throw the error so the modal knows creation failed
+      throw error;
     }
   };
 

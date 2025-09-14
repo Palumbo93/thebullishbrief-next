@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
-import { ReactNodeViewRenderer } from '@tiptap/react';
+import { ReactNodeViewRenderer, ReactNodeViewProps } from '@tiptap/react';
 import { VideoPreview } from '../../components/videos/VideoPreview';
+import React from 'react';
 
 export interface VideoOptions {
   HTMLAttributes: Record<string, any>;
@@ -35,7 +36,16 @@ export const Video = Node.create<VideoOptions>({
   atom: true,
 
   addNodeView() {
-    return ReactNodeViewRenderer(VideoPreview);
+    // Create a wrapper component that bridges ReactNodeViewProps and VideoPreviewProps
+    const VideoWrapper: React.FC<ReactNodeViewProps> = (props) => {
+      return React.createElement(VideoPreview, {
+        node: props.node,
+        updateAttributes: props.updateAttributes,
+        selected: props.selected,
+      });
+    };
+    
+    return ReactNodeViewRenderer(VideoWrapper);
   },
 
   addAttributes() {
@@ -86,19 +96,20 @@ export const Video = Node.create<VideoOptions>({
           if (videoDiv) {
             const video = videoDiv.querySelector('video');
             const iframe = videoDiv.querySelector('iframe');
+            const videoDivElement = videoDiv as HTMLElement;
             
             if (video) {
               return {
                 src: video.getAttribute('src'),
-                title: videoDiv.getAttribute('data-video-title') || '',
+                title: videoDivElement.getAttribute('data-video-title') || '',
                 controls: video.hasAttribute('controls'),
                 autoplay: video.hasAttribute('autoplay'),
                 muted: video.hasAttribute('muted'),
                 loop: video.hasAttribute('loop'),
                 poster: video.getAttribute('poster'),
                 figcaption: figcaption?.textContent || null,
-                width: videoDiv.style.width || '100%',
-                height: videoDiv.style.height || 'auto',
+                width: videoDivElement.style.width || '100%',
+                height: videoDivElement.style.height || 'auto',
               };
             }
             
@@ -108,22 +119,22 @@ export const Video = Node.create<VideoOptions>({
                 const videoId = src.match(/embed\/([^?]+)/)?.[1];
                 return {
                   src: `https://www.youtube.com/watch?v=${videoId}`,
-                  title: videoDiv.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
-                  poster: videoDiv.getAttribute('data-video-poster') || '',
+                  title: videoDivElement.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
+                  poster: videoDivElement.getAttribute('data-video-poster') || '',
                   figcaption: figcaption?.textContent || null,
-                  width: videoDiv.style.width || '100%',
-                  height: videoDiv.style.height || '400px',
+                  width: videoDivElement.style.width || '100%',
+                  height: videoDivElement.style.height || '400px',
                 };
               }
               if (src?.includes('vimeo.com/video/')) {
                 const videoId = src.match(/video\/(\d+)/)?.[1];
                 return {
                   src: `https://vimeo.com/${videoId}`,
-                  title: videoDiv.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
-                  poster: videoDiv.getAttribute('data-video-poster') || '',
+                  title: videoDivElement.getAttribute('data-video-title') || iframe.getAttribute('title') || '',
+                  poster: videoDivElement.getAttribute('data-video-poster') || '',
                   figcaption: figcaption?.textContent || null,
-                  width: videoDiv.style.width || '100%',
-                  height: videoDiv.style.height || '400px',
+                  width: videoDivElement.style.width || '100%',
+                  height: videoDivElement.style.height || '400px',
                 };
               }
             }
@@ -206,7 +217,7 @@ export const Video = Node.create<VideoOptions>({
     ];
   },
 
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({ HTMLAttributes }): any {
     const { src, title, width, height, controls, autoplay, muted, loop, poster, figcaption } = HTMLAttributes;
     
     // Check if it's a YouTube URL

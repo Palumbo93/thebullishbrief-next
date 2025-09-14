@@ -3,12 +3,14 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Edit, Trash2, User, Search, X, Copy } from 'lucide-react';
 import { useAuthors } from '../../hooks/useDatabase';
+import { useBuildTrigger } from '../../hooks/useBuildTrigger';
 import { ManagerHeader } from './ManagerHeader';
 import { SearchBar } from './SearchBar';
 import { DataTable, Column } from './DataTable';
 import { EditModal, FormField } from './EditModal';
 import { DeleteModal } from './DeleteModal';
 import { CreateModal } from './CreateModal';
+import { BuildStatusPopup } from './BuildStatusPopup';
 import { Author } from '../../services/database';
 import { STORAGE_BUCKETS } from '../../lib/storage';
 import { AuthorAvatarImage } from '../ui/OptimizedImage';
@@ -17,6 +19,7 @@ interface AuthorManagerProps {}
 
 export const AuthorManager: React.FC<AuthorManagerProps> = () => {
   const { data: authors, loading, create, update, delete: deleteAuthor } = useAuthors();
+  const { triggerBuild, buildStatus } = useBuildTrigger();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -42,6 +45,9 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
     try {
       await create(authorData);
       setShowCreateModal(false);
+      
+      // Trigger automatic build for new author
+      await triggerBuild(`New author created: "${authorData.name}"`);
     } catch (error) {
       console.error('Error creating author:', error);
     }
@@ -49,9 +55,18 @@ export const AuthorManager: React.FC<AuthorManagerProps> = () => {
 
   const handleUpdateAuthor = async (id: string, authorData: Partial<Author>) => {
     try {
+      // Track if slug changed for build trigger message
+      const slugChanged = authorData.slug && selectedAuthor && authorData.slug !== selectedAuthor.slug;
+      
       await update(id, authorData);
       setShowEditModal(false);
       setSelectedAuthor(null);
+      
+      // Trigger automatic build for updated author
+      const buildReason = slugChanged 
+        ? `Author updated with slug change: "${authorData.name}" (${selectedAuthor?.slug || 'no-slug'} → ${authorData.slug})`
+        : `Author updated: "${authorData.name}"`;
+      await triggerBuild(buildReason);
     } catch (error) {
       console.error('Error updating author:', error);
     }

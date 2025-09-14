@@ -62,7 +62,11 @@ export async function POST(request: NextRequest) {
         
     // Get the request body
     const body = await request.json();
-    const { type = 'all' } = body;
+    const { type = 'all', reason } = body;
+    
+    if (reason) {
+      console.log(`📝 Build triggered for reason: ${reason}`);
+    }
 
     // Create supabase client for fetching current data
     const supabase = createClient(
@@ -72,9 +76,11 @@ export async function POST(request: NextRequest) {
 
     let revalidatedPaths: string[] = [];
     let triggeredDeploy = false;
+    let deploymentId: string | null = null;
 
-    // Revalidate based on type
+    // Always do full revalidation for 'all' type (simplified approach)
     switch (type) {
+      case 'all':
       case 'articles':
         // Revalidate existing paths
         revalidatePath('/articles');
@@ -215,7 +221,16 @@ export async function POST(request: NextRequest) {
             
             if (deployResponse.ok) {
               triggeredDeploy = true;
-              console.log('✅ Vercel deployment triggered');
+              
+              // Try to extract deployment ID from response
+              try {
+                const deployData = await deployResponse.json();
+                deploymentId = deployData.job?.id || deployData.id || null;
+              } catch {
+                // Ignore JSON parsing errors - deployment ID is optional
+              }
+              
+              console.log('✅ Vercel deployment triggered', deploymentId ? `(ID: ${deploymentId})` : '');
             } else {
               console.warn('⚠️ Failed to trigger Vercel deployment:', deployResponse.statusText);
             }
@@ -231,6 +246,7 @@ export async function POST(request: NextRequest) {
       message: `Build triggered for ${type}`,
       revalidatedPaths,
       triggeredDeploy,
+      deploymentId,
       timestamp: new Date().toISOString()
     });
 

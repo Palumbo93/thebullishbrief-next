@@ -6,7 +6,7 @@ import { ClarityTrafficData } from '../../services/clarityApi';
 
 interface TrafficSourceAnalyticsProps {}
 
-interface ExtendedTrafficData extends ClarityTrafficData {
+export interface ExtendedTrafficData extends ClarityTrafficData {
   brokerageClicks: number;
   mediumIntentVisitors: number;
   highIntentVisitors: number;

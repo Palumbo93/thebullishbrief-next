@@ -32,7 +32,6 @@ export function useOnDemandRevalidation() {
         },
         body: JSON.stringify({
           path,
-          secret: process.env.NEXT_PUBLIC_REVALIDATION_SECRET || 'dev-secret', // In production, use proper secret
         }),
       });
 

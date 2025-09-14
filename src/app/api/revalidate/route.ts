@@ -8,15 +8,7 @@ import { revalidatePath } from 'next/cache';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { path, secret } = body;
-
-    // Verify the secret to prevent unauthorized revalidation
-    if (!secret || secret !== process.env.REVALIDATION_SECRET) {
-      return NextResponse.json(
-        { error: 'Invalid or missing secret' },
-        { status: 401 }
-      );
-    }
+    const { path } = body;
 
     if (!path) {
       return NextResponse.json(
@@ -50,18 +42,10 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const path = searchParams.get('path');
-  const secret = searchParams.get('secret');
-
-  if (!secret || secret !== process.env.REVALIDATION_SECRET) {
-    return NextResponse.json(
-      { error: 'Invalid or missing secret' },
-      { status: 401 }
-    );
-  }
 
   if (!path) {
     return NextResponse.json(
-      { error: 'Missing path parameter. Usage: /api/revalidate?path=/articles/my-slug&secret=your-secret' },
+      { error: 'Missing path parameter. Usage: /api/revalidate?path=/articles/my-slug' },
       { status: 400 }
     );
   }

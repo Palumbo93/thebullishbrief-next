@@ -5,11 +5,11 @@ import { createPortal } from 'react-dom';
 import { X, Save, FileText, ArrowLeft, Upload, Image as ImageIcon, Clock } from 'lucide-react';
 import { useCategories } from '../../hooks/useDatabase';
 import { useAuthors } from '../../hooks/useDatabase';
-import { useBuildTrigger } from '../../hooks/useBuildTrigger';
+// Removed useBuildTrigger import - now using ISR for automatic content publishing
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-import { BuildStatusPopup } from './BuildStatusPopup';
+// Removed BuildStatusPopup import - no longer needed with ISR
 import { useCreateUploadSession } from '../../hooks/useEntityUploadSession';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 
@@ -56,7 +56,7 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
-  const { triggerBuild, buildStatus } = useBuildTrigger();
+  // Note: Removed useBuildTrigger since we now use ISR for automatic content publishing
   
   const [formData, setFormData] = useState({
     title: '',
@@ -159,12 +159,9 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
       setHasUnsavedChanges(false);
       commitCreate(); // Mark session as committed - files are already in final location
       
-      console.log('🔨 Triggering build for new article:', formData.title);
-      // Trigger automatic build for new article
-      const buildResult = await triggerBuild(`New article created: "${formData.title}"`);
-      console.log('🏗️ Build trigger result:', buildResult);
+      console.log('✅ Article created successfully:', formData.title, '- Will be available via ISR on first visit');
       
-      onClose(); // Close modal after successful creation and build trigger
+      onClose(); // Close modal after successful creation
     } catch (error) {
       console.error('❌ Error in article creation flow:', error);
     } finally {

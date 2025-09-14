@@ -6,11 +6,14 @@ import { Layout } from '../../../components/Layout';
 import { AuthorPageClient } from '../../../page-components/AuthorPageClient';
 import { fetchAuthorBySlug, fetchAllAuthorSlugs, fetchAuthorBySlugForMetadata } from '../../../hooks/useArticles';
 
-// Generate static params for all known authors
+// Generate static params for only active authors at build time
+// New or less active authors will be generated on-demand via ISR  
 export async function generateStaticParams() {
   try {
     const slugs = await fetchAllAuthorSlugs();
-    return slugs.map((slug) => ({
+    // Only pre-generate the first 5 authors at build time (usually main authors)
+    // The rest will be generated on-demand when first requested
+    return slugs.slice(0, 5).map((slug) => ({
       slug: slug,
     }));
   } catch (error) {
@@ -18,6 +21,12 @@ export async function generateStaticParams() {
     return [];
   }
 }
+
+// Enable dynamic params for ISR - allows generating pages on-demand for unknown routes
+export const dynamicParams = true;
+
+// Enable static generation with revalidation  
+export const revalidate = 3600; // Revalidate every hour
 
 // Generate metadata for each author
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

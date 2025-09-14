@@ -6,7 +6,7 @@ import { X, Save, Upload, Image as ImageIcon, Clock, Briefcase } from 'lucide-re
 import { supabase } from '../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
-import { useBuildTrigger } from '../../hooks/useBuildTrigger';
+// Removed useBuildTrigger import - now using ISR for automatic content publishing
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
 import { ToggleSwitch } from './ToggleSwitch';
@@ -20,7 +20,7 @@ interface BriefCreateModalProps {
 
 export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) => {
   const queryClient = useQueryClient();
-  const { triggerBuild, buildStatus } = useBuildTrigger();
+  // Note: Removed useBuildTrigger since we now use ISR for automatic content publishing
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [featuredImage, setFeaturedImage] = useState<{ url: string; alt: string; path?: string } | null>(null);
@@ -325,8 +325,7 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
         setHasUnsavedChanges(false);
         commitCreate(); // Commit the session - files are now permanent
         
-        // Trigger automatic build for new brief
-        await triggerBuild(`New brief created: "${formData.title}"`);
+        console.log('✅ Brief created successfully:', formData.title, '- Will be available via ISR on first visit');
         
         onClose();
       }

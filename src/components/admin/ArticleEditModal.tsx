@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, Image as ImageIcon, Trash2, Copy, Clock, ExternalLink } from 'lucide-react';
 import { useCategories, useAuthors, useArticleTags, useAllTags } from '../../hooks/useDatabase';
-import { useBuildTrigger } from '../../hooks/useBuildTrigger';
+// Removed useBuildTrigger import - now using ISR for automatic content publishing
 import { TagSelectorButton } from './TagSelectorButton';
 import { RichTextEditor } from './RichTextEditor';
 import { StatusSelector } from './StatusSelector';
-import { BuildStatusPopup } from './BuildStatusPopup';
+// Removed BuildStatusPopup import - no longer needed with ISR
 import { useEditUploadSession } from '../../hooks/useEntityUploadSession';
 import { ArticleDeleteModal } from './ArticleDeleteModal';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
@@ -47,7 +47,7 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
   // Fetch categories and authors for dropdowns
   const { data: categories } = useCategories();
   const { data: authors } = useAuthors();
-  const { triggerBuild, buildStatus } = useBuildTrigger();
+  // Note: Removed useBuildTrigger since we now use ISR for automatic content publishing
   
   // Fetch article tags and all available tags
   const { tags: articleTags, loading: tagsLoading } = useArticleTags(article.id);
@@ -181,11 +181,9 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
       
       setHasUnsavedChanges(false);
       
-      // Trigger automatic build for updated article
-      const buildReason = slugChanged 
-        ? `Article updated with slug change: "${formData.title}" (${article.slug || 'no-slug'} → ${formData.slug})`
-        : `Article updated: "${formData.title}"`;
-      await triggerBuild(buildReason);
+      console.log('✅ Article updated successfully:', formData.title, '- Changes will be visible via ISR within 1 hour or on next visit');
+      
+      // Note: No build trigger needed with ISR - content automatically revalidates
     } catch (error) {
       console.error('Error updating article:', error);
     } finally {

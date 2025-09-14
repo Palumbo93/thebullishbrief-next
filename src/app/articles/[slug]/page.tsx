@@ -6,11 +6,14 @@ import { Layout } from '../../../components/Layout';
 import { ArticlePageClient } from '../../../page-components/ArticlePageClient';
 import { fetchArticleBySlug, fetchAllArticleSlugs, fetchArticleBySlugForMetadata } from '../../../hooks/useArticles';
 
-// Generate static params for all known articles
+// Generate static params for only the most recent/popular articles at build time
+// New articles will be generated on-demand via ISR
 export async function generateStaticParams() {
   try {
     const slugs = await fetchAllArticleSlugs();
-    return slugs.map((slug) => ({
+    // Only pre-generate the first 10 articles at build time to speed up builds
+    // The rest will be generated on-demand when first requested
+    return slugs.slice(0, 10).map((slug) => ({
       slug: slug,
     }));
   } catch (error) {
@@ -18,6 +21,9 @@ export async function generateStaticParams() {
     return [];
   }
 }
+
+// Enable dynamic params for ISR - allows generating pages on-demand for unknown routes
+export const dynamicParams = true;
 
 // Generate metadata for each article
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

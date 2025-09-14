@@ -118,9 +118,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-// Enable static generation WITHOUT automatic revalidation
-// Briefs don't change after publishing, so we only use on-demand revalidation
-// export const revalidate = false; // No automatic revalidation - only on-demand
+// Enable static generation with very long revalidation time
+// We use on-demand revalidation for immediate updates, but ISR needs a revalidate value
+export const revalidate = 31536000; // 1 year - effectively no auto-revalidation, only on-demand
 
 interface Props {
   params: Promise<{ slug: string }>;

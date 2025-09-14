@@ -17,9 +17,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Revalidate the specific path
+    // Revalidate the specific path and related paths
     console.log(`🔄 Revalidating path: ${path}`);
     revalidatePath(path);
+    
+    // Also revalidate the layout and root to ensure ISR works properly
+    revalidatePath('/', 'layout');
+    revalidatePath('/articles', 'page');
+    
+    console.log(`✅ Successfully revalidated: ${path} and related paths`);
 
     return NextResponse.json({
       success: true,

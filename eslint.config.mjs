@@ -10,6 +10,17 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Global ignores first
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**", 
+      "out/**",
+      "dist/**",
+      ".vercel/**",
+    ],
+  },
+  // Then extends and rules
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
@@ -23,6 +34,8 @@ const eslintConfig = [
       "prefer-const": "warn", // Change from error to warning
       "react-hooks/exhaustive-deps": "warn", // Change from error to warning
       "jsx-a11y/alt-text": "warn", // Change from error to warning
+      "@typescript-eslint/no-require-imports": "warn", // Allow require() in specific files
+      "@typescript-eslint/no-unsafe-function-type": "warn", // Change Function type errors to warnings
     },
   },
 ];

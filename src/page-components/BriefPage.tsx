@@ -615,7 +615,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        minHeight: '80vh',
         textAlign: 'center'
       }}>
         <div>
@@ -703,14 +703,14 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     >
       {/* Loading state */}
       {isLoading && (
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '80vh' }}>
           <ArticleSkeleton />
         </div>
       )}
 
       {/* Brief Content */}
       {!isLoading && (
-        <div style={{ minHeight: '100vh', position: 'relative' }}>
+        <div style={{ minHeight: '80vh', position: 'relative' }}>
         
 
         {/* Brief Header - Clean text-only header */}

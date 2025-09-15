@@ -502,7 +502,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   if (loading) {
     return (
       <Layout>
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '80vh' }}>
           <ArticleSkeleton />
         </div>
       </Layout>
@@ -540,7 +540,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       mobileHeader={mobileHeaderProps}
       actionPanel={actionPanelComponent}
     >
-      <div style={{ minHeight: '100vh', position: 'relative' }}>
+      <div style={{ minHeight: '80vh', position: 'relative' }}>
         
 
         {/* Article Header - Clean text-only header */}

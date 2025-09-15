@@ -39,7 +39,7 @@ function HomePageContent() {
   if (articlesLoading || featuredLoading || briefLoading) {
     return (
       <Layout>
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '80vh' }}>
           <ArticleSkeleton />
         </div>
       </Layout>
@@ -71,7 +71,7 @@ function HomePageContent() {
 
   return (
     <Layout>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
         {/* Hero Section */}
         <HeroSection
           heroContent={heroContent}

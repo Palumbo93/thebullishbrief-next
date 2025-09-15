@@ -14,7 +14,7 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({ slug }) =>
   
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
         <ArticleSkeleton />
       </div>
     );

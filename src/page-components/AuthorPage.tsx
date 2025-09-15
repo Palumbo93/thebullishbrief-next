@@ -83,7 +83,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
   // Author skeleton component
   const AuthorSkeleton = () => (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
         {/* Desktop Banner Skeleton */}
         <div style={{
           display: 'flex',
@@ -239,7 +239,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
 
         {/* Author Header with Banner & Overlapping Avatar */}
         <div style={{ position: 'relative' }}>

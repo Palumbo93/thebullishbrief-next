@@ -196,7 +196,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   
   return (
     <>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
         {/* Search Bar - Sticky Header */}
         <div style={{ 
           position: 'sticky', 

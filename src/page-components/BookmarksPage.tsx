@@ -23,7 +23,7 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
   if (!user) {
     return (
       <>
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '80vh' }}>
           {/* Header */}
           <div style={{
             display: 'flex',
@@ -163,7 +163,7 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
 
   return (
     <>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
         {/* Page Header */}
         <div style={{ 
           padding: 'var(--space-6) var(--content-padding) var(--space-4)',

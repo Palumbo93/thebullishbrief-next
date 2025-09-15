@@ -31,7 +31,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ params }
   if (categoryLoading) {
     return (
       <>
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '80vh' }}>
           <div style={{ 
             padding: 'var(--space-6) var(--content-padding) var(--space-4)',
             borderBottom: '0.5px solid var(--color-border-primary)'
@@ -82,7 +82,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ params }
     return (
       <>
         <div style={{ 
-          minHeight: '100vh',
+          minHeight: '80vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -136,7 +136,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ params }
 
   return (
     <>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '80vh' }}>
         {/* Category Header */}
         <div style={{ 
           padding: 'var(--space-6) var(--content-padding) var(--space-4)',

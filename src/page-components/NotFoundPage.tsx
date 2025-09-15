@@ -26,11 +26,11 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onCreateAccountClick
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: '100vh',
+      minHeight: '80vh',
       padding: 'var(--content-padding)',
       background: 'var(--color-bg-primary)'
     }}>
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{
         textAlign: 'center',
         maxWidth: '500px',

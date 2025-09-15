@@ -97,13 +97,20 @@ const ListItem: React.FC<{
   article: any;
   onArticleClick: (id: string, title: string, slug: string) => void;
   showBorder?: boolean;
-}> = ({ article, onArticleClick, showBorder = true }) => (
+  expandToFill?: boolean;
+}> = ({ article, onArticleClick, showBorder = true, expandToFill = false }) => (
   <div
     onClick={() => onArticleClick(article.id, article.title, article.slug)}
     style={{
       cursor: 'pointer',
       padding: 'var(--space-4) 0px var(--space-4) 0px',
-      borderBottom: showBorder ? '0.5px solid var(--color-border-primary)' : 'none'
+      borderBottom: showBorder ? '0.5px solid var(--color-border-primary)' : 'none',
+      ...(expandToFill && {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
+      })
     }}
     className="list-item"
   >
@@ -224,7 +231,7 @@ export const FeaturedStoriesGrid: React.FC<FeaturedStoriesGridProps> = ({
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 'var(--space-4)'
+            height: '100%'
           }} className="secondary-articles">
             {secondaryArticles.map((article, index) => (
               <ListItem
@@ -232,6 +239,7 @@ export const FeaturedStoriesGrid: React.FC<FeaturedStoriesGridProps> = ({
                 article={article}
                 onArticleClick={onArticleClick}
                 showBorder={true}
+                expandToFill={true}
               />
             ))}
           </div>

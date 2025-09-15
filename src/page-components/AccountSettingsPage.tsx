@@ -99,7 +99,7 @@ export const AccountSettingsPage: React.FC<AccountSettingsPageProps> = ({
   return (
     <div>
     <div style={{
-      minHeight: '100vh',
+      minHeight: '80vh',
       background: 'var(--color-bg-primary)',
     }}>
       {/* Header with Account Navigation */}

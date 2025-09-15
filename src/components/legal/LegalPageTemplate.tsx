@@ -43,7 +43,7 @@ export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => 
   return (
     <div>
     <div style={{
-      minHeight: '100vh',
+      minHeight: '80vh',
       background: 'var(--color-bg-primary)',
     }}>
       {/* Header with Legal Page Navigation */}

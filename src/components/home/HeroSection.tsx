@@ -51,53 +51,61 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             }}
           >
             {/* Category/Type Badge */}
-            <div style={{
-              display: 'inline-block',
-              padding: 'var(--space-1) var(--space-3)',
-              background: isHeroBrief ? 'var(--color-primary)' : 'var(--color-accent)',
-              color: isHeroBrief ? 'white' : 'var(--color-text-primary)',
-              fontSize: 'var(--text-xs)',
-              fontWeight: '600',
-              borderRadius: 'var(--radius-sm)',
-              letterSpacing: '0.05em',
-              marginBottom: 'var(--space-4)'
-            }}>
+            <div 
+              className="hero-badge"
+              style={{
+                display: 'inline-block',
+                padding: 'var(--space-1) var(--space-3)',
+                background: isHeroBrief ? 'var(--color-primary)' : 'var(--color-accent)',
+                color: isHeroBrief ? 'white' : 'var(--color-text-primary)',
+                fontSize: 'var(--text-xs)',
+                fontWeight: '600',
+                borderRadius: 'var(--radius-sm)',
+                letterSpacing: '0.05em',
+                marginBottom: 'var(--space-4)'
+              }}>
               {isHeroBrief ? 'Featured Brief' : 'Featured'}
             </div>
 
             {/* Hero Headline */}
-            <h1 style={{
-              fontSize: 'clamp(2rem, 5vw, 3rem)',
-              fontFamily: 'var(--font-editorial)',
-              fontWeight: 'var(--font-normal)',
-              lineHeight: 'var(--leading-tight)',
-              marginBottom: 'var(--space-4)',
-              letterSpacing: '-0.02em',
-              transition: 'opacity var(--transition-base)'
-            }}
+            <h1 
+              className="hero-headline"
+              style={{
+                fontSize: 'clamp(2rem, 5vw, 3rem)',
+                fontFamily: 'var(--font-editorial)',
+                fontWeight: 'var(--font-normal)',
+                lineHeight: 'var(--leading-tight)',
+                marginBottom: 'var(--space-4)',
+                letterSpacing: '-0.02em',
+                transition: 'opacity var(--transition-base)'
+              }}
             >
               {heroContent.title}
             </h1>
 
             {/* Hero Subtitle */}
-            <p style={{
-              fontSize: 'var(--text-lg)',
-              color: 'var(--color-text-secondary)',
-              lineHeight: 'var(--leading-relaxed)',
-              marginBottom: 'var(--space-4)',
-              maxWidth: '600px'
-            }}>
+            <p 
+              className="hero-subtitle"
+              style={{
+                fontSize: 'var(--text-lg)',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 'var(--leading-relaxed)',
+                marginBottom: 'var(--space-4)',
+                maxWidth: '600px'
+              }}>
               {heroContent.subtitle}
             </p>
 
             {/* Hero Meta */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--space-4)',
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)'
-            }}>
+            <div 
+              className="hero-meta"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-4)',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-muted)'
+              }}>
               {isHeroBrief ? (
                 // Brief metadata - show company name and reading time
                 <>
@@ -155,13 +163,42 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       <style jsx>{`
         @media (max-width: 768px) {
+          section {
+            padding: var(--space-4) var(--content-padding) !important;
+          }
+          
           .hero-grid {
             grid-template-columns: 1fr !important;
-            gap: var(--space-6) !important;
+            gap: var(--space-4) !important;
           }
           
           .hero-image {
             order: -1 !important;
+            aspect-ratio: 16/9 !important;
+          }
+          
+          .hero-headline {
+            font-size: clamp(1.5rem, 4vw, 2rem) !important;
+            margin-bottom: var(--space-3) !important;
+          }
+          
+          .hero-badge {
+            margin-bottom: var(--space-3) !important;
+            font-size: 0.75rem !important;
+            padding: var(--space-1) var(--space-2) !important;
+          }
+          
+          .hero-subtitle {
+            font-size: var(--text-base) !important;
+            margin-bottom: var(--space-3) !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+          }
+          
+          .hero-meta {
+            font-size: 0.75rem !important;
           }
         }
       `}</style>

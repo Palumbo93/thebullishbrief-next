@@ -33,8 +33,8 @@
 - [x] Remove AI Vault completely: Admin, UI and in database
 
 ### Phase 4: Finishes & Mobiel Adapt
-- [ ] Article Page
 - [ ] Brief Page Page
+- [ ] Article Page
 - [ ] Explore Page
 - [ ] Search Page Page
 - [ ] Home Page

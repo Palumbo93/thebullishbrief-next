@@ -197,7 +197,6 @@ export const FeaturedStoriesGrid: React.FC<FeaturedStoriesGridProps> = ({
   return (
     <section style={{
       padding: 'var(--space-8) var(--content-padding)',
-      borderBottom: '0.5px solid var(--color-border-primary)'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <h2 style={{

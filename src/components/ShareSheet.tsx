@@ -69,7 +69,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'twitter',
       name: 'X (Twitter)',
-      icon: <SocialIcon network="x" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
+      icon: <SocialIcon network="x" style={{ width: 36, height: 36 }} fgColor="var(--color-text-primary)" bgColor="transparent" />,
       color: 'var(--color-text-primary)',
       url: `https://x.com/intent/tweet?text=${encodeURIComponent('Check out this article')}&url=${encodeURIComponent(url)}`,
       action: 'link'
@@ -77,40 +77,40 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     {
       id: 'linkedin',
       name: 'LinkedIn',
-      icon: <SocialIcon network="linkedin" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
-      color: '#0077b5',
+      icon: <SocialIcon network="linkedin" style={{ width: 36, height: 36 }} fgColor="var(--color-text-primary)" bgColor="transparent" />,
+      color: 'var(--color-text-primary)',
       url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
       action: 'link'
     },
     {
       id: 'messages',
       name: 'Messages',
-      icon: <MessageSquare size={24} />,
-      color: '#34c759',
+      icon: <MessageSquare size={20} />,
+      color: 'var(--color-text-primary)',
       url: `sms:&body=${encodeURIComponent(`Check out this article\n\n${url}`)}`,
       action: 'link'
     },
     {
       id: 'whatsapp',
       name: 'WhatsApp',
-      icon: <SocialIcon network="whatsapp" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
-      color: '#25d366',
+      icon: <SocialIcon network="whatsapp" style={{ width: 36, height: 36 }} fgColor="var(--color-text-primary)" bgColor="transparent" />,
+      color: 'var(--color-text-primary)',
       url: `https://wa.me/?text=${encodeURIComponent(`Check out this article\n\n${url}`)}`,
       action: 'link'
     },
     {
       id: 'telegram',
       name: 'Telegram',
-      icon: <SocialIcon network="telegram" style={{ width: 40, height: 40 }} fgColor="currentColor" bgColor="transparent" />,
-      color: '#0088cc',
+      icon: <SocialIcon network="telegram" style={{ width: 36, height: 36 }} fgColor="var(--color-text-primary)" bgColor="transparent" />,
+      color: 'var(--color-text-primary)',
       url: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Check out this article')}`,
       action: 'link'
     },
     {
       id: 'copy',
       name: 'Copy Link',
-      icon: copied ? <Check size={24} /> : <Copy size={24} />,
-      color: copied ? '#22c55e' : '#a3a3a3',
+      icon: copied ? <Check size={20} /> : <Copy size={20} />,
+      color: copied ? 'var(--color-success)' : 'var(--color-text-primary)',
       url: '',
       action: 'copy'
     }
@@ -183,18 +183,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
           flexDirection: 'column'
         }}
       >
-        {/* Handle - Only show on mobile */}
-        <div
-          className="share-sheet-handle-desktop"
-          style={{
-            width: '40px',
-            height: '4px',
-            background: 'var(--color-border-secondary)',
-            borderRadius: 'var(--radius-full)',
-            margin: '0 auto var(--space-6)',
-            opacity: 0.6
-          }}
-        />
+
         
         {/* Header */}
         <div
@@ -245,13 +234,12 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
           </button>
         </div>
 
-        {/* Share Options Grid */}
+        {/* Share Options List */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 'var(--space-4)',
-            marginBottom: 'var(--space-6)'
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-1)'
           }}
         >
           {shareOptions.map((option, index) => (
@@ -259,33 +247,27 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
               key={option.id}
               onClick={() => handleShare(option)}
               style={{
-                background: 'var(--color-bg-tertiary)',
-                border: '0.5px solid var(--color-border-primary)',
-                borderRadius: 'var(--radius-xl)',
-                padding: 'var(--space-4)',
+                background: 'transparent',
+                border: 'none',
+                borderRadius: 'var(--radius-base)',
+                padding: 'var(--space-3) 0px',
                 cursor: 'pointer',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
-                gap: 'var(--space-2)',
+                gap: 'var(--space-4)',
                 transition: 'all var(--transition-base)',
                 animation: `slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards`,
                 animationDelay: `${index * 0.05}s`,
                 opacity: 0,
-                transform: 'translateY(20px)'
+                transform: 'translateY(20px)',
+                width: '100%',
+                textAlign: 'left'
               }}
               onMouseEnter={(e) => {
-                const shadowColor = theme === 'light' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.3)';
-                e.currentTarget.style.background = 'var(--color-bg-card-hover)';
-                e.currentTarget.style.borderColor = option.color;
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = `0 8px 25px ${shadowColor}`;
+                e.currentTarget.style.background = 'var(--color-bg-secondary)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.background = 'transparent';
               }}
             >
               <div
@@ -294,21 +276,21 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: 'var(--radius-lg)',
-                  background: `${option.color}15`,
-                  transition: 'all var(--transition-base)'
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: 'var(--radius-base)',
+                  background: 'var(--color-bg-tertiary)',
+                  border: '0.5px solid var(--color-border-secondary)',
+                  flexShrink: 0
                 }}
               >
                 {option.icon}
               </div>
               <span
                 style={{
-                  fontSize: 'var(--text-xs)',
+                  fontSize: 'var(--text-base)',
                   fontWeight: 'var(--font-medium)',
-                  color: 'var(--color-text-secondary)',
-                  textAlign: 'center',
+                  color: 'var(--color-text-primary)',
                   lineHeight: 'var(--leading-tight)'
                 }}
               >
@@ -316,38 +298,6 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
               </span>
             </button>
           ))}
-        </div>
-
-        {/* URL Preview */}
-        <div
-          style={{
-            background: 'var(--color-bg-tertiary)',
-            border: '0.5px solid var(--color-border-primary)',
-            borderRadius: 'var(--radius-lg)',
-            padding: 'var(--space-4)',
-            marginTop: 'auto'
-          }}
-        >
-          <div
-            style={{
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)',
-              marginBottom: 'var(--space-2)',
-              fontWeight: 'var(--font-medium)'
-            }}
-          >
-            Link to share
-          </div>
-          <div
-            style={{
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-secondary)',
-              wordBreak: 'break-all',
-              lineHeight: 'var(--leading-relaxed)'
-            }}
-          >
-            {url}
-          </div>
         </div>
       </div>
 

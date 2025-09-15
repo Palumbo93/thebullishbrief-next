@@ -128,6 +128,7 @@ export const Layout: React.FC<LayoutProps> = ({
   const getSidebarNavItems = () => {
     const items = [
       { id: 'home', label: 'Home', path: '/', active: actualCurrentLocation === 'home' },
+      { id: 'search', label: 'Search', path: '/search', active: pathname === '/search' },
     ];
 
     // Add category-based navigation
@@ -186,8 +187,8 @@ export const Layout: React.FC<LayoutProps> = ({
       companyName: mobileHeader?.companyName,
       tickers: mobileHeader?.tickers,
       
-      // Subscribe functionality - only show when user is not authenticated
-      showSubscribe: !user,
+      // Subscribe functionality - always include so it can be conditionally shown
+      showSubscribe: true,
       onSubscribeClick: () => handleSignUpClick(),
     };
 
@@ -357,7 +358,7 @@ export const Layout: React.FC<LayoutProps> = ({
       `}</style>
 
       {/* Mobile Header (visible only on mobile) */}
-      <MobileHeader {...getMobileHeaderConfig()} />
+      <MobileHeader {...getMobileHeaderConfig()} user={user} />
 
       {/* Publication Header (visible only on desktop) */}
       <PublicationHeader

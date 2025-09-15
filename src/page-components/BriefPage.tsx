@@ -714,23 +714,19 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         
 
         {/* Brief Header - Clean text-only header */}
-        <div style={{
-          padding: 'var(--space-6) var(--content-padding)',
-          maxWidth: 'var(--max-width)',
-          margin: '0 auto',
-        }}>
+        <div 
+          className="article-brief-header"
+          style={{
+            maxWidth: 'var(--max-width)',
+            margin: '0 auto'
+          }}>
           {/* Title */}
-          <h1 style={{
-            fontSize: 'var(--brief-headline-size-desktop)',
-            fontWeight: 'var(--font-medium)',
-            lineHeight: 'var(--leading-tight)',
+          <h1 className="article-brief-title" style={{
             color: 'var(--color-text-primary)',
-            marginBottom: 'var(--space-4)',
-            letterSpacing: '-0.01em'
+            marginBottom: 'var(--space-4)'
           }}>
             {brief?.title}
           </h1>
-
 
           {/* Featured Media - Mobile Position (below headline, above info bar) */}
           {(brief as any)?.show_featured_media !== false && (
@@ -1005,6 +1001,34 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           title={currentInlineVideoUrl ? 'Video' : ((brief?.additional_copy as any)?.featuredVideoTitle || 'Featured Video')}
         />
       )}
+      
+      <style jsx>{`
+        .article-brief-header {
+          padding: var(--space-12) var(--content-padding) var(--space-4) var(--content-padding);
+        }
+        
+        .article-brief-title {
+          font-family: var(--font-editorial);
+          font-weight: var(--font-medium);
+          font-size: clamp(1.875rem, 4vw, 2.5rem);
+          line-height: var(--leading-tight);
+          letter-spacing: -0.01em;
+        }
+        
+        @media (max-width: 768px) {
+          .article-brief-header {
+            padding: var(--space-4) var(--content-padding) var(--space-3) var(--content-padding);
+          }
+          
+          .article-brief-title {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+          }
+          
+          .mobile-category-info {
+            display: block !important;
+          }
+        }
+      `}</style>
 
     </Layout>
   );

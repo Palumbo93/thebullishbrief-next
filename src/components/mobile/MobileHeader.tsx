@@ -7,6 +7,10 @@ import { MobileHeaderBranding } from './MobileHeaderBranding';
 import { MobileHeaderTypeLogo } from './MobileHeaderTypeLogo';
 import { MobileHeaderAction, MobileHeaderConfig } from '../../utils/mobileHeaderConfigs';
 
+interface MobileHeaderProps extends MobileHeaderConfig {
+  user?: any; // User authentication state
+}
+
 
 /**
  * MobileHeader - Main mobile header component
@@ -14,10 +18,11 @@ import { MobileHeaderAction, MobileHeaderConfig } from '../../utils/mobileHeader
  * Provides a flexible, page-configurable mobile header system.
  * Supports different layouts for Home, Search, Article, and Brief pages.
  */
-export const MobileHeader: React.FC<MobileHeaderConfig> = ({
+export const MobileHeader: React.FC<MobileHeaderProps> = ({
   leftSection,
   rightSection,
-  onMenuClick
+  onMenuClick,
+  user
 }) => {
   const getHeaderStyles = () => {
     return {
@@ -145,19 +150,58 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
 
           {/* Right Section */}
           <MobileHeaderSection align="right" gap="sm">
-            {rightSection.actions.map((action, index) => (
-              <MobileHeaderButton
-                key={`${action.type}-${index}`}
-                icon={getActionIcon(action.type)}
-                onClick={action.onClick}
-                ariaLabel={getActionAriaLabel(action.type)}
-                variant={getActionVariant(action.type, action.active)}
-                active={action.active}
-                loading={action.loading}
-                disabled={action.disabled}
-                iconFill={action.type === 'bookmark' && action.active ? 'currentColor' : 'none'}
-              />
-            ))}
+            {!user ? (
+              // Not logged in - show only subscribe button if available
+              rightSection.actions
+                .filter(action => action.type === 'subscribe')
+                .map((action, index) => (
+                  <button
+                    key={`subscribe-button-${index}`}
+                    onClick={action.onClick}
+                    style={{
+                      padding: 'var(--space-2) var(--space-4)',
+                      background: 'var(--color-primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-medium)',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-base)',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'var(--color-text-primary)';
+                      e.currentTarget.style.color = 'var(--color-bg-primary)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'var(--color-primary)';
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    Subscribe
+                  </button>
+                ))
+            ) : (
+              // Logged in - show all action buttons except subscribe
+              rightSection.actions
+                .filter(action => action.type !== 'subscribe')
+                .map((action, index) => (
+                  <MobileHeaderButton
+                    key={`${action.type}-${index}`}
+                    icon={getActionIcon(action.type)}
+                    onClick={action.onClick}
+                    ariaLabel={getActionAriaLabel(action.type)}
+                    variant={getActionVariant(action.type, action.active)}
+                    active={action.active}
+                    loading={action.loading}
+                    disabled={action.disabled}
+                    iconFill={action.type === 'bookmark' && action.active ? 'currentColor' : 'none'}
+                  />
+                ))
+            )}
           </MobileHeaderSection>
         </div>
       </header>

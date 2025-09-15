@@ -544,22 +544,55 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         
 
         {/* Article Header - Clean text-only header */}
-        <div style={{
-          padding: 'var(--space-10) var(--content-padding) var(--space-4) var(--content-padding)',
-          maxWidth: maxWidth,
-          margin: '0 auto'
-        }}>
+        <div 
+          className="article-brief-header"
+          style={{
+            maxWidth: maxWidth,
+            margin: '0 auto'
+          }}>
           {/* Title */}
-          <h1 className="headline" style={{
-            fontFamily: 'var(--font-editorial)',
-            fontWeight: 'var(--font-normal)',
-            lineHeight: 'var(--leading-tight)',
+          <h1 className="article-brief-title" style={{
             color: 'var(--color-text-primary)',
-            marginBottom: 'var(--space-4)',
-            letterSpacing: '-0.01em'
+            marginBottom: 'var(--space-4)'
           }}>
             {article.title}
           </h1>
+
+          {/* Category - Mobile Position (below title) */}
+          <div className="mobile-category-info" style={{
+            fontSize: 'var(--text-sm)',
+            color: 'var(--color-text-muted)',
+            marginBottom: 'var(--space-4)',
+            display: 'none'
+          }}>
+            In{' '}
+            <button
+              onClick={() => {
+                const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
+                router.push(`/articles${categoryParam}`);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-primary)',
+                cursor: 'pointer',
+                padding: '0',
+                fontSize: 'inherit',
+                fontWeight: 'var(--font-semibold)',
+                textDecoration: 'underline',
+                textDecorationColor: 'transparent',
+                transition: 'text-decoration-color var(--transition-base)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecorationColor = 'var(--color-text-primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecorationColor = 'transparent';
+              }}
+            >
+              {article.category}
+            </button>
+          </div>
 
           {/* Featured Image - Mobile Position (below headline, above info bar) */}
           {article.image && (
@@ -624,7 +657,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             borderBottom: '0.5px solid var(--color-border-primary)'
                         }}>
             {/* Author and Category */}
-            <div style={{
+            <div className="desktop-category-info" style={{
               display: 'flex',
               alignItems: 'center',
               gap: 'var(--space-3)',
@@ -674,7 +707,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                   </button>
                 )}
                 <div style={{
-                  fontSize: 'var(--text-xs)',
+                  fontSize: 'var(--text-sm)',
                   color: 'var(--color-text-muted)'
                 }}>
                   {article.author ? 'in' : 'In'}{' '}
@@ -686,11 +719,11 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: 'var(--color-text-primary)',
-                      fontWeight: 'var(--font-medium)',
+                      color: 'var(--color-primary)',
                       cursor: 'pointer',
                       padding: '0',
                       fontSize: 'inherit',
+                      fontWeight: 'var(--font-semibold)',
                       textDecoration: 'underline',
                       textDecorationColor: 'transparent',
                       transition: 'text-decoration-color var(--transition-base)'
@@ -709,13 +742,15 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             </div>
 
             {/* Meta Information and Actions */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 'var(--space-3)',
-              flexWrap: 'wrap'
-            }}>
+            <div 
+              className="article-meta-section"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 'var(--space-3)',
+                flexWrap: 'wrap'
+              }}>
               {/* Meta Info */}
               <div style={{
                 display: 'flex',
@@ -733,15 +768,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                   <Clock style={{ width: '14px', height: '14px' }} />
                   <span>{formatReadingTime(readingTime)}</span>
                 </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)'
-              }}>
-                {/* Bookmark Button */}
+                {/* Bookmark Icon */}
                 <button
                   onClick={() => {
                     if (user && article?.id) {
@@ -757,28 +784,24 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                   }}
                   disabled={!user || toggleBookmark.isPending}
                   style={{
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    color: isBookmarked ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                    padding: 'var(--space-2)',
-                    borderRadius: 'var(--radius-md)',
+                    background: 'none',
+                    border: 'none',
+                    color: isBookmarked ? 'var(--color-primary)' : 'var(--color-text-muted)',
                     cursor: (!user || toggleBookmark.isPending) ? 'not-allowed' : 'pointer',
+                    padding: '0',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all var(--transition-base)',
+                    transition: 'color var(--transition-base)',
                     opacity: (!user || toggleBookmark.isPending) ? 0.6 : 1
                   }}
                   onMouseEnter={(e) => {
                     if (user && !toggleBookmark.isPending) {
-                      e.currentTarget.style.background = 'var(--color-bg-card-hover)';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.color = isBookmarked ? 'var(--color-primary)' : 'var(--color-text-secondary)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (user && !toggleBookmark.isPending) {
-                      e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.color = isBookmarked ? 'var(--color-primary)' : 'var(--color-text-muted)';
                     }
                   }}
                   title={isBookmarked ? 'Remove bookmark' : 'Bookmark article'}
@@ -791,39 +814,41 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                     }} 
                   />
                 </button>
-
-                {/* Share Button */}
-                <button
-                  onClick={() => setIsShareSheetOpen(true)}
-                  style={{
-                    background: 'var(--color-bg-tertiary)',
-                    border: '0.5px solid var(--color-border-primary)',
-                    color: 'var(--color-text-secondary)',
-                    padding: 'var(--space-2)',
-                    borderRadius: 'var(--radius-md)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all var(--transition-base)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--color-bg-card-hover)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                  title="Share article"
-                >
-                  <Share style={{ width: '16px', height: '16px' }} />
-                </button>
               </div>
+
+              {/* Share Button */}
+              <button
+                onClick={() => setIsShareSheetOpen(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-1)',
+                  padding: 'var(--space-1) var(--space-2)',
+                  background: 'transparent',
+                  border: '1px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--color-text-muted)',
+                  fontSize: 'var(--text-sm)',
+                  cursor: 'pointer',
+                  transition: 'all var(--transition-base)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'var(--color-bg-secondary)';
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                  e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--color-text-muted)';
+                  e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                }}
+              >
+                <Share style={{ width: '14px', height: '14px' }} />
+                <span>Share</span>
+              </button>
             </div>
+
           </div>
-
-
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none brief-content-container">
@@ -984,6 +1009,44 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         imageAlt={zoomedImageAlt}
         imageName={zoomedImageAlt}
       />
+      
+      <style jsx>{`
+        .article-brief-header {
+          padding: var(--space-12) var(--content-padding) var(--space-4) var(--content-padding);
+        }
+        
+        .article-brief-title {
+          font-family: var(--font-editorial);
+          font-weight: var(--font-medium);
+          font-size: clamp(1.875rem, 4vw, 2.5rem);
+          line-height: var(--leading-tight);
+          letter-spacing: -0.01em;
+        }
+        
+        @media (max-width: 768px) {
+          .article-brief-header {
+            padding: var(--space-4) var(--content-padding) var(--space-3) var(--content-padding);
+          }
+          
+          .article-brief-title {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+          }
+          
+          .mobile-category-info {
+            display: block !important;
+          }
+          
+          .desktop-category-info {
+            display: none !important;
+          }
+          
+          .article-meta-section {
+            flex-wrap: wrap !important;
+            justify-content: space-between !important;
+            width: 100%;
+          }
+        }
+      `}</style>
     </Layout>
   );
 };

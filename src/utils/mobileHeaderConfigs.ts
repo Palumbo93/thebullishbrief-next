@@ -87,7 +87,7 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Search Page: (Menu, Type Logo) | Spacer | Search Icon (disabled since we're on search)
+  // Search Page: (Menu, Type Logo) | Spacer | Subscribe Button
   search: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
@@ -97,12 +97,17 @@ export const createMobileHeaderConfig = {
       }
     },
     rightSection: {
-      actions: [] // No search icon since we're already on search page
+      actions: [
+        ...(props.showSubscribe && props.onSubscribeClick ? [{
+          type: 'subscribe' as const,
+          onClick: props.onSubscribeClick
+        }] : [])
+      ]
     },
     onMenuClick: props.onMenuClick
   }),
 
-  // Article Page: (Menu, Type Logo) | Spacer | Bookmark Button, Share Button
+  // Article Page: (Menu, Type Logo) | Spacer | Bookmark Button, Share Button, Subscribe Button
   article: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
@@ -123,12 +128,16 @@ export const createMobileHeaderConfig = {
           active: props.isBookmarked,
           loading: props.bookmarkLoading
         }] : []),
+        ...(props.showSubscribe && props.onSubscribeClick ? [{
+          type: 'subscribe' as const,
+          onClick: props.onSubscribeClick
+        }] : [])
       ]
     },
     onMenuClick: props.onMenuClick
   }),
 
-  // Brief Page: (Menu, Type Logo) | Spacer | More Button, Share Button
+  // Brief Page: (Menu, Type Logo) | Spacer | More Button, Share Button, Subscribe Button
   brief: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
@@ -147,6 +156,10 @@ export const createMobileHeaderConfig = {
           type: 'more' as const,
           onClick: props.onMoreClick,
           active: props.moreActive
+        }] : []),
+        ...(props.showSubscribe && props.onSubscribeClick ? [{
+          type: 'subscribe' as const,
+          onClick: props.onSubscribeClick
         }] : [])
       ]
     },

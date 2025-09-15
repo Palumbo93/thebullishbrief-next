@@ -1,35 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-// Define the mobile header configuration type
-interface MobileHeaderConfig {
-  leftSection: {
-    showMenu: boolean;
-    logo?: {
-      type: 'main' | 'company';
-      src?: string;
-      alt?: string;
-      fallback?: string;
-      onClick?: () => void;
-    };
-    branding?: {
-      companyName?: string;
-      tickers?: string[];
-      onClick?: () => void;
-    };
-  };
-  rightSection: {
-    actions: Array<{
-      type: 'search' | 'bookmark' | 'share' | 'comment' | 'more';
-      onClick: () => void;
-      active?: boolean;
-      loading?: boolean;
-      disabled?: boolean;
-    }>;
-  };
-  onMenuClick: () => void;
-}
+import { MobileHeaderConfig } from '../utils/mobileHeaderConfigs';
 
 interface MobileHeaderContextType {
   config: MobileHeaderConfig | null;

@@ -1029,7 +1029,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           }
           
           .article-brief-title {
-            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-size: clamp(1.875rem, 6vw, 2.5rem);
           }
           
           .mobile-category-info {

@@ -185,6 +185,10 @@ export const Layout: React.FC<LayoutProps> = ({
       // Brief specific props
       companyName: mobileHeader?.companyName,
       tickers: mobileHeader?.tickers,
+      
+      // Subscribe functionality - only show when user is not authenticated
+      showSubscribe: !user,
+      onSubscribeClick: () => handleSignUpClick(),
     };
 
     return getMobileHeaderConfigForRoute(pathname || '', baseProps);

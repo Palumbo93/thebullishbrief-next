@@ -1,6 +1,6 @@
 // Define the types for mobile header configuration
 export interface MobileHeaderAction {
-  type: 'search' | 'bookmark' | 'share' | 'more';
+  type: 'search' | 'bookmark' | 'share' | 'more' | 'subscribe';
   onClick: () => void;
   active?: boolean;
   loading?: boolean;
@@ -51,6 +51,10 @@ export interface MobileHeaderFactoryProps {
   onMoreClick?: () => void;
   moreActive?: boolean;
   
+  // Subscribe functionality
+  onSubscribeClick?: () => void;
+  showSubscribe?: boolean;
+  
   // Navigation
   onLogoClick?: () => void;
 }
@@ -59,7 +63,7 @@ export interface MobileHeaderFactoryProps {
  * Factory functions for creating mobile header configurations for different page types
  */
 export const createMobileHeaderConfig = {
-  // Home Page: (Menu, Type Logo) | Spacer | Search Icon
+  // Home Page: (Menu, Type Logo) | Spacer | Search Icon, Subscribe Button
   home: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
@@ -69,10 +73,16 @@ export const createMobileHeaderConfig = {
       }
     },
     rightSection: {
-      actions: props.onSearchClick ? [{
-        type: 'search',
-        onClick: () => props.onSearchClick?.('/search?focus=true')
-      }] : []
+      actions: [
+        ...(props.onSearchClick ? [{
+          type: 'search' as const,
+          onClick: () => props.onSearchClick?.('/search?focus=true')
+        }] : []),
+        ...(props.showSubscribe && props.onSubscribeClick ? [{
+          type: 'subscribe' as const,
+          onClick: props.onSubscribeClick
+        }] : [])
+      ]
     },
     onMenuClick: props.onMenuClick
   }),

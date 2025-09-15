@@ -1,46 +1,12 @@
 import React from 'react';
-import { Menu, Search, Bookmark, Share, MessageCircle, MoreHorizontal } from 'lucide-react';
+import { Menu, Search, Bookmark, Share, MoreHorizontal, UserPlus } from 'lucide-react';
 import { MobileHeaderSection } from './MobileHeaderSection';
 import { MobileHeaderButton } from './MobileHeaderButton';
 import { MobileHeaderLogo } from './MobileHeaderLogo';
 import { MobileHeaderBranding } from './MobileHeaderBranding';
 import { MobileHeaderTypeLogo } from './MobileHeaderTypeLogo';
+import { MobileHeaderAction, MobileHeaderConfig } from '../../utils/mobileHeaderConfigs';
 
-interface MobileHeaderAction {
-  type: 'search' | 'bookmark' | 'share' | 'comment' | 'more';
-  onClick: () => void;
-  active?: boolean;
-  loading?: boolean;
-  disabled?: boolean;
-}
-
-interface MobileHeaderConfig {
-  leftSection: {
-    showMenu: boolean;
-    logo?: {
-      type: 'main' | 'company';
-      src?: string;
-      alt?: string;
-      fallback?: string;
-      onClick?: () => void;
-    };
-    branding?: {
-      companyName?: string;
-      companyLogoUrl?: string;
-      tickers?: any; // JSON ticker data from database
-      fallback?: string;
-      onClick?: () => void;
-    };
-    typeLogo?: {
-      size?: 'sm' | 'md' | 'lg';
-      onClick?: () => void;
-    };
-  };
-  rightSection: {
-    actions: MobileHeaderAction[];
-  };
-  onMenuClick: () => void;
-}
 
 /**
  * MobileHeader - Main mobile header component
@@ -85,8 +51,8 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
       search: Search,
       bookmark: Bookmark,
       share: Share,
-      comment: MessageCircle,
-      more: MoreHorizontal
+      more: MoreHorizontal,
+      subscribe: UserPlus
     };
     return icons[type];
   };
@@ -96,14 +62,17 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
       search: 'Open search',
       bookmark: 'Bookmark this content',
       share: 'Share this content',
-      comment: 'Toggle comments',
-      more: 'More options'
+      more: 'More options',
+      subscribe: 'Subscribe'
     };
     return labels[type];
   };
 
   const getActionVariant = (type: MobileHeaderAction['type'], active?: boolean) => {
-    // All action buttons use default variant - we'll handle bookmark state via icon fill
+    // Subscribe button should use primary variant, others use default
+    if (type === 'subscribe') {
+      return 'primary' as const;
+    }
     return 'default' as const;
   };
 
@@ -186,7 +155,7 @@ export const MobileHeader: React.FC<MobileHeaderConfig> = ({
                 active={action.active}
                 loading={action.loading}
                 disabled={action.disabled}
-                iconFill={(action.type === 'bookmark' || action.type === 'comment') && action.active ? 'currentColor' : 'none'}
+                iconFill={action.type === 'bookmark' && action.active ? 'currentColor' : 'none'}
               />
             ))}
           </MobileHeaderSection>

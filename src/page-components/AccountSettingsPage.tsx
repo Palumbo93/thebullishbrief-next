@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { ProfileSection } from '../components/account/ProfileSection';
-import { PreferencesSection } from '../components/account/PreferencesSection';
 import { NotificationPreferencesSection } from '../components/account/NotificationPreferencesSection';
 import { DataSection } from '../components/account/DataSection';
 import { PublicationHeader } from '../components/PublicationHeader';
@@ -55,7 +54,6 @@ export const AccountSettingsPage: React.FC<AccountSettingsPageProps> = ({
 
   const sections = [
     { id: 'profile', name: 'Your account', slug: 'profile' },
-    { id: 'onboarding', name: 'Preferences', slug: 'onboarding' },
     { id: 'notifications', name: 'Notifications', slug: 'notifications' },
     { id: 'data', name: 'Data Management', slug: 'data' }
   ];
@@ -69,8 +67,6 @@ export const AccountSettingsPage: React.FC<AccountSettingsPageProps> = ({
     switch (activeSection) {
       case 'profile':
         return <ProfileSection />;
-      case 'onboarding':
-        return <PreferencesSection />;
       case 'notifications':
         return <NotificationPreferencesSection />;
       case 'security':

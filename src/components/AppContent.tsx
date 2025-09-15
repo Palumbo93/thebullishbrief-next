@@ -3,7 +3,6 @@
 import React from 'react';
 import { useAuthModal } from '../contexts/AuthModalContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useUserRestrictions } from '../hooks/useUserRestrictions';
 import { AuthModal } from './AuthModal/index';
 import { ToastContainer } from './ToastContainer';
 import { ConfirmModal } from './ConfirmModal';
@@ -23,8 +22,6 @@ export const AppContent: React.FC<AppContentProps> = ({ children }) => {
     handleAuthModalClose,
   } = useAuthModal();
   
-  // Initialize user restrictions monitoring for real-time updates
-  useUserRestrictions();
 
   // Show LoadingScreen while auth state is being determined
   if (authLoading) {

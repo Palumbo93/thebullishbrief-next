@@ -363,7 +363,6 @@ export const Layout: React.FC<LayoutProps> = ({
           name: category.name,
           slug: category.slug
         })) || []}
-        activeCategory={getActiveCategory()}
         showTicker={actualCurrentLocation === 'home'}
         onMobileMenuClick={() => setIsSidebarOpen(true)}
       />

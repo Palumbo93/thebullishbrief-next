@@ -76,7 +76,7 @@ export const generateRSSFeed = (articles: Article[], baseUrl: string): string =>
       <link>${articleUrl}</link>
       <guid>${articleUrl}</guid>
       <description>${escapeXml(description)}</description>
-      <author>noreply@bullishbrief.com (${escapeXml(article.author)})</author>
+      <author>info@bullishbrief.com</author>
       <pubDate>${pubDate}</pubDate>
       ${categories.map(cat => `<category>${escapeXml(cat)}</category>`).join('\n      ')}
       <enclosure url="${article.image}" type="image/jpeg" />

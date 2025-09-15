@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useBriefBySlug } from '../hooks/useBriefs';
 import { useTrackBriefView } from '../hooks/useBriefViews';
 import { useTrackBriefEngagement, useTrackBriefScrolling, useTrackVideoInteractions } from '../hooks/useClarityAnalytics';
-import { ArrowLeft, User, Calendar, Clock, Play, Pause } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Clock, Share, Play, Pause } from 'lucide-react';
 
 
 import { parseTOCFromContent, getFirstTickerSymbol, getCountryAppropriateTickerSymbol } from '../utils/tocParser';
@@ -54,15 +54,13 @@ const CustomWidget = dynamic(() => import('../components/CustomWidget'), {
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ShareSheet } from '../components/ShareSheet';
-import { CTABanner } from '../components/CTABanner';
 import { LegalFooter } from '../components/LegalFooter';
-import { BriefDesktopBanner } from '../components/briefs/BriefDesktopBanner';
 import { Layout } from '../components/Layout';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import BriefLeadGenPopup from '../components/BriefLeadGenPopup';
-import SidebarJoinCTA from '../components/SidebarJoinCTA';
 import { VideoModal } from '../components/VideoModal';
 import { FeaturedMedia } from '../components/briefs/FeaturedMedia';
+import BriefsActionPanel from '../components/briefs/BriefsActionPanel';
 
 import Image from 'next/image';
 
@@ -332,7 +330,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       
       // Add responsive sizes for better performance
       if (!img.sizes) {
-        img.sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px';
+        img.sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, var(--max-width)';
       }
       
       // Add proper alt text if missing
@@ -663,34 +661,34 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     </div>
   );
 
-  // Prepare action panel data
-  const briefActionPanel = brief ? {
-    briefId: String(brief.id),
-    brief: brief, // Pass the full brief object for lead generation widget
-    tickerWidget,
-    sections: tocSections,
-    tickers: brief.tickers,
-    companyName: brief.company_name || undefined,
-    companyLogoUrl: brief.company_logo_url || undefined,
-
-    // Include video data when feature_featured_video is false (video goes in action panel)
-    videoUrl: (!brief.feature_featured_video && brief.video_url) ? brief.video_url : undefined,
-    videoThumbnail: (!brief.feature_featured_video && brief.video_url) ? (brief.featured_video_thumbnail || brief.featured_image_url) : undefined,
-    videoTitle: (!brief.feature_featured_video && brief.video_url) ? 
-      ((brief.additional_copy as any)?.featuredVideoTitle || 'Featured Video') : undefined,
-    onVideoClick: (!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined,
-    onSignUpClick: onCreateAccountClick,
-    onWidgetEmailSubmitted: (email: string, isAuthenticated: boolean) => {
-      // Track widget lead generation signup for analytics
-      if (brief?.id && brief?.title && trackLeadGenSignup) {
-        trackLeadGenSignup(String(brief.id), brief.title, 'sidebar_widget', isAuthenticated ? 'authenticated' : 'guest');
-      }
-    },
-    // Pass country context for geolocation-based features
-    country,
-    countryLoading,
-    geolocationError
-  } : undefined;
+  // Prepare action panel component
+  const actionPanelComponent = brief ? (
+    <BriefsActionPanel
+      briefId={String(brief.id)}
+      brief={brief}
+      tickerWidget={tickerWidget}
+      sections={tocSections}
+      tickers={brief.tickers}
+      companyName={brief.company_name || undefined}
+      // Include video data when feature_featured_video is false (video goes in action panel)
+      videoUrl={(!brief.feature_featured_video && brief.video_url) ? brief.video_url : undefined}
+      videoThumbnail={(!brief.feature_featured_video && brief.video_url) ? (brief.featured_video_thumbnail || brief.featured_image_url) : undefined}
+      videoTitle={(!brief.feature_featured_video && brief.video_url) ? 
+        ((brief.additional_copy as any)?.featuredVideoTitle || 'Featured Video') : undefined}
+      onVideoClick={(!brief.feature_featured_video && brief.video_url) ? handleVideoClick : undefined}
+      onSignUpClick={onCreateAccountClick}
+      onWidgetEmailSubmitted={(email: string, isAuthenticated: boolean) => {
+        // Track widget lead generation signup for analytics
+        if (brief?.id && brief?.title && trackLeadGenSignup) {
+          trackLeadGenSignup(String(brief.id), brief.title, 'sidebar_widget', isAuthenticated ? 'authenticated' : 'guest');
+        }
+      }}
+      // Pass country context for geolocation-based features
+      country={country}
+      countryLoading={countryLoading}
+      geolocationError={geolocationError}
+    />
+  ) : undefined;
 
   const mobileHeaderProps = brief ? {
     companyName: brief.company_name || undefined,
@@ -700,10 +698,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
   return (
     <Layout
-      showActionPanel={true}
-      actionPanelType="brief"
-      briefActionPanel={briefActionPanel}
       mobileHeader={mobileHeaderProps}
+      actionPanel={actionPanelComponent}
     >
       {/* Loading state */}
       {isLoading && (
@@ -715,121 +711,12 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       {/* Brief Content */}
       {!isLoading && (
         <div style={{ minHeight: '100vh', position: 'relative' }}>
-        {/* Enhanced Gradient Background Overlay - When featured_color is set */}
-        {(brief as any)?.featured_color && (() => {
-          // Theme-aware opacity values
-          const isDark = theme === 'dark';
-          const mainOpacities = isDark 
-            ? ['40', '30', '22', '16', '12', '08', '05', '03'] // Dark mode - stronger
-            : ['20', '15', '12', '08', '05', '03', '02', '01']; // Light mode - subtle
-          const ambientOpacities = isDark
-            ? { left: ['18', '12', '06'], right: ['15', '08', '04'] } // Dark mode
-            : { left: ['08', '04', '02'], right: ['06', '03', '01'] }; // Light mode
-          const textureOpacities = isDark
-            ? ['10', '06', '03'] // Dark mode
-            : ['05', '03', '01']; // Light mode
-          const textureBaseOpacity = isDark ? 0.8 : 0.4;
-
-          return (
-            <>
-              {/* Main gradient overlay */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '100vh',
-                background: `
-                  radial-gradient(ellipse 200% 120% at 50% -20%, 
-                    ${(brief as any).featured_color}${mainOpacities[0]} 0%, 
-                    ${(brief as any).featured_color}${mainOpacities[1]} 10%, 
-                    ${(brief as any).featured_color}${mainOpacities[2]} 20%, 
-                    ${(brief as any).featured_color}${mainOpacities[3]} 30%, 
-                    ${(brief as any).featured_color}${mainOpacities[4]} 40%, 
-                    ${(brief as any).featured_color}${mainOpacities[5]} 50%, 
-                    ${(brief as any).featured_color}${mainOpacities[6]} 60%, 
-                    ${(brief as any).featured_color}${mainOpacities[7]} 70%, 
-                    transparent 85%
-                  )
-                `,
-                pointerEvents: 'none',
-                zIndex: 1
-              }} />
-              
-              {/* Secondary ambient glow */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '60vh',
-                background: `
-                  radial-gradient(ellipse 120% 80% at 30% 0%, 
-                    ${(brief as any).featured_color}${ambientOpacities.left[0]} 0%, 
-                    ${(brief as any).featured_color}${ambientOpacities.left[1]} 25%, 
-                    ${(brief as any).featured_color}${ambientOpacities.left[2]} 50%, 
-                    transparent 75%
-                  ),
-                  radial-gradient(ellipse 120% 80% at 70% 0%, 
-                    ${(brief as any).featured_color}${ambientOpacities.right[0]} 0%, 
-                    ${(brief as any).featured_color}${ambientOpacities.right[1]} 30%, 
-                    ${(brief as any).featured_color}${ambientOpacities.right[2]} 60%, 
-                    transparent 80%
-                  )
-                `,
-                pointerEvents: 'none',
-                zIndex: 2
-              }} />
-              
-              {/* Enhanced noisy texture overlay */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '100vh',
-                backgroundImage: `
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E"),
-                  linear-gradient(180deg, 
-                    ${(brief as any).featured_color}${textureOpacities[0]} 0%, 
-                    ${(brief as any).featured_color}${textureOpacities[1]} 20%, 
-                    ${(brief as any).featured_color}${textureOpacities[2]} 40%, 
-                    transparent 70%
-                  )
-                `,
-                backgroundSize: isDark ? '400px 400px, 100% 100%' : '280px 280px, 100% 100%',
-                backgroundRepeat: 'repeat, no-repeat',
-                pointerEvents: 'none',
-                zIndex: 4,
-                opacity: isDark ? 0.18 : 0.18,
-                mixBlendMode: 'soft-light'
-              }} />
-            </>
-          );
-        })()}
         
-        {/* Desktop Banner - Hidden on mobile */}
-        <BriefDesktopBanner
-          companyName={brief?.company_name || undefined}
-          companyLogoUrl={brief?.company_logo_url || undefined}
-          tickers={brief?.tickers || []}
-          isScrolled={isScrolled}
-          actions={[
-            {
-              type: 'back',
-              onClick: handleBack
-            },
-            {
-              type: 'share',
-              onClick: () => setIsShareSheetOpen(true)
-            }
-          ]}
-        />
 
         {/* Brief Header - Clean text-only header */}
         <div style={{
-          padding: 'var(--space-10) var(--content-padding) var(--space-4) var(--content-padding)',
-          maxWidth: '800px',
+          padding: 'var(--space-6) var(--content-padding)',
+          maxWidth: 'var(--max-width)',
           margin: '0 auto',
         }}>
           {/* Title */}
@@ -878,16 +765,17 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         {/* Main Content */}
         <main style={{
           padding: '0px var(--content-padding) 50px var(--content-padding)',
-          maxWidth: '800px',
+          maxWidth: 'var(--max-width)',
           margin: '0 auto'
         }}>
 
-          {/* Meta Info - Date */}
+          {/* Meta Info - Date, Reading Time, and Share */}
           <div 
             className="meta-info-section"
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'space-between',
               gap: 'var(--space-3)',
               fontSize: 'var(--text-sm)',
               color: 'var(--color-text-muted)',
@@ -895,25 +783,55 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               paddingBottom: 'var(--space-4)',
               borderBottom: '0.5px solid var(--color-border-primary)'
             }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-              <Calendar style={{ width: '14px', height: '14px' }} />
-              <span>{brief?.published_at ? new Date(brief.published_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              }) : new Date(brief?.created_at || '').toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-              <Clock style={{ width: '14px', height: '14px' }} />
-              <span>{brief?.reading_time_minutes ? `${brief.reading_time_minutes} min` : '4 min'}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                <Calendar style={{ width: '14px', height: '14px' }} />
+                <span>{brief?.published_at ? new Date(brief.published_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                }) : new Date(brief?.created_at || '').toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                <Clock style={{ width: '14px', height: '14px' }} />
+                <span>{brief?.reading_time_minutes ? `${brief.reading_time_minutes} min` : '4 min'}</span>
+              </div>
             </div>
 
-     
-            
+            {/* Share Button */}
+            <button
+              onClick={() => setIsShareSheetOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-1)',
+                padding: 'var(--space-1) var(--space-2)',
+                background: 'transparent',
+                border: '1px solid var(--color-border-primary)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--color-text-muted)',
+                fontSize: 'var(--text-sm)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-base)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'var(--color-bg-secondary)';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-muted)';
+                e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+              }}
+            >
+              <Share style={{ width: '14px', height: '14px' }} />
+              <span>Share</span>
+            </button>
           </div>
 
           {/* Subtitle - Clean callout style */}
@@ -931,7 +849,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 left: 0,
                 width: '3px',
                 height: '100%',
-                background: (brief as any)?.featured_color || 'var(--color-success)',
+                background: 'var(--color-primary)',
                 opacity: 1
               }} />
               
@@ -1039,7 +957,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           <BriefLeadGenPopup
             brief={brief}
             triggerScrollPercentage={triggerScrollPercentage}
-            // triggerScrollPixels={2000} // Also trigger after 800px scroll (better for mobile)
+            // triggerScrollPixels={2000} // Also trigger after var(--max-width) scroll (better for mobile)
             showDelay={showDelay}
             onPopupViewed={() => {
               if (brief?.id && brief?.title) {
@@ -1060,14 +978,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
       })()}
       
       
-      {/* CTA Banner - Only show when content is loaded */}
-      {!isLoading && (
-        <CTABanner 
-          onCreateAccountClick={onCreateAccountClick}
-          variant="secondary"
-          position="bottom"
-        />
-      )}
       
       {/* Legal Footer */}
       <LegalFooter />

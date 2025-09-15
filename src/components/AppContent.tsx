@@ -5,7 +5,6 @@ import { useAuthModal } from '../contexts/AuthModalContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserRestrictions } from '../hooks/useUserRestrictions';
 import { AuthModal } from './AuthModal/index';
-import { OnboardingModal } from './OnboardingModal';
 import { ToastContainer } from './ToastContainer';
 import { ConfirmModal } from './ConfirmModal';
 import { LoadingScreen } from './LoadingScreen';
@@ -21,10 +20,7 @@ export const AppContent: React.FC<AppContentProps> = ({ children }) => {
   const {
     showAuthModal,
     authModalMode,
-    showOnboarding,
     handleAuthModalClose,
-    handleOnboardingComplete,
-    handleOnboardingClose,
   } = useAuthModal();
   
   // Initialize user restrictions monitoring for real-time updates
@@ -54,11 +50,6 @@ export const AppContent: React.FC<AppContentProps> = ({ children }) => {
         initialMode={authModalMode}
       />
       
-      <OnboardingModal
-        isOpen={showOnboarding}
-        onClose={handleOnboardingClose}
-        onComplete={handleOnboardingComplete}
-      />
       
       {/* Global UI Components */}
       <ToastContainer />

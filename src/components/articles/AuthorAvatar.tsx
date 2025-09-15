@@ -2,7 +2,7 @@ import React from 'react';
 import { AuthorAvatarImage } from '../ui/OptimizedImage';
 
 interface AuthorAvatarProps {
-  author: string;
+  author?: string;
   image?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'profile';
   className?: string;
@@ -32,6 +32,11 @@ export const AuthorAvatar: React.FC<AuthorAvatarProps> = ({
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
+
+  // If no author is provided, return null (don't render anything)
+  if (!author) {
+    return null;
+  }
 
   if (image) {
     return (

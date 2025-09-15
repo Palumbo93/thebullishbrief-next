@@ -26,7 +26,7 @@ export const ArticleSkeleton: React.FC<ArticleSkeletonProps> = ({ className = ''
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: 'var(--space-16) var(--content-padding) 0 var(--content-padding)',
-          maxWidth: '800px',
+          maxWidth: 'var(--max-width)',
           margin: '0 auto',
         }}>
           {/* Title Skeleton */}
@@ -73,7 +73,7 @@ export const ArticleSkeleton: React.FC<ArticleSkeletonProps> = ({ className = ''
 
       {/* Article Content Skeleton */}
       <div style={{
-        maxWidth: '800px',
+        maxWidth: 'var(--max-width)',
         margin: '0 auto',
         padding: '0 var(--content-padding)'
       }}>

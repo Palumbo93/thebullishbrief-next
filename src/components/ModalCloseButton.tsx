@@ -5,12 +5,14 @@ interface ModalCloseButtonProps {
   onClose: () => void;
   className?: string;
   style?: React.CSSProperties;
+  showText?: boolean;
 }
 
 export const ModalCloseButton: React.FC<ModalCloseButtonProps> = ({
   onClose,
   className,
   style,
+  showText = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -24,7 +26,7 @@ export const ModalCloseButton: React.FC<ModalCloseButtonProps> = ({
         position: 'absolute',
         top: 'var(--space-4)',
         right: 'var(--space-4)',
-        width: '32px',
+        width: showText ? 'auto' : '32px',
         height: '32px',
         borderRadius: 'var(--radius-lg)',
         background: 'transparent',
@@ -34,16 +36,21 @@ export const ModalCloseButton: React.FC<ModalCloseButtonProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: showText ? 'var(--space-2)' : '0',
+        padding: showText ? '0 var(--space-3)' : '0',
         transition: 'all var(--transition-base)',
         zIndex: 10,
+        fontSize: 'var(--text-sm)',
+        fontWeight: 'var(--font-medium)',
         ...(isHovered && {
-          background: 'rgba(255, 255, 255, 0.1)',
+          background: 'var(--color-bg-tertiary)',
           color: 'var(--color-text-primary)',
         }),
         ...style,
       }}
     >
       <X style={{ width: '16px', height: '16px' }} />
+      {showText && <span>Close</span>}
     </button>
   );
 }; 

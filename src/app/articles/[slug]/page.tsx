@@ -2,7 +2,6 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Script from 'next/script';
-import { Layout } from '../../../components/Layout';
 import { ArticlePageClient } from '../../../page-components/ArticlePageClient';
 import { fetchArticleBySlug, fetchAllArticleSlugs, fetchArticleBySlugForMetadata } from '../../../hooks/useArticles';
 
@@ -304,12 +303,7 @@ export default async function ArticlePageWrapper({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <Layout 
-        articleId={article?.id ? String(article.id) : undefined}
-        articleTitle={article?.title}
-      >
-        <ArticlePageClient slug={slug} />
-      </Layout>
+      <ArticlePageClient slug={slug} />
     </>
   );
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import type { LegalDocument } from '../../data/legal/types';
-import { SectionHeader } from '../SectionHeader';
+import { PublicationHeader } from '../PublicationHeader';
+import { legalDocuments } from '../../data/legal';
+import { LegalFooter } from '../LegalFooter';
 
 interface LegalPageTemplateProps {
   doc: LegalDocument;
@@ -30,27 +32,58 @@ const formatContent = (content: string): string => {
 };
 
 export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => {
-  return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <SectionHeader title={doc.title} />
+  // Create legal pages array for navigation
+  const legalPages = Object.entries(legalDocuments).map(([slug, document]) => ({
+    id: slug,
+    name: document.title,
+    slug: slug,
+    active: slug === doc.slug
+  }));
 
-      {/* Document Content */}
+  return (
+    <div>
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--color-bg-primary)',
+    }}>
+      {/* Header with Legal Page Navigation */}
+      <PublicationHeader
+        variant="full"
+        listType="legal"
+        legalPages={legalPages}
+        activeItem={doc.slug}
+        showTicker={false}
+      />
+
+      {/* Content Container */}
       <div style={{
-        display: 'flex',
-        flexDirection: 'column'
+        maxWidth: 'var(--max-width)',
+        margin: '0 auto',
+        padding: 'var(--space-8) var(--space-4)'
       }}>
+        {/* Page Title */}
+        <h1 style={{
+          fontSize: 'var(--text-4xl)',
+          fontWeight: 'var(--font-bold)',
+          color: 'var(--color-text-primary)',
+          marginBottom: 'var(--space-6)',
+          textAlign: 'center'
+        }}>
+          {doc.title}
+        </h1>
+
         {/* Effective Date Banner */}
         {(doc.effectiveDate || doc.updatedDate) && (
           <div style={{
             padding: 'var(--space-4)',
             background: 'var(--color-bg-secondary)',
-            borderBottom: '1px solid var(--color-border-primary)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--color-border-primary)',
             display: 'flex',
             alignItems: 'center',
-            gap: 'var(--space-2)'
+            justifyContent: 'center',
+            gap: 'var(--space-4)',
+            marginBottom: 'var(--space-8)'
           }}>
             {doc.effectiveDate && (
               <span style={{
@@ -66,7 +99,7 @@ export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => 
                 fontSize: 'var(--text-xs)',
                 color: 'var(--color-text-tertiary)',
                 background: 'var(--color-bg-tertiary)',
-                padding: '2px 8px',
+                padding: '4px 12px',
                 borderRadius: '999px',
                 border: '0.5px solid var(--color-border-primary)'
               }}>
@@ -76,46 +109,48 @@ export const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ doc }) => 
           </div>
         )}
 
-        {/* Sections */}
-        {doc.sections.map((section, index) => (
-          <div key={section.id}>
-            <div
+        {/* Document Sections */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-8)'
+        }}>
+          {doc.sections.map((section, index) => (
+            <section
+              key={section.id}
               id={section.id}
               style={{
-                padding: 'var(--space-6) var(--space-4)',
-                transition: 'background var(--transition-base)'
+                padding: 'var(--space-6)',
+                background: 'var(--color-bg-card)',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--color-border-primary)',
+                transition: 'all var(--transition-base)'
               }}
             >
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  fontSize: 'var(--text-lg)',
-                  fontWeight: 'var(--font-bold)',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 'var(--space-4)'
-                }}>
-                  {section.title}
-                </div>
-                <div
-                  style={{
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--color-text-secondary)',
-                    lineHeight: 1.6
-                  }}
-                  dangerouslySetInnerHTML={{ __html: formatContent(section.body) }}
-                />
-              </div>
-            </div>
-            {/* Divider - only show if not the last item */}
-            {index < doc.sections.length - 1 && (
-              <div style={{
-                height: '1px',
-                background: 'var(--color-border-primary)'
-              }} />
-            )}
-          </div>
-        ))}
-
+              <h2 style={{
+                fontSize: 'var(--text-xl)',
+                fontWeight: 'var(--font-bold)',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+                marginTop: 0
+              }}>
+                {section.title}
+              </h2>
+              <div
+                style={{
+                  fontSize: 'var(--text-base)',
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.7
+                }}
+                dangerouslySetInnerHTML={{ __html: formatContent(section.body) }}
+              />
+            </section>
+          ))}
+        </div>
       </div>
+      </div>
+      {/* Footer */}
+      <LegalFooter />
     </div>
   );
 };

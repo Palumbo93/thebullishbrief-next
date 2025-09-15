@@ -47,14 +47,13 @@ export interface Article {
   slug: string;
   content: string;
   subtitle?: string;
-  author_id?: string;
-  category_id?: string;
+  author_id?: string | null;
+  category_id?: string | null;
   featured: boolean;
   premium: boolean;
   status?: string;
   featured_image_url?: string;
   featured_image_alt?: string;
-  featured_color?: string;
   reading_time_minutes?: number;
   view_count?: number;
   bookmark_count?: number;

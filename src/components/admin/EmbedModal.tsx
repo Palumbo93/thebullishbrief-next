@@ -118,7 +118,7 @@ export const EmbedModal: React.FC<EmbedModalProps> = ({
         background: 'var(--color-bg-primary)',
         borderRadius: 'var(--radius-xl)',
         padding: 'var(--space-6)',
-        maxWidth: '800px',
+        maxWidth: 'var(--max-width)',
         width: '100%',
         maxHeight: '90vh',
         overflow: 'auto',

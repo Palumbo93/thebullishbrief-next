@@ -11,7 +11,7 @@ const JoinButton: React.FC<JoinButtonProps> = ({ onSignUpClick }) => {
 
   const handleClick = async () => {
     // Track the CTA button click
-    await trackCTAButtonClick('join_button', 'Join Free Now');
+    await trackCTAButtonClick('subscribe_button', 'Subscribe');
     
     // Call the original click handler
     onSignUpClick?.();
@@ -26,7 +26,7 @@ const JoinButton: React.FC<JoinButtonProps> = ({ onSignUpClick }) => {
           fullWidth={true}
           className="join-button"
         >
-          Join Free Now
+          Subscribe
         </Button>
       </div>
 
@@ -49,7 +49,7 @@ const JoinButton: React.FC<JoinButtonProps> = ({ onSignUpClick }) => {
           transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
           font-weight: 600;
           padding: 0.75rem 1rem;
-          border-radius: 9999px;
+          border-radius: var(--radius-md);
         }
 
         .join-button:hover {

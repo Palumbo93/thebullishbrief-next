@@ -17,6 +17,7 @@ interface BriefLeadGenWidgetProps {
   onEmailSubmitted?: (email: string, isAuthenticated: boolean) => void;
   onSignupClick?: () => void; // Triggers full auth modal (unauthenticated users only)
   compact?: boolean; // More compact layout for sidebar
+  showTickers?: boolean; // Whether to show ticker chips (default: true)
 }
 
 interface PopupCopy {
@@ -41,7 +42,8 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
   brief,
   onEmailSubmitted,
   onSignupClick,
-  compact = true
+  compact = true,
+  showTickers = true
 }) => {
   const { user } = useAuth();
   const { submitEmail, submitAuthenticatedUser, isSubmitting, error } = useEmailSubmission();
@@ -116,7 +118,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
 
   const containerStyle = {
     padding: compact ? 'var(--space-8)' : 'var(--space-8)',
-    backgroundColor: 'var(--color-bg-secondary)',
+    // backgroundColor: 'var(--color-bg-secondary)',
     borderRadius: 'var(--radius-sm)',
   };
 
@@ -207,7 +209,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
                   size="sm"
                   fullWidth={true}
                 >
-                  Join the Bullish Brief
+                  Subscribe to the Bullish Brief
                 </Button>
               </div>
             </>
@@ -222,44 +224,46 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
       return (
         <div>
           {/* Company tickers */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 'var(--space-2)',
-            marginBottom: 'var(--space-3)'
-          }}>
-            {brief.tickers && (() => {
-              const tickers = getTickers(brief.tickers);
-              return tickers && tickers.length > 0 ? (
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 'var(--space-1)',
-                  justifyContent: 'center'
-                }}>
-                  {tickers.map((ticker, index) => (
-                    <span
-                      key={`${ticker.exchange}-${ticker.symbol}`}
-                      style={{
-                        fontSize: 'var(--text-sm)',
-                        color: 'var(--color-text-secondary)',
-                        fontWeight: 'var(--font-bold)',
-                        fontFamily: 'monospace',
-                        letterSpacing: '0.05em',
-                        padding: '2px 6px',
-                        backgroundColor: 'var(--color-bg-tertiary)',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '0.5px solid var(--color-border-primary)'
-                      }}
-                    >
-                      {ticker.exchange}:{ticker.symbol}
-                    </span>
-                  ))}
-                </div>
-              ) : null;
-            })()}
-          </div>
+          {showTickers && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'var(--space-2)',
+              marginBottom: 'var(--space-3)'
+            }}>
+              {brief.tickers && (() => {
+                const tickers = getTickers(brief.tickers);
+                return tickers && tickers.length > 0 ? (
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 'var(--space-1)',
+                    justifyContent: 'center'
+                  }}>
+                    {tickers.map((ticker, index) => (
+                      <span
+                        key={`${ticker.exchange}-${ticker.symbol}`}
+                        style={{
+                          fontSize: 'var(--text-sm)',
+                          color: 'var(--color-text-secondary)',
+                          fontWeight: 'var(--font-bold)',
+                          fontFamily: 'monospace',
+                          letterSpacing: '0.05em',
+                          padding: '2px 6px',
+                          backgroundColor: 'var(--color-bg-tertiary)',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '0.5px solid var(--color-border-primary)'
+                        }}
+                      >
+                        {ticker.exchange}:{ticker.symbol}
+                      </span>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          )}
 
           <h3 style={{
             fontSize: compact ? 'var(--text-sm)' : 'var(--text-base)',
@@ -339,44 +343,46 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
       return (
         <form onSubmit={handleEmailSubmit}>
           {/* Company tickers */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 'var(--space-2)',
-            marginBottom: 'var(--space-3)'
-          }}>
-            {brief.tickers && (() => {
-              const tickers = getTickers(brief.tickers);
-              return tickers && tickers.length > 0 ? (
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 'var(--space-1)',
-                  justifyContent: 'center'
-                }}>
-                  {tickers.map((ticker, index) => (
-                    <span
-                      key={`${ticker.exchange}-${ticker.symbol}`}
-                      style={{
-                        fontSize: 'var(--text-sm)',
-                        color: 'var(--color-text-secondary)',
-                        fontWeight: 'var(--font-bold)',
-                        fontFamily: 'monospace',
-                        letterSpacing: '0.05em',
-                        padding: '2px 6px',
-                        backgroundColor: 'var(--color-bg-tertiary)',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '0.5px solid var(--color-border-primary)'
-                      }}
-                    >
-                      {ticker.exchange}:{ticker.symbol}
-                    </span>
-                  ))}
-                </div>
-              ) : null;
-            })()}
-          </div>
+          {showTickers && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'var(--space-2)',
+              marginBottom: 'var(--space-3)'
+            }}>
+              {brief.tickers && (() => {
+                const tickers = getTickers(brief.tickers);
+                return tickers && tickers.length > 0 ? (
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 'var(--space-1)',
+                    justifyContent: 'center'
+                  }}>
+                    {tickers.map((ticker, index) => (
+                      <span
+                        key={`${ticker.exchange}-${ticker.symbol}`}
+                        style={{
+                          fontSize: 'var(--text-sm)',
+                          color: 'var(--color-text-secondary)',
+                          fontWeight: 'var(--font-bold)',
+                          fontFamily: 'monospace',
+                          letterSpacing: '0.05em',
+                          padding: '2px 6px',
+                          backgroundColor: 'var(--color-bg-tertiary)',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '0.5px solid var(--color-border-primary)'
+                        }}
+                      >
+                        {ticker.exchange}:{ticker.symbol}
+                      </span>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          )}
 
           <h3 style={{
             fontSize: compact ? 'var(--text-sm)' : 'var(--text-base)',

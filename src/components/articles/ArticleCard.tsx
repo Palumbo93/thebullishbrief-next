@@ -1,52 +1,32 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Eye, Bookmark, MessageSquare, Clock } from 'lucide-react';
-import { useToggleBookmark, useIsBookmarked } from '../../hooks/useArticles';
-import { useAuth } from '../../contexts/AuthContext';
-import { useArticleViewCount } from '../../hooks/useArticleViews';
-import { useTrackArticleEngagement } from '../../hooks/useClarityAnalytics';
-import { ArticleCardImage } from '../ui/OptimizedImage';
 
 interface Article {
   id: number | string;
   category: string;
+  categorySlug?: string;
   title: string;
   subtitle: string;
-  author: string;
+  author?: string;
   authorAvatar?: string;
   authorSlug?: string;
   time: string;
   date: string;
   image: string;
-  views: string;
   bookmark_count?: number;
-  comment_count?: number;
   slug?: string;
 }
 
 interface ArticleCardProps {
   article: Article;
-  onArticleClick?: (articleId: number | string, articleTitle: string) => void;
-  onFilterChange?: (filter: string) => void;
-  hasHorizontalPadding?: boolean;
+  onArticleClick?: (articleId: number | string, articleTitle: string, slug?: string) => void;
 }
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({ 
   article, 
-  onArticleClick,
-  onFilterChange,
-  hasHorizontalPadding = true
+  onArticleClick
 }) => {
-  const { user } = useAuth();
-  const toggleBookmark = useToggleBookmark();
-  const { data: isBookmarked } = useIsBookmarked(article.id);
-  const { data: viewCount } = useArticleViewCount(String(article.id));
-  const { trackBookmark } = useTrackArticleEngagement();
-  const router = useRouter();
-  
   // Format date to show year only if not current year
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -66,252 +46,107 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       });
     }
   };
-  
-  // Local state for immediate feedback
-  const [localBookmarkCount, setLocalBookmarkCount] = React.useState(article.bookmark_count || 0);
-  
-  // Update local count when article prop changes
-  React.useEffect(() => {
-    setLocalBookmarkCount(article.bookmark_count || 0);
-  }, [article.bookmark_count]);
 
   const handleArticleClick = () => {
-    onArticleClick?.(article.id, article.title);
+    onArticleClick?.(article.id, article.title, article.slug);
   };
 
-  const handleCategoryClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  // Helper function to format metadata properly
+  const formatMetadata = (items: (string | null | undefined)[]): string => {
+    return items.filter(Boolean).join(' • ');
+  };
+
+  const generateMetadata = (): string => {
+    const metadataItems: string[] = [];
     
-    // Navigate to home page with category parameter
-    const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
-    router.push(`/${categoryParam}`);
-  };
-
-  const handleAuthorClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (article.authorSlug) {
-      router.push(`/${article.authorSlug}`);
+    if (article.author && article.author.trim()) {
+      metadataItems.push(`By ${article.author.trim()}`);
     }
-  };
-
-  const handleBookmarkClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (user) {
-      // Optimistically update the count immediately
-      const newCount = isBookmarked ? Math.max(localBookmarkCount - 1, 0) : localBookmarkCount + 1;
-      setLocalBookmarkCount(newCount);
-      
-      // Then perform the actual bookmark operation
-      toggleBookmark.mutate(String(article.id));
-      
-      // Track analytics if bookmarking (not unbookmarking)
-      if (!isBookmarked) {
-        trackBookmark(String(article.id), article.title);
-      }
+    
+    if (article.date) {
+      metadataItems.push(formatDate(article.date));
     }
+    
+    if (article.time) {
+      metadataItems.push(article.time);
+    }
+    
+    return formatMetadata(metadataItems);
   };
 
-  // Get the route ID (slug or id)
-  const routeId = article.slug || article.id;
-  const articleUrl = `/articles/${routeId}`;
-
-  // List  - redesigned according to specifications
   return (
-    <Link
-      href={articleUrl}
-      style={{
-        position: 'relative',
-        padding: `var(--space-8) ${hasHorizontalPadding ? 'var(--content-padding)' : '0'}`,
-        borderBottom: '0.5px solid var(--color-border-primary)',
-        cursor: 'pointer',
-        transition: 'all var(--transition-slow)',
-        background: 'transparent',
-        textDecoration: 'none',
-        display: 'block'
-      }}
+    <div
       onClick={handleArticleClick}
+      style={{
+        cursor: 'pointer',
+        borderBottom: '0.5px solid var(--color-border-primary)',
+        padding: 'var(--space-4) 0px',
+        transition: 'opacity var(--transition-base)'
+      }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = 'var(--color-bg-secondary)';
+        e.currentTarget.style.color = 'var(--color-text-muted)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = 'var(--color-text-primary)';
       }}
     >
-      {/* Top line: "In {category} by {author}" */}
-      <div style={{
-        marginBottom: 'var(--space-4)',
-        fontSize: 'var(--text-sm)',
-        color: 'var(--color-text-muted)'
-      }}>
-        <span>In </span>
-        <button
-          onClick={handleCategoryClick}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--color-text-primary)',
-            fontSize: 'var(--text-sm)',
-            fontWeight: 'var(--font-semibold)',
-            transition: 'color var(--transition-base)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-secondary)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-primary)';
-          }}
-        >
-          {article.category}
-        </button>
-        <span> by </span>
-        <button
-          onClick={handleAuthorClick}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--color-text-primary)',
-            fontSize: 'var(--text-sm)',
-            fontWeight: 'var(--font-semibold)',
-            transition: 'color var(--transition-base)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-secondary)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-primary)';
-          }}
-        >
-          {article.author}
-        </button>
-      </div>
-
-      {/* Main content: headline, subheadline inline with image */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr auto',
-        gap: 'var(--space-8)',
-        alignItems: 'center',
-        marginBottom: 'var(--space-4)'
+        gap: 'var(--space-4)',
+        alignItems: 'flex-start'
       }}>
-        {/* Text content */}
-        <div style={{ minWidth: 0 }}>
-          {/* Headline */}
-          <h2 style={{
-            fontSize: '1.875rem',
+        <div>
+          <div style={{
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-muted)',
+            marginBottom: 'var(--space-2)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            {article.category}
+          </div>
+          
+          <h3 style={{
+            fontSize: 'var(--text-lg)',
             fontFamily: 'var(--font-editorial)',
             fontWeight: 'var(--font-normal)',
-            color: 'var(--color-text-primary)',
             lineHeight: 'var(--leading-tight)',
-            marginBottom: 'var(--space-3)',
-            letterSpacing: '-0.02em'
+            marginBottom: 'var(--space-2)',
+            letterSpacing: '-0.01em'
           }}>
             {article.title}
-          </h2>
+          </h3>
           
-          {/* Subheadline */}
-          <p style={{
-            color: 'var(--color-text-secondary)',
-            fontSize: 'var(--text-base)',
-            lineHeight: 'var(--leading-relaxed)',
-            maxWidth: '600px'
+          <div style={{
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-muted)'
           }}>
-            {article.subtitle}
-          </p>
-          
-          {/* Published date line */}
-          {article.date && (
-            <div style={{
-              marginTop: 'var(--space-3)',
-              fontSize: 'var(--text-xs)',
-              color: 'var(--color-text-muted)'
-            }}>
-              Published {formatDate(article.date)}
-            </div>
-          )}
+            {generateMetadata()}
+          </div>
         </div>
         
-        {/* Image */}
         {article.image && (
           <div style={{
-            width: 'min(150px, 25vw)',
-            height: 'min(150px, 25vw)',
-            borderRadius: 'var(--radius-lg)',
+            width: '80px',
+            height: '80px',
+            borderRadius: 'var(--radius-md)',
             overflow: 'hidden',
             background: 'var(--color-bg-tertiary)',
             flexShrink: 0
           }}>
-            <ArticleCardImage
+            <img
               src={article.image}
               alt={article.title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
             />
           </div>
         )}
       </div>
-
-      {/* Bottom line: read time, views, comments, bookmark */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 'var(--space-6)',
-        fontSize: 'var(--text-sm)',
-        color: 'var(--color-text-muted)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-          <Clock style={{ width: '16px', height: '16px' }} />
-          <span>{article.time}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-          <Eye style={{ width: '16px', height: '16px' }} />
-          <span>{viewCount?.toLocaleString() || article.views}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-          <MessageSquare style={{ width: '16px', height: '16px' }} />
-          <span>{article.comment_count || 0}</span>
-        </div>
-        <button
-          onClick={handleBookmarkClick}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: user ? 'pointer' : 'default',
-            color: isBookmarked ? 'var(--color-brand-primary)' : 'var(--color-text-muted)',
-            padding: 'var(--space-1)',
-            borderRadius: 'var(--radius-sm)',
-            transition: 'all var(--transition-base)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-1)',
-            opacity: user ? 1 : 0.5
-          }}
-          onMouseEnter={(e) => {
-            if (user) {
-              e.currentTarget.style.color = isBookmarked ? 'var(--color-brand-secondary)' : 'var(--color-text-primary)';
-              e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (user) {
-              e.currentTarget.style.color = isBookmarked ? 'var(--color-brand-primary)' : 'var(--color-text-muted)';
-              e.currentTarget.style.background = 'transparent';
-            }
-          }}
-          title={user ? (isBookmarked ? 'Remove bookmark' : 'Add bookmark') : 'Sign in to bookmark'}
-        >
-          <Bookmark 
-            style={{ 
-              width: '16px', 
-              height: '16px',
-              fill: isBookmarked ? 'currentColor' : 'none'
-            }} 
-          />
-          <span>{localBookmarkCount}</span>
-        </button>
-      </div>
-    </Link>
+    </div>
   );
 }; 

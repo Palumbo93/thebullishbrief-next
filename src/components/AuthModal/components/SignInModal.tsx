@@ -11,6 +11,8 @@ import { ModalCloseButton } from '../../ModalCloseButton';
 import { OTPVerificationModal } from './OTPVerificationModal';
 import { useViewportHeightOnly } from '../../../hooks/useViewportHeight';
 import { FULL_HEIGHT_BACKDROP_CSS, FULL_HEIGHT_DRAWER_CSS } from '../../../utils/viewportUtils';
+import { BullLogo } from '../../ui/BullLogo';
+import { TypeLogo } from '../../ui/TypeLogo';
 
 export const SignInModal: React.FC<SignInModalProps> = ({
   onClose,
@@ -80,62 +82,115 @@ export const SignInModal: React.FC<SignInModalProps> = ({
       <style>{`
         .auth-modal-backdrop {
           ${FULL_HEIGHT_BACKDROP_CSS}
-          background: rgba(0, 0, 0, 0.65);
-          backdrop-filter: blur(12px);
+          background: var(--color-bg-primary);
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: var(--space-12) var(--space-4);
+          padding: 0;
         }
         .auth-modal-container {
-          background: var(--color-bg-secondary);
-          border: 0.5px solid var(--color-border-primary);
-          border-radius: var(--radius-2xl);
-          width: 100%;
-          max-width: 420px;
-          max-height: 580px;
-          height: 100%;
+          background: var(--color-bg-primary);
+          width: 100vw;
+          height: 100vh;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.9);
           display: flex;
           flex-direction: column;
+          animation: slideUpIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        @keyframes slideUpIn {
+          from {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
         }
         .auth-modal-content {
           position: relative;
-          padding: var(--space-12) var(--space-8);
+          padding: var(--space-16) var(--content-padding);
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
+          justify-content: center;
           height: 100%;
+          width: 100%;
+          overflow-y: auto;
+        }
+        
+        .auth-title {
+          font-size: var(--text-4xl);
+          font-weight: var(--font-bold);
+          color: var(--color-text-primary);
+          margin-bottom: var(--space-3);
+          line-height: 1.2;
+        }
+        
+        .auth-subtitle {
+          font-size: var(--text-xl);
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-12);
+          line-height: 1.4;
+        }
+        
+        .auth-form-section {
+          max-width: var(--max-width);
+          margin: 0 auto;
+          width: 100%;
+        }
+        
+        .auth-form-container {
+          max-width: 480px;
+          margin: 0 auto;
+          width: 100%;
+        }
+        
+        .switch-section {
+          text-align: center;
+          margin-top: var(--space-8);
+          padding-top: var(--space-6);
+          border-top: 1px solid var(--color-border-primary);
+        }
+        
+        .switch-text {
+          color: var(--color-text-tertiary);
+          fontSize: var(--text-base);
+          margin: 0;
+          marginBottom: var(--space-3);
+        }
+        
+        .switch-button {
+          background: transparent;
+          border: none;
+          color: var(--color-primary);
+          fontSize: var(--text-base);
+          fontWeight: var(--font-semibold);
+          cursor: pointer;
+          padding: var(--space-2) var(--space-4);
+          borderRadius: var(--radius-sm);
+          transition: all var(--transition-base);
+        }
+        
+        .switch-button:hover {
+          background: var(--color-bg-tertiary);
+          color: var(--color-text-primary);
         }
         
         /* Mobile styles */
-        @media (max-width: 767px) {
-          .auth-modal-backdrop {
-            padding: 0;
-            align-items: stretch;
-            justify-content: stretch;
-          }
-          .auth-modal-container {
-            ${FULL_HEIGHT_DRAWER_CSS}
-            width: 100vw;
-            max-width: none;
-            max-height: none;
-            border-radius: 0;
-            border: none;
-            box-shadow: none;
-          }
+        @media (max-width: 768px) {
           .auth-modal-content {
-            padding: var(--space-6) var(--space-4);
-            justify-content: center;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            padding: var(--space-8) var(--content-padding);
           }
-          .auth-modal-content::-webkit-scrollbar {
-            display: none;
+          
+          .auth-title {
+            font-size: var(--text-3xl);
+          }
+          
+          .auth-subtitle {
+            font-size: var(--text-lg);
+            margin-bottom: var(--space-8);
           }
         }
       `}</style>
@@ -151,91 +206,78 @@ export const SignInModal: React.FC<SignInModalProps> = ({
           {/* Sign In Form Container */}
           <div className="auth-modal-content">
             {/* Close Button */}
-            <ModalCloseButton onClose={onClose} />
+            <ModalCloseButton onClose={onClose} showText={true} />
 
-            {/* Branding Section */}
-            <div style={{ marginBottom: 'var(--space-6)' }}>
-              <BrandingSection variant="signin" showFeatures={false} />
-            </div>
-
-            {/* Sign In Form */}
-            <form onSubmit={handleSubmit} id="signin-form" style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--space-5)'
-            }}>
-              {/* Form Fields */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--space-5)',
+            <div className="auth-form-section">
+              {/* Branding */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: 'var(--space-4)', 
+                marginBottom: 'var(--space-8)' 
               }}>
-                {/* Email Field */}
-                <FormField
-                  type="email"
-                  label="Email Address"
-                  value={formData.email}
-                  onChange={(value) => handleChange('email', value)}
-                  icon={Mail}
-                  placeholder="your@email.com"
-                  required
-                  error={errors.email}
+                <BullLogo 
+                  width={48}
+                  height={48}
+                  variant="auto"
+                />
+                <TypeLogo 
+                  height={32}
+                  width={200}
                 />
               </div>
-            </form>
 
-            {/* Submit Button */}
-            <div style={{ marginTop: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-              <AuthButton
-                type="submit"
-                form="signin-form"
-                variant="primary"
-                disabled={isLoading}
-                loading={isLoading}
-              >
-                {isLoading ? 'Sending Code...' : 'Sign In'}
-              </AuthButton>
+              {/* Header */}
+              <div style={{ textAlign: 'center', marginBottom: 'var(--space-12)' }}>
+                <h1 className="auth-title">Welcome Back</h1>
+                <p className="auth-subtitle">Sign in to access your personalized market insights</p>
+              </div>
 
-              {/* Switch to Sign Up */}
-              <div style={{
-                textAlign: 'center',
-                marginTop: 'var(--space-4)',
-                paddingTop: 'var(--space-4)',
-                borderTop: '1px solid var(--color-border-secondary)',
-              }}>
-                <p style={{
-                  color: 'var(--color-text-tertiary)',
-                  fontSize: 'var(--text-sm)',
-                  margin: 0,
-                  marginBottom: '0',
+              <div className="auth-form-container">
+                {/* Sign In Form */}
+                <form onSubmit={handleSubmit} id="signin-form" style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-6)',
+                  marginBottom: 'var(--space-8)'
                 }}>
-                  Don't have an account?
-                </p>
-                <button
-                  type="button"
-                  onClick={handleSwitchToSignUp}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: 'var(--color-brand-primary)',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-medium)',
-                    cursor: 'pointer',
-                    padding: 'var(--space-1) var(--space-2)',
-                    borderRadius: 'var(--radius-md)',
-                    transition: 'all var(--transition-base)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(0, 211, 114, 0.1)';
-                    e.currentTarget.style.color = 'var(--color-brand-primary)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = 'var(--color-brand-primary)';
-                  }}
-                >
-                  Create New Account
-                </button>
+                  {/* Email Field */}
+                  <FormField
+                    type="email"
+                    label="Email Address"
+                    value={formData.email}
+                    onChange={(value) => handleChange('email', value)}
+                    icon={Mail}
+                    placeholder="your@email.com"
+                    required
+                    error={errors.email}
+                  />
+
+                  {/* Submit Button */}
+                  <AuthButton
+                    type="submit"
+                    variant="primary"
+                    disabled={isLoading}
+                    loading={isLoading}
+                  >
+                    {isLoading ? 'Sending Code...' : 'Sign In'}
+                  </AuthButton>
+                </form>
+
+                {/* Switch to Sign Up */}
+                <div className="switch-section">
+                  <p className="switch-text">
+                    Don't have an account?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSwitchToSignUp}
+                    className="switch-button"
+                  >
+                    Create New Account
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -1,96 +1,111 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import { Layout } from '../components/Layout';
-import { ArticlesList } from '../components/articles/ArticlesList';
 import { LegalFooter } from '../components/LegalFooter';
-import { useArticlesByCategory, useCategories, Article } from '../hooks/useArticles';
+import { CTABanner } from '../components/CTABanner';
+import { useArticles, useFeaturedArticles, Article } from '../hooks/useArticles';
+import { useFeaturedBrief } from '../hooks/useBriefs';
+import { Brief } from '../lib/database.aliases';
+import { useAuthModal } from '../contexts/AuthModalContext';
+import { useAuth } from '../contexts/AuthContext';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
+import { HeroSection, FeaturedStoriesGrid, LatestNewsGrid } from '../components/home';
 
 function HomePageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { handleSignUpClick } = useAuthModal();
+  const { user } = useAuth();
   
-  // Get category from URL parameters
-  const categoryFromUrl = searchParams ? searchParams.get('category') : null;
-  
-  // Initialize activeFilter from URL or default to 'All'
-  const [activeFilter, setActiveFilter] = useState<string>(categoryFromUrl || 'All');
-  const [isFilterLoading, setIsFilterLoading] = useState(false);
-  
-  // Use the new cached hooks
-  const { data: articles = [], isLoading: categoryLoading } = useArticlesByCategory(activeFilter);
-  const { data: categories = [] } = useCategories();
-
-  // Handle filter changes with loading state and URL updates
-  const handleFilterChange = (filter: string) => {
-    setIsFilterLoading(true);
-    setActiveFilter(filter);
-    
-    // Update URL parameters
-    const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
-    if (filter === 'All') {
-      newSearchParams.delete('category');
-    } else {
-      newSearchParams.set('category', filter);
-    }
-    
-    // Update URL without page reload
-    const newUrl = newSearchParams.toString() 
-      ? `/?${newSearchParams.toString()}` 
-      : '/';
-    router.push(newUrl, { scroll: false });
-  };
-
-  // Sync URL parameter with active filter
-  useEffect(() => {
-    if (categoryFromUrl && categoryFromUrl !== activeFilter) {
-      setActiveFilter(categoryFromUrl);
-    } else if (!categoryFromUrl && activeFilter !== 'All') {
-      // If no category in URL but activeFilter is not 'All', reset to 'All'
-      setActiveFilter('All');
-    }
-  }, [categoryFromUrl, activeFilter]);
-
-  // Reset loading state when articles are loaded
-  useEffect(() => {
-    if (!categoryLoading && isFilterLoading) {
-      // Add a small delay to ensure smooth transition
-      const timer = setTimeout(() => {
-        setIsFilterLoading(false);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [categoryLoading, isFilterLoading]);
+  // Fetch data for the publication grid
+  const { data: allArticlesData, isLoading: articlesLoading } = useArticles();
+  const { data: featuredArticles = [], isLoading: featuredLoading } = useFeaturedArticles();
+  const { data: featuredBrief, isLoading: briefLoading } = useFeaturedBrief();
 
   const handleArticleClick = (articleId: number | string, articleTitle: string, slug?: string) => {
-    // Navigate to article page using slug if available, otherwise use ID
     const routeId = slug || articleId;
     router.push(`/articles/${routeId}`);
   };
 
-  // Get category names for filter
-  const categoryNames = ['All', ...categories.map(cat => cat.name)];
+  const handleBriefClick = (briefId: number | string, briefTitle: string, slug?: string) => {
+    const routeId = slug || briefId;
+    router.push(`/briefs/${routeId}`);
+  };
+
+  // Get regular articles (non-featured)
+  const regularArticles = allArticlesData?.articles || [];
   
-  // Determine if we should show loading in ArticlesList
-  // Show loading during filter changes OR during initial category loading
-  const shouldShowArticlesLoading = isFilterLoading || categoryLoading;
+  if (articlesLoading || featuredLoading || briefLoading) {
+    return (
+      <Layout>
+        <div style={{ minHeight: '100vh' }}>
+          <ArticleSkeleton />
+        </div>
+      </Layout>
+    );
+  }
+
+  // Implement the new content distribution logic
+  let heroContent;
+  let featuredSectionArticles;
+  let latestSectionArticles;
+  
+  if (featuredBrief) {
+    // If Featured Brief > 0: show the latest brief in hero
+    heroContent = featuredBrief;
+    // Show articles 1-4 in featured stories
+    featuredSectionArticles = regularArticles.slice(0, 4);
+    // Show articles 5-rest in latest stories
+    latestSectionArticles = regularArticles.slice(4);
+  } else {
+    // Else: show the latest article in hero
+    heroContent = regularArticles.length > 0 ? regularArticles[0] : null;
+    // Show articles 2-5 in featured stories
+    featuredSectionArticles = regularArticles.slice(1, 5);
+    // Show articles 6-rest in latest stories
+    latestSectionArticles = regularArticles.slice(5);
+  }
+
+  const featuredSectionTitle = featuredBrief ? 'Latest Stories' : 'Featured Stories';
 
   return (
     <Layout>
       <div style={{ minHeight: '100vh' }}>
-        <ArticlesList 
-          articles={articles}
-          categories={categoryNames}
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-          onArticleClick={(articleId, articleTitle) => {
-            const article = articles.find((a: Article) => a.id === articleId);
-            handleArticleClick(articleId, articleTitle, article?.slug);
-          }}
-          isLoading={shouldShowArticlesLoading}
+        {/* Hero Section */}
+        <HeroSection
+          heroContent={heroContent}
+          onArticleClick={handleArticleClick}
+          onBriefClick={handleBriefClick}
         />
+
+        {/* Featured/Latest Stories Grid */}
+        {featuredSectionArticles && featuredSectionArticles.length > 0 && (
+          <FeaturedStoriesGrid
+            articles={featuredSectionArticles}
+            title={featuredSectionTitle}
+            onArticleClick={handleArticleClick}
+          />
+        )}
+
+        {/* CTA Banner */}
+        {!user && (
+          <CTABanner
+            variant="primary"
+            position="top"
+            onCreateAccountClick={handleSignUpClick}
+          />
+        )}
+
+        {/* More Stories Grid */}
+        {latestSectionArticles && latestSectionArticles.length > 0 && (
+          <LatestNewsGrid
+            articles={latestSectionArticles}
+            title="More Stories"
+            maxItems={9}
+            onArticleClick={handleArticleClick}
+          />
+        )}
       </div>
       
       <LegalFooter />

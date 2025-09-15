@@ -8,7 +8,7 @@ interface Article {
   title: string;
   subtitle: string;
   content: string;
-  author: string;
+  author?: string;
   category: string;
   status: 'draft' | 'published' | 'archived';
   created_at: string;

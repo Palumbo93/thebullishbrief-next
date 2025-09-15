@@ -155,7 +155,7 @@ export const FeaturedMedia: React.FC<FeaturedMediaProps> = ({
           height={400}
           priority={true}
           quality={85}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) var(--max-width), var(--max-width)"
           style={{
             width: '100%',
             height: 'auto',

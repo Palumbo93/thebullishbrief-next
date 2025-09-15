@@ -37,7 +37,7 @@ export const Button: React.FC<ButtonProps> = ({
     return {
       width: fullWidth ? '100%' : 'auto',
       height: '58px',
-      borderRadius: 'var(--radius-full)', // Capsule shape
+      borderRadius: 'var(--radius-md)', // Capsule shape
       transition:
         'background 0.18s cubic-bezier(.4,0,.2,1), box-shadow 0.18s cubic-bezier(.4,0,.2,1), transform 0.13s cubic-bezier(.4,0,.2,1), color 0.18s cubic-bezier(.4,0,.2,1)',
       transform: isActive && !isDisabled

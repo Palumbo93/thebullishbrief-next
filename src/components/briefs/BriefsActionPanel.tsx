@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getTickers } from '../../utils/tickerUtils';
-import { X } from 'lucide-react';
+import { X, Copy } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToastContext } from '../../contexts/ToastContext';
 import BriefLeadGenWidget from '../BriefLeadGenWidget';
 import BrokerageWidget from '../BrokerageWidget';
 import { FeaturedVideoWidget } from '../FeaturedVideoWidget';
@@ -69,9 +70,27 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   const [activeSection, setActiveSection] = useState<string>('');
   const tocRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const { showToast } = useToastContext();
   
   // Analytics tracking
   const { trackActionLinkClick } = useTrackBriefEngagement();
+
+  // Copy ticker to clipboard
+  const handleTickerCopy = async (ticker: string) => {
+    try {
+      await navigator.clipboard.writeText(ticker);
+      showToast(`Copied ${ticker} to clipboard`, 'success');
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = ticker;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showToast(`Copied ${ticker} to clipboard`, 'success');
+    }
+  };
 
   // Intersection Observer to track which section is currently visible
   useEffect(() => {
@@ -208,13 +227,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
       {/* Content Container */}
       <div className="briefs-content-container">
 
-     
-      
-        {/* Bullish Brief Sign Up CTA - Only show if user is not logged in and no brief widget */}
-        {/* {!user && <SidebarJoinCTA onSignUpClick={onSignUpClick} showButton={false} />} */}
 
-        {/* Sticky Join Button - Only show if user is not logged in */}
-        {/* {!user && <JoinButton onSignUpClick={onSignUpClick} />} */}
 
         {/* Featured Video Widget */}
         {videoUrl && videoThumbnail && onVideoClick && (
@@ -227,26 +240,39 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           />
         )}
 
-      {/* Brief Lead Generation Widget - Show for brief-specific email collection */}
-      {brief && (
-          
-          <BriefLeadGenWidget
-            brief={brief}
-            onEmailSubmitted={(email, isAuthenticated) => {
-              // Track email submission for analytics
-              if (onWidgetEmailSubmitted) {
-                onWidgetEmailSubmitted(email, isAuthenticated);
-              }
-            }}
-            onSignupClick={onSignUpClick}
-            compact={false}
-          />
-        
+     
+
+
+
+      {/* Ticker Widget */}
+      {tickerWidget && (
+        <div className="briefs-ticker-section">
+          {tickerWidget}
+        </div>
       )}
 
 
+      {/* Brokerage Widget */}
+      {/* {brief?.brokerage_links && (
+        <div className="briefs-brokerage-section">
+        <BrokerageWidget 
+          brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
+          briefId={brief?.slug}
+          briefTitle={brief?.title}
+          location="action_panel"
+          country={country}
+          countryLoading={countryLoading}
+          geolocationError={geolocationError}
+        />
+        </div>
+      )} */}
+
+
+<div className="briefs-sticky-section">
+
+
         {/* Table of Contents */}
-      {sections.length > 0 && (
+        {sections.length > 0 && (
         <div className="briefs-toc-section">
           <h3 className="briefs-section-title">Contents</h3>
           <nav className="briefs-toc-nav" role="navigation" aria-label="Table of contents">
@@ -269,54 +295,52 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
 
 
-      {/* Ticker Widget */}
-      {tickerWidget && (
-        <div className="briefs-ticker-section">
-          {tickerWidget}
-        </div>
-      )}
 
-
-      {/* Brokerage Widget */}
-      {brief?.brokerage_links && (
-        <div className="briefs-brokerage-section">
-        <BrokerageWidget 
-          brokerageLinks={brief.brokerage_links as { [key: string]: string } | null}
-          briefId={brief?.slug}
-          briefTitle={brief?.title}
-          location="action_panel"
-          country={country}
-          countryLoading={countryLoading}
-          geolocationError={geolocationError}
-        />
-        </div>
+        {/* Brief Lead Generation Widget - Show for brief-specific email collection */}
+        {brief && (
+          
+          <div className="briefs-leadgen">
+            <BriefLeadGenWidget
+              brief={brief}
+              showTickers={false}
+              onEmailSubmitted={(email, isAuthenticated) => {
+              // Track email submission for analytics
+              if (onWidgetEmailSubmitted) {
+                onWidgetEmailSubmitted(email, isAuthenticated);
+              }
+            }}
+            onSignupClick={onSignUpClick}
+              compact={false}
+            />
+          </div>
+        
       )}
 
 
       {/* Company Tickers */}
-      <div className="briefs-tickers-section">
-        <h3 className="briefs-section-title">Related Tickers</h3>
-        <div className="briefs-tickers-list">
-          {Object.entries(marketGroups).map(([market, tickers]) => (
-            <div key={market} className="briefs-market-group">
-              <h4 className="briefs-market-title">{market}</h4>
-              <div className="briefs-tickers-grid">
-                {tickers.map((ticker) => (
-                  <a 
-                    key={ticker.symbol} 
-                    href={`https://www.google.com/search?q=${ticker.symbol}+stock`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="briefs-ticker-item"
-                  >
-                    <div className="briefs-ticker-symbol">{ticker.symbol}</div>
-                    <div className="briefs-ticker-name">{ticker.name}</div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
+      {companyTickers.length > 0 && (
+        <div className="briefs-tickers-section">
+          <h3 className="briefs-section-title centered">Related Tickers</h3>
+          <div className="briefs-tickers-flex">
+            {companyTickers.map((ticker) => (
+              <button 
+                key={`${ticker.market}-${ticker.symbol}`} 
+                onClick={() => handleTickerCopy(ticker.symbol)}
+                className="briefs-ticker-chip"
+                title={`Copy ${ticker.symbol} to clipboard`}
+              >
+                <span className="briefs-ticker-market">{ticker.market}:</span>
+                <span className="briefs-ticker-symbol">{ticker.symbol}</span>
+                <Copy className="briefs-ticker-copy-icon" size={12} />
+              </button>
+            ))}
+          </div>
         </div>
+      )}
+
+
+      
+
       </div>
 
       </div>
@@ -336,7 +360,6 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
 
         .briefs-content-container {
           flex: 1;
-          overflow-y: auto;
           display: flex;
           flex-direction: column;
         }
@@ -349,6 +372,10 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         /* Firefox scrollbar */
         .briefs-content-container {
           scrollbar-width: none;
+        }
+
+        .briefs-leadgen {
+          border-top: 0.5px solid var(--color-border-primary);
         }
         
         /* Sign Up CTA Styles */
@@ -415,6 +442,11 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           border-top: 0.5px solid var(--color-border-primary);
         }
         
+        .briefs-sticky-section {
+          position: sticky;
+          top: 0;
+        }
+        
         .briefs-signup-title {
           font-family: var(--font-editorial);
           font-weight: var(--font-normal);
@@ -447,6 +479,10 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           gap: var(--space-2);
           font-size: var(--text-xs);
           color: var(--color-text-secondary);
+        }
+
+        .briefs-section-title.centered {
+          text-align: center;
         }
         
         .briefs-feature-check {
@@ -522,68 +558,71 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         }
         
         .briefs-tickers-section {
-          padding: 2rem 1.5rem;
+          padding: var(--space-6) var(--space-6);
           border-top: 0.5px solid var(--color-border-primary);
+          border-bottom: 0.5px solid var(--color-border-primary);
         }
         
-        .briefs-tickers-list {
+        .briefs-tickers-flex {
           display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
+          flex-wrap: wrap;
+          gap: var(--space-2);
+          align-items: center;   
+          justify-content: center;
         }
         
-        .briefs-market-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        
-        .briefs-market-title {
-          font-size: 0.9rem;
-          font-weight: 700;
-          color: var(--sonic-primary);
-          margin: 0;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-        
-        .briefs-tickers-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 0.5rem;
-        }
-        
-        .briefs-ticker-item {
-          padding: 0.75rem 1rem;
-          background: var(--color-bg-tertiary);
-          border: 0.5px solid var(--color-border-primary);
-          border-radius: 12px;
-          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-          text-decoration: none;
-          display: block;
+        .briefs-ticker-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--space-1);
+          background: var(--color-bg-secondary);
+          border: 1px solid var(--color-border-primary);
+          border-radius: var(--radius-full);
+          padding: var(--space-1) var(--space-3);
           cursor: pointer;
+          transition: all var(--transition-base);
+          font-family: var(--font-primary);
+          outline: none;
+          white-space: nowrap;
         }
         
-        .briefs-ticker-item:hover {
-          background: var(--color-bg-card-hover);
+        .briefs-ticker-chip:hover {
+          background: var(--color-bg-tertiary);
           border-color: var(--color-border-secondary);
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md);
+          transform: translateY(-1px);
+        }
+        
+        .briefs-ticker-chip:active {
+          transform: translateY(0);
+        }
+        
+        .briefs-ticker-chip:focus {
+          box-shadow: 0 0 0 2px var(--color-primary);
+        }
+        
+        .briefs-ticker-market {
+          font-size: var(--text-xs);
+          font-weight: var(--font-medium);
+          color: var(--color-text-muted);
+          text-transform: uppercase;
         }
         
         .briefs-ticker-symbol {
-          font-weight: 800;
-          color: var(--color-brand-primary);
-          font-size: 1rem;
-          margin-bottom: 0.25rem;
-          letter-spacing: -0.02em;
+          font-weight: var(--font-bold);
+          color: var(--color-text-primary);
+          font-size: var(--text-sm);
+          font-family: var(--font-mono);
+          letter-spacing: 0.02em;
         }
         
-        .briefs-ticker-name {
-          font-size: 0.85rem;
+        .briefs-ticker-copy-icon {
+          color: var(--color-text-tertiary);
+          transition: color var(--transition-base);
+          flex-shrink: 0;
+        }
+        
+        .briefs-ticker-chip:hover .briefs-ticker-copy-icon {
           color: var(--color-text-secondary);
-          line-height: 1.4;
-          font-weight: 500;
         }
         
         /* Table of Contents Styles */
@@ -675,7 +714,6 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             height: 100%;
             border-left: none;
             border-radius: 0;
-            overflow-y: auto;
             padding: 0;
             background: var(--color-bg-primary);
           }
@@ -688,7 +726,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             right: 0;
             bottom: 0;
             z-index: 1000;
-            overflow-y: auto;
+            
             -webkit-overflow-scrolling: touch;
           }
 

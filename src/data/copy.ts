@@ -1,65 +1,45 @@
 /**
  * Centralized copy for branded marketing content
- * Premium, Wall Street-ready messaging for The Briefed
+ * News and newsletter focused messaging for The Bullish Brief
  */
 
 export const BRAND_COPY = {
   // Core brand messaging
-  tagline: "Always Ahead. Always Bullish.",
+  tagline: "Early signals. Clear context.",
 
   // Authentication modals
   auth: {
     signUp: {
-      title: "Always Ahead. Always Bullish.",
+      title: "Get Briefed",
       features: [
-        "Get The Bullish Brief Sent Straight to Your Inbox",
-        "Real-time market discussions with serious traders",
-        "Elite AI prompts to get the most out of LLMs",
+        "The Bullish Brief in your inbox",
+        "Timely coverage of moves that matter",
+        "Early ticker calls with clear rationale",
         "Free to join, no subscription required"
       ]
     },
     signIn: {
-      welcome: "Welcome Back, Let's Get You Briefed"
+      welcome: "Welcome back. Get briefed."
     }
   },
 
-  // Onboarding flow - first slide only
-  onboarding: {
-    welcome: {
-      title: "The Market Edge, Delivered",
-      description: "You’re in. Now let’s get you into the right conversations, insights, and tools."
-    }
-  },
-
-  // Bull Room auth overlay
-  bullRoom: {
-    authOverlay: {
-      description: "Sign up to join high-level market conversations with other traders and investors.",
-      cta: "Free to join • No credit card required"
-    }
-  },
-
-  // AI Vault
-  aiVault: {
-    subtitle: "High-performance AI prompts for ChatGPT, Claude, and Perplexity"
-  },
 
   // Briefs Action Panel CTA
   briefsActionPanel: {
     title: "The Bullish Brief",
-    description: "Always Ahead. Always Bullish.",
+    description: "Early signals. Clear context.",
     features: [
-      "Get The Bullish Brief Sent Straight to Your Inbox",
-      "Access Real-time Market Discussions",
-      "Gain World-class AI Prompts for Better Analysis",
-      "Completely Free, No Credit Card Required"
+      "Timely briefs by email when news moves markets",
+      "Early ticker calls, explained in plain language",
+      "Context that shows why it matters and what to watch",
+      "Completely free, no credit card required"
     ],
-    cta: "Secure Your Edge Now",
+    cta: "Subscribe Free",
     // Variants for testing
     headlineVariants: [
-      { title: "Ahead of the Market. Ahead of the Pack.", description: "Market-moving intelligence delivered before the competition reacts." },
-      { title: "While Others React, You Profit.", description: "Get the brief that puts you in front of the trade, every time." },
-      { title: "Your First-Mover Advantage", description: "Fast, clear, and decisive intelligence for traders who lead, not follow." }
+      { title: "Catch the Move Early", description: "Timely briefs and early ticker calls with the context to act." },
+      { title: "Be First to the Signal", description: "Focused reporting on catalysts before the crowd notices." },
+      { title: "News With an Edge", description: "Clear coverage, early calls, zero fluff." }
     ]
   }
 } as const;
@@ -67,4 +47,3 @@ export const BRAND_COPY = {
 // Type definitions for better type safety
 export type BrandCopy = typeof BRAND_COPY;
 export type AuthCopy = BrandCopy['auth'];
-export type OnboardingCopy = BrandCopy['onboarding'];

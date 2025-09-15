@@ -100,13 +100,13 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
   const hasActiveFilters = Boolean(searchQuery || statusFilter !== 'all' || categoryFilter || authorFilter);
 
   // Helper functions to get names from IDs
-  const getAuthorName = (authorId?: string) => {
-    if (!authorId) return 'No Author';
+  const getAuthorName = (authorId?: string | null) => {
+    if (!authorId) return '—'; // Use em dash for no author
     const author = authors?.find(a => a.id === authorId);
     return author?.name || 'Unknown Author';
   };
 
-  const getCategoryName = (categoryId?: string) => {
+  const getCategoryName = (categoryId?: string | null) => {
     if (!categoryId) return 'No Category';
     const category = categories?.find(c => c.id === categoryId);
     return category?.name || 'Unknown Category';
@@ -120,7 +120,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     title: string;
     subtitle: string;
     content: string;
-    author: string;
+    author?: string; // Made optional to support articles without authors
     category: string;
     status: 'draft' | 'published' | 'archived';
     published_at?: string;
@@ -130,7 +130,6 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     slug: string;
     featured_image_url?: string;
     featured_image_alt?: string;
-    featured_color?: string;
     tempPath?: string;
     tags?: string[];
     reading_time_minutes?: number;
@@ -144,7 +143,7 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     title: article.title,
     subtitle: article.subtitle || '',
     content: article.content,
-    author: article.author_id || '',
+    author: article.author_id || '', // Keep empty string for modal compatibility
     category: article.category_id || '',
     status: (article.status as 'draft' | 'published' | 'archived') || 'draft',
     published_at: article.published_at,
@@ -154,7 +153,6 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     slug: article.slug || '',
     featured_image_url: article.featured_image_url,
     featured_image_alt: article.featured_image_alt,
-    featured_color: article.featured_color,
     reading_time_minutes: article.reading_time_minutes,
     featured: article.featured || false,
     premium: article.premium || false
@@ -165,14 +163,13 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
     title: modalArticle.title,
     subtitle: modalArticle.subtitle,
     content: modalArticle.content,
-    author_id: modalArticle.author, // This is already the UUID from the dropdown
-    category_id: modalArticle.category, // This is already the UUID from the dropdown
+    author_id: modalArticle.author && modalArticle.author.trim() !== '' ? modalArticle.author : null, // Handle empty string as null
+    category_id: modalArticle.category && modalArticle.category.trim() !== '' ? modalArticle.category : null, // Handle empty string as null
     status: modalArticle.status,
     published_at: modalArticle.published_at,
     slug: modalArticle.slug || generateSlug(modalArticle.title || ''),
     featured_image_url: modalArticle.featured_image_url,
     featured_image_alt: modalArticle.featured_image_alt,
-    featured_color: modalArticle.featured_color,
     reading_time_minutes: modalArticle.reading_time_minutes
   });
 
@@ -260,7 +257,6 @@ export const ArticleManager: React.FC<ArticleManagerProps> = () => {
         status: 'draft',
         featured: false,
         premium: false,
-        featured_color: article.featured_color,
         reading_time_minutes: readingTimeMinutes
       });
       setShowEditModal(false);

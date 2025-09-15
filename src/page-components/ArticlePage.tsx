@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import { ArrowLeft, Clock, Eye, User, Calendar, Tag } from 'lucide-react';
+import { ArrowLeft, Clock, User, Calendar, Tag, Bookmark, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useArticleBySlug, useRelatedArticles, useToggleBookmark, useIsBookmarked } from '../hooks/useArticles';
-import { useTrackArticleView, useArticleViewCount } from '../hooks/useArticleViews';
+import { useTrackArticleView } from '../hooks/useArticleViews';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTrackArticleEngagement } from '../hooks/useClarityAnalytics';
@@ -12,13 +12,16 @@ import { useMobileHeader } from '../contexts/MobileHeaderContext';
 import { createMobileHeaderConfig } from '../utils/mobileHeaderConfigs';
 import { ArticleCard } from '../components/articles/ArticleCard';
 import { AuthorAvatar } from '../components/articles/AuthorAvatar';
+import ArticleActionPanel from '../components/articles/ArticleActionPanel';
 import { LegalFooter } from '../components/LegalFooter';
 import { ShareSheet } from '../components/ShareSheet';
 import { ImageZoomModal } from '../components/ui/ImageZoomModal';
 
-import { DesktopBanner } from '../components/DesktopBanner';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import { parseTOCFromContent } from '../utils/tocParser';
+import { ProcessedContent } from '../utils/contentProcessor';
 import { ArticleSkeleton } from '../components/ArticleSkeleton';
+import { Layout } from '../components/Layout';
 import Image from 'next/image';
 
 interface ArticlePageProps {
@@ -41,7 +44,6 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   const { data: isBookmarked } = useIsBookmarked(article?.id);
   const toggleBookmark = useToggleBookmark();
   const trackView = useTrackArticleView();
-  const { data: viewCount } = useArticleViewCount(article?.id ? String(article.id) : '');
   const { trackBookmark: trackAnalyticsBookmark, trackShare: trackAnalyticsShare } = useTrackArticleEngagement();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
@@ -49,13 +51,163 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   const [isImageZoomOpen, setIsImageZoomOpen] = React.useState(false);
   const [zoomedImageUrl, setZoomedImageUrl] = React.useState<string>('');
   const [zoomedImageAlt, setZoomedImageAlt] = React.useState<string>('');
+  const [contentProcessed, setContentProcessed] = React.useState(false);
 
-  const maxWidth = '800px';
+  const maxWidth = 'var(--max-width)';
   
   // Calculate reading time from article content
   const readingTime = React.useMemo(() => {
     return article?.content ? calculateReadingTime(article.content) : 5;
   }, [article?.content]);
+
+  // Generate TOC sections from article content
+  const tocSections = React.useMemo(() => {
+    return article?.content ? parseTOCFromContent(article.content) : [];
+  }, [article?.content]);
+
+  // Pre-process content to add IDs to H2 elements before React renders them
+  const processedContent = React.useMemo(() => {
+    if (!article?.content) return '';
+    
+    // Create a temporary div to parse and modify the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = article.content;
+    
+    // Find all H2 elements and add IDs using the same logic as parseTOCFromContent
+    const h2Elements = tempDiv.querySelectorAll('h2');
+    const usedIds = new Set<string>();
+    const addedIds: Array<{ text: string; id: string }> = [];
+    
+    h2Elements.forEach((h2, index) => {
+      if (!h2.id) {
+        const text = h2.textContent?.trim() || '';
+        
+        if (text) {
+          // Generate base ID using same logic as parseTOCFromContent
+          const baseId = text
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim()
+            .replace(/^-+|-+$/g, '');
+          
+          if (baseId) {
+            // Ensure unique ID by adding counter if needed
+            let uniqueId = baseId;
+            let counter = 1;
+            while (usedIds.has(uniqueId)) {
+              uniqueId = `${baseId}-${counter}`;
+              counter++;
+            }
+            
+            usedIds.add(uniqueId);
+            h2.id = uniqueId;
+            addedIds.push({ text, id: uniqueId });
+          }
+        }
+      }
+    });
+    
+    return tempDiv.innerHTML;
+  }, [article?.content]);
+
+  // Reset content processing when article content changes
+  React.useEffect(() => {
+    setContentProcessed(false);
+  }, [article?.content]);
+
+  // Post-render H2 ID assignment - runs after all React rendering is complete
+  React.useEffect(() => {
+    if (!article?.content || !contentProcessed) return;
+
+    const assignH2IdsPostRender = () => {
+      const contentContainer = document.querySelector('.brief-content-container');
+      if (!contentContainer) {
+        return;
+      }
+
+      const h2Elements = contentContainer.querySelectorAll('h2');
+      if (h2Elements.length === 0) return;
+
+      const usedIds = new Set<string>();
+      const assignedIds: Array<{ text: string; id: string }> = [];
+
+      h2Elements.forEach((h2, index) => {
+        const text = h2.textContent?.trim() || '';
+        
+        if (!h2.id && text) {
+          // Generate base ID using same logic as parseTOCFromContent
+          const baseId = text
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim()
+            .replace(/^-+|-+$/g, '');
+          
+          if (baseId) {
+            // Ensure unique ID by adding counter if needed
+            let uniqueId = baseId;
+            let counter = 1;
+            while (usedIds.has(uniqueId)) {
+              uniqueId = `${baseId}-${counter}`;
+              counter++;
+            }
+            
+            usedIds.add(uniqueId);
+            h2.id = uniqueId;
+            assignedIds.push({ text, id: uniqueId });
+          }
+        }
+      });
+      
+      // Set up MutationObserver to watch for ID removal
+      if (assignedIds.length > 0) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'id') {
+              // Track H2 ID modifications if needed for debugging
+            }
+            if (mutation.type === 'childList') {
+              mutation.removedNodes.forEach((node) => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                  const element = node as Element;
+                  // Track H2 element removal if needed for debugging
+                }
+              });
+            }
+          });
+        });
+
+        observer.observe(contentContainer, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeOldValue: true,
+          attributeFilter: ['id']
+        });
+
+        // Clean up observer after 10 seconds
+        setTimeout(() => observer.disconnect(), 10000);
+      }
+      
+      // Final verification that IDs are properly set
+      setTimeout(() => {
+        // Verification complete
+      }, 50);
+    };
+
+    // Use multiple strategies to ensure IDs stick
+    requestAnimationFrame(() => {
+      assignH2IdsPostRender();
+      
+      // Also try after a small delay to catch any late re-renders
+      setTimeout(assignH2IdsPostRender, 100);
+    });
+
+  }, [article?.content, contentProcessed]);
+
 
   // Handle scroll for header background
   React.useEffect(() => {
@@ -128,10 +280,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           }
         } : () => onCreateAccountClick?.(),
         onShareClick: () => setIsShareSheetOpen(true),
-        bookmarkLoading: toggleBookmark.isPending,
-        // Comment functionality - Layout will override these handlers
-        onCommentClick: () => {}, // Placeholder - Layout will override
-        commentsActive: false     // Placeholder - Layout will override
+        bookmarkLoading: toggleBookmark.isPending
       });
       
       setConfig(mobileHeaderConfig);
@@ -179,7 +328,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       
       // Add responsive sizes for better performance
       if (!img.sizes) {
-        img.sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px';
+        img.sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, var(--max-width)';
       }
       
       // Add proper alt text if missing
@@ -275,6 +424,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     });
   };
 
+
   /**
    * Processes text content to automatically convert Twitter handles and stock tickers to clickable links
    * 
@@ -325,32 +475,59 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     return result;
   };
 
+  // Prepare action panel component
+  const actionPanelComponent = article ? (
+    <ArticleActionPanel
+      articleId={String(article.id)}
+      sections={tocSections}
+    />
+  ) : undefined;
+
+  // Mobile header props for Layout
+  const mobileHeaderProps = article ? {
+    isBookmarked: isBookmarked,
+    onBookmarkClick: user ? () => {
+      if (article?.id) {
+        toggleBookmark.mutate(String(article.id));
+        if (article.title) {
+          trackAnalyticsBookmark(String(article.id), article.title);
+        }
+      }
+    } : () => onCreateAccountClick?.(),
+    onShareClick: () => setIsShareSheetOpen(true),
+    bookmarkLoading: toggleBookmark.isPending,
+  } : {};
+
   // Loading state
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh' }}>
-        <ArticleSkeleton />
-      </div>
+      <Layout>
+        <div style={{ minHeight: '100vh' }}>
+          <ArticleSkeleton />
+        </div>
+      </Layout>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <h2 style={{
-          fontSize: 'var(--text-2xl)',
-          fontFamily: 'var(--font-editorial)',
-          fontWeight: 'var(--font-normal)',
-          marginBottom: 'var(--space-4)',
-          color: 'var(--color-text-primary)'
-        }}>Article Not Found</h2>
-        <p className="text-tertiary mb-6">The article you're looking for doesn't exist or has been removed.</p>
-        <button onClick={handleBack} className="btn btn-primary">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Articles</span>
-        </button>
-      </div>
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+          <h2 style={{
+            fontSize: 'var(--text-2xl)',
+            fontFamily: 'var(--font-editorial)',
+            fontWeight: 'var(--font-normal)',
+            marginBottom: 'var(--space-4)',
+            color: 'var(--color-text-primary)'
+          }}>Article Not Found</h2>
+          <p className="text-tertiary mb-6">The article you're looking for doesn't exist or has been removed.</p>
+          <button onClick={handleBack} className="btn btn-primary">
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Articles</span>
+          </button>
+        </div>
+      </Layout>
     );
   }
 
@@ -359,141 +536,18 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   }
 
   return (
-    <div>
+    <Layout
+      mobileHeader={mobileHeaderProps}
+      actionPanel={actionPanelComponent}
+    >
       <div style={{ minHeight: '100vh', position: 'relative' }}>
-        {/* Enhanced Gradient Background Overlay - When featured_color is set */}
-        {article?.featured_color && (() => {
-          // Theme-aware opacity values
-          const isDark = theme === 'dark';
-          const mainOpacities = isDark 
-            ? ['40', '30', '22', '16', '12', '08', '05', '03'] // Dark mode - stronger
-            : ['20', '15', '12', '08', '05', '03', '02', '01']; // Light mode - subtle
-          const ambientOpacities = isDark
-            ? { left: ['18', '12', '06'], right: ['15', '08', '04'] } // Dark mode
-            : { left: ['08', '04', '02'], right: ['06', '03', '01'] }; // Light mode
-          const textureOpacities = isDark
-            ? ['10', '06', '03'] // Dark mode
-            : ['05', '03', '01']; // Light mode
-
-          return (
-            <>
-              {/* Main gradient overlay */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '100vh',
-                background: `
-                  radial-gradient(ellipse 200% 120% at 50% -20%, 
-                    ${article.featured_color}${mainOpacities[0]} 0%, 
-                    ${article.featured_color}${mainOpacities[1]} 10%, 
-                    ${article.featured_color}${mainOpacities[2]} 20%, 
-                    ${article.featured_color}${mainOpacities[3]} 30%, 
-                    ${article.featured_color}${mainOpacities[4]} 40%, 
-                    ${article.featured_color}${mainOpacities[5]} 50%, 
-                    ${article.featured_color}${mainOpacities[6]} 60%, 
-                    ${article.featured_color}${mainOpacities[7]} 70%, 
-                    transparent 85%
-                  )
-                `,
-                pointerEvents: 'none',
-                zIndex: 1
-              }} />
-              
-              {/* Secondary ambient glow */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '60vh',
-                background: `
-                  radial-gradient(ellipse 120% 80% at 30% 0%, 
-                    ${article.featured_color}${ambientOpacities.left[0]} 0%, 
-                    ${article.featured_color}${ambientOpacities.left[1]} 25%, 
-                    ${article.featured_color}${ambientOpacities.left[2]} 50%, 
-                    transparent 75%
-                  ),
-                  radial-gradient(ellipse 120% 80% at 70% 0%, 
-                    ${article.featured_color}${ambientOpacities.right[0]} 0%, 
-                    ${article.featured_color}${ambientOpacities.right[1]} 30%, 
-                    ${article.featured_color}${ambientOpacities.right[2]} 60%, 
-                    transparent 80%
-                  )
-                `,
-                pointerEvents: 'none',
-                zIndex: 2
-              }} />
-              
-              {/* Enhanced noisy texture overlay */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '100vh',
-                backgroundImage: `
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeBlend mode='screen'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23noise)' opacity='0.8'/%3E%3C/svg%3E"),
-                  linear-gradient(180deg, 
-                    ${article.featured_color}${textureOpacities[0]} 0%, 
-                    ${article.featured_color}${textureOpacities[1]} 20%, 
-                    ${article.featured_color}${textureOpacities[2]} 40%, 
-                    transparent 70%
-                  )
-                `,
-                backgroundSize: isDark ? '400px 400px, 100% 100%' : '280px 280px, 100% 100%',
-                backgroundRepeat: 'repeat, no-repeat',
-                pointerEvents: 'none',
-                zIndex: 4,
-                opacity: isDark ? 0.18 : 0.18,
-                mixBlendMode: 'soft-light'
-              }} />
-            </>
-          );
-        })()}
         
-        {/* Desktop Banner - Hidden on mobile */}
-        <DesktopBanner
-          title="Article"
-          isScrolled={isScrolled}
-          maxWidth={maxWidth}
-          actions={[
-            {
-              type: 'back',
-              onClick: handleBack
-            },
-            {
-              type: 'share',
-              onClick: () => setIsShareSheetOpen(true)
-            },
-            {
-              type: 'bookmark',
-              onClick: () => {
-                if (user && article?.id) {
-                  toggleBookmark.mutate(String(article.id));
-                  
-                  // Track analytics bookmark event
-                  if (article.title) {
-                    trackAnalyticsBookmark(String(article.id), article.title);
-                  }
-                } else if (!user) {
-                  onCreateAccountClick?.();
-                }
-              },
-              active: isBookmarked,
-              disabled: !user
-            }
-          ]}
-        />
 
         {/* Article Header - Clean text-only header */}
         <div style={{
           padding: 'var(--space-10) var(--content-padding) var(--space-4) var(--content-padding)',
           maxWidth: maxWidth,
-          margin: '0 auto',
-          position: 'relative',
-          zIndex: 5
+          margin: '0 auto'
         }}>
           {/* Title */}
           <h1 className="headline" style={{
@@ -516,7 +570,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                 width={800}
                 height={400}
                 priority={true}
-                sizes="(max-width: 768px) 100vw, 800px"
+                sizes="(max-width: 768px) 100vw, var(--max-width)"
                 style={{
                   width: '100%',
                   height: 'auto',
@@ -533,9 +587,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         <main style={{
           padding: '0px var(--content-padding) 0px var(--content-padding)',
           maxWidth: maxWidth,
-          margin: '0 auto',
-          position: 'relative',
-          zIndex: 5
+          margin: '0 auto'
         }}>
 
         
@@ -548,7 +600,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                 width={800}
                 height={400}
                 priority={true}
-                sizes="(max-width: 1200px) 800px, 800px"
+                sizes="(max-width: 1200px) var(--max-width), var(--max-width)"
                 style={{
                   width: '100%',
                   height: 'auto',
@@ -579,45 +631,53 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               minWidth: '0',
               flex: '1 1 auto'
             }}>
-              <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
+              {article.author && (
+                <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
+              )}
               <div style={{ textAlign: 'left', minWidth: '0' }}>
-                <button
-                  onClick={() => {
-                    if (article.authorSlug) {
-                      router.push(`/${article.authorSlug}`);
-                    }
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '0',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-medium)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-1)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    transition: 'opacity var(--transition-base)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = '0.8';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = '1';
-                  }}
-                >
-                  {article.author}
-                </button>
+                {article.author && (
+                  <button
+                    onClick={() => {
+                      if (article.authorSlug) {
+                        router.push(`/${article.authorSlug}`);
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: article.authorSlug ? 'pointer' : 'default',
+                      padding: '0',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-medium)',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-1)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      transition: 'opacity var(--transition-base)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (article.authorSlug) {
+                        e.currentTarget.style.opacity = '0.8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (article.authorSlug) {
+                        e.currentTarget.style.opacity = '1';
+                      }
+                    }}
+                  >
+                    {article.author}
+                  </button>
+                )}
                 <div style={{
                   fontSize: 'var(--text-xs)',
                   color: 'var(--color-text-muted)'
                 }}>
-                  in{' '}
+                  {article.author ? 'in' : 'In'}{' '}
                   <button
                     onClick={() => {
                       const categoryParam = article.category === 'All' ? '' : `?category=${encodeURIComponent(article.category)}`;
@@ -648,26 +708,117 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
               </div>
             </div>
 
-            {/* Meta Information */}
+            {/* Meta Information and Actions */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'space-between',
               gap: 'var(--space-3)',
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)',
               flexWrap: 'wrap'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                <Calendar style={{ width: '14px', height: '14px' }} />
-                <span>{article.date}</span>
+              {/* Meta Info */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-3)',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-muted)',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                  <Calendar style={{ width: '14px', height: '14px' }} />
+                  <span>{article.date}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                  <Clock style={{ width: '14px', height: '14px' }} />
+                  <span>{formatReadingTime(readingTime)}</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                <Clock style={{ width: '14px', height: '14px' }} />
-                <span>{formatReadingTime(readingTime)}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                <Eye style={{ width: '14px', height: '14px' }} />
-                <span>{viewCount?.toLocaleString() || article.views}</span>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)'
+              }}>
+                {/* Bookmark Button */}
+                <button
+                  onClick={() => {
+                    if (user && article?.id) {
+                      toggleBookmark.mutate(String(article.id));
+                      
+                      // Track analytics bookmark event
+                      if (article.title) {
+                        trackAnalyticsBookmark(String(article.id), article.title);
+                      }
+                    } else if (!user) {
+                      onCreateAccountClick?.();
+                    }
+                  }}
+                  disabled={!user || toggleBookmark.isPending}
+                  style={{
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    color: isBookmarked ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                    padding: 'var(--space-2)',
+                    borderRadius: 'var(--radius-md)',
+                    cursor: (!user || toggleBookmark.isPending) ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all var(--transition-base)',
+                    opacity: (!user || toggleBookmark.isPending) ? 0.6 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (user && !toggleBookmark.isPending) {
+                      e.currentTarget.style.background = 'var(--color-bg-card-hover)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (user && !toggleBookmark.isPending) {
+                      e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }
+                  }}
+                  title={isBookmarked ? 'Remove bookmark' : 'Bookmark article'}
+                >
+                  <Bookmark 
+                    style={{ 
+                      width: '16px', 
+                      height: '16px',
+                      fill: isBookmarked ? 'currentColor' : 'none'
+                    }} 
+                  />
+                </button>
+
+                {/* Share Button */}
+                <button
+                  onClick={() => setIsShareSheetOpen(true)}
+                  style={{
+                    background: 'var(--color-bg-tertiary)',
+                    border: '0.5px solid var(--color-border-primary)',
+                    color: 'var(--color-text-secondary)',
+                    padding: 'var(--space-2)',
+                    borderRadius: 'var(--radius-md)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all var(--transition-base)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--color-bg-card-hover)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                  title="Share article"
+                >
+                  <Share style={{ width: '16px', height: '16px' }} />
+                </button>
               </div>
             </div>
           </div>
@@ -675,22 +826,24 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
 
           {/* Content */}
-          <div>
+          <div className="prose prose-invert prose-lg max-w-none brief-content-container">
             {article.content ? (
-              <div 
-                className="html-content"
-                dangerouslySetInnerHTML={{ 
-                  __html: processTextWithLinks(article.content) 
-                }}
-                ref={(el) => {
-                  if (el) {
+              <ProcessedContent
+                content={processTextWithLinks(processedContent)}
+                brief={article as any} // Articles have similar structure to briefs
+                onContentReady={(el) => {
+                  if (el && !contentProcessed) {
                     // Optimize images in content for better performance
                     optimizeContentImages(el);
                     
                     // Process embed content to execute scripts
                     processEmbedContent(el);
+                    
+                    setContentProcessed(true);
                   }
                 }}
+                className="html-content brief-html-content"
+                injectWidgets={false} // Articles don't need brief-specific widgets
               />
             ) : (
               <div className="text-center py-12 bg-tertiary rounded-xl mb-8">
@@ -743,8 +896,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                     }}
                     style={{
                       fontSize: 'var(--text-sm)',
-                      borderRadius: 'var(--radius-full)',
-                      padding: 'var(--space-2) var(--space-4)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: 'var(--space-2) var(--space-3)',
                       height: 'auto',
                       minHeight: '32px',
                       whiteSpace: 'nowrap',
@@ -752,7 +905,10 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                       border: '0.5px solid var(--color-border-primary)',
                       color: 'var(--color-text-secondary)',
                       cursor: 'pointer',
-                      transition: 'all var(--transition-base)'
+                      transition: 'all var(--transition-base)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-1)'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'var(--color-bg-tertiary)';
@@ -765,6 +921,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
+                    <span style={{ opacity: 0.7 }}>#</span>
                     {tag}
                   </button>
                 ))}
@@ -795,7 +952,6 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                       // Navigate to the related article
                       router.push(`/articles/${relatedArticle.slug || relatedArticle.id}`);
                     }}
-                    hasHorizontalPadding={false}
                   />
                 ))}
               </div>
@@ -828,7 +984,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         imageAlt={zoomedImageAlt}
         imageName={zoomedImageAlt}
       />
-    </div>
+    </Layout>
   );
 };
 

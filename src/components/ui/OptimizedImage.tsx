@@ -118,7 +118,7 @@ export const ArticleHeroImage: React.FC<{
     src={src}
     alt={alt}
     fill
-    sizes="(max-width: 768px) 100vw, 800px"
+    sizes="(max-width: 768px) 100vw, var(--max-width)"
     priority
     className={className}
     style={{
@@ -200,7 +200,7 @@ export const BriefHeroImage: React.FC<{
     src={src}
     alt={alt}
     fill
-    sizes="(max-width: 768px) 100vw, 800px"
+    sizes="(max-width: 768px) 100vw, var(--max-width)"
     priority
     className={className}
     style={{

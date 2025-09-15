@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from './ui/Button';
 import { BullLogoImg } from './ui/BullLogo';
 import { useTrackCTAInteractions } from '../hooks/useClarityAnalytics';
+import { TypeLogo } from './ui/TypeLogo';
 
 interface CTABannerProps {
   onCreateAccountClick?: () => void;
@@ -19,30 +20,29 @@ export const CTABanner: React.FC<CTABannerProps> = ({
   
   const features = [
     {
-      title: 'Market Intelligence Articles & Briefings',
-      subtitle: 'Daily insights and analysis from market experts'
+      title: "Actionable Market Briefings",
+      subtitle: "Each briefing delivers the signal early, with enough context to understand why it matters and how it could play out."
     },
     {
-      title: 'Bull Room Chats',
-      subtitle: 'Real-time community discussions and insights'
-    },
-    {
-      title: 'Prompt Vault',
-      subtitle: 'Top notch AI prompts to get the most out of ChatGPT, Claude, and Perplexity'
+      title: "Early Ticker Calls",
+      subtitle: "Clear, direct coverage that gives you a first look at opportunities others will only notice later."
     }
   ];
+  
+  
+  
+  
   
   return (
     <section style={{ 
       padding: 'clamp(2rem, 6vw, 3rem) 0', 
-      background: 'var(--color-bg-primary)',
+      background: 'var(--color-bg-secondary)',
       backgroundImage: `
         radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px),
         radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 1px, transparent 1px)
       `,
       backgroundSize: '20px 20px, 20px 20px',
       backgroundPosition: '0 0, 10px 10px',
-      borderTop: '0.5px solid var(--color-border-primary)',
       borderBottom: '0.5px solid var(--color-border-primary)',
       position: 'relative',
       overflow: 'hidden',
@@ -54,75 +54,26 @@ export const CTABanner: React.FC<CTABannerProps> = ({
         margin: '0 auto',
         textAlign: 'center',
       }}>
-        
-        {/* Brand Logo */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: 'var(--space-4)',
-        }}>
-          <div style={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <BullLogoImg 
-              width={48}
-              height={48}
-              alt="The Bullish Brief"
-            />
-            <div style={{
-              display: 'none',
-              width: '48px',
-              height: '48px',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-            }}>
-              <svg 
-                style={{ 
-                  width: '38px', 
-                  height: '38px', 
-                  color: 'var(--color-brand-primary)' 
-                }}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
-              </svg>
-              <div style={{
-                position: 'absolute',
-                top: '-2px',
-                right: '-2px',
-                width: '8px',
-                height: '8px',
-                backgroundColor: 'var(--color-brand-primary)',
-                borderRadius: 'var(--radius-full)',
-                border: '2px solid var(--color-bg-secondary)',
-              }} className="animate-pulse"></div>
-            </div>
-          </div>
-        </div>
 
         {/* Brand Title */}
         <div style={{
           marginBottom: 'var(--space-3)',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 'var(--space-4)', 
         }}>
-          <h2 style={{
-            fontFamily: 'var(--font-editorial)',
-            fontWeight: 'var(--font-normal)',
-            fontSize: 'var(--text-xl)',
-            color: 'var(--color-text-primary)',
-            margin: 0,
-            lineHeight: 1.2,
-          }}>
-            The Bullish Brief
-          </h2>
+          <BullLogoImg 
+              width={48}
+              height={48}
+              alt="The Bullish Brief"
+            />
+         <TypeLogo
+          height={32} 
+          width={160}
+          alt="The Bullish Brief"
+         />
         </div>
 
         <div style={{
@@ -189,7 +140,7 @@ export const CTABanner: React.FC<CTABannerProps> = ({
                   width: '20px',
                   height: '20px',
                   borderRadius: 'var(--radius-sm)',
-                  background: 'var(--color-success)',
+                  background: 'var(--color-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -245,7 +196,7 @@ export const CTABanner: React.FC<CTABannerProps> = ({
         {/* Sign Up Button */}
         <Button
           onClick={async () => {
-            const buttonText = isPrimary ? 'Join Free Now' : 'Join Now';
+            const buttonText = isPrimary ? 'Subscribe Free' : 'Subscribe';
             
             // Track the CTA button click
             await trackCTAButtonClick('cta_banner', buttonText, {
@@ -260,52 +211,10 @@ export const CTABanner: React.FC<CTABannerProps> = ({
           size="lg"
           fullWidth={false}
         >
-          {isPrimary ? 'Join Free Now' : 'Join Now'}
+          {isPrimary ? 'Subscribe Free' : 'Subscribe'}
         </Button>
         
-        {/* Divider and Continue Reading */}
-        {isPrimary && (
-          <div style={{
-            marginTop: 'var(--space-6)',
-            textAlign: 'center',
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 'var(--space-3)',
-              marginBottom: 'var(--space-4)',
-            }}>
-              <div style={{
-                width: '60px',
-                height: '1px',
-                background: 'var(--color-border-primary)',
-              }} />
-              <span style={{
-                color: 'var(--color-text-tertiary)',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-medium)',
-                opacity: 0.8,
-              }}>
-                or
-              </span>
-              <div style={{
-                width: '60px',
-                height: '1px',
-                background: 'var(--color-border-primary)',
-              }} />
-            </div>
-            <p style={{
-              color: 'var(--color-text-tertiary)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-medium)',
-              margin: 0,
-              opacity: 0.8,
-            }}>
-              Continue reading this Brief
-            </p>
-          </div>
-        )}
+        
       </div>
     </section>
   );

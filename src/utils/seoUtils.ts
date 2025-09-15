@@ -205,11 +205,6 @@ export const generateArticleStructuredData = (article: Article, baseUrl: string,
         "@type": "InteractionCounter",
         "interactionType": "https://schema.org/ReadAction",
         "userInteractionCount": viewCount || parseInt(article.views.replace(/,/g, '')) || 0
-      },
-      {
-        "@type": "InteractionCounter", 
-        "interactionType": "https://schema.org/CommentAction",
-        "userInteractionCount": article.comment_count || 0
       }
     ],
     "about": article.tags?.map(tag => ({

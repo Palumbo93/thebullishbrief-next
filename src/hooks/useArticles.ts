@@ -13,9 +13,10 @@ type TagWithCount = any;
 export interface Article {
   id: number | string;
   category: string;
+  categorySlug?: string;
   title: string;
   subtitle: string;
-  author: string;
+  author?: string;
   authorAvatar?: string;
   authorSlug?: string;
   time: string;
@@ -28,8 +29,6 @@ export interface Article {
   premium?: boolean;
   slug?: string;
   bookmark_count?: number;
-  comment_count?: number;
-  featured_color?: string;
 }
 
 /**
@@ -41,10 +40,11 @@ const convertSupabaseArticle = (article: ArticleWithRelations): Article => {
     title: article.title,
     subtitle: article.subtitle || '',
     content: article.content,
-    author: article.author?.name || 'Unknown Author',
+    author: article.author?.name || undefined,
     authorAvatar: article.author?.avatar_url || undefined,
     authorSlug: article.author?.slug || undefined,
     category: article.category?.name || 'Uncategorized',
+    categorySlug: article.category?.slug || undefined,
     image: article.featured_image_url || 'https://images.pexels.com/photos/3760067/pexels-photo-3760067.jpeg?auto=compress&cs=tinysrgb&w=1200',
     views: article.view_count.toLocaleString(),
     time: `${article.reading_time_minutes} min read`,
@@ -58,8 +58,6 @@ const convertSupabaseArticle = (article: ArticleWithRelations): Article => {
     premium: article.premium,
     slug: article.slug,
     bookmark_count: article.bookmark_count || 0,
-    comment_count: article.comment_count || 0,
-    featured_color: article.featured_color
   };
 };
 
@@ -157,21 +155,113 @@ export const useFeaturedArticles = () => {
 };
 
 /**
- * Hook for fetching articles by category with caching
+ * Hook for fetching articles by category slug with caching
  */
-export const useArticlesByCategory = (category: string) => {
+export const useArticlesByCategory = (categorySlug: string) => {
   return useQuery({
-    queryKey: queryKeys.articles.list(category),
+    queryKey: queryKeys.articles.list(categorySlug),
     queryFn: async () => {
-      const data = await fetchArticlesFromSupabase();
-      if (category === 'All') {
-        return [...data.featuredArticles, ...data.articles];
+      if (!hasSupabaseCredentials) {
+        throw new Error('Database connection not configured');
       }
-      return [...data.featuredArticles, ...data.articles].filter(article => article.category === category);
+
+      // First, get the category ID from the slug
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('slug', categorySlug)
+        .single();
+
+      if (categoryError) throw categoryError;
+      if (!categoryData) throw new Error(`Category with slug "${categorySlug}" not found`);
+
+      // Then fetch articles with related data, filtered by category ID
+      const { data: articlesData, error: articlesError } = await supabase
+        .from('articles')
+        .select(`
+          *,
+          category:categories(*),
+          author:authors(*),
+          tags:article_tags(
+            tag:tags(*)
+          )
+        `)
+        .eq('status', 'published')
+        .eq('category_id', categoryData.id)
+        .order('published_at', { ascending: false });
+
+      if (articlesError) throw articlesError;
+
+      // Transform the data to include tags properly
+      const transformedArticles: ArticleWithRelations[] = (articlesData || []).map(article => ({
+        ...article,
+        tags: article.tags?.map((tagRelation: any) => tagRelation.tag).filter(Boolean) || []
+      }));
+
+      // Convert to local format
+      return transformedArticles.map(convertSupabaseArticle);
     },
     staleTime: CACHE_TTL.ARTICLES,
     gcTime: CACHE_TTL.ARTICLES * 2,
-    enabled: !!category,
+    enabled: !!categorySlug,
+  });
+};
+
+/**
+ * Hook for fetching articles by category slug (alias for better naming)
+ */
+export const useArticlesByCategorySlug = (categorySlug: string) => {
+  return useArticlesByCategory(categorySlug);
+};
+
+/**
+ * Hook for fetching articles by category name (for backward compatibility)
+ */
+export const useArticlesByCategoryName = (categoryName: string) => {
+  return useQuery({
+    queryKey: queryKeys.articles.list(`name:${categoryName}`),
+    queryFn: async () => {
+      const data = await fetchArticlesFromSupabase();
+      if (categoryName === 'All') {
+        return [...data.featuredArticles, ...data.articles];
+      }
+      return [...data.featuredArticles, ...data.articles].filter(article => article.category === categoryName);
+    },
+    staleTime: CACHE_TTL.ARTICLES,
+    gcTime: CACHE_TTL.ARTICLES * 2,
+    enabled: !!categoryName,
+  });
+};
+
+/**
+ * Hook for fetching a single category by slug
+ */
+export const useCategoryBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: ['category', slug],
+    queryFn: async () => {
+      if (!hasSupabaseCredentials) {
+        throw new Error('Database connection not configured');
+      }
+
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          throw new Error(`Category with slug "${slug}" not found`);
+        }
+        throw error;
+      }
+
+      return data;
+    },
+    staleTime: CACHE_TTL.CATEGORIES,
+    gcTime: CACHE_TTL.CATEGORIES * 2,
+    enabled: !!slug,
   });
 };
 

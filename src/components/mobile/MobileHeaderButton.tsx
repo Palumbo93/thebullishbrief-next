@@ -35,8 +35,7 @@ export const MobileHeaderButton: React.FC<MobileHeaderButtonProps> = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      border: 'none',
-      borderRadius: 'var(--radius-lg)',
+      borderRadius: 'var(--radius-md)',
       cursor: disabled || loading ? 'not-allowed' : 'pointer',
       transition: 'all var(--transition-base)',
       outline: 'none',
@@ -59,14 +58,17 @@ export const MobileHeaderButton: React.FC<MobileHeaderButtonProps> = ({
     const variantStyles = {
       default: {
         background: 'var(--color-bg-tertiary)',
+        border: '0.5px solid var(--color-border-primary)',
         color: 'var(--color-text-primary)',
       },
       primary: {
         background: active ? 'var(--color-brand-primary)' : 'var(--color-bg-tertiary)',
+        border: active ? '0.5px solid var(--color-brand-primary)' : '0.5px solid var(--color-border-primary)',
         color: active ? 'white' : 'var(--color-text-primary)',
       },
       ghost: {
         background: 'transparent',
+        border: 'none',
         color: 'var(--color-text-primary)',
       }
     };

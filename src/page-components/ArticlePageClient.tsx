@@ -12,8 +12,6 @@ interface ArticlePageClientProps {
 export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({ slug }) => {
   const { data: article, error, isLoading } = useArticleBySlug(slug);
   
-  
-  
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh' }}>

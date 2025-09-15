@@ -20,7 +20,7 @@ interface ModalArticle {
   title: string;
   subtitle: string;
   content: string;
-  author: string;
+  author?: string;
   category: string;
   status: 'draft' | 'published' | 'archived';
   published_at?: string;
@@ -28,7 +28,6 @@ interface ModalArticle {
   updated_at: string;
   featured_image_url?: string;
   featured_image_alt?: string;
-  featured_color?: string;
   tags?: string[];
   reading_time_minutes?: number;
 }
@@ -55,7 +54,6 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
     slug: '',
     featured_image_url: '',
     featured_image_alt: '',
-    featured_color: ''
   });
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -111,7 +109,6 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
       formData.category !== '' ||
       formData.published_at !== '' ||
       formData.slug !== '' ||
-      formData.featured_color !== '' ||
       featuredImage !== null ||
       selectedTags.length > 0;
     setHasUnsavedChanges(hasChanges);
@@ -739,89 +736,6 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
               )}
             </div>
 
-                {/* Featured Color */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-3)'
-                  }}>
-                    Featured Color
-                  </label>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-2)'
-                  }}>
-                    <input
-                      type="color"
-                      value={formData.featured_color || '#3B82F6'}
-                      onChange={(e) => handleChange('featured_color', e.target.value)}
-                      style={{
-                        width: '50px',
-                        height: 'var(--input-height)',
-                        padding: '0',
-                        background: 'transparent',
-                        border: '1px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-md)',
-                        cursor: 'pointer'
-                      }}
-                    />
-                    <input
-                      type="text"
-                      value={formData.featured_color}
-                      onChange={(e) => handleChange('featured_color', e.target.value)}
-                      placeholder="#3B82F6"
-                      style={{
-                        flex: 1,
-                        height: 'var(--input-height)',
-                        padding: '0 var(--input-padding-x)',
-                        background: 'var(--color-bg-tertiary)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--color-text-primary)',
-                        fontSize: 'var(--text-base)',
-                        transition: 'all var(--transition-base)',
-                        fontFamily: 'var(--font-mono)'
-                      }}
-                    />
-                    {formData.featured_color && (
-                      <button
-                        type="button"
-                        onClick={() => handleChange('featured_color', '')}
-                        style={{
-                          padding: 'var(--space-1) var(--space-2)',
-                          background: 'var(--color-bg-tertiary)',
-                          border: '1px solid var(--color-border-primary)',
-                          borderRadius: 'var(--radius-md)',
-                          color: 'var(--color-text-tertiary)',
-                          fontSize: 'var(--text-xs)',
-                          cursor: 'pointer',
-                          transition: 'all var(--transition-base)'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'var(--color-bg-secondary)';
-                          e.currentTarget.style.color = 'var(--color-text-secondary)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                          e.currentTarget.style.color = 'var(--color-text-tertiary)';
-                        }}
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
-                  <p style={{
-                    fontSize: 'var(--text-xs)',
-                    color: 'var(--color-text-tertiary)',
-                    marginTop: 'var(--space-1)'
-                  }}>
-                    Optional gradient background color for the article header
-                  </p>
-                </div>
 
               </div>
             </div>
@@ -861,12 +775,11 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
                       color: 'var(--color-text-primary)',
                       marginBottom: 'var(--space-3)'
                     }}>
-                      Author *
+                      Author
                     </label>
                     <select
                       value={formData.author}
                       onChange={(e) => handleChange('author', e.target.value)}
-                      required
                       style={{
                         width: '100%',
                         height: 'var(--input-height)',

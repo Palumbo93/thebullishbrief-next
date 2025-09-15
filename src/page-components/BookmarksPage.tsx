@@ -22,346 +22,318 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
   // If user is not authenticated, show sign-up prompt
   if (!user) {
     return (
-      <div style={{ minHeight: '100vh' }}>
-        {/* Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: 'var(--color-bg-primary)',
-          height: '56px',
-          position: 'sticky',
-          top: 0,
-          zIndex: 20,
-          borderBottom: '0.5px solid var(--color-border-primary)'
-        }} className="bookmarks-header">
-        <style>{`
-          @media (max-width: 768px) {
-            .bookmarks-header {
-              top: 56px !important; /* Below mobile header */
-            }
-          }
-        `}</style>
+      <>
+        <div style={{ minHeight: '100vh' }}>
+          {/* Header */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            color: 'var(--color-text-primary)',
-            padding: '0 var(--content-padding)',
-            width: '100%',
+            background: 'var(--color-bg-primary)',
+            height: '56px',
+            position: 'sticky',
+            top: 0,
+            zIndex: 20,
+            borderBottom: '0.5px solid var(--color-border-primary)'
+          }} className="bookmarks-header">
+          <style>{`
+            @media (max-width: 768px) {
+              .bookmarks-header {
+                top: 56px !important; /* Below mobile header */
+              }
+            }
+          `}</style>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: 'var(--color-text-primary)',
+              padding: '0 var(--content-padding)',
+              width: '100%',
+              maxWidth: 'var(--max-width)',
+              margin: '0 auto'
+            }}>
+              <button 
+                onClick={() => router.push('/')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--color-text-primary)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: 'var(--radius-lg)',
+                  transition: 'background var(--transition-base)',
+                  marginRight: 'var(--space-4)',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                aria-label="Back to Home"
+              >
+                <ArrowLeft style={{ width: '24px', height: '24px' }} />
+              </button>
+              <div style={{
+                fontWeight: 'bold',
+                fontSize: '1.25rem',
+                letterSpacing: '-0.01em',
+                textAlign: 'left',
+                flex: 1,
+              }}>
+                Bookmarks
+              </div>
+            </div>
+          </div>
+
+          {/* Sign-up prompt */}
+          <div style={{
+            maxWidth: 'var(--max-width)',
+            padding: 'var(--space-16) var(--content-padding)',
+            margin: '0 auto',
+            textAlign: 'center'
           }}>
-            <button 
-              onClick={() => router.push('/')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--color-text-primary)',
-                cursor: 'pointer',
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 'var(--space-8)'
+            }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'var(--color-bg-tertiary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40px',
-                height: '40px',
-                borderRadius: 'var(--radius-lg)',
-                transition: 'background var(--transition-base)',
-                marginRight: 'var(--space-4)',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              aria-label="Back to Home"
-            >
-              <ArrowLeft style={{ width: '24px', height: '24px' }} />
-            </button>
-            <div style={{
-              fontWeight: 'bold',
-              fontSize: '1.25rem',
-              letterSpacing: '-0.01em',
-              textAlign: 'left',
-              flex: 1,
-            }}>
-              Bookmarks
-            </div>
-          </div>
-        </div>
-
-        {/* Sign-up prompt */}
-        <div style={{
-          maxWidth: '800px',
-          padding: 'var(--space-16) var(--content-padding)',
-          margin: '0 auto',
-          textAlign: 'center'
-        }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 'var(--space-8)'
-          }}>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              background: 'var(--color-bg-tertiary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 'var(--space-4)'
-            }}>
-              <Bookmark style={{ width: '40px', height: '40px', color: 'var(--color-text-muted)' }} />
-            </div>
-            <h1 style={{
-              fontSize: 'var(--text-3xl)',
-              fontWeight: 'var(--font-bold)',
-              color: 'var(--color-text-primary)',
-              marginBottom: 'var(--space-4)'
-            }}>
-              Save Articles for Later
-            </h1>
-            <p style={{
-              fontSize: 'var(--text-lg)',
-              color: 'var(--color-text-secondary)',
-              lineHeight: 'var(--leading-relaxed)',
-              maxWidth: '500px',
-              marginBottom: 'var(--space-8)'
-            }}>
-              Create an account to bookmark your favorite articles and access them anytime, anywhere.
-            </p>
-            <button
-              onClick={onCreateAccountClick}
-              style={{
-                background: 'var(--color-brand-primary)',
+                marginBottom: 'var(--space-4)'
+              }}>
+                <Bookmark style={{ width: '40px', height: '40px', color: 'var(--color-text-muted)' }} />
+              </div>
+              <h1 style={{
+                fontSize: 'var(--text-3xl)',
+                fontWeight: 'var(--font-bold)',
                 color: 'var(--color-text-primary)',
-                border: 'none',
-                padding: 'var(--space-4) var(--space-8)',
-                borderRadius: 'var(--radius-lg)',
-                fontSize: 'var(--text-base)',
-                fontWeight: 'var(--font-semibold)',
-                cursor: 'pointer',
-                transition: 'all var(--transition-base)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-brand-secondary)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--color-brand-primary)';
-              }}
-            >
-              <Bookmark style={{ width: '20px', height: '20px' }} />
-              <span>Create Account</span>
-            </button>
+                marginBottom: 'var(--space-4)'
+              }}>
+                Save Articles for Later
+              </h1>
+              <p style={{
+                fontSize: 'var(--text-lg)',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 'var(--leading-relaxed)',
+                maxWidth: '500px',
+                marginBottom: 'var(--space-8)'
+              }}>
+                Create an account to bookmark your favorite articles and access them anytime, anywhere.
+              </p>
+              <button
+                onClick={onCreateAccountClick}
+                style={{
+                  background: 'var(--color-brand-primary)',
+                  color: 'var(--color-text-primary)',
+                  border: 'none',
+                  padding: 'var(--space-4) var(--space-8)',
+                  borderRadius: 'var(--radius-lg)',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 'var(--font-semibold)',
+                  cursor: 'pointer',
+                  transition: 'all var(--transition-base)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--color-brand-secondary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--color-brand-primary)';
+                }}
+              >
+                <Bookmark style={{ width: '20px', height: '20px' }} />
+                <span>Subscribe</span>
+              </button>
+            </div>
           </div>
         </div>
         <LegalFooter />
-      </div>
+      </>
     );
   }
 
   return (
-    <div>
-      {/* Header */}
+    <>
       <div style={{ minHeight: '100vh' }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        background: 'var(--color-bg-primary)',
-        height: '56px',
-        position: 'sticky',
-        top: 0,
-        zIndex: 20,
-        borderBottom: '0.5px solid var(--color-border-primary)'
-      }} className="bookmarks-header">
-      <style>{`
-        @media (max-width: 768px) {
-          .bookmarks-header {
-            top: 56px !important; /* Below mobile header */
-          }
-        }
-      `}</style>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          color: 'var(--color-text-primary)',
-          padding: '0 var(--content-padding)',
-          width: '100%',
+        {/* Page Header */}
+        <div style={{ 
+          padding: 'var(--space-6) var(--content-padding) var(--space-4)',
+          borderBottom: '0.5px solid var(--color-border-primary)',
+          background: 'var(--color-bg-primary)'
         }}>
-          <button 
-            onClick={() => router.push('/')}
-            style={{
-              background: 'transparent',
-              border: 'none',
+          <div style={{ 
+            maxWidth: 'var(--max-width)', 
+            margin: '0 auto',
+            textAlign: 'left'
+          }}>
+            <h1 style={{ 
+              fontSize: 'var(--text-2xl)', 
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 'var(--font-bold)',
               color: 'var(--color-text-primary)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: 'var(--radius-lg)',
-              transition: 'background var(--transition-base)',
-              marginRight: 'var(--space-4)',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            aria-label="Back to Home"
-          >
-            <ArrowLeft style={{ width: '24px', height: '24px' }} />
-          </button>
-          <div style={{
-            fontWeight: 'bold',
-            fontSize: '1.25rem',
-            letterSpacing: '-0.01em',
-            textAlign: 'left',
-            flex: 1,
-          }}>
-            Bookmarks
-          </div>
-          <div style={{
-            fontSize: 'var(--text-sm)',
-            color: 'var(--color-text-muted)'
-          }}>
-            {bookmarks?.length || 0} saved
+              letterSpacing: '-0.02em'
+            }}>
+              Bookmarks
+            </h1>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div style={{
-        padding: '0',
-        margin: '0 auto',
-        width: '100%',
-      }}>
-        {/* Loading state */}
-        {isLoading && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '400px'
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '3px solid var(--color-border-primary)',
-                borderTop: '3px solid var(--color-brand-primary)',
-                borderRadius: '50%',
-                margin: '0 auto var(--space-4)',
-                animation: 'spin 1s linear infinite'
-              }} />
-              <p style={{ color: 'var(--color-text-tertiary)' }}>Loading bookmarks...</p>
-            </div>
-          </div>
-        )}
-
-        {/* Error state */}
-        {error && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '400px',
-            textAlign: 'center'
-          }}>
-            <h2 style={{
-              fontSize: 'var(--text-2xl)',
-              fontWeight: 'var(--font-bold)',
-              marginBottom: 'var(--space-4)',
-              color: 'var(--color-text-primary)'
-            }}>
-              Something went wrong
-            </h2>
-            <p style={{
-              color: 'var(--color-text-tertiary)',
-              marginBottom: 'var(--space-6)'
-            }}>
-              Unable to load your bookmarks. Please try again later.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                background: 'var(--color-brand-primary)',
-                color: 'var(--color-text-primary)',
-                border: 'none',
-                padding: 'var(--space-3) var(--space-6)',
-                borderRadius: 'var(--radius-lg)',
-                fontSize: 'var(--text-base)',
-                fontWeight: 'var(--font-semibold)',
-                cursor: 'pointer',
-                transition: 'all var(--transition-base)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-brand-secondary)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--color-brand-primary)';
-              }}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!isLoading && !error && (!bookmarks || bookmarks.length === 0) && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '400px',
-            textAlign: 'center'
-          }}>
+        {/* Content */}
+        <div style={{
+          padding: '0',
+          margin: '0 auto',
+          width: '100%',
+        }}>
+          {/* Loading state */}
+          {isLoading && (
             <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              background: 'var(--color-bg-tertiary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 'var(--space-6)'
+              minHeight: '400px'
             }}>
-              <Bookmark style={{ width: '40px', height: '40px', color: 'var(--color-text-muted)' }} />
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  border: '3px solid var(--color-border-primary)',
+                  borderTop: '3px solid var(--color-brand-primary)',
+                  borderRadius: '50%',
+                  margin: '0 auto var(--space-4)',
+                  animation: 'spin 1s linear infinite'
+                }} />
+                <p style={{ color: 'var(--color-text-tertiary)' }}>Loading bookmarks...</p>
+              </div>
             </div>
-            <h2 style={{
-              fontSize: 'var(--text-2xl)',
-              fontWeight: 'var(--font-bold)',
-              marginBottom: 'var(--space-4)',
-              color: 'var(--color-text-primary)'
-            }}>
-              No bookmarks yet
-            </h2>
-            <p style={{
-              color: 'var(--color-text-tertiary)',
-              marginBottom: 'var(--space-6)',
-              maxWidth: '400px'
-            }}>
-              Start exploring articles and bookmark your favorites to see them here.
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* Bookmarks list */}
-        {!isLoading && !error && bookmarks && bookmarks.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {bookmarks.map((article) => (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                onArticleClick={(articleId: number | string, articleTitle: string) => {
-                  // Navigate to the article
-                  router.push(`/articles/${article.slug || article.id}`);
+          {/* Error state */}
+          {error && (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '400px',
+              textAlign: 'center'
+            }}>
+              <h2 style={{
+                fontSize: 'var(--text-2xl)',
+                fontWeight: 'var(--font-bold)',
+                marginBottom: 'var(--space-4)',
+                color: 'var(--color-text-primary)'
+              }}>
+                Something went wrong
+              </h2>
+              <p style={{
+                color: 'var(--color-text-tertiary)',
+                marginBottom: 'var(--space-6)'
+              }}>
+                Unable to load your bookmarks. Please try again later.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  background: 'var(--color-brand-primary)',
+                  color: 'var(--color-text-primary)',
+                  border: 'none',
+                  padding: 'var(--space-3) var(--space-6)',
+                  borderRadius: 'var(--radius-lg)',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 'var(--font-semibold)',
+                  cursor: 'pointer',
+                  transition: 'all var(--transition-base)'
                 }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--color-brand-secondary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--color-brand-primary)';
+                }}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!isLoading && !error && (!bookmarks || bookmarks.length === 0) && (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '400px',
+              textAlign: 'center',
+              maxWidth: 'var(--max-width)',
+              margin: '0 auto',
+              padding: '0 var(--content-padding)'
+            }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'var(--color-bg-tertiary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 'var(--space-6)'
+              }}>
+                <Bookmark style={{ width: '40px', height: '40px', color: 'var(--color-text-muted)' }} />
+              </div>
+              <h2 style={{
+                fontSize: 'var(--text-2xl)',
+                fontWeight: 'var(--font-bold)',
+                marginBottom: 'var(--space-4)',
+                color: 'var(--color-text-primary)'
+              }}>
+                No bookmarks yet
+              </h2>
+              <p style={{
+                color: 'var(--color-text-tertiary)',
+                marginBottom: 'var(--space-6)',
+                maxWidth: '400px'
+              }}>
+                Start exploring articles and bookmark your favorites to see them here.
+              </p>
+            </div>
+          )}
+
+          {/* Bookmarks list */}
+          {!isLoading && !error && bookmarks && bookmarks.length > 0 && (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 0,
+              maxWidth: 'var(--max-width)',
+              margin: '0 auto',
+              width: '100%'
+            }}>
+              {bookmarks.map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  onArticleClick={(articleId: number | string, articleTitle: string) => {
+                    // Navigate to the article
+                    router.push(`/articles/${article.slug || article.id}`);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       <LegalFooter />
-    </div>
+    </>
   );
 };
 

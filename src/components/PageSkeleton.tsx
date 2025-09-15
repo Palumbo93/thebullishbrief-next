@@ -29,7 +29,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: 'var(--space-16) var(--content-padding) 0 var(--content-padding)',
-          maxWidth: '800px',
+          maxWidth: 'var(--max-width)',
           margin: '0 auto',
         }}>
           <div style={{
@@ -63,7 +63,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
       {/* Content Skeleton */}
       <div style={{
-        maxWidth: '800px',
+        maxWidth: 'var(--max-width)',
         margin: '0 auto',
         padding: '0 var(--content-padding)'
       }}>
@@ -167,7 +167,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
       {/* Brief Content */}
       <div style={{
-        maxWidth: '800px',
+        maxWidth: 'var(--max-width)',
         margin: '0 auto',
         padding: '0 var(--content-padding)'
       }}>

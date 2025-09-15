@@ -3,38 +3,14 @@
 import React, { ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { ArticleComments } from './articles/ArticleComments';
-import { ExploreWidget } from './ExploreWidget';
-import BriefsActionPanel from './briefs/BriefsActionPanel';
-import { Sidebar } from './Sidebar';
 import { MobileHeader } from './mobile/MobileHeader';
-import { MobileSidebarDrawer } from './MobileSidebarDrawer';
-import dynamic from 'next/dynamic';
-
-// Lazy load TickerTapeWidget to reduce initial bundle size
-const TickerTapeWidget = dynamic(() => import('./TickerTapeWidget').then(mod => ({ default: mod.TickerTapeWidget })), {
-  loading: () => (
-    <div style={{
-      width: '100%',
-      height: '40px',
-      backgroundColor: 'var(--color-bg-secondary)',
-      borderRadius: 'var(--radius-md)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: 'var(--color-text-tertiary)',
-      fontSize: 'var(--text-xs)'
-    }}>
-      Loading ticker...
-    </div>
-  ),
-  ssr: false
-});
+import { SidebarDrawer } from './SidebarDrawer';
+import { PublicationHeader } from './PublicationHeader';
 import { useAuth } from '../contexts/AuthContext';
 import { useAuthModal } from '../contexts/AuthModalContext';
+import { useCategories } from '../hooks/useArticles';
 import { getMobileHeaderConfigForRoute, MobileHeaderFactoryProps } from '../utils/mobileHeaderConfigs';
 import { useMobileHeader } from '../contexts/MobileHeaderContext';
-import { useArticleCommentsState } from '../hooks/useArticleCommentsState';
 import { HomeIcon } from './ui/home';
 import { SearchIcon } from './ui/search';
 import { MessageSquareMoreIcon } from './ui/message-square-more';
@@ -43,32 +19,6 @@ import { ShieldCheckIcon } from './ui/shield-check';
 
 interface LayoutProps {
   children: ReactNode;
-  navItems?: Array<{ id: string; label: string; icon: any; active?: boolean }>;
-  onNavChange?: (tabId: string) => void;
-  articleTitle?: string;
-  articleId?: string;
-  
-  // Brief action panel props
-  showActionPanel?: boolean;
-  actionPanelType?: 'brief';
-  briefActionPanel?: {
-    briefId?: string;
-    brief?: any;
-    tickerWidget?: ReactNode;
-    sections?: Array<{ id: string; label: string; level: number }>;
-    tickers?: any;
-    country?: string;
-    countryLoading?: boolean;
-    geolocationError?: string | null;
-    companyName?: string;
-    companyLogoUrl?: string;
-    investorDeckUrl?: string;
-    videoUrl?: string;
-    videoThumbnail?: string | null;
-    videoTitle?: string;
-    onVideoClick?: () => void;
-    onWidgetEmailSubmitted?: (email: string, isAuthenticated: boolean) => void;
-  };
   
   // Mobile header specific props
   mobileHeader?: {
@@ -82,48 +32,26 @@ interface LayoutProps {
     companyName?: string;
     tickers?: string[];
   };
+  
+  // Action panel for desktop layout (e.g., brief pages)
+  actionPanel?: ReactNode;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ 
   children, 
-  navItems = [],
-  onNavChange,
-  articleTitle,
-  articleId,
-  showActionPanel = false,
-  actionPanelType,
-  briefActionPanel,
-  mobileHeader
+  mobileHeader,
+  actionPanel
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const { user, signOut } = useAuth();
   const { handleSignInClick, handleSignUpClick } = useAuthModal();
   const { config: mobileHeaderOverride } = useMobileHeader();
-
-  // Persistent article comments state
-  const { isExpanded: articleCommentsExpanded, toggleExpanded: toggleArticleComments, isLoaded: commentsStateLoaded, hasHydrated, shouldShowSpace } = useArticleCommentsState();
-  // Mobile comments state - separate from desktop sidebar
-  const [mobileCommentsOpen, setMobileCommentsOpen] = React.useState(false);
-  // Mobile action panel state for brief pages
-  const [mobileActionPanelOpen, setMobileActionPanelOpen] = React.useState(false);
-
-  // Prevent body scroll when mobile action panel is open
-  React.useEffect(() => {
-    if (mobileActionPanelOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileActionPanelOpen]);
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
 
   // Determine current location based on route
-  const getCurrentLocation = (): 'home' | 'articles' | 'article' | 'authors' | 'bull-room' | 'aivault' | 'alphaarena' | 'admin' | 'account-settings' | 'brief' => {
+  const getCurrentLocation = (): 'home' | 'articles' | 'article' | 'authors' | 'aivault' | 'alphaarena' | 'admin' | 'account-settings' | 'brief' => {
     if (pathname && pathname.startsWith('/articles/')) {
       return 'article';
     }
@@ -132,9 +60,6 @@ export const Layout: React.FC<LayoutProps> = ({
     }
     if (pathname && pathname.startsWith('/briefs/')) {
       return 'brief';
-    }
-    if (pathname && pathname.startsWith('/bull-room/')) {
-      return 'bull-room';
     }
     if (pathname && pathname.startsWith('/admin/')) {
       return 'admin';
@@ -151,8 +76,6 @@ export const Layout: React.FC<LayoutProps> = ({
         return 'home';
       case '/alphaarena':
         return 'alphaarena';
-      case '/bull-room':
-        return 'bull-room';
       case '/aivault':
         return 'aivault';
       case '/alphaarena':
@@ -190,24 +113,39 @@ export const Layout: React.FC<LayoutProps> = ({
 
   const actualCurrentLocation = getCurrentLocation();
 
-  // Generate navigation items for mobile sidebar (matches Sidebar.tsx exactly)
-  const getMobileNavItems = () => {
+  const getActiveCategory = (): string | undefined => {
+    // Check if we're on a category page
+    if (pathname?.startsWith('/category/')) {
+      const categorySlug = pathname.replace('/category/', '');
+      return categorySlug;
+    }
+    
+    // No active category for other pages (including home)
+    return undefined;
+  };
+
+  // Generate navigation items for sidebar with category-based navigation
+  const getSidebarNavItems = () => {
     const items = [
-      { id: 'home', label: 'Home', icon: HomeIcon, path: '/', active: actualCurrentLocation === 'home' },
-      { id: 'search', label: 'Explore', icon: SearchIcon, path: '/explore', active: actualCurrentLocation === 'articles' },
-      { id: 'bull-room', label: 'Bull Room', icon: MessageSquareMoreIcon, path: '/bull-room', active: actualCurrentLocation === 'bull-room' },
-      { id: 'aivault', label: 'AI Prompts', icon: FoldersIcon, path: '/aivault', active: actualCurrentLocation === 'aivault' },
+      { id: 'home', label: 'Home', path: '/', active: actualCurrentLocation === 'home' },
     ];
 
-    // Add admin item if user is admin
-    if (user?.isAdmin) {
-      items.push({ id: 'admin', label: 'Admin', icon: ShieldCheckIcon, path: '/admin', active: actualCurrentLocation === 'admin' });
+    // Add category-based navigation
+    if (categoriesData && categoriesData.length > 0) {
+      categoriesData.forEach(category => {
+        items.push({
+          id: `category-${category.id}`,
+          label: category.name,
+          path: `/category/${category.slug}`,
+          active: getActiveCategory() === category.slug
+        });
+      });
     }
 
     return items;
   };
 
-  const mobileNavItems = getMobileNavItems();
+  const sidebarNavItems = getSidebarNavItems();
 
   const getUserInitials = () => {
     if (!user) return '';
@@ -225,70 +163,18 @@ export const Layout: React.FC<LayoutProps> = ({
       // Override key handlers to use Layout's handlers while preserving page-specific config
       const updatedConfig = {
         ...mobileHeaderOverride,
-        onMenuClick: () => setIsMobileSidebarOpen(true),
-        onLogoClick: () => {
-          // Open the appropriate action panel based on current location
-          if (actualCurrentLocation === 'brief') {
-            setMobileActionPanelOpen(true);
-          } else if (actualCurrentLocation === 'article') {
-            setMobileCommentsOpen(true);
-          } else {
-            // For other pages, default to home navigation
-            router.push('/');
-          }
-        }
+        onMenuClick: () => setIsSidebarOpen(true),
+        onLogoClick: () => router.push('/')
       };
-      
-      // For article pages, ensure comment functionality is properly wired
-      if (actualCurrentLocation === 'article') {
-        updatedConfig.rightSection = {
-          ...updatedConfig.rightSection,
-          actions: updatedConfig.rightSection.actions.map(action => {
-            if (action.type === 'comment') {
-              return {
-                ...action,
-                onClick: () => setMobileCommentsOpen(true), // Only open, don't toggle
-                active: false // Never show active state since there's a close button
-              };
-            }
-            return action;
-          })
-        };
-      }
-      
-      // For brief pages, ensure action panel functionality is properly wired
-      if (actualCurrentLocation === 'brief') {
-        updatedConfig.rightSection = {
-          ...updatedConfig.rightSection,
-          actions: updatedConfig.rightSection.actions.map(action => {
-            if (action.type === 'more') {
-              return {
-                ...action,
-                onClick: () => setMobileActionPanelOpen(true), // Only open, don't toggle
-                active: false // Never show active state since there's a close button
-              };
-            }
-            return action;
-          })
-        };
-      }
       
       return updatedConfig;
     }
 
     // Otherwise use route-based configuration
     const baseProps: MobileHeaderFactoryProps = {
-      onMenuClick: () => setIsMobileSidebarOpen(true),
+      onMenuClick: () => setIsSidebarOpen(true),
       onSearchClick: (path?: string) => router.push(path || '/search'),
-      onLogoClick: () => {
-        // Open the appropriate action panel based on current location
-        if (actualCurrentLocation === 'brief') {
-          setMobileActionPanelOpen(true);
-        } else {
-          // For other pages, default to home navigation
-          router.push('/');
-        }
-      },
+      onLogoClick: () => router.push('/'),
       
       // Article/Brief specific props from mobileHeader prop
       isBookmarked: mobileHeader?.isBookmarked,
@@ -296,112 +182,49 @@ export const Layout: React.FC<LayoutProps> = ({
       onShareClick: mobileHeader?.onShareClick,
       bookmarkLoading: mobileHeader?.bookmarkLoading,
       
-      // Comment functionality for article pages
-      onCommentClick: actualCurrentLocation === 'article' ? () => setMobileCommentsOpen(true) : undefined,
-      commentsActive: false, // Never show active state since there's a close button
-      
       // Brief specific props
       companyName: mobileHeader?.companyName,
       tickers: mobileHeader?.tickers,
-      
-      // Brief action panel functionality
-      onMoreClick: actualCurrentLocation === 'brief' ? () => setMobileActionPanelOpen(true) : undefined,
-      moreActive: false, // Never show active state since there's a close button
     };
 
     return getMobileHeaderConfigForRoute(pathname || '', baseProps);
   };
 
+  const getHeaderVariant = (): 'full' | 'condensed' => {
+    // Use condensed header for article and brief pages
+    if (actualCurrentLocation === 'article' || actualCurrentLocation === 'brief') {
+      return 'condensed';
+    }
+    return 'full';
+  };
+
   return (
     <>
       <style>{`
-        /* X-Style Layout System - Page scroll approach */
+        /* Publication Layout System - Clean and simple */
         .app-container {
           min-height: 100vh;
           max-width: 100vw;
           background: var(--color-bg-primary);
-          /* Remove flexbox - let page scroll naturally */
         }
 
-        /* Sidebar - Fixed positioning */
-        .sidebar {
-          position: fixed;
-          left: 0;
-          top: 0;
-          width: 80.5px; /* need to be 80.5px to account for the border */
-          height: 100vh;
-          display: flex;
-          flex-direction: column;
-          overflow-y: auto;
-          background: var(--color-bg-primary);
-          z-index: 100;
-          flex-shrink: 0;
-          overflow-x: hidden;
-        }
-
-        /* Main Content - Offset by sidebar, page scroll */
+        /* Main Content - Full width, no sidebars on desktop */
         .main-content {
           position: relative;
-          margin-left: 80px; /* Offset for fixed sidebar */
-          margin-right: 0; /* Default: no right panel */
-          border-right: 0.5px solid var(--color-border-primary);
           background: var(--color-bg-primary);
           min-height: 100vh;
-        }
-        
-        /* Only apply transitions after state is loaded to prevent hydration glitch */
-        .main-content.state-loaded {
-          transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          width: 100%;
         }
 
-        /* Main Content with Right Panel */
-        .main-content.with-right-panel {
-          margin-right: 400px; /* Offset for fixed right panel */
-        }
-
-        /* Right Panel - Fixed positioning */
-        .right-panel {
-          position: fixed;
-          right: 0;
-          top: 0;
-          width: 400px;
-          height: 100vh;
-          background: var(--color-bg-primary);
-          z-index: 1;
-          overflow-y: auto;
-          transform: translateX(0);
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Content Area - No scroll, just wrapper */
+        /* Content Area - Clean wrapper */
         .content-area {
-          flex: 1;
-          padding: 0;
           background: var(--color-bg-primary);
           position: relative;
         }
 
-        /* Ticker tape styles */
-        .ticker-tape-container {
-          position: sticky;
-          top: 0;
-          z-index: 10;
-          background: var(--color-bg-primary);
-          border-bottom: 0.5px solid var(--color-border-primary);
-        }
-
-        .ticker-tape-container .tradingview-widget-container {
-          height: 40px;
-          overflow: hidden;
-        }
-
-        .ticker-tape-container .tradingview-widget-copyright {
-          display: none;
-        }
-
-        /* Global scrollbar styling for main page scroll */
+        /* Global scrollbar styling */
         ::-webkit-scrollbar {
-          width: 10px; /* Slightly thicker */
+          width: 10px;
           height: 10px;
         }
 
@@ -410,113 +233,62 @@ export const Layout: React.FC<LayoutProps> = ({
         }
 
         ::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2); /* Light gray for visibility */
+          background: rgba(0, 0, 0, 0.2);
           border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3); /* Lighter on hover */
-        }
-
-        /* Firefox global scrollbar */
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* Light gray for visibility */
-        }
-
-        /* Custom Scrollbar Styling */
-        .sidebar::-webkit-scrollbar,
-        .right-panel::-webkit-scrollbar {
-          width: 10px; /* Slightly thicker */
-          height: 10px;
-        }
-
-        .sidebar::-webkit-scrollbar-track,
-        .right-panel::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb,
-        .right-panel::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2); /* Light gray for visibility */
-          border-radius: 5px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb:hover,
-        .right-panel::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3); /* Lighter on hover */
+          background: rgba(0, 0, 0, 0.3);
         }
 
         /* Firefox scrollbar */
-        .sidebar,
-        .right-panel {
+        * {
           scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* Light gray for visibility */
+          scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
         }
 
-        /* Mobile Layout */
-        @media (max-width: 768px) {
+        /* Desktop Layout - Account for fixed publication header */
+        @media (min-width: 769px) {
           .app-container {
-            padding-top: 56px; /* Account for fixed mobile header */
+            padding-top: 160px; /* Header without ticker: 60px main + 100px buffer */
           }
           
-          .sidebar {
-            position: fixed;
-            left: -80px; /* Hidden off-screen, becomes drawer */
-            top: 56px; /* Below mobile header */
-            width: 80px;
-            height: calc(100vh - 56px);
-            transition: left 0.3s ease;
-            z-index: 1000;
+          /* With ticker tape widget */
+          .app-container.with-ticker {
+            padding-top: 200px; /* Header with ticker: 40px ticker + 60px main + 100px buffer */
           }
           
-          .sidebar.open {
-            left: 0; /* Slide in when open */
+          /* Condensed header spacing for article/brief pages */
+          .app-container.condensed-header {
+            padding-top: 92px; /* Condensed: 60px main + 60px buffer */
           }
           
-          .main-content {
-            margin-left: 0; /* No offset on mobile */
-            margin-right: 0; /* No right panel offset on mobile */
-            width: 100%;
+          /* Action panel layout */
+          .app-container.with-action-panel {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--space-8);
+            margin: 0 auto;
+            padding-left: var(--content-padding);
           }
           
-          .main-content.state-loaded {
-            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          .main-content.with-action-panel {
+            min-width: 0; /* Allow content to shrink */
           }
           
-          .right-panel {
-            display: none; /* Hidden on mobile, becomes overlay */
+          .action-panel-container {
+            border-left: 1px solid var(--color-border-primary);
           }
         }
 
-        /* Tablet Layout */
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .sidebar {
-            width: 80px; /* Keep collapsed sidebar on tablet */
-          }
-          
-          .main-content {
-            margin-left: 80px; /* Offset for collapsed sidebar */
-            margin-right: 0 !important; /* No right panel offset on tablet - override with-right-panel class */
-          }
-          
-          .main-content.state-loaded {
-            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-          
-          .main-content.with-right-panel {
-            margin-right: 0 !important; /* Ensure right panel spacing is removed even with the class */
-          }
-          
-          .right-panel {
-            display: none; /* Hide right panel on tablet */
-          }
-        }
-
-        /* Hide ticker on mobile */
+        /* Mobile Layout - Keep existing mobile sidebar pattern */
         @media (max-width: 768px) {
-          .ticker-tape-container {
-            display: none;
+          .publication-header {
+            display: none; /* Hide publication header on mobile */
+          }
+          
+          .app-container {
+            padding-top: 56px; /* Account for mobile header */
           }
         }
 
@@ -581,182 +353,52 @@ export const Layout: React.FC<LayoutProps> = ({
       `}</style>
 
       {/* Mobile Header (visible only on mobile) */}
-      {actualCurrentLocation !== 'bull-room' && (
-        <>
-          <MobileHeader {...getMobileHeaderConfig()} />
-          
-          {/* Mobile Sidebar Drawer */}
-          <MobileSidebarDrawer
-            open={isMobileSidebarOpen}
-            onClose={() => setIsMobileSidebarOpen(false)}
-            navItems={mobileNavItems}
-            user={user ? { 
-              initials: getUserInitials(),
-              username: user.user_metadata?.username || user.email?.split('@')[0] || 'User'
-            } : null}
-            onSignInClick={handleSignInClick}
-            onSignUpClick={handleSignUpClick}
-            onLogoutClick={handleLogout}
-          />
-        </>
-      )}
+      <MobileHeader {...getMobileHeaderConfig()} />
 
-      <div className="app-container">
-        {/* Left Navigation Sidebar */}
-        <header className="sidebar" role="banner">
-          <Sidebar
-            navItems={navItems}
-            onNavChange={onNavChange}
-            onSignInClick={handleSignInClick}
-            onSignUpClick={handleSignUpClick}
-          />
-        </header>
+      {/* Publication Header (visible only on desktop) */}
+      <PublicationHeader
+        variant={getHeaderVariant()}
+        categories={categoriesData?.map(category => ({
+          id: category.id,
+          name: category.name,
+          slug: category.slug
+        })) || []}
+        activeCategory={getActiveCategory()}
+        showTicker={actualCurrentLocation === 'home'}
+        onMobileMenuClick={() => setIsSidebarOpen(true)}
+      />
 
+      {/* Sidebar Drawer (available for both mobile and desktop) */}
+      <SidebarDrawer
+        open={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        navItems={sidebarNavItems}
+        user={user ? { 
+          initials: getUserInitials(),
+          username: user.user_metadata?.username || user.email?.split('@')[0] || 'User',
+          isAdmin: user.isAdmin
+        } : null}
+        onSignInClick={handleSignInClick}
+        onSignUpClick={handleSignUpClick}
+        onLogoutClick={handleLogout}
+      />
+
+      <div className={`app-container ${getHeaderVariant() === 'condensed' ? 'condensed-header' : ''} ${actualCurrentLocation === 'home' ? 'with-ticker' : ''} ${actionPanel ? 'with-action-panel' : ''}`}>
         {/* Main Content Area */}
-        <main className={`main-content ${hasHydrated ? 'state-loaded' : ''} ${(
-          // For articles: use shouldShowSpace for delayed animation
-          (actualCurrentLocation === 'article' && shouldShowSpace) || 
-          showActionPanel || 
-          actualCurrentLocation === 'home' || 
-          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || 
-          actualCurrentLocation === 'authors' || 
-          pathname?.startsWith('/search') || 
-          pathname?.startsWith('/explore')
-        ) ? 'with-right-panel' : ''}`}>
+        <main className={`main-content ${actionPanel ? 'with-action-panel' : ''}`}>
           <div className="content-area">
-            {/* Ticker Tape Widget - Only on Home Page */}
-            {actualCurrentLocation === 'home' && (
-              <div className="ticker-tape-container">
-                <TickerTapeWidget />
-              </div>
-            )}
-            
-            {/* Scrollable Content Area */}
-            <div>
-              {children}
-            </div>
+            {children}
           </div>
         </main>
-
-        {/* Right Panel - Conditional based on page type */}
-        {(
-          // For articles: use shouldShowSpace for delayed animation
-          (actualCurrentLocation === 'article' && shouldShowSpace) || 
-          showActionPanel || 
-          actualCurrentLocation === 'home' || 
-          ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/terms') && !pathname?.startsWith('/privacy') && !pathname?.startsWith('/cookies') && !pathname?.startsWith('/disclaimer')) || 
-          actualCurrentLocation === 'authors' || 
-          pathname?.startsWith('/search') || 
-          pathname?.startsWith('/explore')
-        ) && (
-          <aside className="right-panel">
-            {/* Article Comments - Only show content when expanded and hydrated */}
-            {actualCurrentLocation === 'article' && articleId && articleCommentsExpanded && hasHydrated && (
-              <ArticleComments 
-                articleId={articleId}
-                articleTitle={articleTitle || ''}
-                isExpanded={articleCommentsExpanded} 
-                onToggleExpanded={toggleArticleComments}
-                onCreateAccountClick={handleSignUpClick}
-              />
-            )}
-
-            {/* Brief Action Panel - Only on Brief Pages */}
-            {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
-              <BriefsActionPanel
-                briefId={briefActionPanel.briefId}
-                brief={briefActionPanel.brief}
-                onSignUpClick={handleSignUpClick}
-                tickerWidget={briefActionPanel.tickerWidget}
-                sections={briefActionPanel.sections || []}
-                tickers={briefActionPanel.tickers}
-                companyName={briefActionPanel.companyName}
-                videoUrl={briefActionPanel.videoUrl}
-                videoThumbnail={briefActionPanel.videoThumbnail}
-                videoTitle={briefActionPanel.videoTitle}
-                onVideoClick={briefActionPanel.onVideoClick}
-                onWidgetEmailSubmitted={briefActionPanel.onWidgetEmailSubmitted}
-                country={briefActionPanel.country}
-                countryLoading={briefActionPanel.countryLoading}
-                geolocationError={briefActionPanel.geolocationError}
-              />
-            )}
-
-            {/* Explore Widget - Only on Home, Articles, and Author Pages (not search or explore) */}
-            {(actualCurrentLocation === 'home' || ((actualCurrentLocation === 'articles' || actualCurrentLocation === 'aivault') && !pathname?.startsWith('/search') && !pathname?.startsWith('/explore')) || actualCurrentLocation === 'authors') && (
-              <ExploreWidget onCreateAccountClick={handleSignUpClick} />
-            )}
+        
+        {/* Action Panel (Desktop only) */}
+        {actionPanel && (
+          <aside className="action-panel-container desktop-only">
+            {actionPanel}
           </aside>
         )}
       </div>
 
-      {/* Mobile Comments Overlay - Only on Article Pages */}
-      {actualCurrentLocation === 'article' && articleId && (
-        <div className={`mobile-comments-overlay ${mobileCommentsOpen ? 'open' : ''}`}>
-          <ArticleComments 
-            articleId={articleId}
-            articleTitle={articleTitle || ''}
-            isExpanded={true} 
-            onToggleExpanded={() => setMobileCommentsOpen(false)}
-            onCreateAccountClick={handleSignUpClick}
-          />
-        </div>
-      )}
-
-      {/* Mobile Action Panel Overlay - Only on Brief Pages */}
-      {showActionPanel && actionPanelType === 'brief' && briefActionPanel && (
-        <>
-          {/* Backdrop */}
-          {mobileActionPanelOpen && (
-            <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 999,
-                backdropFilter: 'blur(4px)'
-              }}
-              onClick={() => setMobileActionPanelOpen(false)}
-            />
-          )}
-          
-          <div className={`mobile-action-panel-overlay ${mobileActionPanelOpen ? 'open' : ''}`}>
-          <BriefsActionPanel
-            briefId={briefActionPanel.briefId}
-            brief={briefActionPanel.brief}
-            onSignUpClick={handleSignUpClick}
-            tickerWidget={briefActionPanel.tickerWidget}
-            sections={briefActionPanel.sections || []}
-            tickers={briefActionPanel.tickers}
-            companyName={briefActionPanel.companyName}
-            videoUrl={briefActionPanel.videoUrl}
-            videoThumbnail={briefActionPanel.videoThumbnail}
-            videoTitle={briefActionPanel.videoTitle}
-            onVideoClick={briefActionPanel.onVideoClick}
-            onWidgetEmailSubmitted={briefActionPanel.onWidgetEmailSubmitted}
-            country={briefActionPanel.country}
-            countryLoading={briefActionPanel.countryLoading}
-            geolocationError={briefActionPanel.geolocationError}
-            isMobileOverlay={true}
-            onClose={() => setMobileActionPanelOpen(false)}
-          />
-          </div>
-        </>
-      )}
-
-      {/* Article Comments - Always render on article pages for floating button */}
-      {actualCurrentLocation === 'article' && articleId && !articleCommentsExpanded && hasHydrated && (
-        <ArticleComments 
-          articleId={articleId}
-          articleTitle={articleTitle || ''}
-          isExpanded={articleCommentsExpanded} 
-          onToggleExpanded={toggleArticleComments}
-          onCreateAccountClick={handleSignUpClick}
-        />
-      )}
     </>
   );
 };

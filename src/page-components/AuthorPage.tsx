@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Share } from 'lucide-react';
 import Image from 'next/image';
 import { useAuthorBySlug } from '../hooks/useAuthorBySlug';
 import { useArticlesByAuthor } from '../hooks/useArticlesByAuthor';
@@ -13,7 +13,6 @@ import { ArticleCard } from '../components/articles/ArticleCard';
 import { AuthorNewsletterSignup } from '../components/AuthorNewsletterSignup';
 import { LegalFooter } from '../components/LegalFooter';
 import { ShareSheet } from '../components/ShareSheet';
-import { DesktopBanner } from '../components/DesktopBanner';
 import { convertNewlinesToJSX } from '../utils/contentProcessor';
 
 interface AuthorPageProps {
@@ -96,7 +95,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
           borderBottom: '0.5px solid var(--color-border-primary)',
           padding: '0 var(--content-padding)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: 'var(--max-width)', margin: '0 auto' }}>
             <div style={{
               width: '40px',
               height: '40px',
@@ -241,21 +240,6 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ minHeight: '100vh' }}>
-        {/* Desktop Banner - Hidden on mobile */}
-        <DesktopBanner
-          title="Author"
-          isScrolled={isScrolled}
-          actions={[
-            {
-              type: 'back',
-              onClick: handleBack
-            },
-            {
-              type: 'share',
-              onClick: () => setIsShareSheetOpen(true)
-            }
-          ]}
-        />
 
         {/* Author Header with Banner & Overlapping Avatar */}
         <div style={{ position: 'relative' }}>
@@ -364,14 +348,49 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
                   </div>
                 )}
                 
-                {/* Enhanced Social Links */}
-                {(author.linkedin_url || author.twitter_handle || author.website_url) && (
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    gap: 'var(--space-3)',
-                    flexWrap: 'wrap'
-                  }}>
+                {/* Enhanced Social Links with Share Button */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: 'var(--space-3)',
+                  flexWrap: 'wrap'
+                }}>
+                  {/* Share Button */}
+                  <button
+                    onClick={() => setIsShareSheetOpen(true)}
+                    style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      gap: 'var(--space-2)',
+                      padding: 'var(--space-2) var(--space-4)',
+                      background: 'var(--color-bg-primary)',
+                      border: '1px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-full)',
+                      color: 'var(--color-text-secondary)',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 'var(--font-medium)',
+                      transition: 'all var(--transition-base)',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                      cursor: 'pointer'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
+                      e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)';
+                      e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                    }}
+                  >
+                    Share
+                    <Share style={{ width: '14px', height: '14px' }} />
+                  </button>
+
+                  {/* Social Links */}
+                  {(author.linkedin_url || author.twitter_handle || author.website_url) && (
+                    <>
                     {author.linkedin_url && (
                       <a
                         href={author.linkedin_url}
@@ -479,8 +498,9 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
                         <ExternalLink style={{ width: '14px', height: '14px' }} />
                       </a>
                     )}
-                  </div>
-                )}
+                  </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -651,7 +671,6 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
                   category: (article as any).category?.name || '',
                   time: `${article.reading_time_minutes || 0} min read`,
                   image: article.featured_image_url || '',
-                  views: String(article.view_count || 0),
                   slug: article.slug
                 }}
                 onArticleClick={() => handleArticleClick(article.id, article.title)}

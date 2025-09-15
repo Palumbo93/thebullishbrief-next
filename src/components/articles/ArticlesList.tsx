@@ -6,7 +6,7 @@ interface Article {
   category: string;
   title: string;
   subtitle: string;
-  author: string;
+  author?: string;
   time: string;
   date: string;
   image: string;
@@ -17,9 +17,7 @@ interface Article {
 
 interface ArticlesListProps {
   articles: Article[];
-  categories: string[];
-  activeFilter: string;
-  onFilterChange: (filter: string) => void;
+  activeFilter?: string;
   onArticleClick?: (articleId: number | string, articleTitle: string) => void;
   isLoading?: boolean;
 }
@@ -29,7 +27,7 @@ const ArticleSkeleton: React.FC = () => (
   <article
     style={{
       position: 'relative',
-      padding: 'var(--space-8) var(--content-padding)',
+      padding: 'var(--space-4) var(--content-padding)',
       borderBottom: '0.5px solid var(--color-border-primary)',
       background: 'transparent'
     }}
@@ -145,9 +143,7 @@ const ArticleSkeleton: React.FC = () => (
 
 export const ArticlesList: React.FC<ArticlesListProps> = ({ 
   articles, 
-  categories, 
-  activeFilter, 
-  onFilterChange,
+  activeFilter = 'All',
   onArticleClick,
   isLoading = false
 }) => {
@@ -166,53 +162,6 @@ export const ArticlesList: React.FC<ArticlesListProps> = ({
     <section style={{ 
       padding: 0
     }}>
-      <style>{`
-        .article-filter-bar {
-          position: sticky;
-          top: 0;
-          background: var(--color-bg-primary);
-          border-bottom: 0.5px solid var(--color-border-primary);
-          padding: var(--space-4) var(--content-padding);
-          z-index: 10;
-        }
-        
-        @media (max-width: 768px) {
-          .article-filter-bar {
-            top: 56px; /* Below mobile header */
-          }
-        }
-      `}</style>
-      
-      {/* Filter Bar - Twitter-style top navigation */}
-      <div className="article-filter-bar">
-        {/* Category Filters - Horizontal scrollable */}
-        <div className="hide-scrollbar-horizontal" style={{ 
-          display: 'flex', 
-          gap: 'var(--space-2)', 
-          overflowX: 'auto',
-          
-        }}>
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => onFilterChange(category)}
-              className={`btn ${activeFilter === category ? 'btn-primary' : 'btn-ghost'}`}
-              style={{ 
-                fontSize: 'var(--text-sm)',
-                whiteSpace: 'nowrap',
-                borderRadius: 'var(--radius-full)',
-                padding: 'var(--space-2) var(--space-4)',
-                minHeight: '32px'
-              }}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-        
-
-      </div>
-
       {/* Articles Feed - Twitter-style timeline */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         {isLoading ? (
@@ -227,7 +176,6 @@ export const ArticlesList: React.FC<ArticlesListProps> = ({
               key={article.id} 
               article={article}
               onArticleClick={onArticleClick}
-              onFilterChange={onFilterChange}
             />
           ))
         )}

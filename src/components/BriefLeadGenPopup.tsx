@@ -755,7 +755,7 @@ export const BriefLeadGenPopup: React.FC<BriefLeadGenPopupProps> = ({
                         variant="primary"
                         fullWidth={true}
                       >
-                        Join the Bullish Brief
+                        Subscribe to the Bullish Brief
                       </Button>
                     </div>
                   </>

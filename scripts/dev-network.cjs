@@ -15,18 +15,18 @@ function getLocalIP() {
 }
 
 const localIP = getLocalIP();
-console.log(`\uD83C\uDF10 Starting Vite development server...`);
-console.log(`\uD83D\uDCF1 Access from your phone: http://${localIP}:5173`);
-console.log(`\uD83D\uDCBB Local access: http://localhost:5173`);
+console.log(`\uD83C\uDF10 Starting Next.js development server...`);
+console.log(`\uD83D\uDCF1 Access from your phone: http://${localIP}:3000`);
+console.log(`\uD83D\uDCBB Local access: http://localhost:3000`);
 console.log('');
 
-// Start Vite
-const viteProcess = spawn('npm', ['run', 'dev', '--', '--host'], {
+// Start Next.js with network access
+const nextProcess = spawn('npx', ['next', 'dev', '--hostname', '0.0.0.0', '--port', '3000'], {
   stdio: 'inherit',
   shell: true
 });
 
-viteProcess.on('error', (error) => {
-  console.error('Failed to start Vite:', error);
+nextProcess.on('error', (error) => {
+  console.error('Failed to start Next.js:', error);
   process.exit(1);
 }); 

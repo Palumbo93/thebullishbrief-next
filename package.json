@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:network": "node scripts/dev-network.cjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

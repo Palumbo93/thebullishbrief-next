@@ -1,7 +1,7 @@
 import React from 'react';
-import { FileText, Folder, Users, Tag, Settings, Brain, MessageSquare, Briefcase, RefreshCw, Mail, BarChart3 } from 'lucide-react';
+import { FileText, Folder, Users, Tag, Settings, MessageSquare, Briefcase, RefreshCw, Mail, BarChart3 } from 'lucide-react';
 
-export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'emails' | 'prompts' | 'prompt-categories' | 'briefs' | 'bull-rooms' | 'build' | 'analytics';
+export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'emails' | 'briefs' | 'build' | 'analytics';
 
 interface AdminTabsProps {
   activeTab: AdminTab;
@@ -46,24 +46,6 @@ const tabConfigs: TabConfig[] = [
     label: 'Briefs',
     icon: <Briefcase style={{ width: '16px', height: '16px' }} />,
     description: 'Manage investor briefs'
-  },
-  {
-    id: 'prompts',
-    label: 'AI Prompts',
-    icon: <Brain style={{ width: '16px', height: '16px' }} />,
-    description: 'Manage AI prompt templates'
-  },
-  {
-    id: 'prompt-categories',
-    label: 'Prompt Categories',
-    icon: <MessageSquare style={{ width: '16px', height: '16px' }} />,
-    description: 'Organize prompts by category'
-  },
-  {
-    id: 'bull-rooms',
-    label: 'Bull Rooms',
-    icon: <MessageSquare style={{ width: '16px', height: '16px' }} />,
-    description: 'Manage chat rooms'
   },
   {
     id: 'emails',

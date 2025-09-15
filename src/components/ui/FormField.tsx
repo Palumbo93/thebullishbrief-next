@@ -76,7 +76,7 @@ export const FormField: React.FC<FormFieldProps> = ({
             padding: '1.25rem 20px 15px',
             backgroundColor: 'var(--color-bg-tertiary)',
             border: `1px solid ${error ? 'var(--color-error)' : 'var(--color-border-secondary)'}`,
-            borderRadius: 'var(--radius-full)',
+            borderRadius: 'var(--radius-md)',
             color: 'var(--color-text-primary)',
             fontSize: '16px',
             fontWeight: 600,

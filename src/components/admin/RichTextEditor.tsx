@@ -1214,7 +1214,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             fontSize: 'var(--text-base)',
             lineHeight: '1.6',
             color: 'var(--color-text-primary)',
-            maxWidth: isFullscreen ? '800px' : 'none',
+            maxWidth: isFullscreen ? 'var(--max-width)' : 'none',
             margin: isFullscreen ? '0 auto' : '0'
           }}
         />

@@ -30,46 +30,14 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('light');
+  // Force light theme only - no system theme detection
+  const [theme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
-  // Get system theme preference, defaulting to light
-  const getSystemTheme = (): Theme => {
-    if (typeof window === 'undefined') return 'light';
-    
-    // Check if the browser supports prefers-color-scheme
-    if (window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    
-    // Default to light theme for devices that don't support media queries
-    return 'light';
-  };
-
-  // Initialize theme from system preference on mount
+  // Initialize theme as light only
   useEffect(() => {
     setMounted(true);
-    const systemTheme = getSystemTheme();
-    setTheme(systemTheme);
   }, []);
-
-  // Listen for system theme changes
-  useEffect(() => {
-    if (!mounted || typeof window === 'undefined' || !window.matchMedia) return;
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      const newTheme = e.matches ? 'dark' : 'light';
-      setTheme(newTheme);
-    };
-
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleSystemThemeChange);
-    };
-  }, [mounted]);
 
   // Update document class when theme changes
   useEffect(() => {
@@ -84,14 +52,18 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     root.setAttribute('data-theme', theme);
   }, [theme, mounted]);
 
-  // Keep toggleTheme for any existing usage, but it won't do anything since we follow system
+  // No-op functions since we force light theme only
   const toggleTheme = () => {
-    // No-op since we automatically follow system theme
+    // No-op since we force light theme only
+  };
+
+  const handleSetTheme = () => {
+    // No-op since we force light theme only
   };
 
   const contextValue = {
     theme,
-    setTheme,
+    setTheme: handleSetTheme,
     toggleTheme,
   };
 

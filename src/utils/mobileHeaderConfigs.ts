@@ -1,6 +1,6 @@
 // Define the types for mobile header configuration
 export interface MobileHeaderAction {
-  type: 'search' | 'bookmark' | 'share' | 'comment' | 'more';
+  type: 'search' | 'bookmark' | 'share' | 'more';
   onClick: () => void;
   active?: boolean;
   loading?: boolean;
@@ -44,8 +44,6 @@ export interface MobileHeaderFactoryProps {
   onBookmarkClick?: () => void;
   onShareClick?: () => void;
   bookmarkLoading?: boolean;
-  onCommentClick?: () => void;
-  commentsActive?: boolean;
   
   // Brief page specific
   companyName?: string;
@@ -94,7 +92,7 @@ export const createMobileHeaderConfig = {
     onMenuClick: props.onMenuClick
   }),
 
-  // Article Page: (Menu, Type Logo) | Spacer | Comment Button, Bookmark Button, Share Button
+  // Article Page: (Menu, Type Logo) | Spacer | Bookmark Button, Share Button
   article: (props: MobileHeaderFactoryProps): MobileHeaderConfig => ({
     leftSection: {
       showMenu: true,
@@ -115,11 +113,6 @@ export const createMobileHeaderConfig = {
           active: props.isBookmarked,
           loading: props.bookmarkLoading
         }] : []),
-        ...(props.onCommentClick ? [{
-          type: 'comment' as const,
-          onClick: props.onCommentClick,
-          active: props.commentsActive
-        }] : [])
       ]
     },
     onMenuClick: props.onMenuClick

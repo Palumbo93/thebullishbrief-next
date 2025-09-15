@@ -7,8 +7,6 @@ import { Search, X } from 'lucide-react';
 import { useArticles, useTags } from '../hooks/useArticles';
 import { useTrackSearch } from '../hooks/useClarityAnalytics';
 import { ArticleCard } from '../components/articles/ArticleCard';
-import { AuthorAvatar } from '../components/articles/AuthorAvatar';
-import { FeaturedBriefCard } from '../components/briefs/FeaturedBriefCard';
 import { LegalFooter } from '../components/LegalFooter';
 
 interface SearchPageProps {
@@ -144,45 +142,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
       };
     }
   }, [shouldFocus, searchParams, pathname]);
-  
-  // Get unique authors from articles
-  const authors = useMemo(() => {
-    if (!articlesData) return [];
-    const allArticles = [...articlesData.featuredArticles, ...articlesData.articles];
-    const authorMap = new Map<string, { count: number; avatar?: string; slug?: string }>();
-    
-    allArticles.forEach(article => {
-      const author = article.author;
-      const existing = authorMap.get(author);
-      if (existing) {
-        existing.count += 1;
-        // Keep the first avatar URL found for this author
-        if (!existing.avatar && article.authorAvatar) {
-          existing.avatar = article.authorAvatar;
-        }
-        // Keep the first slug found for this author
-        if (!existing.slug && article.authorSlug) {
-          existing.slug = article.authorSlug;
-        }
-      } else {
-        authorMap.set(author, { 
-          count: 1, 
-          avatar: article.authorAvatar,
-          slug: article.authorSlug
-        });
-      }
-    });
-    
-    return Array.from(authorMap.entries())
-      .map(([name, data]) => ({ 
-        name, 
-        count: data.count,
-        avatar: data.avatar,
-        slug: data.slug
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 6); // Top 6 authors
-  }, [articlesData]);
+
   
   // Handle tag selection
   const handleTagClick = (tagName: string) => {
@@ -256,7 +216,9 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         <form onSubmit={(e) => e.preventDefault()}>
           <div style={{
             position: 'relative',
-            width: '100%'
+            width: '100%',
+            maxWidth: 'var(--max-width)',
+            margin: '0 auto'
           }}>
             <Search style={{
               position: 'absolute',
@@ -338,6 +300,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
             <div style={{ 
               padding: 'var(--space-4) var(--content-padding)'
             }}>
+              <div style={{
+                maxWidth: 'var(--max-width)',
+                margin: '0 auto'
+              }}>
               <div className="hide-scrollbar-horizontal" style={{ 
                 display: 'flex', 
                 gap: 'var(--space-2)', 
@@ -347,18 +313,46 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                   <button
                     key={tag.id}
                     onClick={() => handleTagClick(tag.name)}
-                    className={`btn ${selectedTags.includes(tag.name) ? 'btn-primary' : 'btn-ghost'}`}
                     style={{ 
                       fontSize: 'var(--text-sm)',
                       whiteSpace: 'nowrap',
-                      borderRadius: 'var(--radius-full)',
-                      padding: 'var(--space-2) var(--space-4)',
-                      minHeight: '32px'
+                      borderRadius: 'var(--radius-sm)',
+                      padding: 'var(--space-2) var(--space-3)',
+                      minHeight: '32px',
+                      height: 'auto',
+                      background: selectedTags.includes(tag.name) 
+                        ? 'var(--color-primary)' 
+                        : 'var(--color-bg-card)',
+                      color: selectedTags.includes(tag.name) 
+                        ? 'white' 
+                        : 'var(--color-text-secondary)',
+                      border: selectedTags.includes(tag.name) 
+                        ? '0.5px solid var(--color-primary)' 
+                        : '0.5px solid var(--color-border-primary)',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-base)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-1)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!selectedTags.includes(tag.name)) {
+                        e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                        e.currentTarget.style.color = 'var(--color-text-primary)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!selectedTags.includes(tag.name)) {
+                        e.currentTarget.style.background = 'var(--color-bg-card)';
+                        e.currentTarget.style.color = 'var(--color-text-secondary)';
+                      }
                     }}
                   >
+                    <span style={{ opacity: 0.7 }}>#</span>
                     {tag.name}
                   </button>
                 ))}
+              </div>
               </div>
             </div>
           )}
@@ -366,11 +360,15 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           {/* Results Header */}
           <div style={{ 
             padding: 'var(--space-4) var(--content-padding)',
-            borderBottom: '0.5px solid var(--color-border-primary)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            borderBottom: '0.5px solid var(--color-border-primary)'
           }}>
+            <div style={{
+              maxWidth: 'var(--max-width)',
+              margin: '0 auto',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
             <h2 style={{
               fontSize: 'var(--text-lg)',
               fontWeight: 'var(--font-semibold)',
@@ -384,10 +382,18 @@ export const SearchPage: React.FC<SearchPageProps> = ({
             }}>
               {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
             </span>
+            </div>
           </div>
           
           {/* Articles List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 0,
+            maxWidth: 'var(--max-width)',
+            margin: '0 auto',
+            width: '100%'
+          }}>
             {articlesLoading ? (
               // Show skeleton loading states
               Array.from({ length: 5 }).map((_, index) => (
@@ -501,23 +507,25 @@ export const SearchPage: React.FC<SearchPageProps> = ({
       ) : (
         // Show explore interface - more visually interesting like Twitter
         <div>
-          {/* Featured Brief - Dynamic Card */}
-          <FeaturedBriefCard />
-
+         
           {/* Trending Topics - Visual Grid */}
           <div style={{ 
             borderBottom: '0.5px solid var(--color-border-primary)',
-            paddingBottom: 'var(--space-6)',
+            padding: 'var(--space-6) 0px',
             marginBottom: 'var(--space-6)'
           }}>
             <div style={{ padding: '0 var(--content-padding)' }}>
+              <div style={{
+                maxWidth: 'var(--max-width)',
+                margin: '0 auto'
+              }}>
               <h3 style={{
                 fontSize: 'var(--text-xl)',
                 fontWeight: 'var(--font-semibold)',
                 color: 'var(--color-text-primary)',
                 marginBottom: 'var(--space-4)'
               }}>
-                Trending Topics
+                Explore Topics
               </h3>
               {tagsLoading ? (
                 // Tags skeleton loading
@@ -549,132 +557,40 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     <button
                       key={tag.id}
                       onClick={() => handleTagClick(tag.name)}
-                      className="btn btn-ghost"
                       style={{ 
                         fontSize: 'var(--text-sm)',
-                        borderRadius: 'var(--radius-full)',
-                        padding: 'var(--space-2) var(--space-4)',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: 'var(--space-2) var(--space-3)',
                         height: 'auto',
                         minHeight: '32px',
                         whiteSpace: 'nowrap',
                         background: 'var(--color-bg-card)',
                         border: '0.5px solid var(--color-border-primary)',
-                        transition: 'all var(--transition-base)'
+                        color: 'var(--color-text-secondary)',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition-base)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-1)'
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                        e.currentTarget.style.color = 'var(--color-text-primary)';
                         e.currentTarget.style.transform = 'translateY(-1px)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'var(--color-bg-card)';
+                        e.currentTarget.style.color = 'var(--color-text-secondary)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }}
                     >
+                      <span style={{ opacity: 0.7 }}>#</span>
                       {tag.name}
                     </button>
                   ))}
                 </div>
               ) : null}
-            </div>
-          </div>
-
-          {/* Popular Authors - Card Layout */}
-          <div style={{ 
-            borderBottom: '0.5px solid var(--color-border-primary)',
-            marginBottom: 'var(--space-6)',
-            paddingBottom: 'var(--space-6)'
-          }}>
-            <div style={{ padding: '0 var(--content-padding)' }}>
-              <h3 style={{
-                fontSize: 'var(--text-xl)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--color-text-primary)',
-                marginBottom: 'var(--space-4)'
-              }}>
-                Popular Authors
-              </h3>
-              {articlesLoading ? (
-                // Authors skeleton loading
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 'var(--space-2)'
-                }}>
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 'var(--space-2)',
-                        padding: 'var(--space-2) var(--space-4)',
-                        height: 'auto',
-                        minHeight: '32px',
-                        whiteSpace: 'nowrap',
-                        background: 'var(--color-bg-card)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-full)',
-                        animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-                      }}
-                    >
-                      {/* Avatar skeleton */}
-                      <div style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        background: 'var(--color-bg-tertiary)',
-                        flexShrink: 0
-                      }} />
-                      {/* Name skeleton */}
-                      <div style={{
-                        width: `${Math.random() * 80 + 60}px`,
-                        height: '16px',
-                        borderRadius: 'var(--radius-sm)',
-                        background: 'var(--color-bg-tertiary)'
-                      }} />
-                    </div>
-                  ))}
-                </div>
-              ) : authors.length > 0 ? (
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 'var(--space-2)'
-                }}>
-                  {authors.map((author) => (
-                    <button
-                      key={author.name}
-                      onClick={() => handleAuthorClick(author.name, author.slug)}
-                      className="btn btn-ghost"
-                      style={{ 
-                        fontSize: 'var(--text-sm)',
-                        borderRadius: 'var(--radius-full)',
-                        padding: 'var(--space-2) var(--space-4)',
-                        height: 'auto',
-                        minHeight: '32px',
-                        whiteSpace: 'nowrap',
-                        background: 'var(--color-bg-card)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        transition: 'all var(--transition-base)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 'var(--space-2)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'var(--color-bg-card)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
-                    >
-                      <AuthorAvatar author={author.name} image={author.avatar} size="sm" />
-                      <span>{author.name}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+              </div>
             </div>
           </div>
         </div>

@@ -56,7 +56,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
     show_featured_media: true,
     tickers: '',
     featured: false,
-    featured_color: '',
     company_name: '',
     company_logo_url: '',
     // Lead generation fields
@@ -89,7 +88,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         show_featured_media: (brief as any).show_featured_media !== undefined ? (brief as any).show_featured_media : true,
         tickers: brief.tickers ? JSON.stringify(brief.tickers, null, 2) : '',
         featured: brief.featured || false,
-        featured_color: (brief as any).featured_color || '',
         company_name: brief.company_name || '',
         company_logo_url: brief.company_logo_url || '',
         // Lead generation fields
@@ -157,7 +155,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
       formData.featured_video_thumbnail !== ((brief as any).featured_video_thumbnail || '') ||
       formData.show_cta !== (brief.show_cta || false) ||
       formData.featured !== (brief.featured || false) ||
-      formData.featured_color !== ((brief as any).featured_color || '') ||
       formData.company_name !== (brief.company_name || '') ||
       formData.company_logo_url !== (brief.company_logo_url || '') ||
       formData.additional_copy !== ((brief as any).additional_copy ? JSON.stringify((brief as any).additional_copy, null, 2) : JSON.stringify({ "featuredVideoTitle": "Featured Video" }, null, 2)) ||
@@ -312,7 +309,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
           additional_copy: additionalCopy,
           featured_image_url: featuredImage?.url,
           featured_image_alt: featuredImage?.alt,
-          featured_color: formData.featured_color || null,
           published_at: formData.status === 'published' && formData.published_at ? formData.published_at : null,
         })
         .eq('id', brief.id);
@@ -410,7 +406,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         show_cta: formData.show_cta,
         tickers,
         featured: false, // Don't duplicate as featured
-        featured_color: formData.featured_color || null,
         company_name: formData.company_name,
         company_logo_url: formData.company_logo_url,
         mailchimp_audience_tag: formData.mailchimp_audience_tag,
@@ -1321,89 +1316,6 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
                   />
                 </div>
 
-                {/* Featured Color */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--color-text-primary)',
-                    marginBottom: 'var(--space-2)'
-                  }}>
-                    Featured Color
-                  </label>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-2)'
-                  }}>
-                    <input
-                      type="color"
-                      value={formData.featured_color || '#3B82F6'}
-                      onChange={(e) => handleChange('featured_color', e.target.value)}
-                      style={{
-                        width: '50px',
-                        height: 'var(--input-height)',
-                        padding: '0',
-                        background: 'transparent',
-                        border: '1px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-md)',
-                        cursor: 'pointer'
-                      }}
-                    />
-                    <input
-                      type="text"
-                      value={formData.featured_color}
-                      onChange={(e) => handleChange('featured_color', e.target.value)}
-                      placeholder="#3B82F6"
-                      style={{
-                        flex: 1,
-                        height: 'var(--input-height)',
-                        padding: '0 var(--input-padding-x)',
-                        background: 'var(--color-bg-tertiary)',
-                        border: '0.5px solid var(--color-border-primary)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--color-text-primary)',
-                        fontSize: 'var(--text-base)',
-                        transition: 'all var(--transition-base)',
-                        fontFamily: 'var(--font-mono)'
-                      }}
-                    />
-                    {formData.featured_color && (
-                      <button
-                        type="button"
-                        onClick={() => handleChange('featured_color', '')}
-                        style={{
-                          padding: 'var(--space-1) var(--space-2)',
-                          background: 'var(--color-bg-tertiary)',
-                          border: '1px solid var(--color-border-primary)',
-                          borderRadius: 'var(--radius-md)',
-                          color: 'var(--color-text-tertiary)',
-                          fontSize: 'var(--text-xs)',
-                          cursor: 'pointer',
-                          transition: 'all var(--transition-base)'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'var(--color-bg-secondary)';
-                          e.currentTarget.style.color = 'var(--color-text-secondary)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                          e.currentTarget.style.color = 'var(--color-text-tertiary)';
-                        }}
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
-                  <p style={{
-                    fontSize: 'var(--text-xs)',
-                    color: 'var(--color-text-tertiary)',
-                    marginTop: 'var(--space-1)'
-                  }}>
-                    Optional color for visual theming and categorization
-                  </p>
-                </div>
               </div>
             </div>
 

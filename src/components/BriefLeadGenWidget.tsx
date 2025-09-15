@@ -119,8 +119,8 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
   };
 
   const containerStyle = {
-    padding: showPadding ? (compact ? 'var(--space-8)' : 'var(--space-8)') : 'var(--space-8) 0px',
-    borderBottom: showPadding ? 'none' : '0.5px solid var(--color-border-primary)',
+    padding: showPadding ? (compact ? 'var(--space-8)' : 'var(--space-8)') : 'var(--space-4)',
+    backgroundColor: showPadding ? 'var(--color-bg-card)' : 'transparent',
     borderRadius: 'var(--radius-sm)',
   };
 

@@ -303,6 +303,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             <BriefLeadGenWidget
               brief={brief}
               showTickers={false}
+              showPadding={true}
               onEmailSubmitted={(email, isAuthenticated) => {
               // Track email submission for analytics
               if (onWidgetEmailSubmitted) {

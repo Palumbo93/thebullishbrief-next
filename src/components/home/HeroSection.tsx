@@ -55,11 +55,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               className="hero-badge"
               style={{
                 display: 'inline-block',
-                padding: 'var(--space-1) var(--space-3)',
-                background: isHeroBrief ? 'var(--color-primary)' : 'var(--color-accent)',
-                color: isHeroBrief ? 'white' : 'var(--color-text-primary)',
-                fontSize: 'var(--text-xs)',
-                fontWeight: '600',
+                color: 'var(--color-primary)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-semibold)',
                 borderRadius: 'var(--radius-sm)',
                 letterSpacing: '0.05em',
                 marginBottom: 'var(--space-4)'
@@ -185,7 +183,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           .hero-badge {
             margin-bottom: var(--space-3) !important;
             font-size: 0.75rem !important;
-            padding: var(--space-1) var(--space-2) !important;
           }
           
           .hero-subtitle {

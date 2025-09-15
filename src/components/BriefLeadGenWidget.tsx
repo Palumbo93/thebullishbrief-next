@@ -18,6 +18,7 @@ interface BriefLeadGenWidgetProps {
   onSignupClick?: () => void; // Triggers full auth modal (unauthenticated users only)
   compact?: boolean; // More compact layout for sidebar
   showTickers?: boolean; // Whether to show ticker chips (default: true)
+  showPadding?: boolean; // Whether to show container padding (default: false)
 }
 
 interface PopupCopy {
@@ -43,7 +44,8 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
   onEmailSubmitted,
   onSignupClick,
   compact = true,
-  showTickers = true
+  showTickers = true,
+  showPadding = false
 }) => {
   const { user } = useAuth();
   const { submitEmail, submitAuthenticatedUser, isSubmitting, error } = useEmailSubmission();
@@ -117,7 +119,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
   };
 
   const containerStyle = {
-    padding: compact ? 'var(--space-8)' : 'var(--space-8)',
+    padding: showPadding ? (compact ? 'var(--space-8)' : 'var(--space-8)') : '0',
     // backgroundColor: 'var(--color-bg-secondary)',
     borderRadius: 'var(--radius-sm)',
   };

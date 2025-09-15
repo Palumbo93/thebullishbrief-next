@@ -451,13 +451,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       // Replace Twitter handles (@username) with HTML links
       // Matches @ followed by alphanumeric characters and underscores, 1-15 characters long
       let processed = part.replace(/@([a-zA-Z0-9_]{1,15})\b/g, (match, username) => {
-        return `<a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" style="color: #1d9bf0; text-decoration: none;">${match}</a>`;
+        return `<a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: underline;">${match}</a>`;
       });
       
       // Replace stock tickers ($TICKER) with HTML links
       // Matches $ followed by 1-5 uppercase letters, ensuring it's not part of a larger word
       processed = processed.replace(/\$([A-Z]{1,5})\b/g, (match, ticker) => {
-        return `<a href="https://x.com/search?q=%24${ticker}&src=cashtag_click" target="_blank" rel="noopener noreferrer" style="color: #00ba7c; text-decoration: none;">${match}</a>`;
+        return `<a href="https://x.com/search?q=%24${ticker}&src=cashtag_click" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: underline;">${match}</a>`;
       });
       
       return processed;

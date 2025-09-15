@@ -1,26 +1,112 @@
-"use client";
-
-import React, { Suspense } from 'react';
+import React from 'react';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+import Script from 'next/script';
 import { Layout } from '../../../components/Layout';
 import { CategoryPageClient } from '../../../page-components/CategoryPageClient';
-import { PageSkeleton } from '@/components/PageSkeleton';
+import { fetchCategoryBySlug, fetchAllCategorySlugs, fetchCategoryBySlugForMetadata } from '../../../hooks/useArticles';
+
+// Generate static params for only active categories at build time
+// New or less active categories will be generated on-demand via ISR
+export async function generateStaticParams() {
+  try {
+    const slugs = await fetchAllCategorySlugs();
+    // Pre-generate all categories at build time since there are typically fewer categories
+    return slugs.map((slug) => ({
+      slug: slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for category pages:', error);
+    return [];
+  }
+}
+
+// Enable dynamic params for ISR - allows generating pages on-demand for unknown routes
+export const dynamicParams = true;
+
+// Define revalidation settings for ISR
+export const revalidate = 3600; // Revalidate every hour
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-function CategoryPageContent({ params }: Props) {
-  return (
-    <Layout>
-      <CategoryPageClient params={params} />
-    </Layout>
-  );
+// Generate metadata for SEO
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
+  try {
+    const category = await fetchCategoryBySlugForMetadata(slug);
+    
+    if (!category) {
+      return {
+        title: 'Category Not Found',
+        description: 'The requested category could not be found.',
+      };
+    }
+
+    const siteName = 'The Bullish Brief';
+    const title = `${category.name} | ${siteName}`;
+    const description = category.description || `Read the latest articles in ${category.name} on ${siteName}`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        siteName,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata for category:', error);
+    return {
+      title: 'Category | The Bullish Brief',
+      description: 'Read the latest financial news and analysis.',
+    };
+  }
 }
 
-export default function CategoryPageWrapper({ params }: Props) {
+export default async function CategoryPage({ params }: Props) {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
+  // Verify the category exists on the server side
+  const category = await fetchCategoryBySlug(slug);
+  
+  if (!category) {
+    notFound();
+  }
+
   return (
-    <Suspense fallback={<PageSkeleton />}>
-      <CategoryPageContent params={params} />
-    </Suspense>
+    <>
+      <Layout>
+        <CategoryPageClient params={params} />
+      </Layout>
+      <Script
+        id="category-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: category.name,
+            description: category.description || `Read the latest articles in ${category.name}`,
+            url: `https://thebullishbrief.com/category/${slug}`,
+            mainEntity: {
+              '@type': 'ItemList',
+              name: `${category.name} Articles`,
+            },
+          }),
+        }}
+      />
+    </>
   );
 }

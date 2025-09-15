@@ -547,13 +547,13 @@ export const BriefPage: React.FC<BriefPageProps> = ({
     // Replace Twitter handles (@username) with HTML links
     // Matches @ followed by alphanumeric characters and underscores, 1-15 characters long
     const withHandles = text.replace(/@([a-zA-Z0-9_]{1,15})\b/g, (match, username) => {
-      return `<a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" style="color: #1DA1F2; text-decoration: underline;">${match}</a>`;
+      return `<a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: underline;">${match}</a>`;
     });
     
     // Replace stock tickers ($TICKER) with HTML links
     // Matches $ followed by 1-5 uppercase letters, ensuring it's not part of a larger word
     const withTickers = withHandles.replace(/\$([A-Z]{1,5})\b/g, (match, ticker) => {
-      return `<a href="https://x.com/search?q=%24${ticker}&src=cashtag_click" target="_blank" rel="noopener noreferrer" style="color: #00D4AA; text-decoration: underline;">${match}</a>`;
+      return `<a href="https://x.com/search?q=%24${ticker}&src=cashtag_click" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: underline;">${match}</a>`;
     });
     
     return withTickers;

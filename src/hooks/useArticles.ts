@@ -836,6 +836,24 @@ export const useArticlesUtils = () => {
 }; 
 
 /**
+ * Fetch all category slugs for static generation
+ */
+export const fetchAllCategorySlugs = async (): Promise<string[]> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('slug')
+    .order('sort_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) throw error;
+  return data?.map(category => category.slug) || [];
+};
+
+/**
  * Fetch all author slugs for static generation
  */
 export const fetchAllAuthorSlugs = async (): Promise<string[]> => {
@@ -850,6 +868,37 @@ export const fetchAllAuthorSlugs = async (): Promise<string[]> => {
 
   if (error) throw error;
   return data?.map(author => author.slug) || [];
+};
+
+/**
+ * Fetch a single category by slug (server-side function)
+ */
+export const fetchCategoryBySlug = async (slug: string): Promise<any> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return null; // Category not found
+    }
+    throw error;
+  }
+
+  return data;
+};
+
+/**
+ * Fetch a single category by slug for metadata (server-side function)
+ */
+export const fetchCategoryBySlugForMetadata = async (slug: string): Promise<any> => {
+  return fetchCategoryBySlug(slug);
 };
 
 /**

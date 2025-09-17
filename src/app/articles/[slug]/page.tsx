@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Script from 'next/script';
 import { ArticlePageClient } from '../../../page-components/ArticlePageClient';
-import { fetchArticleBySlug, fetchAllArticleSlugs, fetchArticleBySlugForMetadata } from '../../../hooks/useArticles';
+import { fetchArticleBySlug, fetchArticleBySlugIncludingDrafts, fetchAllArticleSlugs, fetchArticleBySlugForMetadata } from '../../../hooks/useArticles';
 
 /**
  * Extracts a clean meta description from HTML content
@@ -174,11 +174,11 @@ export default async function ArticlePageWrapper({ params }: Props) {
     notFound();
   }
   
-  // Fetch article data on the server for the Layout and schema
+  // Fetch article data on the server for the Layout and schema (including drafts)
   let article;
   let rawArticle;
   try {
-    article = await fetchArticleBySlug(slug);
+    article = await fetchArticleBySlugIncludingDrafts(slug);
     rawArticle = await fetchArticleBySlugForMetadata(slug);
   } catch (error) {
     console.error('Error fetching article:', error);

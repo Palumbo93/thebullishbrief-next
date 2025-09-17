@@ -593,7 +593,7 @@ export const fetchArticleBySlugForMetadata = async (slug: string): Promise<any> 
     throw new Error('Database connection not configured');
   }
 
-  // Fetch single article with related data
+  // Fetch single article with related data (including drafts)
   const { data: articleData, error: articleError } = await supabase
     .from('articles')
     .select(`
@@ -605,7 +605,7 @@ export const fetchArticleBySlugForMetadata = async (slug: string): Promise<any> 
       )
     `)
     .eq('slug', slug)
-    .eq('status', 'published')
+    .in('status', ['published', 'draft'])
     .single();
 
   if (articleError) {

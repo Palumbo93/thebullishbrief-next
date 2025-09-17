@@ -118,7 +118,7 @@ export const fetchBriefBySlugForMetadata = async (slug: string): Promise<any> =>
     .from('briefs')
     .select('*')
     .eq('slug', slug)
-    .eq('status', 'published')
+    .in('status', ['published', 'draft'])
     .single();
 
   if (briefError) {

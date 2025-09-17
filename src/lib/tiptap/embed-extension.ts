@@ -162,7 +162,7 @@ export const Embed = Node.create<EmbedOptions>({
   renderHTML({ HTMLAttributes }) {
     const { content, title, width, height, type } = HTMLAttributes;
     
-    // For published pages, output a clean container that the EmbedRenderer will process
+    // For published pages, output a clean container that processEmbedContent will process
     return [
       'div',
       mergeAttributes(this.options.HTMLAttributes, {
@@ -174,7 +174,7 @@ export const Embed = Node.create<EmbedOptions>({
         'data-embed-height': height || 'auto',
         'class': 'embed-container',
       }),
-      // Empty content - will be filled by EmbedRenderer component
+      // Empty content - will be filled by processEmbedContent function
     ];
   },
 

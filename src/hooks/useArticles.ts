@@ -305,12 +305,64 @@ export const fetchArticleBySlug = async (slug: string): Promise<Article> => {
 };
 
 /**
+ * Fetch a single article by slug including drafts (for admin/preview use)
+ */
+export const fetchArticleBySlugIncludingDrafts = async (slug: string): Promise<Article> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  // Fetch single article with related data, including drafts
+  const { data: articleData, error: articleError } = await supabase
+    .from('articles')
+    .select(`
+      *,
+      category:categories(*),
+      author:authors(*),
+      tags:article_tags(
+        tag:tags(*)
+      )
+    `)
+    .eq('slug', slug)
+    .in('status', ['published', 'draft'])
+    .single();
+
+  if (articleError) {
+    if (articleError.code === 'PGRST116') {
+      throw new Error(`Article with slug "${slug}" not found`);
+    }
+    throw articleError;
+  }
+
+  // Transform the data to include tags properly
+  const transformedArticle: ArticleWithRelations = {
+    ...articleData,
+    tags: articleData.tags?.map((tagRelation: any) => tagRelation.tag).filter(Boolean) || []
+  };
+
+  return convertSupabaseArticle(transformedArticle);
+};
+
+/**
  * Hook for fetching a single article by slug with caching
  */
 export const useArticleBySlug = (slug: string) => {
   return useQuery({
     queryKey: queryKeys.articles.bySlug(slug),
     queryFn: () => fetchArticleBySlug(slug),
+    staleTime: CACHE_TTL.ARTICLES,
+    gcTime: CACHE_TTL.ARTICLES * 2,
+    enabled: !!slug,
+  });
+};
+
+/**
+ * Hook for fetching a single article by slug including drafts with caching
+ */
+export const useArticleBySlugIncludingDrafts = (slug: string) => {
+  return useQuery({
+    queryKey: ['articles', 'bySlugWithDrafts', slug],
+    queryFn: () => fetchArticleBySlugIncludingDrafts(slug),
     staleTime: CACHE_TTL.ARTICLES,
     gcTime: CACHE_TTL.ARTICLES * 2,
     enabled: !!slug,
@@ -358,7 +410,7 @@ export const fetchAllArticleSlugs = async (): Promise<string[]> => {
   const { data: articlesData, error: articlesError } = await supabase
     .from('articles')
     .select('slug')
-    .eq('status', 'published');
+    .in('status', ['published', 'draft']);
 
   if (articlesError) throw articlesError;
 

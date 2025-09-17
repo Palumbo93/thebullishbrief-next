@@ -85,7 +85,7 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
               {buildStatus.isBuilding ? 'Building...' : 'Build All Content'}
             </Button>
             <p className="text-sm text-gray-500 mt-1">
-              Manually trigger a full site rebuild
+              Manually trigger a full site rebuild (includes published content and drafts)
             </p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export const BuildTrigger: React.FC<BuildTriggerProps> = ({ className = '' }) =>
         <h4 className="text-sm font-medium text-gray-900 mb-2">Automatic Build System</h4>
         <ul className="text-sm text-gray-600 space-y-1">
           <li>• Builds are automatically triggered when you create or edit content</li>
-          <li>• All pages are revalidated and new pages are generated</li>
+          <li>• All pages are revalidated and new pages are generated (includes draft content)</li>
           <li>• You'll see a notification popup when builds start and complete</li>
           <li>• Manual builds are useful for debugging or force-refreshing</li>
           <li>• Process typically completes in 10-30 seconds</li>

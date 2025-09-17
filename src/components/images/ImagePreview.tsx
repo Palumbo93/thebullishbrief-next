@@ -107,8 +107,8 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               padding: 'var(--space-2)',
               borderRadius: 'var(--radius-sm)',
               border: 'none',
-              background: 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
+              background: 'white',
+              color: 'black',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -118,7 +118,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
             }}
             title="Edit Image"
           >
-            <Edit3 style={{ width: '14px', height: '14px' }} />
+            <Edit3 style={{ width: '14px', height: '14px', color: 'white' }} />
           </button>
         </div>
 

@@ -82,6 +82,31 @@ const fetchBriefBySlug = async (slug: string): Promise<Brief> => {
 };
 
 /**
+ * Fetch a single brief by slug including drafts (for admin/preview use)
+ */
+const fetchBriefBySlugIncludingDrafts = async (slug: string): Promise<Brief> => {
+  if (!hasSupabaseCredentials) {
+    throw new Error('Database connection not configured');
+  }
+
+  const { data: briefData, error: briefError } = await supabase
+    .from('briefs')
+    .select('*')
+    .eq('slug', slug)
+    .in('status', ['published', 'draft'])
+    .single();
+
+  if (briefError) {
+    if (briefError.code === 'PGRST116') {
+      throw new Error(`Brief with slug "${slug}" not found`);
+    }
+    throw briefError;
+  }
+
+  return convertSupabaseBrief(briefData);
+};
+
+/**
  * Fetch raw brief data by slug for metadata generation
  */
 export const fetchBriefBySlugForMetadata = async (slug: string): Promise<any> => {
@@ -132,6 +157,19 @@ export const useBriefBySlug = (slug: string) => {
 };
 
 /**
+ * Hook for fetching a single brief by slug including drafts
+ */
+export const useBriefBySlugIncludingDrafts = (slug: string) => {
+  return useQuery({
+    queryKey: ['briefs', 'detailWithDrafts', slug],
+    queryFn: () => fetchBriefBySlugIncludingDrafts(slug),
+    staleTime: CACHE_TTL.ARTICLES, // Use same cache as articles
+    gcTime: CACHE_TTL.ARTICLES * 2,
+    enabled: !!slug && slug.trim() !== '',
+  });
+};
+
+/**
  * Hook for fetching all briefs (for admin use only)
  */
 export const useAllBriefs = () => {
@@ -167,7 +205,7 @@ export const fetchAllBriefSlugs = async (): Promise<string[]> => {
   const { data: briefsData, error: briefsError } = await supabase
     .from('briefs')
     .select('slug')
-    .eq('status', 'published');
+    .in('status', ['published', 'draft']);
 
   if (briefsError) throw briefsError;
 

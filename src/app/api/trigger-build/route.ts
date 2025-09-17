@@ -81,12 +81,12 @@ export async function POST(request: NextRequest) {
         revalidateTag('articles');
         revalidatedPaths.push('/articles');
         
-        // Get all article slugs and revalidate individual pages
+        // Get all article slugs and revalidate individual pages (including drafts)
         try {
           const { data: articles } = await supabase
             .from('articles')
             .select('slug')
-            .eq('published', true);
+            .in('status', ['published', 'draft']);
           
           if (articles) {
             for (const article of articles) {
@@ -105,12 +105,12 @@ export async function POST(request: NextRequest) {
         revalidateTag('briefs');
         revalidatedPaths.push('/briefs');
         
-        // Get all brief slugs and revalidate individual pages
+        // Get all brief slugs and revalidate individual pages (including drafts)
         try {
           const { data: briefs } = await supabase
             .from('briefs')
             .select('slug')
-            .eq('published', true);
+            .in('status', ['published', 'draft']);
           
           if (briefs) {
             for (const brief of briefs) {
@@ -163,11 +163,11 @@ export async function POST(request: NextRequest) {
         revalidateTag('authors');
         revalidatedPaths.push('/', '/articles', '/briefs', '/authors', '/explore');
         
-        // Revalidate all individual pages
+        // Revalidate all individual pages (including drafts for articles and briefs)
         try {
           const [articlesRes, briefsRes, authorsRes] = await Promise.all([
-            supabase.from('articles').select('slug').eq('published', true),
-            supabase.from('briefs').select('slug').eq('published', true),
+            supabase.from('articles').select('slug').in('status', ['published', 'draft']),
+            supabase.from('briefs').select('slug').in('status', ['published', 'draft']),
             supabase.from('authors').select('slug')
           ]);
           

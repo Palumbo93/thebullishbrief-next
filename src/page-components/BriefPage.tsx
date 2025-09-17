@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useBriefBySlug } from '../hooks/useBriefs';
+import { useBriefBySlug, useBriefBySlugIncludingDrafts } from '../hooks/useBriefs';
 import { useTrackBriefView } from '../hooks/useBriefViews';
 import { useTrackBriefEngagement, useTrackBriefScrolling, useTrackVideoInteractions } from '../hooks/useClarityAnalytics';
 import { ArrowLeft, User, Calendar, Clock, Share, Play, Pause } from 'lucide-react';
@@ -77,7 +77,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
   const router = useRouter();
   const { user } = useAuth();
   const { theme } = useTheme();
-  const { data: brief, isLoading, error } = useBriefBySlug(briefSlug);
+  const { data: brief, isLoading, error } = useBriefBySlugIncludingDrafts(briefSlug);
   const trackView = useTrackBriefView();
   
   // Country detection state for geolocation-based features

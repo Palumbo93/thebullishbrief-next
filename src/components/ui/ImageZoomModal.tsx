@@ -30,6 +30,15 @@ export const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [imageError, setImageError] = React.useState<string | null>(null);
+
+  // Debug logging
+  React.useEffect(() => {
+    if (isOpen && imageUrl) {
+      console.log('ImageZoomModal opened with URL:', imageUrl);
+      console.log('Image Alt:', imageAlt);
+    }
+  }, [isOpen, imageUrl, imageAlt]);
 
   // Handle keyboard events
   React.useEffect(() => {
@@ -49,6 +58,7 @@ export const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
   React.useEffect(() => {
     if (isOpen) {
       setIsLoaded(false);
+      setImageError(null);
     }
   }, [isOpen, imageUrl]);
 
@@ -264,28 +274,48 @@ export const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
         </div>
       </div>
 
-      {/* Loading indicator */}
-      {!isLoaded && (
+      {/* Loading indicator and error display */}
+      {!isLoaded && !imageError && (
         <div style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           color: 'white',
-          fontSize: 'var(--text-sm)'
+          fontSize: 'var(--text-sm)',
+          textAlign: 'center'
         }}>
-          Loading...
+          Loading image...
+        </div>
+      )}
+
+      {imageError && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: 'white',
+          fontSize: 'var(--text-sm)',
+          textAlign: 'center',
+          padding: 'var(--space-4)',
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: 'var(--radius-md)'
+        }}>
+          <div>Failed to load image</div>
+          <div style={{ fontSize: 'var(--text-xs)', opacity: 0.7, marginTop: 'var(--space-2)' }}>
+            {imageUrl}
+          </div>
         </div>
       )}
 
       {/* Image Container */}
       <div style={{
         position: 'relative',
-        maxWidth: typeof window !== 'undefined' && window.innerWidth <= 768 ? '95vw' : '90vw',
-        maxHeight: typeof window !== 'undefined' && window.innerWidth <= 768 ? '80vh' : '85vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: typeof window !== 'undefined' && window.innerWidth <= 768 ? '95vw' : '90vw',
+        height: typeof window !== 'undefined' && window.innerWidth <= 768 ? '80vh' : '85vh',
+        maxWidth: '100vw',
+        maxHeight: '100vh',
         cursor: 'default'
       }}>
         <Image
@@ -299,8 +329,15 @@ export const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
             opacity: isLoaded ? 1 : 0,
             transition: 'opacity var(--transition-base)'
           }}
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setIsLoaded(true)} // Show even if error occurs
+          onLoad={() => {
+            console.log('Image loaded successfully');
+            setIsLoaded(true);
+          }}
+          onError={(e) => {
+            console.error('Image failed to load:', e);
+            setImageError('Failed to load image');
+            setIsLoaded(true);
+          }}
         />
       </div>
       </div>

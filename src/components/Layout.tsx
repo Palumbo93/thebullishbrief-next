@@ -197,7 +197,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
   const getHeaderVariant = (): 'full' | 'condensed' => {
     // Use condensed header for article and brief pages
-    if (actualCurrentLocation === 'article' || actualCurrentLocation === 'brief') {
+    if (actualCurrentLocation === 'article' || actualCurrentLocation === 'brief' || actualCurrentLocation === 'admin') {
       return 'condensed';
     }
     return 'full';
@@ -359,8 +359,9 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {/* Mobile Header (visible only on mobile) */}
       <MobileHeader {...getMobileHeaderConfig()} user={user} />
+      
 
-      {/* Publication Header (visible only on desktop) */}
+      {/* Publication Header (visible only on desktop) Not visible on admin page */}
       <PublicationHeader
         variant={getHeaderVariant()}
         categories={categoriesData?.map(category => ({

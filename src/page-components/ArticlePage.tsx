@@ -3,7 +3,7 @@
 import React from 'react';
 import { ArrowLeft, Clock, User, Calendar, Tag, Bookmark, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useArticleBySlug, useRelatedArticles, useToggleBookmark, useIsBookmarked } from '../hooks/useArticles';
+import { useArticleBySlug, useArticleBySlugIncludingDrafts, useRelatedArticles, useToggleBookmark, useIsBookmarked } from '../hooks/useArticles';
 import { useTrackArticleView } from '../hooks/useArticleViews';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -39,7 +39,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   const { theme } = useTheme();
   const router = useRouter();
   const { setConfig } = useMobileHeader();
-  const { data: article, isLoading: loading, error } = useArticleBySlug(String(articleId));
+  const { data: article, isLoading: loading, error } = useArticleBySlugIncludingDrafts(String(articleId));
   const { data: relatedArticles } = useRelatedArticles(article || null, 3);
   const { data: isBookmarked } = useIsBookmarked(article?.id);
   const toggleBookmark = useToggleBookmark();
@@ -296,6 +296,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
    * Handle image click to open zoom modal
    */
   const handleImageClick = (imageUrl: string, imageAlt: string = 'Image') => {
+    console.log('ArticlePage: handleImageClick called with URL:', imageUrl);
+    console.log('ArticlePage: handleImageClick called with alt:', imageAlt);
     setZoomedImageUrl(imageUrl);
     setZoomedImageAlt(imageAlt);
     setIsImageZoomOpen(true);
@@ -316,11 +318,15 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
    * 
    * @param el - The HTML element containing images to optimize
    */
-  const optimizeContentImages = (el: HTMLElement) => {
+  const optimizeContentImages = React.useCallback((el: HTMLElement) => {
     const imgElements = el.querySelectorAll('img');
+    console.log('ArticlePage: optimizeContentImages called, found', imgElements.length, 'images');
     imgElements.forEach((img, index) => {
       // Skip if already optimized
-      if (img.hasAttribute('data-optimized')) return;
+      if (img.hasAttribute('data-optimized')) {
+        console.log('ArticlePage: Skipping already optimized image', index, img.src);
+        return;
+      }
       
       // First image should load eagerly for better LCP, others lazily
       img.loading = index === 0 ? 'eager' : 'lazy';
@@ -352,13 +358,15 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       // Add click handler for zoom
       img.addEventListener('click', (e) => {
         e.preventDefault();
+        console.log('ArticlePage: Image clicked, src:', img.src);
         handleImageClick(img.src, img.alt || 'Content image');
       });
       
       // Mark as optimized to prevent re-processing
       img.setAttribute('data-optimized', 'true');
+      console.log('ArticlePage: Optimized image', index, 'with src:', img.src);
     });
-  };
+  }, [handleImageClick]); // Add handleImageClick as dependency
 
   /**
    * Processes embed content to execute scripts properly
@@ -857,14 +865,18 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                 content={processTextWithLinks(processedContent)}
                 brief={article as any} // Articles have similar structure to briefs
                 onContentReady={(el) => {
-                  if (el && !contentProcessed) {
-                    // Optimize images in content for better performance
+                  if (el) {
+                    // Always optimize images to ensure click handlers are attached
+                    // even if content gets re-rendered by React
                     optimizeContentImages(el);
                     
-                    // Process embed content to execute scripts
+                    // Always process embed content to ensure embeds work
                     processEmbedContent(el);
                     
-                    setContentProcessed(true);
+                    // Track that content has been processed at least once
+                    if (!contentProcessed) {
+                      setContentProcessed(true);
+                    }
                   }
                 }}
                 className="html-content brief-html-content"

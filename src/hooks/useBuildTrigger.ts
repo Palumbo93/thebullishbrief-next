@@ -58,7 +58,7 @@ export function useBuildTrigger() {
           'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({ 
-          type: 'all', // Always trigger full build as requested
+          type: 'all', // Always trigger full build as requested (includes drafts)
           reason 
         }),
       });

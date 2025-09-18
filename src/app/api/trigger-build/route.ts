@@ -150,6 +150,28 @@ export async function POST(request: NextRequest) {
         }
         break;
         
+      case 'categories':
+        revalidateTag('categories');
+        revalidatedPaths.push('categories');
+        
+        // Get all category slugs and revalidate individual pages
+        try {
+          const { data: categories } = await supabase
+            .from('categories')
+            .select('slug');
+          
+          if (categories) {
+            for (const category of categories) {
+              const path = `/category/${category.slug}`;
+              revalidatePath(path);
+              revalidatedPaths.push(path);
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to revalidate individual category pages:', err);
+        }
+        break;
+        
       case 'all':
       default:
         // Revalidate all main paths
@@ -161,14 +183,16 @@ export async function POST(request: NextRequest) {
         revalidateTag('articles');
         revalidateTag('briefs');
         revalidateTag('authors');
+        revalidateTag('categories');
         revalidatedPaths.push('/', '/articles', '/briefs', '/authors', '/explore');
         
         // Revalidate all individual pages (including drafts for articles and briefs)
         try {
-          const [articlesRes, briefsRes, authorsRes] = await Promise.all([
+          const [articlesRes, briefsRes, authorsRes, categoriesRes] = await Promise.all([
             supabase.from('articles').select('slug').in('status', ['published', 'draft']),
             supabase.from('briefs').select('slug').in('status', ['published', 'draft']),
-            supabase.from('authors').select('slug')
+            supabase.from('authors').select('slug'),
+            supabase.from('categories').select('slug')
           ]);
           
           // Revalidate all article pages
@@ -199,6 +223,15 @@ export async function POST(request: NextRequest) {
               revalidatedPaths.push(authorPath, rootPath);
             }
           }
+          
+          // Revalidate all category pages
+          if (categoriesRes.data) {
+            for (const category of categoriesRes.data) {
+              const path = `/category/${category.slug}`;
+              revalidatePath(path);
+              revalidatedPaths.push(path);
+            }
+          }
         } catch (err) {
           console.warn('Failed to revalidate some individual pages:', err);
         }
@@ -212,10 +245,11 @@ export async function POST(request: NextRequest) {
           console.log('🔧 Forcing page generation for ALL content...');
           
           // Get ALL content and force generation for any pages that might need updating
-          const [articlesRes, briefsRes, authorsRes] = await Promise.all([
-            supabase.from('articles').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }),
-            supabase.from('briefs').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }),
-            supabase.from('authors').select('slug, created_at').order('created_at', { ascending: false })
+          const [articlesRes, briefsRes, authorsRes, categoriesRes] = await Promise.all([
+            supabase.from('articles').select('slug').eq('status', 'published'),
+            supabase.from('briefs').select('slug').eq('status', 'published'),
+            supabase.from('authors').select('slug'),
+            supabase.from('categories').select('slug')
           ]);
           
           const pagesToGenerate: string[] = [];
@@ -242,6 +276,13 @@ export async function POST(request: NextRequest) {
             }
           }
           
+          // Add all categories
+          if (categoriesRes.data) {
+            for (const category of categoriesRes.data) {
+              pagesToGenerate.push(`${baseUrl}/category/${category.slug}`);
+            }
+          }
+          
           // Force generation by making HEAD requests (doesn't transfer body, just triggers generation)
           const generationPromises = pagesToGenerate.map(async (url) => {
             try {
@@ -262,6 +303,14 @@ export async function POST(request: NextRequest) {
           const failedResults = results.filter(r => r.status === 'fulfilled' && !r.value.success);
           
           console.log(`✅ Generated ${successCount}/${pagesToGenerate.length} pages`);
+          
+          // Log summary of what was generated
+          const articleCount = pagesToGenerate.filter(url => url.includes('/articles/')).length;
+          const briefCount = pagesToGenerate.filter(url => url.includes('/briefs/')).length;
+          const authorCount = pagesToGenerate.filter(url => url.includes('/authors/') || (!url.includes('/articles/') && !url.includes('/briefs/') && !url.includes('/category/') && url.split('/').length === 4)).length;
+          const categoryCount = pagesToGenerate.filter(url => url.includes('/category/')).length;
+          
+          console.log(`📊 Generation summary: ${articleCount} articles, ${briefCount} briefs, ${authorCount} authors, ${categoryCount} categories`);
           
           // Log failed pages for debugging
           if (failedResults.length > 0) {

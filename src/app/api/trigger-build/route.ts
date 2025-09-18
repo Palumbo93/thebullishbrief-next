@@ -209,32 +209,32 @@ export async function POST(request: NextRequest) {
             `https://${process.env.VERCEL_URL}` : 
             process.env.NEXT_PUBLIC_SITE_URL || 'https://bullishbrief.com';
           
-          console.log('🔧 Forcing page generation for new content...');
+          console.log('🔧 Forcing page generation for ALL content...');
           
-          // Get all content and force generation for any pages that might be new
+          // Get ALL content and force generation for any pages that might need updating
           const [articlesRes, briefsRes, authorsRes] = await Promise.all([
-            supabase.from('articles').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }).limit(20),
-            supabase.from('briefs').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }).limit(20),
-            supabase.from('authors').select('slug, created_at').order('created_at', { ascending: false }).limit(10)
+            supabase.from('articles').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }),
+            supabase.from('briefs').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }),
+            supabase.from('authors').select('slug, created_at').order('created_at', { ascending: false })
           ]);
           
           const pagesToGenerate: string[] = [];
           
-          // Add recent articles (most likely to be new)
+          // Add all published articles
           if (articlesRes.data) {
             for (const article of articlesRes.data) {
               pagesToGenerate.push(`${baseUrl}/articles/${article.slug}`);
             }
           }
           
-          // Add recent briefs (most likely to be new)
+          // Add all published briefs
           if (briefsRes.data) {
             for (const brief of briefsRes.data) {
               pagesToGenerate.push(`${baseUrl}/briefs/${brief.slug}`);
             }
           }
           
-          // Add recent authors (most likely to be new)
+          // Add all authors
           if (authorsRes.data) {
             for (const author of authorsRes.data) {
               pagesToGenerate.push(`${baseUrl}/authors/${author.slug}`);
@@ -259,7 +259,35 @@ export async function POST(request: NextRequest) {
           
           const results = await Promise.allSettled(generationPromises);
           const successCount = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+          const failedResults = results.filter(r => r.status === 'fulfilled' && !r.value.success);
+          
           console.log(`✅ Generated ${successCount}/${pagesToGenerate.length} pages`);
+          
+          // Log failed pages for debugging
+          if (failedResults.length > 0) {
+            console.log('❌ Failed pages:');
+            failedResults.forEach((result: any) => {
+              if (result.status === 'fulfilled' && result.value.url) {
+                console.log(`  - ${result.value.url} (${result.value.status})`);
+              }
+            });
+          }
+          
+          // Log specific articles we're looking for
+          const teslaArticle = pagesToGenerate.find(url => url.includes('tesla-a-stock-reborn'));
+          const stockGuideArticle = pagesToGenerate.find(url => url.includes('basic-stock-analysis-guide-for-beginners'));
+          
+          if (teslaArticle) {
+            console.log(`🔍 Tesla article will be generated: ${teslaArticle}`);
+          } else {
+            console.log('❌ Tesla article NOT found in generation list');
+          }
+          
+          if (stockGuideArticle) {
+            console.log(`🔍 Stock guide article will be generated: ${stockGuideArticle}`);
+          } else {
+            console.log('❌ Stock guide article NOT found in generation list');
+          }
           
         } catch (generationErr) {
           console.warn('⚠️ Error during page generation:', generationErr);

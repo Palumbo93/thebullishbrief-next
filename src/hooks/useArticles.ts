@@ -410,7 +410,8 @@ export const fetchAllArticleSlugs = async (): Promise<string[]> => {
   const { data: articlesData, error: articlesError } = await supabase
     .from('articles')
     .select('slug')
-    .in('status', ['published', 'draft']);
+    .in('status', ['published', 'draft'])
+    .order('created_at', { ascending: false });
 
   if (articlesError) throw articlesError;
 

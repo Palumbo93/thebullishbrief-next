@@ -56,14 +56,13 @@ function extractMetaDescription(htmlContent: string, maxLength: number = 155): s
   return truncated.trim() + '...';
 }
 
-// Generate static params for only the most recent/popular articles at build time
-// New articles will be generated on-demand via ISR
+// Generate static params for ALL articles at build time
 export async function generateStaticParams() {
   try {
     const slugs = await fetchAllArticleSlugs();
-    // Only pre-generate the first 10 articles at build time to speed up builds
-    // The rest will be generated on-demand when first requested
-    return slugs.slice(0, 10).map((slug) => ({
+    // Pre-generate ALL articles at build time to prevent 404s
+    console.log(`📄 Generating static params for ${slugs.length} articles`);
+    return slugs.map((slug) => ({
       slug: slug,
     }));
   } catch (error) {

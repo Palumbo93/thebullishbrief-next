@@ -6,14 +6,13 @@ import { Layout } from '../../../components/Layout';
 import { AuthorPageClient } from '../../../page-components/AuthorPageClient';
 import { fetchAuthorBySlug, fetchAllAuthorSlugs, fetchAuthorBySlugForMetadata } from '../../../hooks/useArticles';
 
-// Generate static params for only active authors at build time
-// New or less active authors will be generated on-demand via ISR  
+// Generate static params for ALL authors at build time
 export async function generateStaticParams() {
   try {
     const slugs = await fetchAllAuthorSlugs();
-    // Only pre-generate the first 5 authors at build time (usually main authors)
-    // The rest will be generated on-demand when first requested
-    return slugs.slice(0, 5).map((slug) => ({
+    // Pre-generate ALL authors at build time to prevent 404s
+    console.log(`📄 Generating static params for ${slugs.length} author pages`);
+    return slugs.map((slug) => ({
       slug: slug,
     }));
   } catch (error) {

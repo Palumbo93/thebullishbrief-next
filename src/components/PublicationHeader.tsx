@@ -264,6 +264,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           align-items: center;
           position: absolute;
           left: 0;
+          width: 100px;
         }
 
         .header-center {
@@ -278,6 +279,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           gap: var(--space-4);
           position: absolute;
           right: 0;
+          width: 100px;
         }
 
         /* Condensed Header Layout */

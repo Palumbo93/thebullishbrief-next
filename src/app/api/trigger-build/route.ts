@@ -252,12 +252,26 @@ export async function POST(request: NextRequest) {
             supabase.from('categories').select('slug')
           ]);
           
+          // Debug: Log the specific articles we're looking for
+          console.log('🔍 Articles fetched from database:', articlesRes.data?.length || 0);
+          const hasTestArticles = {
+            tesla: articlesRes.data?.some(a => a.slug === 'tesla-a-stock-reborn'),
+            stockGuide: articlesRes.data?.some(a => a.slug === 'basic-stock-analysis-guide-for-beginners')
+          };
+          console.log('🎯 Target articles in DB results:', hasTestArticles);
+          
           const pagesToGenerate: string[] = [];
           
           // Add all published articles
           if (articlesRes.data) {
             for (const article of articlesRes.data) {
-              pagesToGenerate.push(`${baseUrl}/articles/${article.slug}`);
+              const url = `${baseUrl}/articles/${article.slug}`;
+              pagesToGenerate.push(url);
+              
+              // Debug: Log our specific target articles
+              if (article.slug === 'tesla-a-stock-reborn' || article.slug === 'basic-stock-analysis-guide-for-beginners') {
+                console.log(`🎯 Target article URL added: ${url}`);
+              }
             }
           }
           

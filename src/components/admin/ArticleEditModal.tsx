@@ -177,12 +177,12 @@ export const ArticleEditModal: React.FC<ArticleEditModalProps> = ({ article, onC
       
       setHasUnsavedChanges(false);
       
-      console.log('✅ Article updated successfully:', formData.title, '- Triggering on-demand revalidation...');
+      console.log('✅ Article updated successfully:', formData.title, '- Use Build Trigger tab to publish...');
       
-      // Trigger on-demand revalidation for instant updates
+      // Light revalidation for cache refresh (full build trigger should be done manually)
       const revalidationResult = await revalidateArticle(formData.slug);
       if (revalidationResult.success) {
-        console.log('🔄 Article page cache updated - changes visible immediately!');
+        console.log('🔄 Article cache updated - use Build Trigger tab for full site update');
       } else {
         console.warn('⚠️ Revalidation failed, but article was updated:', revalidationResult.error);
       }

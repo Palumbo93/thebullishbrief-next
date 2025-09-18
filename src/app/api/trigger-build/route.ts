@@ -203,7 +203,69 @@ export async function POST(request: NextRequest) {
           console.warn('Failed to revalidate some individual pages:', err);
         }
 
-        // If we have a deploy hook, trigger it for full rebuild
+        // Force generation of new pages by making HEAD requests to them
+        try {
+          const baseUrl = process.env.VERCEL_URL ? 
+            `https://${process.env.VERCEL_URL}` : 
+            process.env.NEXT_PUBLIC_SITE_URL || 'https://bullishbrief.com';
+          
+          console.log('🔧 Forcing page generation for new content...');
+          
+          // Get all content and force generation for any pages that might be new
+          const [articlesRes, briefsRes, authorsRes] = await Promise.all([
+            supabase.from('articles').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }).limit(20),
+            supabase.from('briefs').select('slug, created_at').eq('status', 'published').order('created_at', { ascending: false }).limit(20),
+            supabase.from('authors').select('slug, created_at').order('created_at', { ascending: false }).limit(10)
+          ]);
+          
+          const pagesToGenerate: string[] = [];
+          
+          // Add recent articles (most likely to be new)
+          if (articlesRes.data) {
+            for (const article of articlesRes.data) {
+              pagesToGenerate.push(`${baseUrl}/articles/${article.slug}`);
+            }
+          }
+          
+          // Add recent briefs (most likely to be new)
+          if (briefsRes.data) {
+            for (const brief of briefsRes.data) {
+              pagesToGenerate.push(`${baseUrl}/briefs/${brief.slug}`);
+            }
+          }
+          
+          // Add recent authors (most likely to be new)
+          if (authorsRes.data) {
+            for (const author of authorsRes.data) {
+              pagesToGenerate.push(`${baseUrl}/authors/${author.slug}`);
+              pagesToGenerate.push(`${baseUrl}/${author.slug}`); // Root level author pages
+            }
+          }
+          
+          // Force generation by making HEAD requests (doesn't transfer body, just triggers generation)
+          const generationPromises = pagesToGenerate.map(async (url) => {
+            try {
+              const response = await fetch(url, { 
+                method: 'HEAD',
+                headers: { 'User-Agent': 'BuildTrigger/1.0' }
+              });
+              console.log(`📄 Generated: ${url} (${response.status})`);
+              return { url, status: response.status, success: response.ok };
+            } catch (error) {
+              console.warn(`⚠️ Failed to generate: ${url}`, error);
+              return { url, status: 0, success: false, error };
+            }
+          });
+          
+          const results = await Promise.allSettled(generationPromises);
+          const successCount = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+          console.log(`✅ Generated ${successCount}/${pagesToGenerate.length} pages`);
+          
+        } catch (generationErr) {
+          console.warn('⚠️ Error during page generation:', generationErr);
+        }
+
+        // If we have a deploy hook, trigger it for full rebuild as backup
         if (process.env.VERCEL_DEPLOY_HOOK_URL) {
           try {
             const deployResponse = await fetch(process.env.VERCEL_DEPLOY_HOOK_URL, {
@@ -215,7 +277,7 @@ export async function POST(request: NextRequest) {
             
             if (deployResponse.ok) {
               triggeredDeploy = true;
-              console.log('✅ Vercel deployment triggered');
+              console.log('✅ Vercel deployment triggered as backup');
             } else {
               console.warn('⚠️ Failed to trigger Vercel deployment:', deployResponse.statusText);
             }

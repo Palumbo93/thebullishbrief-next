@@ -332,10 +332,10 @@ export const BriefEditModal: React.FC<BriefEditModalProps> = ({ onClose, brief }
         
         console.log('✅ Brief updated successfully:', formData.title, '- Triggering on-demand revalidation...');
         
-        // Trigger on-demand revalidation for instant updates
+        // Light revalidation for cache refresh (full build trigger should be done manually)
         const revalidationResult = await revalidateBrief(formData.slug);
         if (revalidationResult.success) {
-          console.log('🔄 Brief page cache updated - changes visible immediately!');
+          console.log('🔄 Brief cache updated - use Build Trigger tab for full site update');
         } else {
           console.warn('⚠️ Revalidation failed, but brief was updated:', revalidationResult.error);
         }

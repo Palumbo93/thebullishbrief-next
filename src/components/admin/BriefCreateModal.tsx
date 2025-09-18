@@ -325,12 +325,12 @@ export const BriefCreateModal: React.FC<BriefCreateModalProps> = ({ onClose }) =
         setHasUnsavedChanges(false);
         commitCreate(); // Commit the session - files are now permanent
         
-        console.log('✅ Brief created successfully:', formData.title, '- Triggering on-demand revalidation...');
+        console.log('✅ Brief created successfully:', formData.title, '- Use Build Trigger tab to publish...');
         
-        // Trigger on-demand revalidation for instant availability
+        // Light revalidation for cache refresh (full build trigger should be done manually)
         const revalidationResult = await revalidateBrief(formData.slug);
         if (revalidationResult.success) {
-          console.log('🔄 Brief page cache updated - available immediately!');
+          console.log('🔄 Brief cache updated - use Build Trigger tab for full site update');
         } else {
           console.warn('⚠️ Revalidation failed, but brief was created:', revalidationResult.error);
         }

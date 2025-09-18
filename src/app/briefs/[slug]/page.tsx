@@ -118,9 +118,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-// Enable static generation with very long revalidation time
-// We use on-demand revalidation for immediate updates, but ISR needs a revalidate value
-export const revalidate = 31536000; // 1 year - effectively no auto-revalidation, only on-demand
+// Disable automatic ISR revalidation - rely on build trigger for all updates
+// This makes content updates predictable and controlled via build trigger
+export const revalidate = false; // No automatic revalidation - build trigger controls all updates
 
 interface Props {
   params: Promise<{ slug: string }>;

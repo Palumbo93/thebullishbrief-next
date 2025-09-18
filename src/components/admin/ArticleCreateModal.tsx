@@ -142,12 +142,12 @@ export const ArticleCreateModal: React.FC<ArticleCreateModalProps> = ({ onClose,
       setHasUnsavedChanges(false);
       commitCreate(); // Mark session as committed - files are already in final location
       
-      console.log('✅ Article created successfully:', formData.title, '- Triggering on-demand revalidation...');
+      console.log('✅ Article created successfully:', formData.title, '- Use Build Trigger tab to publish...');
       
-      // Trigger on-demand revalidation for instant availability
+      // Light revalidation for cache refresh (full build trigger should be done manually)
       const revalidationResult = await revalidateArticle(formData.slug);
       if (revalidationResult.success) {
-        console.log('🔄 Article page cache updated - available immediately!');
+        console.log('🔄 Article cache updated - use Build Trigger tab for full site update');
       } else {
         console.warn('⚠️ Revalidation failed, but article was created:', revalidationResult.error);
       }

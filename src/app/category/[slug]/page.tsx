@@ -25,7 +25,9 @@ export async function generateStaticParams() {
 export const dynamicParams = true;
 
 // Define revalidation settings for ISR
-export const revalidate = 3600; // Revalidate every hour
+// Disable automatic ISR revalidation - rely on build trigger for all updates
+// This makes content updates predictable and controlled via build trigger
+export const revalidate = false; // No automatic revalidation - build trigger controls all updates
 
 interface Props {
   params: Promise<{ slug: string }>;

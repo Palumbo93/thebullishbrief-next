@@ -159,7 +159,6 @@ export const AudioNativeController: React.FC<AudioNativeControllerProps> = ({
           opacity: isMovedToPanel ? 1 : 0,
           transform: isMovedToPanel ? 'translateY(0)' : 'translateY(-10px)',
           pointerEvents: isMovedToPanel ? 'auto' : 'none',
-          marginBottom: isMovedToPanel ? 'var(--space-4)' : '0',
           borderBottom: isMovedToPanel ? '0.5px solid var(--color-border-primary)' : 'none',
           paddingBottom: isMovedToPanel ? 'var(--space-4)' : '0'
         }}

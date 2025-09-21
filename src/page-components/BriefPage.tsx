@@ -830,17 +830,7 @@ export const BriefPage: React.FC<BriefPageProps> = ({
             </button>
           </div>
 
-          {/* Audio Native Player */}
-          <AudioNativeController
-          textColorRgba='rgba(255, 255, 255, 1.0)'
-            backgroundColorRgba='rgba(29, 194, 97, 1.0)'
-            contentType="brief"
-            title={brief?.title}
-            size="small"
-            triggerOffset={400}
-            metaInfoSelector=".meta-info-section"
-            actionPanelSelector=".briefs-sticky-section"
-          />
+       
 
           {/* Subtitle - Clean callout style */}
           {brief?.subtitle && (
@@ -889,6 +879,18 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               />
             </div>
           )}
+
+             {/* Audio Native Player */}
+             <AudioNativeController
+          textColorRgba='rgba(255, 255, 255, 1.0)'
+            backgroundColorRgba='rgba(29, 194, 97, 1.0)'
+            contentType="brief"
+            title={brief?.title}
+            size="small"
+            triggerOffset={400}
+            metaInfoSelector=".meta-info-section"
+            actionPanelSelector=".briefs-sticky-section"
+          />
 
 
 

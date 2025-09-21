@@ -43,6 +43,7 @@ export const MobileHeaderTypeLogo: React.FC<MobileHeaderTypeLogoProps> = ({
       alt="The Bullish Brief"
       onClick={onClick}
       className="mobile-header-type-logo"
+      variant="light"
     />
   );
 };

@@ -57,19 +57,19 @@ export const MobileHeaderButton: React.FC<MobileHeaderButtonProps> = ({
 
     const variantStyles = {
       default: {
-        background: 'var(--color-bg-tertiary)',
-        border: '0.5px solid var(--color-border-primary)',
-        color: 'var(--color-text-primary)',
+        background: 'transparent',
+        border: 'none',
+        color: 'var(--color-bg-primary)',
       },
       primary: {
-        background: active ? 'var(--color-brand-primary)' : 'var(--color-bg-tertiary)',
-        border: active ? '0.5px solid var(--color-brand-primary)' : '0.5px solid var(--color-border-primary)',
-        color: active ? 'white' : 'var(--color-text-primary)',
+        background: active ? 'var(--color-brand-primary)' : 'transparent',
+        border: active ? 'none' : 'none',
+        color: active ? 'white' : 'var(--color-bg-primary)',
       },
       ghost: {
         background: 'transparent',
         border: 'none',
-        color: 'var(--color-text-primary)',
+        color: 'var(--color-bg-primary)',
       }
     };
 
@@ -85,13 +85,13 @@ export const MobileHeaderButton: React.FC<MobileHeaderButtonProps> = ({
     
     const target = e.currentTarget;
     if (variant === 'default') {
-      target.style.background = 'var(--color-bg-card-hover)';
+      target.style.background = 'rgba(255, 255, 255, 0.1)';
     } else if (variant === 'primary') {
       target.style.background = active 
         ? 'var(--color-brand-secondary)' 
-        : 'var(--color-bg-card-hover)';
+        : 'rgba(255, 255, 255, 0.1)';
     } else if (variant === 'ghost') {
-      target.style.background = 'var(--color-bg-tertiary)';
+      target.style.background = 'rgba(255, 255, 255, 0.1)';
     }
   };
 
@@ -100,11 +100,11 @@ export const MobileHeaderButton: React.FC<MobileHeaderButtonProps> = ({
     
     const target = e.currentTarget;
     if (variant === 'default') {
-      target.style.background = 'var(--color-bg-tertiary)';
+      target.style.background = 'transparent';
     } else if (variant === 'primary') {
       target.style.background = active 
         ? 'var(--color-brand-primary)' 
-        : 'var(--color-bg-tertiary)';
+        : 'transparent';
     } else if (variant === 'ghost') {
       target.style.background = 'transparent';
     }

@@ -31,8 +31,8 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
       left: 0,
       right: 0,
       height: '56px',
-      background: 'var(--color-bg-primary)',
-      borderBottom: '0.5px solid var(--color-border-primary)',
+      background: 'var(--color-text-primary)',
+      borderBottom: '0.5px solid var(--color-text-secondary)',
       backdropFilter: 'blur(10px)',
       zIndex: 'var(--z-fixed)',
       display: 'none', // Hidden by default, shown only on mobile

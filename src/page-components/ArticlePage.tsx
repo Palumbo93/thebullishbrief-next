@@ -296,8 +296,6 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
    * Handle image click to open zoom modal
    */
   const handleImageClick = (imageUrl: string, imageAlt: string = 'Image') => {
-    console.log('ArticlePage: handleImageClick called with URL:', imageUrl);
-    console.log('ArticlePage: handleImageClick called with alt:', imageAlt);
     setZoomedImageUrl(imageUrl);
     setZoomedImageAlt(imageAlt);
     setIsImageZoomOpen(true);
@@ -320,11 +318,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
    */
   const optimizeContentImages = React.useCallback((el: HTMLElement) => {
     const imgElements = el.querySelectorAll('img');
-    console.log('ArticlePage: optimizeContentImages called, found', imgElements.length, 'images');
     imgElements.forEach((img, index) => {
       // Skip if already optimized
       if (img.hasAttribute('data-optimized')) {
-        console.log('ArticlePage: Skipping already optimized image', index, img.src);
         return;
       }
       
@@ -358,13 +354,11 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       // Add click handler for zoom
       img.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('ArticlePage: Image clicked, src:', img.src);
         handleImageClick(img.src, img.alt || 'Content image');
       });
       
       // Mark as optimized to prevent re-processing
       img.setAttribute('data-optimized', 'true');
-      console.log('ArticlePage: Optimized image', index, 'with src:', img.src);
     });
   }, [handleImageClick]); // Add handleImageClick as dependency
 

@@ -76,7 +76,12 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
         }
       });
 
+      if (elementsToObserve.length === 0) {
+        console.log('ArticleActionPanel: No elements found to observe');
+        return;
       }
+
+      console.log(`ArticleActionPanel: Setting up observer for ${elementsToObserve.length}/${sections.length} sections`);
       
       // Create a single observer for all sections
       observer = new IntersectionObserver(
@@ -115,6 +120,7 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
             });
             
             const bestSection = intersectingSections[0];
+            console.log('ArticleActionPanel: Best section:', bestSection.id, 'ratio:', bestSection.ratio.toFixed(2));
             
             // Debounce the active section change to prevent flickering
             clearTimeout(timeoutId);

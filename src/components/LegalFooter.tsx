@@ -32,11 +32,14 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
     <>
       <style>{`
         .legal-footer {
-          border-top: 1px solid var(--color-border-primary);
+          background: var(--color-text-primary);
+          border-top: 1px solid var(--color-text-secondary);
           margin-top: var(--space-16);
         }
         
         .footer-main {
+          max-width: 1200px;
+          margin: 0 auto;
           padding: var(--space-12) var(--content-padding) var(--space-8);
         }
         
@@ -46,7 +49,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
           justify-content: space-between;
           margin-bottom: var(--space-8);
           padding-bottom: var(--space-6);
-          border-bottom: 1px solid var(--color-border-primary);
+          border-bottom: 1px solid var(--color-text-secondary);
         }
         
         .footer-brand {
@@ -64,13 +67,13 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         .footer-title {
           font-size: var(--text-lg);
           font-weight: var(--font-semibold);
-          color: var(--color-text-primary);
+          color: var(--color-bg-primary);
           margin: 0;
         }
         
         .footer-tagline {
           font-size: var(--text-sm);
-          color: var(--color-text-tertiary);
+          color: var(--color-bg-secondary);
           margin: 0;
         }
         
@@ -82,7 +85,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         
         .footer-subscribe-text {
           font-size: var(--text-sm);
-          color: var(--color-text-secondary);
+          color: var(--color-bg-secondary);
           margin: 0;
         }
         
@@ -100,8 +103,8 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         }
         
         .footer-subscribe-button:hover {
-          background: var(--color-text-primary);
-          color: var(--color-bg-primary);
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--color-text-primary);
           transform: translateY(-1px);
         }
         
@@ -121,7 +124,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         
         .footer-link {
           font-size: var(--text-sm);
-          color: var(--color-text-tertiary);
+          color: var(--color-bg-secondary);
           text-decoration: none;
           padding: var(--space-2);
           border-radius: var(--radius-sm);
@@ -130,8 +133,8 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         }
         
         .footer-link:hover {
-          color: var(--color-text-primary);
-          background: var(--color-bg-tertiary);
+          color: var(--color-bg-primary);
+          background: rgba(255, 255, 255, 0.1);
         }
         
         .footer-social {
@@ -153,7 +156,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         
         .footer-copyright {
           font-size: var(--text-sm);
-          color: var(--color-text-muted);
+          color: var(--color-bg-secondary);
           margin: 0;
         }
         
@@ -236,7 +239,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
               <BullLogo 
                 width={48}
                 height={48}
-                variant="auto"
+                variant="light"
               />
               <div className="footer-brand-text">
                 <h3 className="footer-title">The Bullish Brief</h3>
@@ -290,7 +293,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
                   url="https://x.com/thebullishbrief"
                   network="x" 
                   style={{ width: 32, height: 32 }} 
-                  fgColor="var(--color-text-muted)" 
+                  fgColor="#f4f4f4" 
                   bgColor="transparent"
                   target="_blank"
                 />
@@ -300,7 +303,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
                   url="https://www.linkedin.com/company/the-bullish-brief/about/"
                   network="linkedin" 
                   style={{ width: 32, height: 32 }} 
-                  fgColor="var(--color-text-muted)" 
+                  fgColor="#f4f4f4" 
                   bgColor="transparent"
                   target="_blank"
                 />

@@ -54,13 +54,6 @@ export const ElevenLabsAudioNative = ({
     };
   }, []);
 
-  // Don't render if no public user ID is available
-  if (!userIdToUse) {
-    console.warn('ElevenLabsAudioNative: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
-    return null;
-  }
-
-
   // Debug logging to help identify issues (only once)
   React.useEffect(() => {
     console.log('ElevenLabsAudioNative: Initializing with public user ID:', userIdToUse);
@@ -71,7 +64,13 @@ export const ElevenLabsAudioNative = ({
       backgroundColor: backgroundColorRgba ?? 'var(--color-primary)',
       autoplay: 'false'
     });
-  }, [userIdToUse]);
+  }, [userIdToUse, size, textColorRgba, backgroundColorRgba]);
+
+  // Don't render if no public user ID is available
+  if (!userIdToUse) {
+    console.warn('ElevenLabsAudioNative: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
+    return null;
+  }
 
   return (
     <div

@@ -73,6 +73,7 @@ export const ElevenLabsAudioNative = ({
         data-small={size === 'small' ? 'True' : 'False'}
         data-textcolor={textColorRgba ?? 'rgba(255, 255, 255, 1.0)'}
         data-backgroundcolor={backgroundColorRgba ?? 'var(--color-primary)'}
+        data-autoplay="false"
       >
         {children ? children : 'Loading Elevenlabs AudioNative Player...'}
       </div>

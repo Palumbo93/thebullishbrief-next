@@ -270,7 +270,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
 
           <div style={{
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             gap: 'var(--space-2)',
             marginBottom: 'var(--space-3)',
             textAlign: 'left'
@@ -409,7 +409,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
 
           <div style={{
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             gap: 'var(--space-2)',
             marginBottom: 'var(--space-3)',
             textAlign: 'left'

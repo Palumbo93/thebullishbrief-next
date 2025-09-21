@@ -30,19 +30,11 @@ export const ElevenLabsAudioNative = ({
     const script = document.createElement('script');
     script.src = 'https://elevenlabs.io/player/audioNativeHelper.js';
     script.async = true;
+    script.setAttribute('data-elevenlabs-script', 'true');
     document.body.appendChild(script);
 
-    return () => {
-      // Only try to remove if the script is still in the DOM and is a child of document.body
-      try {
-        if (script.parentNode === document.body) {
-          document.body.removeChild(script);
-        }
-      } catch (error) {
-        // Script may have already been removed, ignore the error
-        console.debug('ElevenLabs script cleanup: Script already removed');
-      }
-    };
+    // No cleanup function - let the script persist for the entire session
+    // ElevenLabs scripts are designed to be loaded once and shared across components
   }, []);
 
   return (

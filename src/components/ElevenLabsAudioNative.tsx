@@ -21,30 +21,20 @@ export const ElevenLabsAudioNative = ({
   className = '',
   style = {},
 }: ElevenLabsProps) => {
-  const [scriptLoaded, setScriptLoaded] = useState(false);
-  
   // Get public user ID from environment variable or use provided prop
   const userIdToUse = publicUserId || process.env.NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID;
-  
-  // Don't render if no public user ID is available
-  if (!userIdToUse) {
-    console.warn('ElevenLabsAudioNative: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
-    return null;
-  }
 
   useEffect(() => {
     // Check if script is already loaded
     const existingScript = document.querySelector('script[src="https://elevenlabs.io/player/audioNativeHelper.js"]');
     
     if (existingScript) {
-      setScriptLoaded(true);
       return;
     }
 
     const script = document.createElement('script');
     script.src = 'https://elevenlabs.io/player/audioNativeHelper.js';
     script.async = true;
-    script.onload = () => setScriptLoaded(true);
     script.onerror = () => console.error('Failed to load ElevenLabs Audio Native script');
     
     document.body.appendChild(script);
@@ -54,12 +44,18 @@ export const ElevenLabsAudioNative = ({
       if (!document.querySelector('script[src="https://elevenlabs.io/player/audioNativeHelper.js"]:not([data-added-by-component])')) {
         try {
           document.body.removeChild(script);
-        } catch (e) {
+        } catch {
           // Script might have already been removed
         }
       }
     };
   }, []);
+
+  // Don't render if no public user ID is available
+  if (!userIdToUse) {
+    console.warn('ElevenLabsAudioNative: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
+    return null;
+  }
 
   return (
     <div

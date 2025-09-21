@@ -26,13 +26,11 @@ export const AudioNativeController: React.FC<AudioNativeControllerProps> = ({
   backgroundColorRgba,
   size = 'small',
   title,
-  contentType = 'article',
   triggerOffset = 300,
   metaInfoSelector = '.meta-info-section, .article-meta-section',
   actionPanelSelector = '.briefs-sticky-section, .article-sticky-section'
 }) => {
   const [isMovedToPanel, setIsMovedToPanel] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
   const metaPlayerRef = useRef<HTMLDivElement>(null);
   const panelPlayerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);

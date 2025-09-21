@@ -9,6 +9,8 @@ import { useAuthModal } from '../contexts/AuthModalContext';
 import { useAuth } from '../contexts/AuthContext';
 import dynamic from 'next/dynamic';
 import { BullLogoImg } from './ui/BullLogo';
+import LegalPageList from './LegalPageList';
+import AccountPageList from './AccountPageList';
 
 // Lazy load TickerTapeWidget to reduce initial bundle size
 const TickerTapeWidget = dynamic(() => import('./TickerTapeWidget').then(mod => ({ default: mod.TickerTapeWidget })), {

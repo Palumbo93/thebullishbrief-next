@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export type ElevenLabsProps = {
   publicUserId?: string;
@@ -29,13 +29,16 @@ export const ElevenLabsAudioNative = ({
     const existingScript = document.querySelector('script[src="https://elevenlabs.io/player/audioNativeHelper.js"]');
     
     if (existingScript) {
+      console.log('ElevenLabsAudioNative: Script already loaded');
       return;
     }
 
+    console.log('ElevenLabsAudioNative: Loading Audio Native script');
     const script = document.createElement('script');
     script.src = 'https://elevenlabs.io/player/audioNativeHelper.js';
     script.async = true;
-    script.onerror = () => console.error('Failed to load ElevenLabs Audio Native script');
+    script.onload = () => console.log('ElevenLabsAudioNative: Script loaded successfully');
+    script.onerror = () => console.error('ElevenLabsAudioNative: Failed to load Audio Native script');
     
     document.body.appendChild(script);
 
@@ -56,6 +59,16 @@ export const ElevenLabsAudioNative = ({
     console.warn('ElevenLabsAudioNative: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
     return null;
   }
+
+  // Debug logging to help identify issues
+  console.log('ElevenLabsAudioNative: Initializing with public user ID:', userIdToUse);
+  console.log('ElevenLabsAudioNative: Current URL:', typeof window !== 'undefined' ? window.location.href : 'SSR');
+  console.log('ElevenLabsAudioNative: Player configuration:', {
+    size,
+    textColor: textColorRgba ?? 'rgba(255, 255, 255, 1.0)',
+    backgroundColor: backgroundColorRgba ?? 'var(--color-primary)',
+    autoplay: 'false'
+  });
 
   return (
     <div

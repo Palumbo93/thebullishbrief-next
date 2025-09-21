@@ -331,8 +331,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
 
               {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>
-                <h1 className="auth-title">Join The Bullish Brief</h1>
-                <p className="auth-subtitle">Get exclusive market insights delivered to your inbox</p>
+                <h1 className="auth-title">{BRAND_COPY.auth.signUp.title}</h1>
               </div>
 
               <div className="auth-form-container">

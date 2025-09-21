@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { ArrowLeft, Clock, User, Calendar, Bookmark, Share } from 'lucide-react';
+import { ArrowLeft, Clock, User, Calendar, Bookmark, Share, Tag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useArticleBySlug, useArticleBySlugIncludingDrafts, useRelatedArticles, useToggleBookmark, useIsBookmarked } from '../hooks/useArticles';
 import { useTrackArticleView } from '../hooks/useArticleViews';
@@ -280,7 +280,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           }
         } : () => onCreateAccountClick?.(),
         onShareClick: () => setIsShareSheetOpen(true),
-        bookmarkLoading: toggleBookmark.isPending
+        bookmarkLoading: toggleBookmark.isPending,
+        showSubscribe: !user, // Only show subscribe button for non-logged-in users
+        onSubscribeClick: () => onCreateAccountClick?.()
       });
       
       setConfig(mobileHeaderConfig);
@@ -290,7 +292,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     return () => {
       setConfig(null);
     };
-  }, [article?.id, article?.title, isBookmarked, user, toggleBookmark.isPending]);
+  }, [article?.id, article?.title, isBookmarked, user, toggleBookmark.isPending, onCreateAccountClick]);
 
   /**
    * Handle image click to open zoom modal
@@ -509,6 +511,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     } : () => onCreateAccountClick?.(),
     onShareClick: () => setIsShareSheetOpen(true),
     bookmarkLoading: toggleBookmark.isPending,
+    showSubscribe: !user,
+    onSubscribeClick: () => onCreateAccountClick?.()
   } : {};
 
   // Loading state
@@ -920,6 +924,158 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             </div>
           </article>
 
+          {/* Mobile-only Tags and Related Articles Section */}
+          <div className="mobile-only-sections" style={{ 
+            display: 'none',
+            marginTop: 'var(--space-8)',
+            paddingTop: 'var(--space-8)',
+            borderTop: '0.5px solid var(--color-border-primary)'
+          }}>
+            
+            {/* Tags Section - Mobile Only */}
+            {article.tags && article.tags.length > 0 && (
+              <div className="mobile-tags-section" style={{
+                marginBottom: 'var(--space-8)'
+              }}>
+                <div className="mobile-section-header" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  marginBottom: 'var(--space-4)'
+                }}>
+                  <Tag style={{ width: '16px', height: '16px', color: 'var(--color-text-tertiary)' }} />
+                  <h3 style={{
+                    fontSize: 'var(--text-lg)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    margin: '0'
+                  }}>Tags</h3>
+                </div>
+                <div className="mobile-tags-list" style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 'var(--space-2)'
+                }}>
+                  {article.tags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => {
+                        router.push(`/search?tags=${encodeURIComponent(tag)}`);
+                      }}
+                      className="mobile-tag-button"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        background: 'var(--color-bg-card)',
+                        border: '0.5px solid var(--color-border-primary)',
+                        color: 'var(--color-text-secondary)',
+                        padding: 'var(--space-2) var(--space-3)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: 'var(--text-sm)',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition-base)',
+                        whiteSpace: 'nowrap'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                        e.currentTarget.style.color = 'var(--color-text-primary)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'var(--color-bg-card)';
+                        e.currentTarget.style.color = 'var(--color-text-secondary)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <span style={{ opacity: 0.7 }}>#</span>
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Related Articles Section - Mobile Only */}
+            {relatedArticles && relatedArticles.length > 0 && (
+              <div className="mobile-related-articles-section">
+                <h3 style={{
+                  fontSize: 'var(--text-lg)',
+                  fontWeight: 'var(--font-semibold)',
+                  color: 'var(--color-text-primary)',
+                  margin: '0 0 var(--space-4) 0'
+                }}>Related Articles</h3>
+                <div className="mobile-related-articles-list" style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-3)'
+                }}>
+                  {relatedArticles.map((relatedArticle) => (
+                    <button
+                      key={relatedArticle.id}
+                      onClick={() => {
+                        router.push(`/articles/${relatedArticle.slug || relatedArticle.id}`);
+                      }}
+                      className="mobile-related-article-item"
+                      style={{
+                        width: '100%',
+                        background: 'none',
+                        border: '0.5px solid var(--color-border-primary)',
+                        textAlign: 'left',
+                        padding: 'var(--space-4)',
+                        borderRadius: 'var(--radius-md)',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition-base)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'var(--color-bg-tertiary)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'none';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <div className="mobile-related-article-content" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 'var(--space-2)'
+                      }}>
+                        <h4 style={{
+                          fontSize: 'var(--text-base)',
+                          fontWeight: 'var(--font-semibold)',
+                          color: 'var(--color-text-primary)',
+                          lineHeight: '1.4',
+                          margin: '0',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
+                          {relatedArticle.title}
+                        </h4>
+                        <div className="mobile-related-article-meta" style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 'var(--space-3)',
+                          fontSize: 'var(--text-sm)',
+                          color: 'var(--color-text-muted)'
+                        }}>
+                          <span style={{
+                            fontWeight: 'var(--font-medium)',
+                            color: 'var(--color-primary)'
+                          }}>
+                            {relatedArticle.category}
+                          </span>
+                          <span>{relatedArticle.date}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
         </main>
       </div>
@@ -984,6 +1140,10 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             flex-wrap: wrap !important;
             justify-content: space-between !important;
             width: 100%;
+          }
+          
+          .mobile-only-sections {
+            display: block !important;
           }
         }
       `}</style>

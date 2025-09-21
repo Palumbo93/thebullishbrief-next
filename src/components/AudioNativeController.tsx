@@ -114,15 +114,23 @@ export const AudioNativeController: React.FC<AudioNativeControllerProps> = ({
     }
   }, [isMovedToPanel, actionPanelSelector]);
 
+  // Get public user ID from environment variable or use provided prop
+  const userIdToUse = publicUserId || process.env.NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID;
+
+  // Don't render if no public user ID is available
+  if (!userIdToUse) {
+    console.warn('AudioNativeController: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
+    return null;
+  }
+
   const audioPlayerElement = (
     <ElevenLabsAudioNative
-      publicUserId={publicUserId}
+      publicUserId={userIdToUse}
       size={size}
       textColorRgba={textColorRgba}
       backgroundColorRgba={backgroundColorRgba}
-      className="audio-native-player"
     >
-      {title ? `Listen to: ${title}` : 'Loading audio player...'}
+      {title ? `Listen to: ${title}` : 'Loading the Elevenlabs Text to Speech AudioNative Player...'}
     </ElevenLabsAudioNative>
   );
 

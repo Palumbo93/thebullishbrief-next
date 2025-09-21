@@ -873,7 +873,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           />
 
           {/* Content */}
-          <div className="prose prose-invert prose-lg max-w-none brief-content-container">
+          <article className="prose prose-invert prose-lg max-w-none brief-content-container" itemScope itemType="https://schema.org/Article">
+            {/* Schema.org metadata for better content identification */}
+            <meta itemProp="headline" content={article?.title || ''} />
+            <meta itemProp="datePublished" content={article?.published_at || article?.created_at || ''} />
+            {article?.author && <meta itemProp="author" content={article.author} />}
+            
+            <div className="article-content" data-elevenlabs-content="true">
             {article.content ? (
               <ProcessedContent
                 content={processTextWithLinks(processedContent)}
@@ -909,7 +915,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
                 )}
               </div>
             )}
-          </div>
+            </div>
+          </article>
 
 
         </main>

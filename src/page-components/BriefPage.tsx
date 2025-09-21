@@ -891,7 +891,13 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
 
           {/* Content */}
-          <div className="prose prose-invert prose-lg max-w-none brief-content-container">
+          <article className="prose prose-invert prose-lg max-w-none brief-content-container" itemScope itemType="https://schema.org/Article">
+            {/* Schema.org metadata for better content identification */}
+            <meta itemProp="headline" content={brief?.title || ''} />
+            <meta itemProp="datePublished" content={brief?.published_at || brief?.created_at || ''} />
+            {brief?.company_name && <meta itemProp="about" content={brief.company_name} />}
+            
+            <div className="brief-content" data-elevenlabs-content="true">
             {brief?.content ? (
               <ProcessedContent
                 content={processedContent}
@@ -936,7 +942,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
                 )}
               </div>
             )}
-          </div>
+            </div>
+          </article>
 
 
 

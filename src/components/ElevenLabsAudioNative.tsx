@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 export type ElevenLabsProps = {
   publicUserId?: string;
@@ -23,6 +23,8 @@ export const ElevenLabsAudioNative = ({
 }: ElevenLabsProps) => {
   // Get public user ID from environment variable or use provided prop
   const userIdToUse = publicUserId || process.env.NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID;
+  const [hasError, setHasError] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
     // Check if script is already loaded
@@ -37,8 +39,15 @@ export const ElevenLabsAudioNative = ({
     const script = document.createElement('script');
     script.src = 'https://elevenlabs.io/player/audioNativeHelper.js';
     script.async = true;
-    script.onload = () => console.log('ElevenLabsAudioNative: Script loaded successfully');
-    script.onerror = () => console.error('ElevenLabsAudioNative: Failed to load Audio Native script');
+    script.onload = () => {
+      console.log('ElevenLabsAudioNative: Script loaded successfully');
+      setIsLoading(false);
+    };
+    script.onerror = () => {
+      console.error('ElevenLabsAudioNative: Failed to load Audio Native script');
+      setHasError(true);
+      setIsLoading(false);
+    };
     
     document.body.appendChild(script);
 
@@ -57,6 +66,12 @@ export const ElevenLabsAudioNative = ({
   // Don't render if no public user ID is available
   if (!userIdToUse) {
     console.warn('ElevenLabsAudioNative: No public user ID provided. Set NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID environment variable or pass publicUserId prop.');
+    return null;
+  }
+
+  // Don't render if there's an error loading the script
+  if (hasError) {
+    console.warn('ElevenLabsAudioNative: Audio player unavailable due to script loading error');
     return null;
   }
 
@@ -87,6 +102,8 @@ export const ElevenLabsAudioNative = ({
         data-textcolor={textColorRgba ?? 'rgba(255, 255, 255, 1.0)'}
         data-backgroundcolor={backgroundColorRgba ?? 'var(--color-primary)'}
         data-autoplay="false"
+        onLoad={() => console.log('ElevenLabsAudioNative: Widget loaded')}
+        onError={(e) => console.error('ElevenLabsAudioNative: Widget error:', e)}
       >
         {children ? children : 'Loading Elevenlabs AudioNative Player...'}
       </div>

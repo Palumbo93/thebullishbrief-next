@@ -62,25 +62,99 @@ Based on the error message "Unable to convert the url into an audio project", th
 
 ## Implementation Plan
 
-### Step 1: Debug Current State
-- Add console logging to understand the integration flow
-- Check browser network tab for detailed error responses
-- Verify ElevenLabs dashboard configuration
+### Step 1: Debug Current State ✅
+- ✅ Added console logging to understand the integration flow
+- ✅ Added error handling for script loading failures
+- ✅ Added debug information for configuration tracking
 
-### Step 2: Content Structure Review
-- Ensure articles and briefs have proper content containers
-- Add semantic markup if missing
-- Verify title and content accessibility
+### Step 2: Content Structure Review ✅
+- ✅ Added semantic `<article>` tags with Schema.org markup
+- ✅ Added `data-elevenlabs-content="true"` attributes for content identification
+- ✅ Added proper meta tags for headline, datePublished, and author information
 
-### Step 3: Configuration Updates
-- Update data attributes if needed
-- Add error boundaries and fallback states
-- Implement proper loading states
+### Step 3: Configuration Updates ✅
+- ✅ Enhanced error handling and loading states
+- ✅ Added proper React state management for error and loading states
+- ✅ Improved debugging output for troubleshooting
 
 ### Step 4: Testing and Monitoring
 - Test integration on staging/development
 - Monitor for successful audio conversion
 - Document working configuration
+
+## Key Changes Made
+
+### 1. Enhanced Debugging (ElevenLabsAudioNative.tsx)
+```typescript
+// Added comprehensive logging
+console.log('ElevenLabsAudioNative: Initializing with public user ID:', userIdToUse);
+console.log('ElevenLabsAudioNative: Current URL:', window.location.href);
+console.log('ElevenLabsAudioNative: Player configuration:', config);
+
+// Added error handling
+const [hasError, setHasError] = React.useState(false);
+const [isLoading, setIsLoading] = React.useState(true);
+```
+
+### 2. Improved Content Structure (ArticlePage.tsx & BriefPage.tsx)
+```html
+<article itemScope itemType="https://schema.org/Article">
+  <meta itemProp="headline" content={title} />
+  <meta itemProp="datePublished" content={publishedDate} />
+  <meta itemProp="author" content={author} />
+  
+  <div className="article-content" data-elevenlabs-content="true">
+    <!-- Main content here -->
+  </div>
+</article>
+```
+
+### 3. Better Error Handling
+- Graceful fallback when script fails to load
+- Console warnings for debugging
+- State management for loading and error states
+
+## Troubleshooting Steps
+
+### 1. Check ElevenLabs Dashboard Configuration
+**MOST IMPORTANT**: The 400 error is most likely due to domain allowlist issues.
+
+1. Go to [ElevenLabs Audio Native Dashboard](https://elevenlabs.io/audio-native)
+2. Find your project: `0a79d6ba6750d0c5bcf17c902ebfcce75307fe03d5172be413cabcea71cf78e2`
+3. Navigate to "Settings" or "Configuration"
+4. Check "Allowed Sites" or "URL Allowlist"
+5. Add your domains:
+   - Development: `http://localhost:3000` (or your dev port)
+   - Staging: `https://your-staging-domain.com`
+   - Production: `https://your-production-domain.com`
+   - Or use wildcards: `https://*.your-domain.com`
+
+### 2. Test the Enhanced Debugging
+After deploying the changes, check the browser console for:
+```
+ElevenLabsAudioNative: Initializing with public user ID: 0a79d6ba...
+ElevenLabsAudioNative: Current URL: https://your-domain.com/article-slug
+ElevenLabsAudioNative: Player configuration: { size: "small", ... }
+ElevenLabsAudioNative: Script loaded successfully
+```
+
+### 3. Monitor Network Requests
+1. Open browser DevTools → Network tab
+2. Look for requests to `api.us.elevenlabs.io`
+3. Check if the 400 error still occurs
+4. Look at the response body for detailed error messages
+
+### 4. Content Verification
+The enhanced content structure should help ElevenLabs identify content:
+- Articles now use semantic `<article>` tags
+- Schema.org markup provides metadata
+- `data-elevenlabs-content="true"` explicitly marks content areas
+
+### 5. Fallback Testing
+If errors persist, the component now gracefully handles failures:
+- Script loading errors are caught and logged
+- Component won't render if there are issues
+- No broken UI states for users
 
 ## Success Criteria
 

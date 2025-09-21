@@ -864,6 +864,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
           {/* Audio Native Player */}
           <AudioNativeController
+            textColorRgba='rgba(255, 255, 255, 1.0)'
+            backgroundColorRgba='var(--color-primary-rgba)'
             contentType="article"
             title={article?.title}
             size="small"

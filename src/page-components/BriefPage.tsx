@@ -832,6 +832,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
 
           {/* Audio Native Player */}
           <AudioNativeController
+          textColorRgba='rgba(255, 255, 255, 1.0)'
+            backgroundColorRgba='var(--color-primary-rgba)'
             contentType="brief"
             title={brief?.title}
             size="small"

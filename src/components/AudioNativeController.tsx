@@ -35,84 +35,19 @@ export const AudioNativeController: React.FC<AudioNativeControllerProps> = ({
   const panelPlayerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  // Disabled scroll-based movement to prevent crashes
+  /*
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const shouldMoveToPanel = scrollY > triggerOffset;
-      
-      if (shouldMoveToPanel !== isMovedToPanel) {
-        setIsMovedToPanel(shouldMoveToPanel);
-      }
-    };
+    // All scroll-based logic disabled for stability
+  }, []);
+  */
 
-    // Set up intersection observer to track when meta section goes out of view
-    const setupObserver = () => {
-      const metaElement = document.querySelector(metaInfoSelector);
-      
-      if (metaElement && !observerRef.current) {
-        observerRef.current = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              // When meta section is not visible and user has scrolled enough,
-              // move audio player to action panel
-              const shouldMoveToPanel = !entry.isIntersecting && window.scrollY > triggerOffset;
-              setIsMovedToPanel(shouldMoveToPanel);
-            });
-          },
-          {
-            threshold: 0.1,
-            rootMargin: '-50px 0px 0px 0px'
-          }
-        );
-        
-        observerRef.current.observe(metaElement);
-      }
-    };
-
-    // Initial setup
-    setupObserver();
-    
-    // Fallback scroll listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Retry observer setup if elements aren't ready yet
-    const retryTimeout = setTimeout(setupObserver, 1000);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(retryTimeout);
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-    };
-  }, [isMovedToPanel, triggerOffset, metaInfoSelector]);
-
-  // Portal effect to move audio player to action panel
+  // Disabled portal effect to prevent crashes
+  /*
   useEffect(() => {
-    if (isMovedToPanel) {
-      const actionPanelElement = document.querySelector(actionPanelSelector);
-      const panelContainer = panelPlayerRef.current;
-      
-      if (actionPanelElement && panelContainer) {
-        // Insert the panel player container at the top of the action panel sticky section
-        const firstChild = actionPanelElement.firstChild;
-        if (firstChild) {
-          actionPanelElement.insertBefore(panelContainer, firstChild);
-        } else {
-          actionPanelElement.appendChild(panelContainer);
-        }
-      }
-    } else {
-      // Move panel player back to its original container if needed
-      const panelContainer = panelPlayerRef.current;
-      const originalContainer = document.querySelector('.audio-native-controller');
-      
-      if (panelContainer && originalContainer && !originalContainer.contains(panelContainer)) {
-        originalContainer.appendChild(panelContainer);
-      }
-    }
-  }, [isMovedToPanel, actionPanelSelector]);
+    // Portal logic disabled for stability
+  }, []);
+  */
 
   // Get public user ID from environment variable or use provided prop
   const userIdToUse = publicUserId || process.env.NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID;
@@ -136,35 +71,22 @@ export const AudioNativeController: React.FC<AudioNativeControllerProps> = ({
 
   return (
     <div className="audio-native-controller">
-      {/* Audio player in meta section - visible when not moved to panel */}
+      {/* Audio player in meta section - always visible, no movement */}
       <div 
         ref={metaPlayerRef}
-        className={`audio-native-meta ${isMovedToPanel ? 'hidden' : 'visible'}`}
-        style={{
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          opacity: isMovedToPanel ? 0 : 1,
-          transform: isMovedToPanel ? 'translateY(-10px)' : 'translateY(0)',
-          pointerEvents: isMovedToPanel ? 'none' : 'auto'
-        }}
+        className="audio-native-meta visible"
       >
-        {!isMovedToPanel && audioPlayerElement}
+        {audioPlayerElement}
       </div>
 
-      {/* Audio player for action panel - moved via portal effect */}
+      {/* Disabled: Audio player for action panel - commented out to prevent crashes */}
+      {/* 
       <div 
         ref={panelPlayerRef}
-        className={`audio-native-panel ${isMovedToPanel ? 'visible' : 'hidden'}`}
-        style={{
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          opacity: isMovedToPanel ? 1 : 0,
-          transform: isMovedToPanel ? 'translateY(0)' : 'translateY(-10px)',
-          pointerEvents: isMovedToPanel ? 'auto' : 'none',
-          borderBottom: isMovedToPanel ? '0.5px solid var(--color-border-primary)' : 'none',
-          paddingBottom: isMovedToPanel ? 'var(--space-4)' : '0'
-        }}
+        className="audio-native-panel hidden"
       >
-        {isMovedToPanel && audioPlayerElement}
       </div>
+      */}
 
       <style jsx>{`
         .audio-native-controller {

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEmailSubmission } from '../hooks/useEmailSubmission';
@@ -267,26 +268,46 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
             </div>
           )}
 
-          <h3 style={{
-            fontSize: compact ? 'var(--text-sm)' : 'var(--text-base)',
-            fontWeight: 'var(--font-bold)',
-            color: 'var(--color-text-primary)',
-            marginBottom: 'var(--space-2)',
-            lineHeight: 1.3,
-            textAlign: 'center'
-          }}>
-            {popupCopy.headline}
-          </h3>
-          
-          <p style={{
-            fontSize: 'var(--text-sm)',
-            color: 'var(--color-text-secondary)',
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 'var(--space-2)',
             marginBottom: 'var(--space-3)',
-            lineHeight: 1.4,
-            textAlign: 'center'
+            textAlign: 'left'
           }}>
-            {popupCopy.subheadline}
-          </p>
+            <Image
+              src="/images/PDF_file_icon.png"
+              alt="PDF icon"
+              width={36}
+              height={36}
+              style={{
+                flexShrink: 0,
+                marginTop: '2px',
+                width: 'auto',
+                height: '36px'
+              }}
+            />
+            <div style={{ flex: 1 }}>
+              <h3 style={{
+                fontSize: compact ? 'var(--text-sm)' : 'var(--text-base)',
+                fontWeight: 'var(--font-bold)',
+                color: 'var(--color-text-primary)',
+                lineHeight: 1.3,
+                margin: '0 0 var(--space-2) 0'
+              }}>
+                {popupCopy.headline}
+              </h3>
+              
+              <p style={{
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 1.4,
+                margin: 0
+              }}>
+                {popupCopy.subheadline}
+              </p>
+            </div>
+          </div>
 
           <div style={{
             padding: 'var(--space-3)',
@@ -386,26 +407,45 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
             </div>
           )}
 
-          <h3 style={{
-            fontSize: compact ? 'var(--text-sm)' : 'var(--text-base)',
-            fontWeight: 'var(--font-bold)',
-            color: 'var(--color-text-primary)',
-            marginBottom: 'var(--space-2)',
-            lineHeight: 1.3,
-            textAlign: 'center'
-          }}>
-            {popupCopy.headline}
-          </h3>
-          
-          <p style={{
-            fontSize: 'var(--text-sm)',
-            color: 'var(--color-text-secondary)',
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 'var(--space-2)',
             marginBottom: 'var(--space-3)',
-            lineHeight: 1.4,
-            textAlign: 'center'
+            textAlign: 'left'
           }}>
-            {popupCopy.subheadline}
-          </p>
+            <Image
+              src="/images/PDF_file_icon.png"
+              alt="PDF icon"
+              width={36}
+              height={36}
+              style={{
+                flexShrink: 0,
+                marginTop: '2px',
+                width: 'auto',
+                height: '36px'
+              }}
+            />
+            <div style={{ flex: 1 }}>
+              <h3 style={{
+                fontSize: compact ? 'var(--text-sm)' : 'var(--text-base)',
+                fontWeight: 'var(--font-bold)',
+                color: 'var(--color-text-primary)',
+                lineHeight: 1.3,
+              }}>
+                {popupCopy.headline}
+              </h3>
+            </div>
+          </div>
+              
+          <p style={{
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 1.4,
+                marginBottom: 'var(--space-3)'
+              }}>
+                {popupCopy.subheadline}
+              </p>
 
           <div style={{ marginBottom: 'var(--space-3)' }}>
             <FormField

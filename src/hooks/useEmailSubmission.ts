@@ -16,7 +16,7 @@ interface EmailSubmissionData {
   email: string;
   brief_id?: string;
   author_id?: string;
-  source: 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author';
+  source: 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author' | 'newsletter_home' | 'newsletter_category';
   user_id?: string;
 }
 
@@ -113,16 +113,22 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         return { success: false, error: errorMsg };
       }
 
-      // Check if email already exists for this brief/author
+      // Check if email already exists for this brief/author/general newsletter
       let existingEmailsQuery = supabase
         .from('emails')
         .select('id')
         .eq('email', email);
       
-      if (isAuthor) {
+      // If it's a specific brief or author signup, check for duplicates in that context
+      if (isAuthor && briefIdOrAuthorId) {
         existingEmailsQuery = existingEmailsQuery.eq('author_id', briefIdOrAuthorId);
-      } else {
+      } else if (!isAuthor && briefIdOrAuthorId) {
         existingEmailsQuery = existingEmailsQuery.eq('brief_id', briefIdOrAuthorId);
+      } else {
+        // For general newsletter, check if email already exists without brief/author association
+        existingEmailsQuery = existingEmailsQuery
+          .is('brief_id', null)
+          .is('author_id', null);
       }
 
       const { data: existingEmails, error: checkError } = await existingEmailsQuery;
@@ -132,7 +138,10 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
       }
 
       if (existingEmails && existingEmails.length > 0) {
-        const entityType = isAuthor ? 'author' : 'brief';
+        let entityType = 'newsletter';
+        if (isAuthor && briefIdOrAuthorId) entityType = 'author';
+        else if (!isAuthor && briefIdOrAuthorId) entityType = 'brief';
+        
         const errorMsg = `You're already subscribed to updates for this ${entityType}`;
         setError(errorMsg);
         return { success: false, error: errorMsg };
@@ -141,13 +150,14 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
       // Submit the email
       const submissionData: any = {
         email,
-        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author',
+        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author' | 'newsletter_home' | 'newsletter_category',
         user_id: user?.id || undefined
       };
 
-      if (isAuthor) {
+      // Only add briefId/authorId if they are provided (not empty strings)
+      if (isAuthor && briefIdOrAuthorId) {
         submissionData.author_id = briefIdOrAuthorId;
-      } else {
+      } else if (!isAuthor && briefIdOrAuthorId) {
         submissionData.brief_id = briefIdOrAuthorId;
       }
 
@@ -176,16 +186,22 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
         return { success: false, error: errorMsg };
       }
 
-      // Check if user already subscribed to this brief/author
+      // Check if user already subscribed to this brief/author/general newsletter
       let existingEmailsQuery = supabase
         .from('emails')
         .select('id')
         .eq('email', user.email);
       
-      if (isAuthor) {
+      // If it's a specific brief or author signup, check for duplicates in that context
+      if (isAuthor && briefIdOrAuthorId) {
         existingEmailsQuery = existingEmailsQuery.eq('author_id', briefIdOrAuthorId);
-      } else {
+      } else if (!isAuthor && briefIdOrAuthorId) {
         existingEmailsQuery = existingEmailsQuery.eq('brief_id', briefIdOrAuthorId);
+      } else {
+        // For general newsletter, check if email already exists without brief/author association
+        existingEmailsQuery = existingEmailsQuery
+          .is('brief_id', null)
+          .is('author_id', null);
       }
 
       const { data: existingEmails, error: checkError } = await existingEmailsQuery;
@@ -204,13 +220,14 @@ export const useEmailSubmission = (): UseEmailSubmissionReturn => {
       // Submit with user's authenticated email
       const submissionData: any = {
         email: user.email,
-        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author',
+        source: source as 'popup' | 'widget' | 'mobile_popup' | 'desktop_popup' | 'mobile_widget' | 'desktop_widget' | 'newsletter' | 'manual' | 'mobile_author' | 'desktop_author' | 'newsletter_home' | 'newsletter_category',
         user_id: user.id
       };
 
-      if (isAuthor) {
+      // Only add briefId/authorId if they are provided (not empty strings)
+      if (isAuthor && briefIdOrAuthorId) {
         submissionData.author_id = briefIdOrAuthorId;
-      } else {
+      } else if (!isAuthor && briefIdOrAuthorId) {
         submissionData.brief_id = briefIdOrAuthorId;
       }
 

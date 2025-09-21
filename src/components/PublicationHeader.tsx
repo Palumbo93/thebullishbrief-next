@@ -8,8 +8,7 @@ import { CategoryList } from './CategoryList';
 import { useAuthModal } from '../contexts/AuthModalContext';
 import { useAuth } from '../contexts/AuthContext';
 import dynamic from 'next/dynamic';
-import LegalPageList from './LegalPageList';
-import AccountPageList from './AccountPageList';
+import { BullLogoImg } from './ui/BullLogo';
 
 // Lazy load TickerTapeWidget to reduce initial bundle size
 const TickerTapeWidget = dynamic(() => import('./TickerTapeWidget').then(mod => ({ default: mod.TickerTapeWidget })), {
@@ -17,7 +16,7 @@ const TickerTapeWidget = dynamic(() => import('./TickerTapeWidget').then(mod => 
     <div style={{
       width: '100%',
       height: '40px',
-      backgroundColor: 'var(--color-bg-secondary)',
+      backgroundColor: 'var(--color-text-primary)',
       borderRadius: 'var(--radius-md)',
       display: 'flex',
       alignItems: 'center',
@@ -182,8 +181,8 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           left: 0;
           right: 0;
           z-index: 50;
-          background: var(--color-bg-primary);
-          border-bottom: 1px solid var(--color-border-primary);
+          background: var(--color-text-primary);
+          border-bottom: 0.5px solid var(--color-text-secondary);
           transition: top 0.3s ease;
         }
 
@@ -197,7 +196,8 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
 
         /* Ticker Tape Styles */
         .ticker-tape-container {
-          border-bottom: 0.5px solid var(--color-border-primary);
+          border-bottom: 0.5px solid var(--color-text-secondary);
+          // background: var(--color-primary);
           transition: all 0.3s ease;
           opacity: 1;
           max-height: 100px;
@@ -222,7 +222,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
 
         /* Header Main Styles */
         .header-main {
-          background: var(--color-bg-primary);
+          background: var(--color-text-primary);
           padding: var(--space-4) var(--space-6);
           transition: all 0.3s ease;
         }
@@ -271,6 +271,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
+          gap: var(--space-2);
         }
 
         .header-right {
@@ -311,14 +312,14 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           background: transparent;
           border: none;
           border-radius: var(--radius-md);
-          color: var(--color-text-secondary);
+          color: var(--color-bg-primary);
           cursor: pointer;
           transition: all var(--transition-base);
         }
 
         .search-button:hover {
-          background: var(--color-bg-secondary);
-          color: var(--color-text-primary);
+          background: rgba(255, 255, 255, 0.1);
+          color: var(--color-bg-primary);
         }
 
         /* Menu Button (for condensed header) */
@@ -331,14 +332,14 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           background: transparent;
           border: none;
           border-radius: var(--radius-md);
-          color: var(--color-text-secondary);
+          color: var(--color-bg-primary);
           cursor: pointer;
           transition: all var(--transition-base);
         }
 
         .menu-button:hover {
-          background: var(--color-bg-secondary);
-          color: var(--color-text-primary);
+          background: rgba(255, 255, 255, 0.1);
+          color: var(--color-bg-primary);
         }
 
         /* Subscribe Button */
@@ -356,8 +357,8 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
         }
 
         .subscribe-button:hover {
-          background: var(--color-text-primary);
-          color: var(--color-bg-primary);
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--color-text-primary);
           transform: translateY(-1px);
         }
 
@@ -428,10 +429,16 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
 
           {/* Center Section - Logo */}
           <div className="header-center">
+          {/* <BullLogoImg 
+          width={32}
+          height={32}
+          alt="Logo"
+        /> */}
             <TypeLogo 
               height={32}
-              width={240}
+              width={180}
               onClick={handleLogoClick}
+              variant="light"
             />
           </div>
 

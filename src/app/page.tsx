@@ -12,6 +12,7 @@ import { useAuthModal } from '../contexts/AuthModalContext';
 import { useAuth } from '../contexts/AuthContext';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
 import { HeroSection, FeaturedStoriesGrid, LatestNewsGrid } from '../components/home';
+import { SignUpBanner } from '../components/SignUpBanner';
 
 function HomePageContent() {
   const router = useRouter();
@@ -71,6 +72,9 @@ function HomePageContent() {
 
   return (
     <Layout>
+      {/* Newsletter Signup Banner */}
+      <SignUpBanner variant="home" />
+      
       <div style={{ minHeight: '80vh' }}>
         {/* Hero Section */}
         <HeroSection

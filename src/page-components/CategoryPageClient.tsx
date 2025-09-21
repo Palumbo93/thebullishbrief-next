@@ -6,6 +6,7 @@ import { ArticlesList } from '../components/articles/ArticlesList';
 import { LegalFooter } from '../components/LegalFooter';
 import { useArticlesByCategorySlug, useCategoryBySlug, Article } from '../hooks/useArticles';
 import { ArticleSkeleton } from '@/components/ArticleSkeleton';
+import { SignUpBanner } from '../components/SignUpBanner';
 
 interface CategoryPageClientProps {
   params: Promise<{ slug: string }>;
@@ -136,6 +137,9 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ params }
 
   return (
     <>
+      {/* Newsletter Signup Banner */}
+      <SignUpBanner variant="category" />
+      
       <div style={{ minHeight: '80vh' }}>
         {/* Category Header */}
         <div style={{ 

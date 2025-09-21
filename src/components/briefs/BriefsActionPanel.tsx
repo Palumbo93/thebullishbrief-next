@@ -72,6 +72,13 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   const { user } = useAuth();
   const { showToast } = useToastContext();
   
+  // Set first section as active by default when sections are available
+  useEffect(() => {
+    if (sections.length > 0 && !activeSection) {
+      setActiveSection(sections[0].id);
+    }
+  }, [sections, activeSection]);
+  
   // Analytics tracking
   const { trackActionLinkClick } = useTrackBriefEngagement();
 
@@ -280,9 +287,13 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
               {sections.map((section) => (
                 <li key={section.id} className="briefs-toc-item">
                   <button
-                    className={`briefs-toc-link ${activeSection === section.id ? 'active' : ''}`}
+                    className={`briefs-toc-link ${
+                      activeSection === section.id || 
+                      (!activeSection && section.id === sections[0]?.id) 
+                        ? 'active' 
+                        : ''
+                    }`}
                     onClick={() => handleSectionClick(section.id)}
-                    style={{ paddingLeft: '16px' }}
                   >
                     {section.label}
                   </button>
@@ -642,7 +653,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           margin: 0;
           display: flex;
           flex-direction: column;
-          gap: 0.25rem;
+          
         }
         
         .briefs-toc-item {
@@ -655,25 +666,31 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           text-align: left;
           background: none;
           border: none;
-          padding: 0.75rem 1rem;
-          color: var(--color-text-tertiary);
-          font-size: 0.9rem;
+          padding: 0.75rem 0.75rem;
+          color: var(--color-text-secondary);
+          font-size: 0.875rem;
           font-weight: 500;
           cursor: pointer;
-          border-radius: 8px;
-          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+          border-radius: var(--radius-md);
+          transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
           line-height: 1.4;
+          outline: none;
+          position: relative;
         }
         
         .briefs-toc-link:hover {
           background: var(--color-bg-tertiary);
-          color: var(--color-text-secondary);
-          transform: translateX(4px);
+          color: var(--color-text-primary);
+          transform: translateY(-1px);
+        }
+        
+        .briefs-toc-link:focus {
+          box-shadow: 0 0 0 2px var(--color-primary);
         }
         
         .briefs-toc-link.active {
-          background: var(--color-bg-card-hover);
-          color: var(--color-brand-primary);
+          background: var(--color-primary-dim-background);
+          color: var(--color-primary);
           font-weight: 600;
         }
         

@@ -71,7 +71,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               style={{
                 fontSize: 'clamp(2rem, 5vw, 3rem)',
                 fontFamily: 'var(--font-editorial)',
-                fontWeight: 'var(--font-normal)',
+                fontWeight: 'var(--font-semibold)',
                 lineHeight: 'var(--leading-tight)',
                 marginBottom: 'var(--space-4)',
                 letterSpacing: '-0.02em',

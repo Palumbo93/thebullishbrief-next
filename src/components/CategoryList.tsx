@@ -40,9 +40,9 @@ export const CategoryList: React.FC<CategoryListProps> = ({
     <div className="category-list">
       <style>{`
         .category-list {
-          border-top: 0.5px solid var(--color-border-primary);
+          border-top: 0.5px solid var(--color-text-secondary);
           padding: var(--space-4) var(--space-6);
-          background: var(--color-bg-primary);
+          backgroundColor: 'var(--color-text-primary)',
           transition: all 0.3s ease;
           opacity: 1;
           max-height: 100px;
@@ -74,12 +74,12 @@ export const CategoryList: React.FC<CategoryListProps> = ({
           cursor: pointer;
           transition: all var(--transition-base);
           background: transparent;
-          color: var(--color-text-secondary);
+          color: var(--color-bg-primary);
         }
         
         .category-button:hover {
-          background: var(--color-bg-secondary);
-          color: var(--color-text-primary);
+          background: rgba(255, 255, 255, 0.1);
+          color: var(--color-bg-primary);
         }
         
         .category-button.active {
@@ -88,7 +88,8 @@ export const CategoryList: React.FC<CategoryListProps> = ({
         }
         
         .category-button.active:hover {
-          background: var(--color-primary-hover);
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--color-text-primary);
         }
         
         /* Mobile Responsive */

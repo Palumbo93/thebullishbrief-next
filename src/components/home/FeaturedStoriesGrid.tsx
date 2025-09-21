@@ -61,7 +61,7 @@ const LargeGrid: React.FC<{
     <h3 style={{
       fontSize: 'clamp(1.5rem, 3vw, 2rem)',
       fontFamily: 'var(--font-editorial)',
-      fontWeight: 'var(--font-normal)',
+      fontWeight: 'var(--font-semibold)',
       lineHeight: 'var(--leading-tight)',
       marginBottom: 'var(--space-3)',
       letterSpacing: '-0.02em',
@@ -131,10 +131,10 @@ const ListItem: React.FC<{
           {article.category}
         </div>
         
-        <h4 style={{
+        <h3 style={{
           fontSize: 'var(--text-base)',
           fontFamily: 'var(--font-editorial)',
-          fontWeight: 'var(--font-normal)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--color-text-primary)',
           lineHeight: 'var(--leading-tight)',
           marginBottom: 'var(--space-2)',
@@ -149,7 +149,18 @@ const ListItem: React.FC<{
         }}
         >
           {article.title}
-        </h4>
+        </h3>
+
+         {/* Article Subtitle */}
+    <p style={{
+      fontSize: 'var(--text-sm)',
+      color: 'var(--color-text-secondary)',
+      lineHeight: 'var(--leading-relaxed)',
+      marginBottom: 'var(--space-2)',
+      opacity: 0.9
+    }}>
+      {article.subtitle}
+    </p>
         
         <div style={{
           fontSize: 'var(--text-xs)',
@@ -162,8 +173,8 @@ const ListItem: React.FC<{
       {/* Small thumbnail */}
       {article.image && (
         <div style={{
-          width: '60px',
-          height: '60px',
+          width: '100px',
+          height: '100px',
           borderRadius: 'var(--radius-sm)',
           overflow: 'hidden',
           background: 'var(--color-bg-tertiary)',

@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { ArrowLeft, Clock, User, Calendar, Tag, Bookmark, Share } from 'lucide-react';
+import { ArrowLeft, Clock, User, Calendar, Bookmark, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useArticleBySlug, useArticleBySlugIncludingDrafts, useRelatedArticles, useToggleBookmark, useIsBookmarked } from '../hooks/useArticles';
 import { useTrackArticleView } from '../hooks/useArticleViews';
@@ -10,12 +10,12 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTrackArticleEngagement } from '../hooks/useClarityAnalytics';
 import { useMobileHeader } from '../contexts/MobileHeaderContext';
 import { createMobileHeaderConfig } from '../utils/mobileHeaderConfigs';
-import { ArticleCard } from '../components/articles/ArticleCard';
 import { AuthorAvatar } from '../components/articles/AuthorAvatar';
 import ArticleActionPanel from '../components/articles/ArticleActionPanel';
 import { LegalFooter } from '../components/LegalFooter';
 import { ShareSheet } from '../components/ShareSheet';
 import { ImageZoomModal } from '../components/ui/ImageZoomModal';
+import AudioNativeController from '../components/AudioNativeController';
 
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 import { parseTOCFromContent } from '../utils/tocParser';
@@ -488,6 +488,17 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     <ArticleActionPanel
       articleId={String(article.id)}
       sections={tocSections}
+      tags={article.tags}
+      relatedArticles={relatedArticles}
+      onTagClick={(tag) => {
+        // Navigate to search page with tag selected
+        router.push(`/search?tags=${encodeURIComponent(tag)}`);
+      }}
+      onRelatedArticleClick={(articleId, articleTitle) => {
+        // Find the related article to get its slug
+        const relatedArticle = relatedArticles?.find(a => a.id === articleId);
+        router.push(`/articles/${relatedArticle?.slug || articleId}`);
+      }}
     />
   ) : undefined;
 
@@ -560,8 +571,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
           }}>
           {/* Title */}
           <h1 className="article-brief-title" style={{
-            color: 'var(--color-text-primary)',
-            marginBottom: 'var(--space-4)'
+            marginBottom: 'var(--space-4)',
           }}>
             {article.title}
           </h1>
@@ -858,6 +868,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 
           </div>
 
+          {/* Audio Native Player */}
+          <AudioNativeController
+            contentType="article"
+            title={article?.title}
+            size="small"
+            triggerOffset={400}
+            metaInfoSelector=".article-meta-section"
+            actionPanelSelector=".article-sticky-section"
+          />
+
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none brief-content-container">
             {article.content ? (
@@ -897,103 +917,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
             )}
           </div>
 
-          {/* Tags */}
-          {article.tags && (
-            <div style={{
-              marginTop: 'var(--space-8)',
-              paddingTop: 'var(--space-6)',
-              borderTop: '0.5px solid var(--color-border-primary)'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                marginBottom: 'var(--space-3)'
-              }}>
-                <Tag style={{ width: '16px', height: '16px', color: 'var(--color-text-tertiary)' }} />
-                <span style={{
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--color-text-primary)'
-                }}>
-                  Tags
-                </span>
-              </div>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 'var(--space-2)'
-              }}>
-                {article.tags.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => {
-                      // Navigate to search page with tag selected
-                      router.push(`/search?tags=${encodeURIComponent(tag)}`);
-                    }}
-                    style={{
-                      fontSize: 'var(--text-sm)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: 'var(--space-2) var(--space-3)',
-                      height: 'auto',
-                      minHeight: '32px',
-                      whiteSpace: 'nowrap',
-                      background: 'var(--color-bg-card)',
-                      border: '0.5px solid var(--color-border-primary)',
-                      color: 'var(--color-text-secondary)',
-                      cursor: 'pointer',
-                      transition: 'all var(--transition-base)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 'var(--space-1)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'var(--color-bg-tertiary)';
-                      e.currentTarget.style.color = 'var(--color-text-primary)';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'var(--color-bg-card)';
-                      e.currentTarget.style.color = 'var(--color-text-secondary)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    <span style={{ opacity: 0.7 }}>#</span>
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {/* Related Articles */}
-          {relatedArticles && relatedArticles.length > 0 && (
-            <div style={{
-              marginTop: 'var(--space-16)',
-              paddingTop: 'var(--space-8)',
-              borderTop: '0.5px solid var(--color-border-primary)'
-            }}>
-              <h2 style={{
-                fontSize: 'var(--text-2xl)',
-                fontFamily: 'var(--font-editorial)',
-                fontWeight: 'var(--font-normal)',
-                marginBottom: 'var(--space-6)',
-                color: 'var(--color-text-primary)'
-              }}>Related Articles</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {relatedArticles.map((relatedArticle) => (
-                  <ArticleCard
-                    key={relatedArticle.id}
-                    article={relatedArticle}
-                    onArticleClick={(articleId: number | string, articleTitle: string) => {
-                      // Navigate to the related article
-                      router.push(`/articles/${relatedArticle.slug || relatedArticle.id}`);
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </main>
       </div>
       
@@ -1029,7 +953,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
         
         .article-brief-title {
           font-family: var(--font-editorial);
-          font-weight: var(--font-medium);
+          font-weight: var(--font-semibold);
+          color: var(--color-text-primary);
           font-size: clamp(1.875rem, 4vw, 2.5rem);
           line-height: var(--leading-tight);
           letter-spacing: -0.01em;

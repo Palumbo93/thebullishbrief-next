@@ -110,7 +110,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           <h3 style={{
             fontSize: 'var(--text-lg)',
             fontFamily: 'var(--font-editorial)',
-            fontWeight: 'var(--font-normal)',
+            fontWeight: 'var(--font-semibold)',
             lineHeight: 'var(--leading-tight)',
             marginBottom: 'var(--space-2)',
             letterSpacing: '-0.01em'

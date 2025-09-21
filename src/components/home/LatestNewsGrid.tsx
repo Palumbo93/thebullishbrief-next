@@ -90,7 +90,7 @@ export const LatestNewsGrid: React.FC<LatestNewsGridProps> = ({
               <h3 style={{
                 fontSize: 'var(--text-lg)',
                 fontFamily: 'var(--font-editorial)',
-                fontWeight: 'var(--font-normal)',
+                fontWeight: 'var(--font-semibold)',
                 lineHeight: 'var(--leading-tight)',
                 marginBottom: 'var(--space-3)',
                 letterSpacing: '-0.01em',
@@ -99,6 +99,17 @@ export const LatestNewsGrid: React.FC<LatestNewsGridProps> = ({
               >
                 {article.title}
               </h3>
+
+                   {/* Article Subtitle */}
+    <p style={{
+      fontSize: 'var(--text-sm)',
+      color: 'var(--color-text-secondary)',
+      lineHeight: 'var(--leading-relaxed)',
+      marginBottom: 'var(--space-2)',
+      opacity: 0.9
+    }}>
+      {article.subtitle}
+    </p>
 
               {/* Article Meta */}
               <div style={{

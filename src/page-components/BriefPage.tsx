@@ -61,6 +61,7 @@ import BriefLeadGenPopup from '../components/BriefLeadGenPopup';
 import { VideoModal } from '../components/VideoModal';
 import { FeaturedMedia } from '../components/briefs/FeaturedMedia';
 import BriefsActionPanel from '../components/briefs/BriefsActionPanel';
+import AudioNativeController from '../components/AudioNativeController';
 
 import Image from 'next/image';
 
@@ -722,7 +723,6 @@ export const BriefPage: React.FC<BriefPageProps> = ({
           }}>
           {/* Title */}
           <h1 className="article-brief-title" style={{
-            color: 'var(--color-text-primary)',
             marginBottom: 'var(--space-4)'
           }}>
             {brief?.title}
@@ -829,6 +829,16 @@ export const BriefPage: React.FC<BriefPageProps> = ({
               <span>Share</span>
             </button>
           </div>
+
+          {/* Audio Native Player */}
+          <AudioNativeController
+            contentType="brief"
+            title={brief?.title}
+            size="small"
+            triggerOffset={400}
+            metaInfoSelector=".meta-info-section"
+            actionPanelSelector=".briefs-sticky-section"
+          />
 
           {/* Subtitle - Clean callout style */}
           {brief?.subtitle && (
@@ -1009,7 +1019,8 @@ export const BriefPage: React.FC<BriefPageProps> = ({
         
         .article-brief-title {
           font-family: var(--font-editorial);
-          font-weight: var(--font-medium);
+          font-weight: var(--font-semibold);
+          color: var(--color-text-primary);
           font-size: clamp(1.875rem, 4vw, 2.5rem);
           line-height: var(--leading-tight);
           letter-spacing: -0.01em;

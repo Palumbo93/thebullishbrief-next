@@ -21,6 +21,7 @@ The Bullish Brief provides curated financial content including:
 - **Email**: Postmark SMTP
 - **Storage**: Supabase Storage for media files
 - **Real-time**: Supabase Realtime for chat features
+- **Audio**: ElevenLabs Audio Native for text-to-speech
 
 ## Getting Started
 
@@ -50,6 +51,7 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID=your_elevenlabs_public_user_id
 ```
 
 4. Run database migrations
@@ -161,6 +163,7 @@ Required for production:
 - `NEXT_PUBLIC_APP_URL`
 - `NEXT_PUBLIC_CLARITY_PROJECT_ID`
 - `POSTMARK_API_TOKEN`
+- `NEXT_PUBLIC_ELEVENLABS_PUBLIC_USER_ID` (for audio features)
 
 ## Contributing
 

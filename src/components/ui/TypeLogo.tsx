@@ -10,6 +10,7 @@ interface TypeLogoProps {
   alt?: string;
   className?: string;
   onClick?: () => void;
+  variant?: 'dark' | 'light' | 'auto';
 }
 
 /**
@@ -23,13 +24,16 @@ export const TypeLogo: React.FC<TypeLogoProps> = ({
   width = 160,
   alt = 'The Bullish Brief',
   className = '',
-  onClick
+  onClick,
+  variant = 'auto'
 }) => {
   const { theme } = useTheme();
   
   // Select the appropriate logo based on theme
-  const logoSrc = theme === 'dark' ? '/images/type-logo.png' : '/images/type-logo-black.png';
+  const themeLogoSrc = theme === 'dark' ? '/images/type-logo.png' : '/images/type-logo-black.png';
   
+  const logoSrc = variant === 'auto' ? themeLogoSrc : variant === 'dark' ? '/images/type-logo-black.png' : '/images/type-logo.png';
+
   const containerStyles = {
     display: 'flex',
     alignItems: 'center',

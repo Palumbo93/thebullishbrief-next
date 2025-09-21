@@ -84,7 +84,7 @@ export const TickerTapeWidget: React.FC<TickerTapeWidgetProps> = ({ className = 
             "title": "Ethereum"
           }
         ],
-        "colorTheme": theme === 'dark' ? 'dark' : 'light',
+        "colorTheme": 'dark',
         "locale": "en",
         "largeChartUrl": "",
         "isTransparent": true,

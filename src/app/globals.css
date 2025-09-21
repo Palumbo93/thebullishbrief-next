@@ -1,6 +1,9 @@
 :root {
   /* Color System */
-  --color-primary: #164fa7;
+  --color-primary: #1dc261;
+  --color-primary-dim-background: #EDF6EF ;
+  --color-primary-background: #CAEDD1;
+  
   --color-brand-primary: #3b82f6;
   --color-secondary: #64748b;
   --color-success: #10b981;

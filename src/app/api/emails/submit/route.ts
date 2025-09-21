@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
     const { email, briefId, authorId, source = 'popup', userId } = body;
 
     // Validate required fields
-    if (!email || (!briefId && !authorId)) {
+    if (!email) {
       return NextResponse.json(
-        { success: false, error: 'Email and either briefId or authorId are required' },
+        { success: false, error: 'Email is required' },
         { status: 400 }
       );
     }
@@ -47,16 +47,22 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // Check if email already exists for this brief or author
+    // Check if email already exists for this brief, author, or general newsletter
     let existingEmailsQuery = supabase
       .from('emails')
       .select('id')
       .eq('email', email);
     
+    // If it's a specific brief or author signup, check for duplicates in that context
     if (briefId) {
       existingEmailsQuery = existingEmailsQuery.eq('brief_id', briefId);
     } else if (authorId) {
       existingEmailsQuery = existingEmailsQuery.eq('author_id', authorId);
+    } else {
+      // For general newsletter, check if email already exists without brief/author association
+      existingEmailsQuery = existingEmailsQuery
+        .is('brief_id', null)
+        .is('author_id', null);
     }
 
     const { data: existingEmails, error: checkError } = await existingEmailsQuery;
@@ -70,7 +76,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (existingEmails && existingEmails.length > 0) {
-      const entityType = briefId ? 'brief' : 'author';
+      let entityType = 'newsletter';
+      if (briefId) entityType = 'brief';
+      else if (authorId) entityType = 'author';
+      
       return NextResponse.json(
         { success: false, error: `You're already subscribed to updates for this ${entityType}` },
         { status: 409 }

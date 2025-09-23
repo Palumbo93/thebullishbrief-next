@@ -138,7 +138,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ params }
   return (
     <>
       {/* Newsletter Signup Banner */}
-      <SignUpBanner variant="category" />
+      {/* <SignUpBanner variant="category" /> */}
       
       <div style={{ minHeight: '80vh' }}>
         {/* Category Header */}

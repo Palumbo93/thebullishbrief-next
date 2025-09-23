@@ -210,7 +210,7 @@ export const FeaturedStoriesGrid: React.FC<FeaturedStoriesGridProps> = ({
       padding: 'var(--space-8) var(--content-padding)',
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <h2 style={{
+        {/* <h2 style={{
           fontSize: 'var(--text-2xl)',
           fontFamily: 'var(--font-editorial)',
           fontWeight: 'var(--font-normal)',
@@ -220,7 +220,7 @@ export const FeaturedStoriesGrid: React.FC<FeaturedStoriesGridProps> = ({
           paddingBottom: 'var(--space-3)'
         }}>
           {title}
-        </h2>
+        </h2> */}
         
         {/* Desktop Editorial Grid Layout */}
         <div style={{

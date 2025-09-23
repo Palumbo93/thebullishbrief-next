@@ -23,7 +23,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section style={{
-      padding: 'var(--space-12) var(--content-padding)',
+      padding: 'var(--space-12) var(--content-padding) var(--space-8) var(--content-padding)',
       borderBottom: '0.5px solid var(--color-border-primary)',
       background: 'var(--color-bg-primary)'
     }}>

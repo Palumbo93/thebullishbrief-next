@@ -20,15 +20,15 @@ export const MobileHeaderTypeLogo: React.FC<MobileHeaderTypeLogoProps> = ({
     const sizes = {
       sm: {
         height: 20,
-        width: 100
+        width: 120
       },
       md: {
         height: 24,
-        width: 120
+        width: 140
       },
       lg: {
         height: 28,
-        width: 140
+        width: 160
       }
     };
     return sizes[size];

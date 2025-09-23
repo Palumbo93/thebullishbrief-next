@@ -72,8 +72,8 @@ function HomePageContent() {
 
   return (
     <Layout>
-      {/* Newsletter Signup Banner */}
-      <SignUpBanner variant="home" />
+      {/* Newsletter Signup Banner (Disabled for now) */}
+      {/* <SignUpBanner variant="home" /> */}
       
       <div style={{ minHeight: '80vh' }}>
         {/* Hero Section */}

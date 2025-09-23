@@ -437,8 +437,8 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           alt="Logo"
         /> */}
             <TypeLogo 
-              height={32}
-              width={180}
+              height={52}
+              width={250}
               onClick={handleLogoClick}
               variant="light"
             />

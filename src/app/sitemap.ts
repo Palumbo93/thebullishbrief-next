@@ -14,7 +14,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.readplaza.com';
+  const baseUrl = 'https://www.bullishbrief.com';
   const currentDate = new Date();
 
   console.log('🗺️ Starting sitemap generation at build time');

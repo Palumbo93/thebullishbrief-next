@@ -64,7 +64,7 @@ The current site architecture is designed as a specialized financial content pla
 
 ### Layout System
 - **Current:** Fixed sidebar (80px) + main content + conditional right panel (400px)
-- **Mobile:** Header (56px) + drawer sidebar + full-width content
+- **Mobile:** Header (64px) + drawer sidebar + full-width content
 - **Key Files:** `Layout.tsx`, `Sidebar.tsx`, `AppContent.tsx`
 
 ### Navigation Structure

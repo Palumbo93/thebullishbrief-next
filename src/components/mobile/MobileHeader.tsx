@@ -30,8 +30,11 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
       top: 0,
       left: 0,
       right: 0,
-      height: '56px',
+      height: '64px',
       background: 'var(--color-text-primary)',
+      backgroundImage: 
+        'linear-gradient(90deg, var(--color-text-secondary) 0.5px, transparent 0.5px), linear-gradient(var(--color-text-secondary) 0.5px, transparent 0.5px)',
+      backgroundSize: '32px 32px',
       borderBottom: '0.5px solid var(--color-text-secondary)',
       backdropFilter: 'blur(10px)',
       zIndex: 'var(--z-fixed)',
@@ -92,7 +95,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
           
           /* Ensure content doesn't overlap with fixed header */
           .mobile-content-offset {
-            padding-top: 56px;
+            padding-top: 64px;
           }
         }
       `}</style>

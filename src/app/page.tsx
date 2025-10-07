@@ -50,22 +50,27 @@ function HomePageContent() {
   // Implement the new content distribution logic
   let heroContent;
   let featuredSectionArticles;
-  let latestSectionArticles;
+  let continueReadingArticles;
+  let moreStoriesArticles;
   
   if (featuredBrief) {
     // If Featured Brief > 0: show the latest brief in hero
     heroContent = featuredBrief;
     // Show articles 1-4 in featured stories
     featuredSectionArticles = regularArticles.slice(0, 4);
-    // Show articles 5-rest in latest stories
-    latestSectionArticles = regularArticles.slice(4);
+    // Show articles 5-7 in continue reading (3 items)
+    continueReadingArticles = regularArticles.slice(4, 7);
+    // Show articles 8-rest in more stories (up to 9 items)
+    moreStoriesArticles = regularArticles.slice(7, 16);
   } else {
     // Else: show the latest article in hero
     heroContent = regularArticles.length > 0 ? regularArticles[0] : null;
     // Show articles 2-5 in featured stories
     featuredSectionArticles = regularArticles.slice(1, 5);
-    // Show articles 6-rest in latest stories
-    latestSectionArticles = regularArticles.slice(5);
+    // Show articles 6-8 in continue reading (3 items)
+    continueReadingArticles = regularArticles.slice(5, 8);
+    // Show articles 9-rest in more stories (up to 9 items)
+    moreStoriesArticles = regularArticles.slice(8, 17);
   }
 
   const featuredSectionTitle = featuredBrief ? 'Latest Stories' : 'Featured Stories';
@@ -92,6 +97,16 @@ function HomePageContent() {
           />
         )}
 
+        {/* Continue Reading Grid */}
+        {continueReadingArticles && continueReadingArticles.length > 0 && (
+          <LatestNewsGrid
+            articles={continueReadingArticles}
+            title="Continue Reading"
+            maxItems={3}
+            onArticleClick={handleArticleClick}
+          />
+        )}
+
         {/* CTA Banner */}
         <SignUpBanner variant="home" />
         {/* {!user && (
@@ -103,9 +118,9 @@ function HomePageContent() {
         )} */}
 
         {/* More Stories Grid */}
-        {latestSectionArticles && latestSectionArticles.length > 0 && (
+        {moreStoriesArticles && moreStoriesArticles.length > 0 && (
           <LatestNewsGrid
-            articles={latestSectionArticles}
+            articles={moreStoriesArticles}
             title="More Stories"
             maxItems={9}
             onArticleClick={handleArticleClick}

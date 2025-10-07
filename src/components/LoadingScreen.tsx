@@ -37,6 +37,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
           width={120}
           height={120}
           alt="Logo"
+          variant="light"
         />
         <TrendingUp 
           style={{ 

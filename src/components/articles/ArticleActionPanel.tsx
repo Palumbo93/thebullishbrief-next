@@ -352,11 +352,32 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
                     className="article-related-item"
                   >
                     <div className="article-related-content">
-                      <h4 className="article-related-title">{article.title}</h4>
-                      <div className="article-related-meta">
-                        <span className="article-related-category">{article.category}</span>
-                        <span className="article-related-date">{article.date}</span>
+                      <div className="article-related-text">
+                        <div className="article-related-category-badge">
+                          {article.category}
+                        </div>
+                        
+                        <h4 className="article-related-title">{article.title}</h4>
+                        
+                        <div className="article-related-meta">
+                          <span className="article-related-date">{article.date}</span>
+                        </div>
                       </div>
+                      
+                      {/* Small thumbnail */}
+                      {article.image && (
+                        <div className="article-related-image">
+                          <img
+                            src={article.image}
+                            alt={article.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </button>
                 ))}
@@ -438,7 +459,7 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
           text-align: left;
           background: none;
           border: none;
-          padding: 0.875rem 1rem;
+          padding: 0.5rem 0rem;
           color: var(--color-text-secondary);
           font-size: 0.875rem;
           font-weight: 500;
@@ -451,7 +472,6 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
         }
         
         .article-toc-link:hover {
-          background: var(--color-bg-tertiary);
           color: var(--color-text-primary);
           transform: translateY(-1px);
         }
@@ -461,7 +481,6 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
         }
         
         .article-toc-link.active {
-          background: var(--color-primary-dim-background);
           color: var(--color-primary);
           font-weight: 600;
         }
@@ -526,7 +545,7 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
         .article-related-list {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
+          gap: 1rem;
         }
         
         .article-related-item {
@@ -534,47 +553,67 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
           background: none;
           border: none;
           text-align: left;
-          padding: 1rem;
-          border-radius: var(--radius-md);
           cursor: pointer;
           transition: all var(--transition-base);
-          border: 0.5px solid var(--color-border-primary);
         }
         
         .article-related-item:hover {
-          background: var(--color-bg-tertiary);
           transform: translateY(-1px);
         }
         
         .article-related-content {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: var(--space-3);
+          align-items: flex-start;
+        }
+        
+        .article-related-text {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          min-width: 0;
+        }
+        
+        .article-related-category-badge {
+          font-size: var(--text-xs);
+          color: var(--color-primary);
+          font-weight: var(--font-semibold);
+          margin-bottom: var(--space-2);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
         
         .article-related-title {
-          font-size: 0.9rem;
-          font-weight: 600;
+          font-size: var(--text-base);
+          font-family: var(--font-editorial);
+          font-weight: var(--font-semibold);
           color: var(--color-text-primary);
-          line-height: 1.4;
-          margin: 0;
+          line-height: var(--leading-tight);
+          margin: 0 0 var(--space-2) 0;
+          letter-spacing: -0.01em;
+          transition: opacity var(--transition-base);
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
         
+        .article-related-title:hover {
+          opacity: 0.7;
+        }
+        
         .article-related-meta {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          font-size: 0.8rem;
+          font-size: var(--text-xs);
           color: var(--color-text-muted);
         }
         
-        .article-related-category {
-          font-weight: 500;
-          color: var(--color-primary);
+        .article-related-image {
+          width: 100px;
+          height: 100px;
+          border-radius: var(--radius-sm);
+          overflow: hidden;
+          background: var(--color-bg-tertiary);
+          flex-shrink: 0;
         }
         
         /* Mobile Header Styles */
@@ -585,7 +624,7 @@ const ArticleActionPanel: React.FC<ArticleActionPanelProps> = ({
           background: var(--color-bg-primary);
           border-bottom: 0.5px solid var(--color-border-primary);
           backdrop-filter: blur(10px);
-          padding-top: 56px; /* Account for mobile header height */
+          padding-top: 64px; /* Account for mobile header height */
         }
         
         .article-mobile-header-content {

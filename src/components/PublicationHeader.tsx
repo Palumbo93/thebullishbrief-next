@@ -382,7 +382,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           }
 
           .header-content {
-            height: 56px; /* Standard mobile header height */
+            height: 64px; /* Standard mobile header height */
           }
 
 

@@ -293,7 +293,7 @@ export const Layout: React.FC<LayoutProps> = ({
           }
           
           .app-container {
-            padding-top: 56px; /* Account for mobile header */
+            padding-top: 64px; /* Account for mobile header */
           }
         }
 
@@ -301,7 +301,7 @@ export const Layout: React.FC<LayoutProps> = ({
         .mobile-comments-overlay {
           display: none;
           position: fixed;
-          top: 56px;
+          top: 64px;
           left: 0;
           right: 0;
           bottom: 0;

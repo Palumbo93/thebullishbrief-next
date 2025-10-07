@@ -323,10 +323,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
                   height={48}
                   variant="auto"
                 />
-                <TypeLogo 
-                  height={32}
-                  width={200}
-                />
               </div>
 
               {/* Header */}

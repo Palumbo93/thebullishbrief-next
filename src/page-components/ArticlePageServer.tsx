@@ -145,17 +145,17 @@ export async function ArticlePageServer({
 
               {/* Category - Mobile Position (below title) */}
               <div className="mobile-category-info" style={{
-                fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-muted)',
                 marginBottom: 'var(--space-4)',
                 display: 'none'
               }}>
-                In{' '}
                 <span
                   style={{
-                    color: 'var(--color-primary)',
+                    color: 'white',
+                    background: 'var(--color-primary)',
+                    padding: 'var(--space-2) var(--space-4)',
                     fontWeight: 'var(--font-semibold)',
-                    textDecoration: 'underline'
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: 'var(--text-sm)'
                   }}
                 >
                   {article.category}
@@ -225,7 +225,89 @@ export async function ArticlePageServer({
                   borderBottom: '0.5px solid var(--color-border-primary)'
                 }}
               >
-                {/* Author and Category */}
+                {/* Mobile Author and Category */}
+                <div 
+                  className="mobile-category-info" 
+                  style={{
+                    display: 'none',
+                    flexDirection: 'column',
+                    gap: 'var(--space-3)',
+                    width: '100%'
+                  }}
+                >
+                  {/* Author section */}
+                  {article.author && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-3)'
+                    }}>
+                      <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
+                      <div>
+                        <div style={{
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-medium)',
+                          color: 'var(--color-text-primary)',
+                          marginBottom: 'var(--space-1)'
+                        }}>
+                          {article.author}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Date, reading time, and actions row */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 'var(--space-3)',
+                    flexWrap: 'wrap',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-text-muted)',
+                    width: '100%'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                      flexWrap: 'wrap'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                        <Calendar style={{ width: '14px', height: '14px' }} />
+                        <span>{article.date}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                        <Clock style={{ width: '14px', height: '14px' }} />
+                        <span>{formatReadingTime(readingTime)}</span>
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                      {/* Bookmark placeholder */}
+                      <div id="bookmark-placeholder" style={{
+                        width: '16px',
+                        height: '16px',
+                        opacity: 0.5
+                      }}>
+                        {/* Client component will replace this */}
+                      </div>
+                      
+                      {/* Share Button placeholder */}
+                      <div id="share-button-placeholder" style={{
+                        padding: 'var(--space-1) var(--space-2)',
+                        border: '1px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--text-sm)',
+                        opacity: 0.5
+                      }}>
+                        Share
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop Author and Category */}
                 <div 
                   className="desktop-category-info" 
                   style={{
@@ -233,13 +315,14 @@ export async function ArticlePageServer({
                     alignItems: 'center',
                     gap: 'var(--space-3)',
                     minWidth: '0',
-                    flex: '1 1 auto'
+                    flex: '1 1 auto',
+                    width: '100%'
                   }}
                 >
                   {article.author && (
                     <AuthorAvatar author={article.author} image={article.authorAvatar} size="md" />
                   )}
-                  <div style={{ textAlign: 'left', minWidth: '0' }}>
+                  <div style={{ textAlign: 'left', minWidth: '0', width: '100%' }}>
                     {article.author && (
                       <div
                         style={{
@@ -256,84 +339,92 @@ export async function ArticlePageServer({
                       </div>
                     )}
                     <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 'var(--space-3)',
                       fontSize: 'var(--text-sm)',
-                      color: 'var(--color-text-muted)'
+                      color: 'var(--color-text-muted)',
+                      width: '100%'
                     }}>
-                      {article.author ? 'in' : 'In'}{' '}
-                      <span
-                        style={{
-                          color: 'var(--color-primary)',
-                          fontWeight: 'var(--font-semibold)',
-                          textDecoration: 'underline'
-                        }}
-                      >
-                        {article.category}
-                      </span>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-3)',
+                        flexWrap: 'wrap'
+                      }}>
+                        <span
+                          style={{
+                            color: 'white',
+                            background: 'var(--color-primary)',
+                            padding: 'var(--space-2) var(--space-4)',
+                            fontWeight: 'var(--font-semibold)',
+                            borderRadius: 'var(--radius-sm)',
+                            fontSize: 'var(--text-sm)'
+                          }}
+                        >
+                          {article.category}
+                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                          <Calendar style={{ width: '14px', height: '14px' }} />
+                          <span>{article.date}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                          <Clock style={{ width: '14px', height: '14px' }} />
+                          <span>{formatReadingTime(readingTime)}</span>
+                        </div>
+                     
+                      </div>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                         {/* Bookmark placeholder - desktop */}
+                         <div id="bookmark-placeholder-desktop" style={{
+                          width: '16px',
+                          height: '16px',
+                          opacity: 0.5
+                        }}>
+                          {/* Client component will replace this */}
+                        </div>
+                      {/* Share Button placeholder - desktop */}
+                      <div id="share-button-placeholder-desktop" style={{
+                        padding: 'var(--space-1) var(--space-2)',
+                        border: '1px solid var(--color-border-primary)',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--text-sm)',
+                        opacity: 0.5
+                      }}>
+                        Share
+                      </div>
+                    </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Meta Information and Actions */}
-                <div 
-                  className="article-meta-section"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 'var(--space-3)',
-                    flexWrap: 'wrap'
-                  }}>
-                  {/* Meta Info */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-3)',
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--color-text-muted)',
-                    flexWrap: 'wrap'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                      <Calendar style={{ width: '14px', height: '14px' }} />
-                      <span>{article.date}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                      <Clock style={{ width: '14px', height: '14px' }} />
-                      <span>{formatReadingTime(readingTime)}</span>
-                    </div>
-                    {/* Bookmark placeholder - will be enhanced by client component */}
-                    <div id="bookmark-placeholder" style={{
-                      width: '16px',
-                      height: '16px',
-                      opacity: 0.5
-                    }}>
-                      {/* Client component will replace this */}
-                    </div>
-                  </div>
-
-                  {/* Share Button placeholder - will be enhanced by client component */}
-                  <div id="share-button-placeholder" style={{
-                    padding: 'var(--space-1) var(--space-2)',
-                    border: '1px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: 'var(--text-sm)',
-                    opacity: 0.5
-                  }}>
-                    Share
-                  </div>
-                </div>
               </div>
 
-              {/* Audio Native Player */}
-              <AudioNativeController
-                textColorRgba='rgba(255, 255, 255, 1.0)'
-                backgroundColorRgba='rgba(7, 102, 255, 1.0)'
-                contentType="article"
-                title={article.title}
-                size="small"
-                triggerOffset={400}
-                metaInfoSelector=".article-meta-section"
-                actionPanelSelector=".article-sticky-section"
-              />
+              {/* Audio Native Player - Disabled on mobile for performance */}
+              <div className="audio-player-wrapper">
+                <AudioNativeController
+                  textColorRgba='rgba(255, 255, 255, 1.0)'
+                  backgroundColorRgba='rgba(7, 102, 255, 1.0)'
+                  contentType="article"
+                  title={article.title}
+                  size="small"
+                  triggerOffset={400}
+                  metaInfoSelector=".article-meta-section"
+                  actionPanelSelector=".article-sticky-section"
+                />
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                    /* Hide audio player on mobile for performance */
+                    @media (max-width: 768px) {
+                      .audio-player-wrapper {
+                        display: none !important;
+                      }
+                    }
+                  `
+                }} />
+              </div>
 
               {/* Article Content - Server Rendered HTML */}
               <article 
@@ -469,6 +560,123 @@ export async function ArticlePageServer({
                   </div>
                 </div>
               )}
+
+              {/* Related Articles - Mobile Only */}
+              {relatedArticles && relatedArticles.length > 0 && (
+                <div 
+                  className="mobile-related-articles"
+                  style={{
+                    padding: 'var(--space-8) var(--content-padding)',
+                    borderTop: '0.5px solid var(--color-border-primary)'
+                  }}
+                >
+                  <h3 style={{
+                    fontSize: 'var(--text-lg)',
+                    fontWeight: 'var(--font-semibold)',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-4)'
+                  }}>
+                    Related Articles
+                  </h3>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 0
+                  }}>
+                    {relatedArticles.slice(0, 3).map((relatedArticle) => {
+                      const formatDate = (dateString: string) => {
+                        const date = new Date(dateString);
+                        const currentYear = new Date().getFullYear();
+                        const articleYear = date.getFullYear();
+                        
+                        if (articleYear === currentYear) {
+                          return date.toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric' 
+                          });
+                        } else {
+                          return date.toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          });
+                        }
+                      };
+
+                      return (
+                        <a
+                          key={relatedArticle.id}
+                          href={`/articles/${relatedArticle.slug}`}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr auto',
+                            gap: 'var(--space-4)',
+                            alignItems: 'flex-start',
+                            padding: 'var(--space-4) 0',
+                            borderBottom: '0.5px solid var(--color-border-primary)',
+                            textDecoration: 'none',
+                            color: 'var(--color-text-primary)',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <h4 style={{
+                              fontSize: 'var(--text-lg)',
+                              fontFamily: 'var(--font-editorial)',
+                              fontWeight: 'var(--font-semibold)',
+                              lineHeight: 'var(--leading-tight)',
+                              letterSpacing: '-0.01em',
+                              color: 'inherit',
+                              margin: '0 0 var(--space-2) 0',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden'
+                            }}>
+                              {relatedArticle.title}
+                            </h4>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 'var(--space-2)',
+                              fontSize: 'var(--text-xs)',
+                              color: 'var(--color-text-muted)'
+                            }}>
+                              <span style={{ whiteSpace: 'nowrap' }}>
+                                {formatDate(relatedArticle.date)}
+                              </span>
+                              <span style={{ color: 'var(--color-text-muted)' }}>•</span>
+                              <span style={{ whiteSpace: 'nowrap' }}>
+                                {calculateReadingTime(relatedArticle.content)} min
+                              </span>
+                            </div>
+                          </div>
+                          {relatedArticle.image && (
+                            <div style={{
+                              width: '80px',
+                              height: '80px',
+                              borderRadius: 'var(--radius-md)',
+                              overflow: 'hidden',
+                              background: 'var(--color-bg-tertiary)',
+                              flexShrink: 0
+                            }}>
+                              <img
+                                src={relatedArticle.image}
+                                alt={relatedArticle.title}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover'
+                                }}
+                              />
+                            </div>
+                          )}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </main>
           </div>
           
@@ -504,7 +712,7 @@ export async function ArticlePageServer({
             }
             
             .mobile-category-info {
-              display: block !important;
+              display: flex !important;
             }
             
             .desktop-category-info {

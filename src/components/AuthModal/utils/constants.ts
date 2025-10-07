@@ -51,8 +51,8 @@ export const SUCCESS_MESSAGES = {
 export const COMPONENT_SIZES = {
   MODAL_MAX_WIDTH_SIGNIN: '480px',
   MODAL_MAX_WIDTH_SIGNUP: '700px',
-  INPUT_HEIGHT: '56px',
-  BUTTON_HEIGHT: '56px',
+  INPUT_HEIGHT: '64px',
+  BUTTON_HEIGHT: '64px',
   LOGO_SIZE_SIGNIN: '64px',
   LOGO_SIZE_SIGNUP: '80px',
 } as const;

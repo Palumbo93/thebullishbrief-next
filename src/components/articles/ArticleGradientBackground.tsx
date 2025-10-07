@@ -42,19 +42,30 @@ export const ArticleGradientBackground: React.FC<ArticleGradientBackgroundProps>
   }
 
   return (
-    <div
-      className="article-gradient-background"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '100vh',
-        background: `linear-gradient(135deg, ${gradientColors[0]}08 0%, ${gradientColors[1]}05 100%)`,
-        pointerEvents: 'none',
-        zIndex: -1,
-        opacity: 0.3
-      }}
-    />
+    <>
+      <div
+        className="article-gradient-background"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100vh',
+          background: `linear-gradient(135deg, ${gradientColors[0]}08 0%, ${gradientColors[1]}05 100%)`,
+          pointerEvents: 'none',
+          zIndex: -1,
+          opacity: 0.3,
+          willChange: 'auto' // Prevent GPU layer promotion on mobile
+        }}
+      />
+      <style jsx>{`
+        /* Disable gradient background on mobile for better performance */
+        @media (max-width: 768px) {
+          .article-gradient-background {
+            display: none !important;
+          }
+        }
+      `}</style>
+    </>
   );
 };

@@ -443,7 +443,7 @@ body {
   color: var(--color-text-primary);
 }
 
-.html-content img:not(.video-thumbnail):not(.brokerage-logo) {
+.html-content img:not(.video-thumbnail):not(.brokerage-logo):not(.widget-icon) {
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-md);
@@ -454,8 +454,67 @@ body {
   transition: opacity 0.2s ease-in-out;
 }
 
+/* Zoomable image hover effect - CSS only for better performance */
+.html-content img.zoomable-image {
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* Only enable will-change on desktop for performance */
+@media (hover: hover) and (pointer: fine) {
+  .html-content img.zoomable-image {
+    will-change: transform;
+  }
+  
+  .html-content img.zoomable-image:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Disable hover effects and transforms on mobile for better performance */
+@media (hover: none) and (pointer: coarse) {
+  .html-content img.zoomable-image {
+    transition: none;
+    will-change: auto;
+  }
+  
+  .html-content img.zoomable-image:hover {
+    transform: none;
+  }
+  
+  /* Mobile-specific performance optimizations */
+  .html-content {
+    /* Use content-visibility for better rendering performance on mobile */
+    contain: layout style paint;
+  }
+  
+  /* Prevent layout shifts during portal rendering */
+  .app-container {
+    min-height: 100vh;
+  }
+  
+  /* Force GPU acceleration for smoother scrolling */
+  .mobile-header-root,
+  .action-panel-container,
+  .briefs-sticky-section,
+  .article-sticky-section {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Prevent content flashing during hydration */
+  .server-content {
+    opacity: 1;
+    transition: opacity 0.15s ease-out;
+  }
+  
+  .server-content[style*="display: none"] {
+    opacity: 0;
+  }
+}
+
 /* Prevent layout shift in brief content */
-.brief-content-container .html-content img:not(.video-thumbnail):not(.brokerage-logo) {
+.brief-content-container .html-content img:not(.video-thumbnail):not(.brokerage-logo):not(.widget-icon) {
   /* Reserve space for images to prevent layout shift */
   min-height: 200px;
   background-color: var(--color-bg-secondary);

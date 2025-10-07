@@ -29,7 +29,7 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
             display: 'flex',
             alignItems: 'center',
             background: 'var(--color-bg-primary)',
-            height: '56px',
+            height: '64px',
             position: 'sticky',
             top: 0,
             zIndex: 20,
@@ -38,7 +38,7 @@ export const BookmarksPage: React.FC<BookmarksPageProps> = ({
           <style>{`
             @media (max-width: 768px) {
               .bookmarks-header {
-                top: 56px !important; /* Below mobile header */
+                top: 64px !important; /* Below mobile header */
               }
             }
           `}</style>

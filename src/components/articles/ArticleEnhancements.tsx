@@ -39,7 +39,8 @@ export const ArticleEnhancements: React.FC<ArticleEnhancementsProps> = ({
         slug: a.slug,
         category: a.category,
         date: a.date,
-        author: a.author
+        author: a.author,
+        image: a.image
       }))}
       onTagClick={(tag) => {
         // Navigate to search page with tag selected

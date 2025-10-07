@@ -280,6 +280,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
               alt="PDF icon"
               width={36}
               height={36}
+              className="widget-icon"
               style={{
                 flexShrink: 0,
                 marginTop: '2px',
@@ -419,6 +420,7 @@ export const BriefLeadGenWidget: React.FC<BriefLeadGenWidgetProps> = ({
               alt="PDF icon"
               width={36}
               height={36}
+              className="widget-icon"
               style={{
                 flexShrink: 0,
                 marginTop: '2px',

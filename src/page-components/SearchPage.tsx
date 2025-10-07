@@ -209,7 +209,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         <style>{`
           @media (max-width: 768px) {
             .search-bar-sticky {
-              top: 56px !important; /* Below mobile header */
+              top: 64px !important; /* Below mobile header */
             }
           }
         `}</style>

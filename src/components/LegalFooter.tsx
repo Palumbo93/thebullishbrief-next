@@ -33,7 +33,11 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
       <style>{`
         .legal-footer {
           background: var(--color-text-primary);
-          border-top: 1px solid var(--color-text-secondary);
+          background-image: 
+            linear-gradient(90deg, var(--color-text-secondary) 0.5px, transparent 0.5px),
+            linear-gradient(0deg, var(--color-text-secondary) 0.5px, transparent 0.5px);
+          background-size: 50px 50px, 50px 50px;
+          border-top: 0.5px solid var(--color-text-secondary);
           margin-top: var(--space-16);
         }
         
@@ -49,7 +53,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
           justify-content: space-between;
           margin-bottom: var(--space-8);
           padding-bottom: var(--space-6);
-          border-bottom: 1px solid var(--color-text-secondary);
+          border-bottom: 0.5px solid var(--color-text-secondary);
         }
         
         .footer-brand {
@@ -90,7 +94,7 @@ export const LegalFooter: React.FC<LegalFooterProps> = ({
         }
         
         .footer-subscribe-button {
-          padding: var(--space-3) var(--space-6);
+          padding: var(--space-2) var(--space-4);
           background: var(--color-primary);
           color: white;
           border: none;

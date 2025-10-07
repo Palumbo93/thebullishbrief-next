@@ -33,7 +33,8 @@ export const ArticleActionPanelWrapper: React.FC<ArticleActionPanelWrapperProps>
         slug: a.slug,
         category: a.category,
         date: a.date,
-        author: a.author
+        author: a.author,
+        image: a.image
       }))}
       onTagClick={(tag) => {
         router.push(`/search?tags=${encodeURIComponent(tag)}`);

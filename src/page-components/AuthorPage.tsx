@@ -88,7 +88,7 @@ export const AuthorPage: React.FC<AuthorPageProps> = ({
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          height: '56px',
+          height: '64px',
           position: 'sticky',
           top: 0,
           zIndex: 20,

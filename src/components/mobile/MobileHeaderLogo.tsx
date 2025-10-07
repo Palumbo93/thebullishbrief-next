@@ -24,7 +24,7 @@ export const MobileHeaderLogo: React.FC<MobileHeaderLogoProps> = ({
   src,
   alt,
   fallback,
-  size = 'md',
+  size = 'lg',
   onClick
 }) => {
   const [imageError, setImageError] = React.useState(false);
@@ -42,9 +42,9 @@ export const MobileHeaderLogo: React.FC<MobileHeaderLogoProps> = ({
         maxWidth: '160px'
       },
       lg: {
-        height: '40px',
+        height: '50px',
         width: 'auto',
-        maxWidth: '200px'
+        maxWidth: '250px'
       }
     };
     return sizes[size];
@@ -55,7 +55,7 @@ export const MobileHeaderLogo: React.FC<MobileHeaderLogoProps> = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      height: '40px',
+      height: '50px',
       cursor: onClick ? 'pointer' : 'default',
     };
   };

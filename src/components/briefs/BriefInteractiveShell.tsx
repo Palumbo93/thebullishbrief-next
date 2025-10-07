@@ -481,16 +481,15 @@ export function BriefInteractiveShell({
     const findPortalTarget = () => {
       const serverContent = document.querySelector('.server-content');
       if (serverContent) {
-        // Hide server content
+        // Hide server content immediately to prevent flash
         (serverContent as HTMLElement).style.display = 'none';
         // Use the parent of server content as portal target
         setContentPortalTarget(serverContent.parentElement);
       }
     };
 
-    // Wait a bit for DOM to be ready
-    const timeout = setTimeout(findPortalTarget, 100);
-    return () => clearTimeout(timeout);
+    // Run immediately instead of with timeout to reduce layout shift
+    findPortalTarget();
   }, [showClientContent]);
 
   // Add IDs to H2 elements and process embeds in the visible content

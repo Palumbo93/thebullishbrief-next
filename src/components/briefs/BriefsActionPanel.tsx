@@ -770,7 +770,7 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
           background: var(--color-bg-primary);
           border-bottom: 0.5px solid var(--color-border-primary);
           backdropFilter: 'blur(10px)';
-          padding-top: 56px; /* Account for mobile header height */
+          padding-top: 64px; /* Account for mobile header height */
         }
         
         .briefs-mobile-header-content {

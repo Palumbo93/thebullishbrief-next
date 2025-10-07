@@ -21,33 +21,57 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const showDate = shouldShowDate(heroContent, true);
   const isHeroBrief = isBrief(heroContent);
 
+  const featuredImage = (heroContent as any).image || (heroContent as any).featured_image_url;
+
   return (
     <section style={{
-      padding: 'var(--space-20) var(--content-padding) var(--space-12) var(--content-padding)',
+      position: 'relative',
+      minHeight: '60vh',
       borderBottom: '0.5px solid var(--color-border-primary)',
-      background: 'var(--color-bg-primary)'
+      background: featuredImage ? `url(${featuredImage})` : 'var(--color-bg-primary)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      overflow: 'hidden'
     }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Background overlay */}
+      {featuredImage && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.1) 100%)',
+          zIndex: 1
+        }} />
+      )}
+      
+      <div style={{ 
+        position: 'relative',
+        zIndex: 2,
+        maxWidth: '1200px', 
+        margin: '0 auto',
+        padding: '0 var(--content-padding) var(--space-12) var(--content-padding)',
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'flex-end'
+      }}>
         <div 
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '2fr 1fr',
-            gap: 'var(--space-8)',
-            alignItems: 'center'
-          }}
-          className="hero-grid"
+          className="hero-content"
         >
           {/* Main Hero Content */}
           <div
             onClick={handleClick}
             style={{
-              cursor: 'pointer'
+              cursor: 'pointer',
+              color: featuredImage ? '#ffffff' : 'var(--color-text-primary)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--color-text-muted)';
+              e.currentTarget.style.opacity = '0.8';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--color-text-primary)';
+              e.currentTarget.style.opacity = '1';
             }}
           >
             
@@ -62,7 +86,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 lineHeight: 'var(--leading-tight)',
                 marginBottom: 'var(--space-4)',
                 letterSpacing: '-0.02em',
-                transition: 'opacity var(--transition-base)'
+                transition: 'opacity var(--transition-base)',
+                maxWidth: '920px',
+                marginRight: 'auto'
               }}
             >
               {heroContent.title}
@@ -73,7 +99,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               className="hero-subtitle"
               style={{
                 fontSize: 'var(--text-lg)',
-                color: 'var(--color-text-secondary)',
+                color: featuredImage ? 'rgba(255, 255, 255, 0.9)' : 'var(--color-text-secondary)',
                 lineHeight: 'var(--leading-relaxed)',
                 marginBottom: 'var(--space-4)',
                 maxWidth: '600px'
@@ -89,7 +115,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 alignItems: 'center',
                 gap: 'var(--space-4)',
                 fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-muted)'
+                color: featuredImage ? 'rgba(255, 255, 255, 0.8)' : 'var(--color-text-muted)'
               }}>
               {isHeroBrief ? (
                 // Brief metadata - show company name and reading time
@@ -105,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   {heroContent.reading_time_minutes && (
                     <>
                       <span>•</span>
-                      <span>{heroContent.reading_time_minutes} min</span>
+                      <span>{heroContent.reading_time_minutes} min read</span>
                     </>
                   )}
                 </>
@@ -127,46 +153,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               )}
             </div>
           </div>
-
-          {/* Hero Image */}
-          {((heroContent as any).image || (heroContent as any).featured_image_url) && (
-            <div 
-              style={{
-                aspectRatio: '4/3',
-                borderRadius: 'var(--radius-lg)',
-                overflow: 'hidden',
-                background: 'var(--color-bg-tertiary)'
-              }}
-              className="hero-image"
-            >
-              <img
-                src={(heroContent as any).image || (heroContent as any).featured_image_url}
-                alt={heroContent.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover'
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
 
       <style jsx>{`
         @media (max-width: 768px) {
           section {
-            padding: var(--space-4) var(--content-padding) !important;
+            min-height: 50vh !important;
           }
           
-          .hero-grid {
-            grid-template-columns: 1fr !important;
-            gap: var(--space-4) !important;
-          }
-          
-          .hero-image {
-            order: -1 !important;
-            aspect-ratio: 16/9 !important;
+          .hero-content {
+            max-width: 100% !important;
           }
           
           .hero-headline {
@@ -174,22 +171,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             margin-bottom: var(--space-3) !important;
           }
           
-          .hero-badge {
-            margin-bottom: var(--space-3) !important;
-            font-size: 0.75rem !important;
-          }
-          
           .hero-subtitle {
             font-size: var(--text-base) !important;
             margin-bottom: var(--space-3) !important;
             display: -webkit-box !important;
-            -webkit-line-clamp: 2 !important;
+            -webkit-line-clamp: 3 !important;
             -webkit-box-orient: vertical !important;
             overflow: hidden !important;
           }
           
           .hero-meta {
             font-size: 0.75rem !important;
+            flex-wrap: wrap !important;
           }
         }
       `}</style>

@@ -222,10 +222,6 @@ export const SignInModal: React.FC<SignInModalProps> = ({
                   height={48}
                   variant="auto"
                 />
-                <TypeLogo 
-                  height={32}
-                  width={200}
-                />
               </div>
 
               {/* Header */}

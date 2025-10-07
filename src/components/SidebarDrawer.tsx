@@ -170,12 +170,10 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
             align-items: center;
             justify-content: space-between;
             gap: var(--space-3);
-            padding: var(--space-3);
-            border-radius: var(--radius-lg);
+            padding: var(--space-2);
             color: var(--color-text-secondary);
             text-decoration: none;
             font-size: var(--text-sm);
-            font-weight: var(--font-medium);
             background: transparent;
             border: none;
             transition: all var(--transition-base);
@@ -185,30 +183,30 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
             position: relative;
           }
           .sidebar-nav-link:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--color-text-primary);
+            background: rgba(255, 255, 255, 0.03);
             transform: translateY(-1px);
           }
-          .sidebar-nav-link.active {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--color-text-primary);
-          }
-          .sidebar-nav-link.active::before {
-            content: '';
-            position: absolute;
-            left: -16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 20px;
-            background: var(--color-text-primary);
-            border-radius: 0 2px 2px 0;
+          .sidebar-nav-link.active .sidebar-nav-link-label {
+            background: var(--color-primary);
+            color: white;
           }
           .sidebar-nav-link-content {
             display: flex;
             align-items: center;
             gap: var(--space-3);
             flex: 1;
+          }
+          .sidebar-nav-link-label {
+            color: white;
+            background: var(--color-primary);
+            padding: var(--space-2) var(--space-4);
+            width: fit-content;
+            font-weight: var(--font-semibold);
+            transition: all var(--transition-base);
+          }
+          .sidebar-nav-link:hover .sidebar-nav-link-label {
+            background: var(--color-primary-hover, #0856d4);
+            box-shadow: 0 2px 8px rgba(7, 102, 255, 0.3);
           }
           .sidebar-nav-link-icon {
             width: 16px;
@@ -374,7 +372,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
                 onClick={onClose}
               >
                 <div className="sidebar-nav-link-content">
-                  <span>{item.label}</span>
+                  <span className="sidebar-nav-link-label">{item.label}</span>
                 </div>
                 <ChevronRight className="sidebar-nav-link-arrow" size={14} />
               </Link>
@@ -391,7 +389,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
                 onClick={onClose}
               >
                 <div className="sidebar-nav-link-content">
-                  <span>Bookmarks</span>
+                  <span className="sidebar-nav-link-label">Bookmarks</span>
                 </div>
                 <ChevronRight className="sidebar-nav-link-arrow" size={14} />
               </Link>
@@ -401,7 +399,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
                 onClick={onClose}
               >
                 <div className="sidebar-nav-link-content">
-                  <span>Settings</span>
+                  <span className="sidebar-nav-link-label">Settings</span>
                 </div>
                 <ChevronRight className="sidebar-nav-link-arrow" />
               </Link>
@@ -412,7 +410,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
                   onClick={onClose}
                 >
                   <div className="sidebar-nav-link-content">
-                    <span>Admin</span>
+                    <span className="sidebar-nav-link-label">Admin</span>
                   </div>
                   <ChevronRight className="sidebar-nav-link-arrow" size={14} />
                 </Link>

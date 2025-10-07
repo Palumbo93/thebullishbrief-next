@@ -402,29 +402,17 @@ export async function ArticlePageServer({
 
               </div>
 
-              {/* Audio Native Player - Disabled on mobile for performance */}
-              <div className="audio-player-wrapper">
-                <AudioNativeController
-                  textColorRgba='rgba(255, 255, 255, 1.0)'
-                  backgroundColorRgba='rgba(7, 102, 255, 1.0)'
-                  contentType="article"
-                  title={article.title}
-                  size="small"
-                  triggerOffset={400}
-                  metaInfoSelector=".article-meta-section"
-                  actionPanelSelector=".article-sticky-section"
-                />
-                <style dangerouslySetInnerHTML={{
-                  __html: `
-                    /* Hide audio player on mobile for performance */
-                    @media (max-width: 768px) {
-                      .audio-player-wrapper {
-                        display: none !important;
-                      }
-                    }
-                  `
-                }} />
-              </div>
+              {/* Audio Native Player */}
+              <AudioNativeController
+                textColorRgba='rgba(255, 255, 255, 1.0)'
+                backgroundColorRgba='rgba(7, 102, 255, 1.0)'
+                contentType="article"
+                title={article.title}
+                size="small"
+                triggerOffset={400}
+                metaInfoSelector=".article-meta-section"
+                actionPanelSelector=".article-sticky-section"
+              />
 
               {/* Article Content - Server Rendered HTML */}
               <article 

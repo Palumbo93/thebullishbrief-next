@@ -102,6 +102,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             color: 'white',
             background: 'var(--color-primary)',
             padding: 'var(--space-2) var(--space-4)',
+            width: 'fit-content',
             fontWeight: 'var(--font-semibold)',
             marginBottom: 'var(--space-2)',
             textTransform: 'uppercase',

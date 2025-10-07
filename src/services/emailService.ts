@@ -163,7 +163,7 @@ export async function fetchEmailsGroupedByEntity(): Promise<EmailsByEntity[]> {
       entity = {
         id: null,
         type: 'unassigned',
-        title: 'Unassigned',
+        title: 'Direct Platform Signup',
         subtitle: 'No brief or author associated',
         emails: [],
         count: 0

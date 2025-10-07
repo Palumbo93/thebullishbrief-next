@@ -8,7 +8,6 @@ import { CategoryManager } from '../components/admin/CategoryManager';
 import { AuthorManager } from '../components/admin/AuthorManager';
 import { TagManager } from '../components/admin/TagManager';
 import { BriefManager } from '../components/admin/BriefManager';
-import { UserManager } from '../components/admin/UserManager';
 import { EmailManager } from '../components/admin/EmailManager';
 import { BuildTrigger } from '../components/admin/BuildTrigger';
 import { AdminTabs, AdminTab } from '../components/admin/AdminTabs';
@@ -28,7 +27,7 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
   // Handle URL-based routing - simplified to avoid page reloads
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'users', 'emails', 'build'].includes(hash)) {
+    if (hash && ['articles', 'categories', 'authors', 'tags', 'briefs', 'emails', 'build'].includes(hash)) {
       setActiveTab(hash as AdminTab);
     } else {
       // Set default tab if no valid hash
@@ -52,8 +51,6 @@ export const AdminPageClient: React.FC<AdminPageClientProps> = ({ onCreateAccoun
         return <TagManager />;
       case 'briefs':
         return <BriefManager />;
-      case 'users':
-        return <UserManager />;
       case 'emails':
         return <EmailManager />;
       case 'build':

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileText, Folder, Users, Tag, Settings, MessageSquare, Briefcase, RefreshCw, Mail } from 'lucide-react';
 
-export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'users' | 'emails' | 'briefs' | 'build';
+export type AdminTab = 'articles' | 'categories' | 'authors' | 'tags' | 'emails' | 'briefs' | 'build';
 
 interface AdminTabsProps {
   activeTab: AdminTab;
@@ -52,12 +52,6 @@ const tabConfigs: TabConfig[] = [
     label: 'Emails',
     icon: <Mail style={{ width: '16px', height: '16px' }} />,
     description: 'View collected email addresses'
-  },
-  {
-    id: 'users',
-    label: 'Users',
-    icon: <Settings style={{ width: '16px', height: '16px' }} />,
-    description: 'Manage user accounts'
   },
   {
     id: 'build',

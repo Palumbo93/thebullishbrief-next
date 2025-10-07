@@ -64,6 +64,8 @@ export const SignInModal: React.FC<SignInModalProps> = ({
 
   const handleOTPSuccess = () => {
     onSuccess();
+    // Refresh the page after successful login
+    window.location.reload();
   };
 
   const handleOTPBack = () => {

@@ -105,6 +105,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({
 
   const handleOTPSuccess = () => {
     onSuccess();
+    // Refresh the page after successful signup
+    window.location.reload();
   };
 
   const handleOTPBack = () => {

@@ -2,8 +2,14 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Script from 'next/script';
-import { BriefPageClient } from '../../../page-components/BriefPageClient';
-import { fetchAllBriefSlugs, fetchBriefBySlugForMetadata } from '../../../hooks/useBriefs';
+import { BriefPageServer, ServerBrief } from '../../../page-components/BriefPageServer';
+import { BriefInteractiveShell } from '../../../components/briefs/BriefInteractiveShell';
+import { Layout } from '../../../components/Layout';
+import { LegalFooter } from '../../../components/LegalFooter';
+import { fetchAllBriefSlugs, fetchBriefBySlugForMetadata, fetchBriefBySlugIncludingDrafts } from '../../../hooks/useBriefs';
+import { determineBriefAccess } from '../../../lib/serverAccessControl';
+import { parseTOCFromContent, getFirstTickerSymbol, getCountryAppropriateTickerSymbol } from '../../../utils/tocParser';
+// BriefsActionPanel will be handled by the client component
 
 // Generate static params for ALL briefs at build time
 export async function generateStaticParams() {
@@ -132,14 +138,80 @@ export default async function BriefPageWrapper({ params }: Props) {
     notFound();
   }
   
-  // Fetch brief data for schema
+  // Fetch brief data for server-side rendering
   let rawBrief;
+  let brief;
   try {
     rawBrief = await fetchBriefBySlugForMetadata(slug);
+    brief = await fetchBriefBySlugIncludingDrafts(slug);
   } catch (error) {
     console.error('Error fetching brief:', error);
     notFound();
   }
+
+  // Determine brief access server-side
+  const accessResult = await determineBriefAccess({
+    id: String(brief.id),
+    title: brief.title,
+    premium: false, // Briefs are typically free
+    status: 'published', // Default to published
+    content: brief.content,
+    preview: brief.content?.substring(0, 1000) // Generate preview
+  });
+
+  // Transform brief data for server component
+  const serverBrief: ServerBrief = {
+    id: String(brief.id),
+    title: brief.title,
+    slug: brief.slug || slug,
+    subtitle: brief.subtitle || undefined,
+    content: brief.content || '',
+    disclaimer: brief.disclaimer,
+    company_name: brief.company_name,
+    tickers: Array.isArray(brief.tickers) ? brief.tickers : undefined,
+    brokerage_links: brief.brokerage_links as { [key: string]: string } | null | undefined,
+    featured_image_url: brief.featured_image_url,
+    featured_image_alt: brief.featured_image_alt,
+    video_url: brief.video_url,
+    featured_video_thumbnail: brief.featured_video_thumbnail,
+    feature_featured_video: brief.feature_featured_video,
+    show_featured_media: brief.show_featured_media,
+    published_at: brief.published_at,
+    created_at: brief.created_at,
+    reading_time_minutes: brief.reading_time_minutes,
+    additional_copy: brief.additional_copy,
+    popup_copy: brief.popup_copy
+  };
+
+  // Parse TOC sections for action panel
+  const tocSections = brief.content ? parseTOCFromContent(brief.content) : [];
+  
+  // Debug: Log the ticker data to see what we're dealing with
+  console.log('Brief tickers:', brief.tickers, 'Type:', typeof brief.tickers);
+
+  // Generate ticker widget for action panel
+  const firstTickerSymbol = brief.tickers ? getFirstTickerSymbol(brief.tickers) : null;
+  
+  // Convert tickers to safe string array
+  const safeTickers = (() => {
+    if (!brief.tickers) return undefined;
+    if (Array.isArray(brief.tickers)) {
+      return brief.tickers.filter(ticker => typeof ticker === 'string');
+    }
+    // If it's an object like {CSE: "SONC"} or {CSE}, convert to array
+    if (typeof brief.tickers === 'object') {
+      return Object.keys(brief.tickers);
+    }
+    return undefined;
+  })();
+
+  // Action panel will be handled by client component
+
+  const mobileHeaderProps = {
+    companyName: brief.company_name || undefined,
+    tickers: Array.isArray(brief.tickers) ? brief.tickers as string[] : undefined,
+    // Note: onShareClick will be handled by client component
+  };
 
   // Generate enhanced JSON-LD schema for NewsArticle
   const newsArticleSchema = {
@@ -264,7 +336,34 @@ export default async function BriefPageWrapper({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <BriefPageClient briefSlug={slug} />
+      
+      <Layout
+        mobileHeader={mobileHeaderProps}
+        actionPanel={null}
+      >
+        <BriefInteractiveShell
+          brief={serverBrief}
+          slug={slug}
+        >
+          <BriefPageServer
+            brief={serverBrief}
+            slug={slug}
+          />
+        </BriefInteractiveShell>
+      </Layout>
+      
+      {/* Legal Footer - Full bleed outside container */}
+      <div style={{
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
+        marginTop: 'var(--space-16)'
+      }}>
+        <LegalFooter />
+      </div>
     </>
   );
 }

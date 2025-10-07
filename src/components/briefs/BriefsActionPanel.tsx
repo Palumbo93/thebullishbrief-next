@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getTickers } from '../../utils/tickerUtils';
-import { X, Copy } from 'lucide-react';
+import { X, Copy, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToastContext } from '../../contexts/ToastContext';
 import BriefLeadGenWidget from '../BriefLeadGenWidget';
 import BrokerageWidget from '../BrokerageWidget';
 import { FeaturedVideoWidget } from '../FeaturedVideoWidget';
 import { useTrackBriefEngagement } from '../../hooks/useClarityAnalytics';
+import { useRelatedBriefs } from '../../hooks/useRelatedBriefs';
+import Link from 'next/link';
 
 interface CompanyTicker {
   symbol: string;
@@ -24,7 +26,7 @@ interface TOCItem {
 
 interface BriefsActionPanelProps {
   briefId?: string; // Brief ID for analytics tracking
-  brief?: any; // Full brief object for lead generation widget
+  brief?: any; // Brief object - accepts ServerBrief or full database brief
   onSignUpClick?: () => void;
   signUpForm?: React.ReactNode;
   tickerWidget?: React.ReactNode;
@@ -71,6 +73,13 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
   const tocRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { showToast } = useToastContext();
+  
+  // Fetch related briefs
+  const { data: relatedBriefs = [], isLoading: isLoadingRelated } = useRelatedBriefs(
+    brief?.company_name,
+    briefId,
+    3
+  );
   
   // Set first section as active by default when sections are available
   useEffect(() => {
@@ -350,8 +359,67 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
         </div>
       )}
 
+      {/* Related Articles */}
+      {/* {relatedBriefs.length > 0 && (
+        <div className="briefs-related-section">
+          <h3 className="briefs-section-title">Related Articles</h3>
+          <div className="briefs-related-list">
+            {relatedBriefs.map((relatedBrief) => {
+              const formatDate = (dateString: string) => {
+                const date = new Date(dateString);
+                const currentYear = new Date().getFullYear();
+                const articleYear = date.getFullYear();
+                
+                if (articleYear === currentYear) {
+                  return date.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric' 
+                  });
+                } else {
+                  return date.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  });
+                }
+              };
 
-      
+              return (
+                <Link
+                  key={relatedBrief.id}
+                  href={`/briefs/${relatedBrief.slug}`}
+                  className="briefs-related-item"
+                >
+                  <div className="briefs-related-content">
+                    <h4 className="briefs-related-title">{relatedBrief.title}</h4>
+                    <div className="briefs-related-meta">
+                      <span className="briefs-related-date">
+                        {formatDate(relatedBrief.published_at || relatedBrief.created_at)}
+                      </span>
+                      {relatedBrief.reading_time_minutes && (
+                        <>
+                          <span className="briefs-related-divider">•</span>
+                          <span className="briefs-related-reading-time">
+                            {relatedBrief.reading_time_minutes} min
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {relatedBrief.featured_image_url && (
+                    <div className="briefs-related-image">
+                      <img
+                        src={relatedBrief.featured_image_url}
+                        alt={relatedBrief.title}
+                      />
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )} */}
 
       </div>
 
@@ -756,6 +824,93 @@ const BriefsActionPanel: React.FC<BriefsActionPanelProps> = ({
             position: relative; /* Keep relative positioning */
             height: 100%; /* Use 100% height */
           }
+        }
+        
+        /* Related Articles Styles */
+        .briefs-related-section {
+          padding: var(--space-4) var(--content-padding);
+          border-top: 0.5px solid var(--color-border-primary);
+        }
+        
+        .briefs-related-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        
+        .briefs-related-item {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: var(--space-4);
+          align-items: flex-start;
+          padding: var(--space-4) 0;
+          border-bottom: 0.5px solid var(--color-border-primary);
+          text-decoration: none;
+          transition: color var(--transition-base);
+          cursor: pointer;
+          color: var(--color-text-primary);
+        }
+        
+        .briefs-related-item:last-child {
+          border-bottom: none;
+        }
+        
+        .briefs-related-item:hover {
+          color: var(--color-text-muted);
+        }
+        
+        .briefs-related-content {
+          flex: 1;
+          min-width: 0;
+        }
+        
+        .briefs-related-title {
+          font-size: var(--text-lg);
+          font-family: var(--font-editorial);
+          font-weight: var(--font-semibold);
+          line-height: var(--leading-tight);
+          letter-spacing: -0.01em;
+          color: inherit;
+          margin: 0 0 var(--space-2) 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .briefs-related-meta {
+          display: flex;
+          align-items: center;
+          gap: var(--space-2);
+          font-size: var(--text-xs);
+          color: var(--color-text-muted);
+        }
+        
+        .briefs-related-date {
+          white-space: nowrap;
+        }
+        
+        .briefs-related-divider {
+          color: var(--color-text-muted);
+        }
+        
+        .briefs-related-reading-time {
+          white-space: nowrap;
+        }
+        
+        .briefs-related-image {
+          width: 80px;
+          height: 80px;
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          background: var(--color-bg-tertiary);
+          flex-shrink: 0;
+        }
+        
+        .briefs-related-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
       `}</style>
     </div>

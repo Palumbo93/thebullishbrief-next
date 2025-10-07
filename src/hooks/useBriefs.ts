@@ -84,7 +84,7 @@ const fetchBriefBySlug = async (slug: string): Promise<Brief> => {
 /**
  * Fetch a single brief by slug including drafts (for admin/preview use)
  */
-const fetchBriefBySlugIncludingDrafts = async (slug: string): Promise<Brief> => {
+export const fetchBriefBySlugIncludingDrafts = async (slug: string): Promise<Brief> => {
   if (!hasSupabaseCredentials) {
     throw new Error('Database connection not configured');
   }

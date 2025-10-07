@@ -158,7 +158,7 @@ export const SignUpBanner: React.FC<SignUpBannerProps> = ({
       style={{
         background: "var(--color-primary-dim-background)",
         borderBottom: '0.5px solid var(--color-border-primary)',
-        padding: 'var(--space-8) var(--content-padding)',
+        padding: 'var(--space-12) var(--content-padding)',
       }}
     >
       <div style={{

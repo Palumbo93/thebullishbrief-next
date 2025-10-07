@@ -40,7 +40,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({
     <div className="category-list">
       <style>{`
         .category-list {
-          border-top: 0.5px solid var(--color-text-secondary);
+          // border-top: 0.5px solid var(--color-text-secondary);
           padding: var(--space-4) var(--space-6);
           backgroundColor: 'var(--color-text-primary)',
           transition: all 0.3s ease;

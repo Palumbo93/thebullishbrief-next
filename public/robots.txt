@@ -18,6 +18,7 @@ Disallow: /bull-room/
 # Allow important pages
 Allow: /
 Allow: /articles/
+Allow: /briefs/
 Allow: /authors/
 Allow: /search/
 Allow: /legal/

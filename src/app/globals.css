@@ -42,8 +42,8 @@
   --space-12: 3rem;
   
   /* Typography */
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-editorial: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-primary: var(--font-instrument-sans);
+  --font-editorial: var(--font-instrument-sans);
   --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   
   /* Font Sizes */
@@ -443,7 +443,7 @@ body {
   color: var(--color-text-primary);
 }
 
-.html-content img {
+.html-content img:not(.video-thumbnail):not(.brokerage-logo) {
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-md);
@@ -455,7 +455,7 @@ body {
 }
 
 /* Prevent layout shift in brief content */
-.brief-content-container .html-content img:not(.brokerage-logo) {
+.brief-content-container .html-content img:not(.video-thumbnail):not(.brokerage-logo) {
   /* Reserve space for images to prevent layout shift */
   min-height: 200px;
   background-color: var(--color-bg-secondary);

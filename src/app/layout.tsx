@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Archivo } from 'next/font/google'
+import { Instrument_Sans } from 'next/font/google'
 import './globals.css'
 import '../styles/design-system.css'
 
@@ -7,9 +7,9 @@ import '../styles/design-system.css'
 import { ClientProviders } from '../components/ClientProviders'
 import { AppContent } from '../components/AppContent'
 
-const archivo = Archivo({ 
+const instrumentSans = Instrument_Sans({ 
   subsets: ['latin'],
-  variable: '--font-archivo',
+  variable: '--font-instrument-sans',
   display: 'swap',
 })
 
@@ -119,7 +119,7 @@ export default function RootLayout({
           }}
         /> */}
       </head>
-      <body className={`${archivo.variable}`}>
+      <body className={`${instrumentSans.variable}`}>
         {/* Google Tag Manager (noscript) */}
         {/* <noscript>
           <iframe

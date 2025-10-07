@@ -397,11 +397,11 @@ export const Layout: React.FC<LayoutProps> = ({
         </main>
         
         {/* Action Panel (Desktop only) */}
-        {actionPanel && (
-          <aside className="action-panel-container desktop-only">
-            {actionPanel}
-          </aside>
-        )}
+        <aside className={`action-panel-container desktop-only ${actionPanel ? 'has-content' : ''}`}>
+          {actionPanel}
+          {/* Portal target for dynamic action panels */}
+          <div id="dynamic-action-panel-root" style={{ width: '100%', height: '100%' }}></div>
+        </aside>
       </div>
 
     </>

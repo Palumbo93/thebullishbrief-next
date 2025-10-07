@@ -123,7 +123,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                 alt={leftSection.logo.alt}
                 fallback={leftSection.logo.fallback}
                 onClick={leftSection.logo.onClick}
-                size="md"
+                size="lg"
               />
             )}
 
@@ -139,7 +139,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             {/* Type Logo */}
             {leftSection.typeLogo && (
               <MobileHeaderTypeLogo
-                size={leftSection.typeLogo.size}
+                size="lg"
                 onClick={leftSection.typeLogo.onClick}
               />
             )}
@@ -165,7 +165,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                       border: 'none',
                       borderRadius: 'var(--radius-sm)',
                       fontSize: 'var(--text-sm)',
-                      fontWeight: 'var(--font-medium)',
+                      fontWeight: 'var(--font-bold)',
                       cursor: 'pointer',
                       transition: 'all var(--transition-base)',
                       whiteSpace: 'nowrap'

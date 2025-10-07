@@ -23,7 +23,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section style={{
-      padding: 'var(--space-12) var(--content-padding) var(--space-8) var(--content-padding)',
+      padding: 'var(--space-20) var(--content-padding) var(--space-12) var(--content-padding)',
       borderBottom: '0.5px solid var(--color-border-primary)',
       background: 'var(--color-bg-primary)'
     }}>
@@ -50,20 +50,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               e.currentTarget.style.color = 'var(--color-text-primary)';
             }}
           >
-            {/* Category/Type Badge */}
-            <div 
-              className="hero-badge"
-              style={{
-                display: 'inline-block',
-                color: 'var(--color-primary)',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-semibold)',
-                borderRadius: 'var(--radius-sm)',
-                letterSpacing: '0.05em',
-                marginBottom: 'var(--space-4)'
-              }}>
-              {isHeroBrief ? 'Featured Brief' : 'Featured'}
-            </div>
+            
 
             {/* Hero Headline */}
             <h1 
@@ -107,7 +94,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               {isHeroBrief ? (
                 // Brief metadata - show company name and reading time
                 <>
-                  <span>{heroContent.company_name}</span>
+                  <span
+                    style={{
+                      color: 'white',
+                background: 'var(--color-primary)',
+                padding: 'var(--space-2) var(--space-4)',
+                fontWeight: 'var(--font-semibold)',
+                    }}
+                  >{heroContent.company_name}</span>
                   {heroContent.reading_time_minutes && (
                     <>
                       <span>•</span>

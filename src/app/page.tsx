@@ -73,7 +73,7 @@ function HomePageContent() {
   return (
     <Layout>
       {/* Newsletter Signup Banner (Disabled for now) */}
-      <SignUpBanner variant="home" />
+      
       
       <div style={{ minHeight: '80vh' }}>
         {/* Hero Section */}
@@ -93,13 +93,14 @@ function HomePageContent() {
         )}
 
         {/* CTA Banner */}
-        {!user && (
+        <SignUpBanner variant="home" />
+        {/* {!user && (
           <CTABanner
             variant="primary"
             position="top"
             onCreateAccountClick={handleSignUpClick}
           />
-        )}
+        )} */}
 
         {/* More Stories Grid */}
         {latestSectionArticles && latestSectionArticles.length > 0 && (

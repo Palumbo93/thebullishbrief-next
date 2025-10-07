@@ -68,6 +68,7 @@ export const processContentWithWidgets = (
       // Create the appropriate widget component
       let widgetComponent: React.ReactElement | null = null;
       
+      
       switch (widgetType) {
         case 'INLINE_CTA':
           widgetComponent = (
@@ -84,6 +85,7 @@ export const processContentWithWidgets = (
                 onEmailSubmitted={onEmailSubmitted}
                 onSignupClick={onSignupClick}
                 compact={true}
+                showTickers={false}
               />
             </div>
           );
@@ -103,8 +105,8 @@ export const processContentWithWidgets = (
                 briefId={brief.slug}
                 briefTitle={brief.title}
                 location="inline"
-                country={country}
-                countryLoading={countryLoading}
+                country={country || 'CA'}
+                countryLoading={countryLoading || false}
                 geolocationError={geolocationError}
               />
             </div>
@@ -156,7 +158,6 @@ export const processContentWithWidgets = (
           widgetComponent = (
             <div 
               key={`trading-view-${widgetIndex}`}
-              className="mobile-only"
               style={{
                 margin: 'var(--space-8) 0',
                 padding: '0'
@@ -279,6 +280,7 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
   // Check if content has widgets to inject
   const hasWidgets = contentHasWidgets(content);
   
+  
   // Always process content to remove markers
   // If widgets should be injected, process with widgets; otherwise just clean
   const processedSegments = hasWidgets
@@ -295,6 +297,7 @@ export const ProcessedContent: React.FC<ProcessedContentProps> = ({
         content: content,
         key: 'original-content'
       }];
+  
   
   // Call onContentReady when content is mounted (for existing optimizations)
   React.useEffect(() => {

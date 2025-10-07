@@ -99,7 +99,10 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         <div>
           <div style={{
             fontSize: 'var(--text-xs)',
-            color: 'var(--color-text-muted)',
+            color: 'white',
+            background: 'var(--color-primary)',
+            padding: 'var(--space-2) var(--space-4)',
+            fontWeight: 'var(--font-semibold)',
             marginBottom: 'var(--space-2)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em'

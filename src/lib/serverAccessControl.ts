@@ -14,9 +14,33 @@ export interface ArticleAccessCheckProps {
 }
 
 /**
+ * Brief access check properties
+ */
+export interface BriefAccessCheckProps {
+  id: string
+  title: string
+  premium?: boolean
+  status?: string
+  content?: string
+  preview?: string
+}
+
+/**
  * Result of article access determination
  */
 export interface ArticleAccessResult {
+  renderMode: 'full' | 'preview' | 'blocked'
+  reason: string
+  user?: User | null
+  canBookmark: boolean
+  canShare: boolean
+  showSubscribePrompt: boolean
+}
+
+/**
+ * Result of brief access determination (same structure as articles)
+ */
+export interface BriefAccessResult {
   renderMode: 'full' | 'preview' | 'blocked'
   reason: string
   user?: User | null
@@ -95,6 +119,88 @@ export async function determineArticleAccess(article: ArticleAccessCheckProps): 
     // Fallback to safe defaults on error
     return {
       renderMode: article.premium ? 'preview' : 'full',
+      reason: 'error_fallback',
+      user: null,
+      canBookmark: false,
+      canShare: true,
+      showSubscribePrompt: true
+    }
+  }
+}
+
+/**
+ * Determines brief access level for server-side rendering
+ * This function runs on the server and can read authentication state from cookies
+ * 
+ * @param brief - Brief to check access for
+ * @returns Access result with rendering mode and user context
+ */
+export async function determineBriefAccess(brief: BriefAccessCheckProps): Promise<BriefAccessResult> {
+  // Briefs are typically free content, but check premium flag if set
+  const isPremium = brief.premium === true
+  
+  try {
+    // Get authenticated user from server-side cookies
+    const user = await getServerUser()
+    const userProfile = user ? await getServerUserProfile() : null
+    
+    // If brief is not premium, everyone can access full content
+    if (!isPremium) {
+      return {
+        renderMode: 'full',
+        reason: 'free_brief',
+        user,
+        canBookmark: !!user,
+        canShare: true,
+        showSubscribePrompt: !user
+      }
+    }
+    
+    // For premium briefs, check user authentication and subscription
+    if (!user) {
+      // Unauthenticated users get preview for premium briefs
+      return {
+        renderMode: 'preview',
+        reason: 'premium_brief_unauthenticated',
+        user: null,
+        canBookmark: false,
+        canShare: true,
+        showSubscribePrompt: true
+      }
+    }
+    
+    // Authenticated users - check subscription status
+    // For now, we'll assume all authenticated users have access
+    // This can be extended with actual subscription logic
+    const hasSubscription = true // TODO: Implement actual subscription check
+    
+    if (hasSubscription) {
+      return {
+        renderMode: 'full',
+        reason: 'subscribed_user',
+        user,
+        canBookmark: true,
+        canShare: true,
+        showSubscribePrompt: false
+      }
+    }
+    
+    // Authenticated but no subscription - show preview
+    return {
+      renderMode: 'preview',
+      reason: 'premium_brief_no_subscription',
+      user,
+      canBookmark: true,
+      canShare: true,
+      showSubscribePrompt: true
+    }
+    
+  } catch (error) {
+    console.error('Error determining brief access:', error)
+    
+    // Fallback to safe defaults on error
+    return {
+      renderMode: isPremium ? 'preview' : 'full',
       reason: 'error_fallback',
       user: null,
       canBookmark: false,

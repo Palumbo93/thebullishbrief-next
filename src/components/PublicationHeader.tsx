@@ -184,7 +184,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
           right: 0;
           z-index: 50;
           background: var(--color-text-primary);
-          border-bottom: 0.5px solid var(--color-text-secondary);
+          // border-bottom: 0.5px solid var(--color-text-secondary);
           transition: top 0.3s ease;
         }
 
@@ -198,8 +198,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
 
         /* Ticker Tape Styles */
         .ticker-tape-container {
-          border-bottom: 0.5px solid var(--color-text-secondary);
-          // background: var(--color-primary);
+          background: var(--color-text-primary);
           transition: all 0.3s ease;
           opacity: 1;
           max-height: 100px;
@@ -225,6 +224,11 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
         /* Header Main Styles */
         .header-main {
           background: var(--color-text-primary);
+          background-image: 
+            linear-gradient(90deg, var(--color-text-secondary) 0.5px, transparent 0.5px),
+            linear-gradient(var(--color-text-secondary) 0.5px, transparent 0.5px);
+          background-size: 50px 50px;
+          border-bottom: 0.5px solid var(--color-text-secondary);
           padding: var(--space-4) var(--space-6);
           transition: all 0.3s ease;
         }
@@ -235,6 +239,7 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
 
         /* Category List Wrapper */
         .category-list-wrapper {
+          background: var(--color-text-primary);
           transition: all 0.3s ease;
           opacity: 1;
           max-height: 200px;
@@ -431,14 +436,15 @@ export const PublicationHeader: React.FC<PublicationHeaderProps> = ({
 
           {/* Center Section - Logo */}
           <div className="header-center">
-          {/* <BullLogoImg 
-          width={32}
-          height={32}
-          alt="Logo"
-        /> */}
+            {/* <BullLogoImg 
+              width={32}
+              height={32}
+              alt="Logo"
+              variant="light"
+            /> */}
             <TypeLogo 
-              height={52}
-              width={250}
+              height={62}
+              width={280}
               onClick={handleLogoClick}
               variant="light"
             />

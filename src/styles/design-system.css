@@ -2,14 +2,11 @@
 /* Minimalist Black, White & Grey Theme - Inspired by Modern Dashboard Design */
 
 /* Import Fonts */
-@import '@fontsource/libre-caslon-condensed/400.css';
-@import '@fontsource/libre-caslon-condensed/500.css';
-@import '@fontsource/libre-caslon-condensed/600.css';
-@import '@fontsource/libre-caslon-condensed/700.css';
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   /* Font variables */
-  --font-archivo: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-instrument-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
   
   /* === LAYOUT === */
   --sidebar-width: 80px;
@@ -39,8 +36,8 @@
   
   /* === TYPOGRAPHY === */
   /* Font Families */
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-editorial: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-primary: var(--font-instrument-sans);
+  --font-editorial: var(--font-instrument-sans);
   --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   
   /* Font Sizes */

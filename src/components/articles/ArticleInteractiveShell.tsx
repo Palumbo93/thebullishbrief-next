@@ -15,6 +15,8 @@ import AudioNativeController from '../AudioNativeController';
 import { ServerArticle } from '../../page-components/ArticlePageServer';
 import { ArticleAccessResult } from '../../lib/serverAccessControl';
 import { TOCSection } from '../../utils/tocParser';
+import { ArticleActionPanelWrapper } from './ArticleActionPanelWrapper';
+import { createPortal } from 'react-dom';
 
 interface ArticleInteractiveShellProps {
   article: ServerArticle;
@@ -53,6 +55,9 @@ export const ArticleInteractiveShell: React.FC<ArticleInteractiveShellProps> = (
   const [isShareSheetOpen, setIsShareSheetOpen] = React.useState(false);
   const [isImageZoomOpen, setIsImageZoomOpen] = React.useState(false);
   const [zoomedImageUrl, setZoomedImageUrl] = React.useState<string>('');
+  
+  // Portal target state for action panel
+  const [portalTarget, setPortalTarget] = React.useState<Element | null>(null);
   const [zoomedImageAlt, setZoomedImageAlt] = React.useState<string>('');
   const [contentProcessed, setContentProcessed] = React.useState(false);
 
@@ -99,6 +104,92 @@ export const ArticleInteractiveShell: React.FC<ArticleInteractiveShellProps> = (
     toggleBookmark.isPending, 
     setConfig
   ]);
+
+  // Find portal target and update layout classes for action panel
+  React.useEffect(() => {
+    const target = document.getElementById('dynamic-action-panel-root');
+    const appContainer = document.querySelector('.app-container');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (target) {
+      setPortalTarget(target);
+      
+      // Add classes to indicate action panel is present
+      if (appContainer && mainContent) {
+        appContainer.classList.add('with-action-panel');
+        mainContent.classList.add('with-action-panel');
+      }
+    }
+    
+    // Cleanup function
+    return () => {
+      if (appContainer && mainContent) {
+        appContainer.classList.remove('with-action-panel');
+        mainContent.classList.remove('with-action-panel');
+      }
+    };
+  }, []);
+
+  // Add IDs to H2 elements and process embeds in the visible content
+  React.useEffect(() => {
+    const processVisibleContent = () => {
+      const contentContainer = document.querySelector('.brief-content-container, .article-content');
+      if (!contentContainer) return;
+
+      // Add IDs to H2 elements for TOC functionality
+      const h2Elements = contentContainer.querySelectorAll('h2');
+      const usedIds = new Set<string>();
+
+      h2Elements.forEach((h2) => {
+        if (!h2.id) {
+          const text = h2.textContent?.trim() || '';
+          if (text) {
+            // Generate ID using the same logic as parseTOCFromContent
+            let baseId = text
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .trim()
+              .replace(/^-+|-+$/g, '');
+
+            if (!baseId) {
+              baseId = `section-${usedIds.size + 1}`;
+            }
+
+            let uniqueId = baseId;
+            let counter = 1;
+            while (usedIds.has(uniqueId)) {
+              uniqueId = `${baseId}-${counter}`;
+              counter++;
+            }
+
+            usedIds.add(uniqueId);
+            h2.id = uniqueId;
+          }
+        }
+      });
+
+      // Process embed content, images, and videos if the functions exist
+      if (typeof processEmbedContent === 'function') {
+        processEmbedContent(contentContainer as HTMLElement);
+      }
+      if (typeof optimizeContentImages === 'function') {
+        optimizeContentImages(contentContainer as HTMLElement);
+      }
+      if (typeof optimizeContentVideos === 'function') {
+        optimizeContentVideos(contentContainer as HTMLElement);
+      }
+    };
+
+    // Try immediately
+    processVisibleContent();
+
+    // Also try after a short delay in case content is still loading
+    const timeout = setTimeout(processVisibleContent, 500);
+
+    return () => clearTimeout(timeout);
+  }, [article.content]);
 
   // Handle image click to open zoom modal
   const handleImageClick = React.useCallback((imageUrl: string, imageAlt: string = 'Image') => {
@@ -247,6 +338,16 @@ export const ArticleInteractiveShell: React.FC<ArticleInteractiveShellProps> = (
         imageAlt={zoomedImageAlt}
         imageName={zoomedImageAlt}
       />
+      
+      {/* Action Panel Portal */}
+      {portalTarget && createPortal(
+        <ArticleActionPanelWrapper
+          article={article}
+          tocSections={tocSections}
+          relatedArticles={relatedArticles}
+        />,
+        portalTarget
+      )}
     </>
   );
 };

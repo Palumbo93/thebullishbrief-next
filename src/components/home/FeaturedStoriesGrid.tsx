@@ -49,11 +49,15 @@ const LargeGrid: React.FC<{
     {/* Category Badge */}
     <div style={{
         fontSize: 'var(--text-xs)',
-        color: 'var(--color-text-muted)',
-        marginBottom: 'var(--space-1)',
+        color: 'var(--color-primary)',
+        fontWeight: 'var(--font-semibold)',
+        marginBottom: 'var(--space-2)',
+        width: 'fit-content',
         textTransform: 'uppercase',
-        letterSpacing: '0.05em'
+        letterSpacing: '0.05em',
+        
     }}>
+      
       {article.category}
     </div>
 
@@ -123,8 +127,9 @@ const ListItem: React.FC<{
       <div>
         <div style={{
           fontSize: 'var(--text-xs)',
-          color: 'var(--color-text-muted)',
-          marginBottom: 'var(--space-1)',
+          color: 'var(--color-primary)',
+          fontWeight: 'var(--font-semibold)',
+          marginBottom: 'var(--space-2)',
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}>

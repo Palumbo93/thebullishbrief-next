@@ -6,7 +6,7 @@ import { ArticlePageServer, ServerArticle } from '../../../page-components/Artic
 import { fetchArticleBySlug, fetchArticleBySlugIncludingDrafts, fetchAllArticleSlugs, fetchArticleBySlugForMetadata, fetchRelatedArticles } from '../../../hooks/useArticles';
 import { determineArticleAccess } from '../../../lib/serverAccessControl';
 import { Layout } from '../../../components/Layout';
-import { ArticleActionPanelWrapper } from '../../../components/articles/ArticleActionPanelWrapper';
+// ArticleActionPanelWrapper will be handled by the client component
 import { parseTOCFromContent } from '../../../utils/tocParser';
 import { LegalFooter } from '../../../components/LegalFooter';
 
@@ -363,13 +363,7 @@ export default async function ArticlePageWrapper({ params }: Props) {
       />
       
       <Layout
-        actionPanel={
-          <ArticleActionPanelWrapper
-            article={serverArticle}
-            tocSections={serverArticle.content ? parseTOCFromContent(serverArticle.content) : []}
-            relatedArticles={serverRelatedArticles}
-          />
-        }
+        actionPanel={null} // Will be handled by client component
       >
         <ArticlePageServer 
           article={serverArticle}

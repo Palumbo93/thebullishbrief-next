@@ -131,9 +131,8 @@ export default function RootLayout({
         </noscript> */}
         
         <ClientProviders>
-          <AppContent>
-            {children}
-          </AppContent>
+          {children}
+          <AppContent />
         </ClientProviders>
       </body>
     </html>

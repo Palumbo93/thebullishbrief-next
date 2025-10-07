@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fontsource/libre-caslon-condensed": "^5.2.5",
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.54.0",
     "@tanstack/react-query": "^5.84.2",
     "@tiptap/extension-code-block": "^3.1.0",

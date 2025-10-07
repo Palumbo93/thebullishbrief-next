@@ -15,7 +15,43 @@ export const parseTOCFromContent = (content: string): TOCSection[] => {
   const sections: TOCSection[] = [];
   const seenLabels = new Set<string>();
   
-  // Create a temporary div to parse HTML content
+  // Server-safe HTML parsing using regex instead of DOM
+  if (typeof document === 'undefined') {
+    // Server-side parsing using regex
+    const h2Regex = /<h2[^>]*>(.*?)<\/h2>/gi;
+    let match;
+    
+    while ((match = h2Regex.exec(content)) !== null) {
+      const text = match[1]
+        .replace(/<[^>]*>/g, '') // Remove any HTML tags within the heading
+        .trim();
+      
+      if (text && !seenLabels.has(text)) {
+        seenLabels.add(text);
+        
+        // Generate ID using same logic as client-side
+        const baseId = text
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim()
+          .replace(/^-+|-+$/g, '');
+        
+        if (baseId) {
+          sections.push({
+            id: baseId,
+            label: text,
+            level: 2
+          });
+        }
+      }
+    }
+    
+    return sections;
+  }
+  
+  // Client-side parsing using DOM
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = content;
   

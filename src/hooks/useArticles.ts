@@ -696,6 +696,9 @@ const fetchRelatedArticles = async (currentArticle: Article, limit: number = 3):
   return sortedArticles;
 };
 
+// Export the function for server-side use
+export { fetchRelatedArticles };
+
 /**
  * Hook for fetching related articles
  */

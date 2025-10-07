@@ -11,10 +11,10 @@ import { ConsentBanner } from './consent/ConsentBanner';
 import { ConsentModal } from './consent/ConsentModal';
 
 interface AppContentProps {
-  children: React.ReactNode;
+  // No children prop - this component only renders global modals and UI
 }
 
-export const AppContent: React.FC<AppContentProps> = ({ children }) => {
+export const AppContent: React.FC<AppContentProps> = () => {
   const { user, loading: authLoading } = useAuth();
   const {
     showAuthModal,
@@ -37,10 +37,7 @@ export const AppContent: React.FC<AppContentProps> = ({ children }) => {
 
   return (
     <>
-      {/* Page content */}
-      {children}
-      
-      {/* Global Modals */}
+      {/* Global Modals and UI Components */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={handleAuthModalClose}

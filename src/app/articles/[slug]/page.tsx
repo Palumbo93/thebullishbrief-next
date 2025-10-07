@@ -2,8 +2,13 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Script from 'next/script';
-import { ArticlePageClient } from '../../../page-components/ArticlePageClient';
-import { fetchArticleBySlug, fetchArticleBySlugIncludingDrafts, fetchAllArticleSlugs, fetchArticleBySlugForMetadata } from '../../../hooks/useArticles';
+import { ArticlePageServer, ServerArticle } from '../../../page-components/ArticlePageServer';
+import { fetchArticleBySlug, fetchArticleBySlugIncludingDrafts, fetchAllArticleSlugs, fetchArticleBySlugForMetadata, fetchRelatedArticles } from '../../../hooks/useArticles';
+import { determineArticleAccess } from '../../../lib/serverAccessControl';
+import { Layout } from '../../../components/Layout';
+import { ArticleActionPanelWrapper } from '../../../components/articles/ArticleActionPanelWrapper';
+import { parseTOCFromContent } from '../../../utils/tocParser';
+import { LegalFooter } from '../../../components/LegalFooter';
 
 /**
  * Extracts a clean meta description from HTML content
@@ -173,16 +178,70 @@ export default async function ArticlePageWrapper({ params }: Props) {
     notFound();
   }
   
-  // Fetch article data on the server for the Layout and schema (including drafts)
+  // Fetch article data on the server for SSR (including drafts)
   let article;
   let rawArticle;
+  let relatedArticles;
   try {
     article = await fetchArticleBySlugIncludingDrafts(slug);
     rawArticle = await fetchArticleBySlugForMetadata(slug);
+    
+    if (!article || !rawArticle) {
+      notFound();
+    }
+    
+    // Fetch related articles
+    relatedArticles = await fetchRelatedArticles(article, 3);
   } catch (error) {
     console.error('Error fetching article:', error);
     notFound();
   }
+  
+  // Determine article access server-side
+  const accessResult = await determineArticleAccess({
+    id: String(article.id),
+    title: article.title,
+    premium: article.premium || false,
+    status: 'published', // Default to published for now, since the Article type doesn't include status
+    content: article.content,
+    preview: article.content?.substring(0, 1000) // Generate preview
+  });
+  
+  // Transform article data for server component
+  const serverArticle: ServerArticle = {
+    id: String(article.id),
+    title: article.title,
+    slug: article.slug || slug, // Use the slug from params if article.slug is undefined
+    subtitle: article.subtitle,
+    content: article.content || '',
+    image: article.image,
+    category: article.category,
+    author: article.author,
+    authorSlug: article.authorSlug,
+    authorAvatar: article.authorAvatar,
+    date: article.date,
+    tags: article.tags,
+    premium: article.premium || false,
+    status: 'published' // Default to published since Article type doesn't include status
+  };
+  
+  // Transform related articles
+  const serverRelatedArticles: ServerArticle[] = (relatedArticles || []).map(related => ({
+    id: String(related.id),
+    title: related.title,
+    slug: related.slug || `article-${related.id}`, // Fallback slug if undefined
+    subtitle: related.subtitle,
+    content: related.content || '',
+    image: related.image,
+    category: related.category,
+    author: related.author,
+    authorSlug: related.authorSlug,
+    authorAvatar: related.authorAvatar,
+    date: related.date,
+    tags: related.tags,
+    premium: related.premium || false,
+    status: 'published' // Default to published since Article type doesn't include status
+  }));
 
   // Generate enhanced JSON-LD schema for NewsArticle
   const description = rawArticle.content ? extractMetaDescription(rawArticle.content) : rawArticle.subtitle || rawArticle.title;
@@ -230,7 +289,7 @@ export default async function ArticlePageWrapper({ params }: Props) {
     keywords: rawArticle.tags?.map((tag: any) => tag.tag.name).join(', ') || 'finance, markets, investing',
     wordCount: rawArticle.content?.length || 0,
     articleBody: rawArticle.content || '',
-    isAccessibleForFree: true,
+    isAccessibleForFree: accessResult.renderMode === 'full',
     isPartOf: {
       '@type': 'CreativeWork',
       name: 'The Bullish Brief',
@@ -302,7 +361,36 @@ export default async function ArticlePageWrapper({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <ArticlePageClient slug={slug} />
+      
+      <Layout
+        actionPanel={
+          <ArticleActionPanelWrapper
+            article={serverArticle}
+            tocSections={serverArticle.content ? parseTOCFromContent(serverArticle.content) : []}
+            relatedArticles={serverRelatedArticles}
+          />
+        }
+      >
+        <ArticlePageServer 
+          article={serverArticle}
+          accessResult={accessResult}
+          relatedArticles={serverRelatedArticles}
+          slug={slug}
+        />
+      </Layout>
+      
+      {/* Legal Footer - Full bleed outside container */}
+      <div style={{
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
+        marginTop: 'var(--space-16)'
+      }}>
+        <LegalFooter />
+      </div>
     </>
   );
 }
